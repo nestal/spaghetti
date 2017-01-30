@@ -4,11 +4,11 @@
 int main(int argc, char **argv)
 {
 	const char *arg[] =
-		{
-			"-std=c++14",
-			"DemoStat.cc",
-			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/"
-		};
+	{
+		"-std=c++14",
+		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+		"DemoStat.cc",
+	};
 	
 	auto idx = ::clang_createIndex(0, 0);
 	auto tu  = ::clang_parseTranslationUnit(idx, 0, arg, sizeof(arg)/sizeof(arg[0]), 0, 0, CXTranslationUnit_None);
