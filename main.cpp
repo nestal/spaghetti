@@ -18,9 +18,9 @@ int main(int argc, char **argv)
 	}, CXTranslationUnit_None);
 	
 	std::cout << "translated " << tu.Spelling() << "\n";
-	tu.Visit([](clx::Cursor cursor, clx::Cursor parent)
+	tu.Root().Visit([](clx::Cursor cursor, clx::Cursor parent)
 	{
-		std::cout << cursor.DisplayName() << " " << cursor.Spelling() << " " << cursor.Kind() << "\n";
+		std::cout << cursor.DisplayName() << " \"" << cursor.Spelling() << "\": " << cursor.Kind() << "\n";
 	});
 	
 	for (unsigned i = 0, n = clang_getNumDiagnostics(tu.Get()); i != n; ++i)

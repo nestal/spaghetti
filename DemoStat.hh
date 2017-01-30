@@ -8,6 +8,7 @@
 
 #pragma once
 
+// hahaha
 struct DemoStat
 {
 	int request_count;

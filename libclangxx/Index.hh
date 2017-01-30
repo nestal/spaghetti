@@ -49,22 +49,6 @@ public:
 	std::string Spelling() const;
 	Cursor Root();
 	
-	template <typename Visitor>
-	void Visit(Visitor visitor)
-	{
-		auto functor = [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult
-		{
-			Visitor *visitor = reinterpret_cast<Visitor*>(client_data);
-			
-			Cursor current{cursor};
-			(*visitor)(current, Cursor{parent});
-			
-			return CXChildVisit_Continue;
-		};
-		
-		::clang_visitChildren(::clang_getTranslationUnitCursor(m_unit.get()), functor, &visitor);
-	}
-	
 	CXTranslationUnit Get();
 	
 private:
@@ -86,6 +70,23 @@ public:
 	std::string DisplayName() const;
 	std::string USR() const;
 	
+	template <typename Visitor>
+	void Visit(Visitor visitor)
+	{
+		auto functor = [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult
+		{
+			Visitor *visitor = reinterpret_cast<Visitor*>(client_data);
+			
+			Cursor current{cursor};
+			(*visitor)(current, Cursor{parent});
+			current.Visit(*visitor);
+						
+			return CXChildVisit_Continue;
+		};
+		
+		::clang_visitChildren(m_cursor, functor, &visitor);
+	}
+
 private:
 	CXCursor m_cursor;
 };
