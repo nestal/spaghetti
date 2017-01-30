@@ -22,13 +22,28 @@ Index::Index() :
 	
 }
 
-void Index::Parse(std::initializer_list<std::string> args, unsigned options)
+TranslationUnit Index::Parse(std::initializer_list<std::string> args, unsigned options)
 {
 	std::vector<const char*> vargs;
 	for (auto&& arg : args)
 		vargs.push_back(arg.c_str());
 	
-	auto tu = ::clang_parseTranslationUnit(m_index.get(), 0, &vargs[0], static_cast<int>(vargs.size()), 0, 0, options);
+	return {::clang_parseTranslationUnit(m_index.get(), 0, &vargs[0], static_cast<int>(vargs.size()), 0, 0, options)};
+}
+
+CXIndex Index::Get()
+{
+	return m_index.get();
+}
+
+TranslationUnit::TranslationUnit(CXTranslationUnit tu) :
+	m_unit{tu}
+{
+}
+
+CXTranslationUnit TranslationUnit::Get()
+{
+	return m_unit.get();
 }
 	
 } // end of namespace

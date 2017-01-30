@@ -16,7 +16,25 @@
 #include <memory>
 
 namespace util {
+/*
+template<class FunctionPointer>
+struct GetFunctionPointerFirstArgumentType;
 
+template<typename FirstArgType, typename ReturnType>
+struct GetFunctionPointerFirstArgumentType<ReturnType (*)(FirstArgType)>
+{
+	using Result = FirstArgType;
+};
+
+template<typename FunctionPointer>
+struct GetFunctionPointerReturnType;
+
+template<typename FirstArgType, typename ReturnType>
+struct GetFunctionPointerReturnType<ReturnType (*)(FirstArgType)>
+{
+	using Result = ReturnType;
+};
+*/
 template <typename T, typename R, R (*deleter)(T*)>
 struct FunctionDeleter
 {

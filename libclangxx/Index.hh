@@ -24,23 +24,34 @@ class Index
 {
 public:
 	Index();
+	Index(Index&&) = default;
 	
-	void Parse(std::initializer_list<std::string> args, unsigned options);
+	TranslationUnit Parse(std::initializer_list<std::string> args, unsigned options);
+	
+	CXIndex Get();
 	
 private:
-	util::DeleteWith<std::remove_pointer_t<::CXIndex>,
+	util::DeleteWith<
+		std::remove_pointer_t<CXIndex>,
 		void,
-	    &::clang_disposeIndex
+		&::clang_disposeIndex
 	> m_index;
 };
-/*
+
 class TranslationUnit
 {
 public:
 	TranslationUnit(CXTranslationUnit tu);
+	TranslationUnit(TranslationUnit&&) = default;
+	
+	CXTranslationUnit Get();
 	
 private:
-	util::DeleteWith(std::remove_pointer_t<)
+	util::DeleteWith<
+		std::remove_pointer_t<CXTranslationUnit>,
+		void,
+		&::clang_disposeTranslationUnit
+	> m_unit;
 };
-*/
+
 } // end of namespace clx
