@@ -18,6 +18,10 @@ int main(int argc, char **argv)
 	}, CXTranslationUnit_None);
 	
 	std::cout << "translated " << tu.Spelling() << "\n";
+	tu.Visit([](CXCursor cursor, CXCursor parent)
+	{
+		
+	});
 	
 	for (unsigned i = 0, n = clang_getNumDiagnostics(tu.Get()); i != n; ++i)
 	{

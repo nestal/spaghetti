@@ -38,6 +38,8 @@ private:
 	> m_index;
 };
 
+class Cursor;
+
 class TranslationUnit
 {
 public:
@@ -45,6 +47,20 @@ public:
 	TranslationUnit(TranslationUnit&&) = default;
 	
 	std::string Spelling() const;
+	Cursor Root();
+	
+	template <typename Visitor>
+	void Visit(Visitor visitor)
+	{
+		auto functor = [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult
+		{
+			Visitor *visitor = reinterpret_cast<Visitor*>(client_data);
+			(*visitor)(cursor, parent);
+			return CXChildVisit_Break;
+		};
+		
+		::clang_visitChildren(::clang_getTranslationUnitCursor(m_unit.get()), functor, &visitor);
+	}
 	
 	CXTranslationUnit Get();
 	
@@ -54,6 +70,17 @@ private:
 		void,
 		&::clang_disposeTranslationUnit
 	> m_unit;
+};
+
+class Cursor
+{
+public:
+	Cursor(CXCursor cursor);
+	
+	CXCursorKind Kind() const;
+	
+private:
+	CXCursor m_cursor;
 };
 
 } // end of namespace clx

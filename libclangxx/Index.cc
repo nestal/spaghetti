@@ -51,5 +51,20 @@ std::string TranslationUnit::Spelling() const
 {
 	return XStr{::clang_getTranslationUnitSpelling(m_unit.get())}.Str();
 }
+
+Cursor TranslationUnit::Root()
+{
+	return Cursor{::clang_getTranslationUnitCursor(m_unit.get())};
+}
+
+Cursor::Cursor(CXCursor cursor) :
+	m_cursor{cursor}
+{
+}
+
+CXCursorKind Cursor::Kind() const
+{
+	return ::clang_getCursorKind(m_cursor);
+}
 	
 } // end of namespace
