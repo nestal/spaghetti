@@ -55,8 +55,11 @@ public:
 		auto functor = [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult
 		{
 			Visitor *visitor = reinterpret_cast<Visitor*>(client_data);
-			(*visitor)(cursor, parent);
-			return CXChildVisit_Break;
+			
+			Cursor current{cursor};
+			(*visitor)(current, Cursor{parent});
+			
+			return CXChildVisit_Continue;
 		};
 		
 		::clang_visitChildren(::clang_getTranslationUnitCursor(m_unit.get()), functor, &visitor);
@@ -78,6 +81,10 @@ public:
 	Cursor(CXCursor cursor);
 	
 	CXCursorKind Kind() const;
+	
+	std::string Spelling() const ;
+	std::string DisplayName() const;
+	std::string USR() const;
 	
 private:
 	CXCursor m_cursor;

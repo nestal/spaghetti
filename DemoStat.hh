@@ -8,12 +8,16 @@
 
 #pragma once
 
-#include <cstddef>
-#include <array>
-
 struct DemoStat
 {
-	std::size_t request_count;
-	std::array<char, 80> last_request;
-	std::size_t last_result;
+	int request_count;
+	char last_request[80];
+	int last_result;
 };
+
+DemoStat f()
+{
+	DemoStat i;
+	i.request_count = 0;
+	return i;
+}

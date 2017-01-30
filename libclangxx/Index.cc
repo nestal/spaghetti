@@ -66,5 +66,20 @@ CXCursorKind Cursor::Kind() const
 {
 	return ::clang_getCursorKind(m_cursor);
 }
+
+std::string Cursor::DisplayName() const
+{
+	return XStr{::clang_getCursorDisplayName(m_cursor)}.Str();
+}
+
+std::string Cursor::USR() const
+{
+	return XStr{::clang_getCursorUSR(m_cursor)}.Str();
+}
+
+std::string Cursor::Spelling() const
+{
+	return XStr{::clang_getCursorSpelling(m_cursor)}.Str();
+}
 	
 } // end of namespace
