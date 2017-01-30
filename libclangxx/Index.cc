@@ -11,6 +11,7 @@
 //
 
 #include "Index.hh"
+#include "XStr.hh"
 
 #include <vector>
 
@@ -44,6 +45,11 @@ TranslationUnit::TranslationUnit(CXTranslationUnit tu) :
 CXTranslationUnit TranslationUnit::Get()
 {
 	return m_unit.get();
+}
+
+std::string TranslationUnit::Spelling() const
+{
+	return XStr{::clang_getTranslationUnitSpelling(m_unit.get())}.Str();
 }
 	
 } // end of namespace

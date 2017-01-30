@@ -17,6 +17,8 @@ int main(int argc, char **argv)
 		"DemoStat.cc",
 	}, CXTranslationUnit_None);
 	
+	std::cout << "translated " << tu.Spelling() << "\n";
+	
 	for (unsigned i = 0, n = clang_getNumDiagnostics(tu.Get()); i != n; ++i)
 	{
 		auto diag = ::clang_getDiagnostic(tu.Get(), i);

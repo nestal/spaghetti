@@ -44,6 +44,8 @@ public:
 	TranslationUnit(CXTranslationUnit tu);
 	TranslationUnit(TranslationUnit&&) = default;
 	
+	std::string Spelling() const;
+	
 	CXTranslationUnit Get();
 	
 private:
