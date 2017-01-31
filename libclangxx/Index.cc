@@ -120,6 +120,11 @@ Cursor Cursor::GetDefinition() const
 	return {::clang_getCursorDefinition(m_cursor)};
 }
 
+bool Cursor::IsDeclaration() const
+{
+	return ::clang_isDeclaration(Kind()) != 0 ;
+}
+
 SourceLocation::SourceLocation(CXSourceLocation loc) :
 	m_loc{loc}
 {

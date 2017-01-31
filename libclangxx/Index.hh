@@ -81,6 +81,7 @@ public:
 	
 	bool IsReference() const;
 	bool IsDefinition() const;
+	bool IsDeclaration() const;
 	
 	Cursor GetDefinition() const;
 	

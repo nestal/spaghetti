@@ -31,6 +31,38 @@ namespace cb {
 class Class
 {
 public:
+	class Field
+	{
+	public:
+		Field(clx::Cursor field);
+		
+		const std::string& Name() const;
+	
+	private:
+		std::string m_name;
+		std::string m_usr;
+		clx::Type   m_type;
+	};
+	
+	using FieldList = std::vector<Field>;
+	
+	class Data
+	{
+	public:
+		Data() = default;
+		Data(clx::Cursor cursor);
+		
+		friend class Class;
+	
+	private:
+		boost::optional<clx::SourceLocation> m_definition;
+		
+		FieldList m_fields;
+	};
+
+	using field_iterator = std::vector<Field>::const_iterator;
+	
+public:
 	Class(clx::Cursor cursor);
 	Class(const Class&) = default;
 	Class(Class&&) = default;
@@ -44,23 +76,10 @@ public:
 	const std::string& Name() const;
 	const std::string& USR() const;
 	
-	class Data
-	{
-	public:
-		Data() = default;
-		Data(clx::Cursor cursor);
-		
-		friend class Class;
-		
-	private:
-		boost::optional<clx::SourceLocation> m_definition;
-		
-		std::vector<std::string> m_field_usr;
-		std::vector<std::string> m_func_usr;
-	};
-	
 	void Visit(Data& data, clx::Cursor self) const;
 	void Merge(Data&& data);
+	
+	std::pair<field_iterator, field_iterator> Fields() const;
 
 private:
 	std::string m_name;

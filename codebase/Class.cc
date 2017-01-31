@@ -47,34 +47,50 @@ const std::string& Class::USR() const
 void Class::Visit(Data& data, clx::Cursor self) const
 {
 	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl);
-	assert(m_name == self.Spelling());
-	assert(m_usr == self.USR());
+	assert(!m_name.empty() && m_name == self.Spelling());
+	assert(!m_usr.empty() && m_usr == self.USR());
 	
 	self.Visit([&data, this](clx::Cursor child, clx::Cursor)
 	{
-		std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
-		
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-		{
-			std::cout << '\t' << child.Spelling() << ": " << child.Type().Spelling() << " " << child.USR() << "\n";
-			data.m_field_usr.push_back(child.USR());
+			data.m_fields.emplace_back(child);
 			break;
-		}
 			
+		default:
+			std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
+			break;
 		}
 	});
 }
 
 void Class::Merge(Class::Data&& data)
 {
-	m_data.m_field_usr = std::move(data.m_field_usr);
+	m_data.m_fields = std::move(data.m_fields);
 	
 	if (data.m_definition)
 		m_data.m_definition = std::move(data.m_definition);
 
 	std::cout << "after merging: " << m_name << std::endl;
+}
+
+std::pair<Class::field_iterator, Class::field_iterator> Class::Fields() const
+{
+	return {m_data.m_fields.begin(), m_data.m_fields.end()};
+}
+
+Class::Field::Field(clx::Cursor field) :
+	m_name{field.Spelling()},
+	m_usr{field.USR()},
+	m_type{field.Type()}
+{
+	std::cout << "\tfield: " << m_name << " type: " << m_type.Spelling() << std::endl;
+}
+
+const std::string& Class::Field::Name() const
+{
+	return m_name;
 }
 	
 } // end of namespace
