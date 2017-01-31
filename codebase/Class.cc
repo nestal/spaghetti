@@ -17,15 +17,16 @@
 namespace cb {
 
 Class::Class(clx::Cursor cursor) :
+	m_name{cursor.Spelling()},
+	m_usr{cursor.USR()},
 	m_data{cursor}
 {
-	
 }
 
-Class::Data::Data(clx::Cursor cursor) :
-	m_name{cursor.Spelling()},
-	m_usr{cursor.USR()}
+Class::Data::Data(clx::Cursor cursor)
 {
+	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl);
+	
 	if (cursor.IsDefinition())
 	{
 		std::cout << "found definition: " << cursor.Location() << std::endl;
@@ -35,37 +36,45 @@ Class::Data::Data(clx::Cursor cursor) :
 
 const std::string& Class::Name() const
 {
-	return m_data.m_name;
+	return m_name;
 }
 
 const std::string& Class::USR() const
 {
-	return m_data.m_usr;
+	return m_usr;
 }
 
-void Class::VisitChild(Data& data, clx::Cursor child) const
+void Class::Visit(Data& data, clx::Cursor self) const
 {
-	std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
-
-	switch (child.Kind())
-	{
-	case CXCursor_FieldDecl:
-	{
-		std::cout << '\t' << child.Spelling() << ": " << child.Type().Spelling() << " " << child.USR() << "\n";
-		data.m_field_usr.push_back(child.USR());
-		break;
-	}
+	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl);
+	assert(m_name == self.Spelling());
+	assert(m_usr == self.USR());
 	
-	}
+	self.Visit([&data, this](clx::Cursor child, clx::Cursor)
+	{
+		std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
+		
+		switch (child.Kind())
+		{
+		case CXCursor_FieldDecl:
+		{
+			std::cout << '\t' << child.Spelling() << ": " << child.Type().Spelling() << " " << child.USR() << "\n";
+			data.m_field_usr.push_back(child.USR());
+			break;
+		}
+			
+		}
+	});
 }
 
 void Class::Merge(Class::Data&& data)
 {
-	m_data.m_name = std::move(data.m_name);
 	m_data.m_field_usr = std::move(data.m_field_usr);
 	
 	if (data.m_definition)
 		m_data.m_definition = std::move(data.m_definition);
+
+	std::cout << "after merging: " << m_name << std::endl;
 }
 	
 } // end of namespace

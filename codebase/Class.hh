@@ -53,20 +53,19 @@ public:
 		friend class Class;
 		
 	private:
-		std::string m_name;
-		std::string m_usr;
-		
 		boost::optional<clx::SourceLocation> m_definition;
 		
 		std::vector<std::string> m_field_usr;
 		std::vector<std::string> m_func_usr;
-		
 	};
 	
-	void VisitChild(Data& data, clx::Cursor child) const;
+	void Visit(Data& data, clx::Cursor self) const;
 	void Merge(Data&& data);
 
 private:
+	std::string m_name;
+	std::string m_usr;
+	
 	Data m_data;
 };
 	

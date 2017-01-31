@@ -26,17 +26,14 @@ void CodeBase::Visit(clx::Cursor cursor, clx::Cursor parent)
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
 		{
-			std::cout << "class: " << cursor.Spelling() << "\n";
-			auto it = m_classes.emplace(cursor);
+			auto it = m_classes.find(cursor.USR());
+			if (it == m_classes.end())
+				it = m_classes.emplace(cursor).first;
 
 			Class::Data data;
-			cursor.Visit([&data, it](clx::Cursor child, clx::Cursor)
-			{
-				it.first->VisitChild(data, child);
-			});
-			std::cout << "end class: " << cursor.Spelling() << "\n";
+			it->Visit(data, cursor);
 			
-			m_classes.modify(it.first, [&data](Class& c){c.Merge(std::move(data));});
+			m_classes.modify(it, [&data](Class& c){c.Merge(std::move(data));});
 			break;
 		}
 			
@@ -87,10 +84,19 @@ void CodeBase::Parse(const std::string& source)
 	m_units.push_back(std::move(tu));
 }
 
-const Class *CodeBase::FindClass(const std::string& usr) const
+CodeBase::usr_iterator CodeBase::find(const std::string& usr) const
 {
-	auto it = m_classes.get<ByUSR>().find(usr);
-	return it != m_classes.get<ByUSR>().end() ? &*it : nullptr;
+	return m_classes.get<ByUSR>().find(usr);
+}
+
+CodeBase::usr_iterator CodeBase::begin() const
+{
+	return m_classes.get<ByUSR>().begin();
+}
+
+CodeBase::usr_iterator CodeBase::end() const
+{
+	return m_classes.get<ByUSR>().end();
 }
 	
 } // end of namespace

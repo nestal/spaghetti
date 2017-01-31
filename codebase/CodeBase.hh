@@ -31,36 +31,43 @@ namespace cb {
 class CodeBase
 {
 public:
+	struct ByUSR {};
+	
+	using ClassDB = boost::multi_index_container<
+		Class,
+		boost::multi_index::indexed_by<
+			
+			// hash by USR
+			boost::multi_index::hashed_unique<
+				boost::multi_index::tag<ByUSR>,
+				boost::multi_index::const_mem_fun<
+					Class,
+					const std::string&,
+					&Class::USR
+				>
+			>
+		>
+	>;
+	
+	using USRIndex = ClassDB::index<ByUSR>::type ;
+	using usr_iterator = USRIndex::iterator;
+
+public:
 	CodeBase() = default;
 	
 	void Parse(const std::string& source);
 	
 	void Visit(clx::Cursor cursor, clx::Cursor parent);
 	
-	const Class* FindClass(const std::string& usr) const;
+	usr_iterator begin() const;
+	usr_iterator end() const;
+	usr_iterator find(const std::string& usr) const;
 	
 private:
 	clx::Index  m_index;
 	std::vector<clx::TranslationUnit> m_units;
 	
-	struct ByCursor {};
-	struct ByUSR {};
-	
-	boost::multi_index_container<
-		Class,
-		boost::multi_index::indexed_by<
-			
-			// hash by USR
-			boost::multi_index::hashed_unique<
-			    boost::multi_index::tag<ByUSR>,
-			    boost::multi_index::const_mem_fun<
-			        Class,
-			        const std::string&,
-			        &Class::USR
-				>
-			>
-		>
-	> m_classes;
+	ClassDB m_classes;
 };
 	
 } // end of namespace
