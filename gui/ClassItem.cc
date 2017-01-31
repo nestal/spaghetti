@@ -19,6 +19,11 @@ ClassItem::ClassItem(const codebase::Class& class_, QGraphicsItem *parent) :
 	m_class{class_}
 {
 	auto name = new QGraphicsTextItem{QString::fromStdString(m_class.Name()), this};
+
+	// use a bold font for class names
+	auto font = name->font();
+	font.setBold(true);
+	name->setFont(font);
 	
 	double ypos = name->boundingRect().height();
 	for (auto& field : m_class.Fields())
