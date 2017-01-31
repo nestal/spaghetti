@@ -18,6 +18,10 @@
 
 namespace clx {
 
+// forward declarations
+class Cursor;
+class Index;
+class SourceLocation;
 class TranslationUnit;
 
 class Index
@@ -26,7 +30,7 @@ public:
 	Index();
 	Index(Index&&) = default;
 	
-	TranslationUnit Parse(std::initializer_list<std::string> args, unsigned options);
+	TranslationUnit Parse(const std::string& filename, std::initializer_list<std::string> args, unsigned options);
 	
 	CXIndex Get();
 	
@@ -37,8 +41,6 @@ private:
 		&::clang_disposeIndex
 	> m_index;
 };
-
-class Cursor;
 
 class TranslationUnit
 {
@@ -70,16 +72,18 @@ public:
 	std::string DisplayName() const;
 	std::string USR() const;
 	
+	SourceLocation Location() const;
+	
 	template <typename Visitor>
 	void Visit(Visitor visitor)
 	{
 		auto functor = [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult
 		{
-			Visitor *visitor = reinterpret_cast<Visitor*>(client_data);
+			Visitor *pv = reinterpret_cast<Visitor*>(client_data);
 			
 			Cursor current{cursor};
-			(*visitor)(current, Cursor{parent});
-			current.Visit(*visitor);
+			(*pv)(current, Cursor{parent});
+			current.Visit(*pv);
 						
 			return CXChildVisit_Continue;
 		};
@@ -89,6 +93,19 @@ public:
 
 private:
 	CXCursor m_cursor;
+};
+
+class SourceLocation
+{
+public:
+	SourceLocation(CXSourceLocation loc);
+	
+	void SpellingLocation(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const;
+	bool IsFromMainFile() const;
+	bool IsFromSystemHeader() const;
+	
+private:
+	CXSourceLocation m_loc;
 };
 
 } // end of namespace clx
