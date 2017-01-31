@@ -15,7 +15,9 @@
 #include "DeleteWith.hh"
 
 #include <clang-c/Index.h>
+
 #include <cassert>
+#include <iosfwd>
 
 namespace clx {
 
@@ -126,6 +128,8 @@ public:
 private:
 	CXSourceLocation m_loc;
 };
+
+std::ostream& operator<<(std::ostream& os, const SourceLocation& loc);
 
 class Type
 {

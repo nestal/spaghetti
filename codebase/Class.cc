@@ -27,7 +27,10 @@ Class::Data::Data(clx::Cursor cursor) :
 	m_usr{cursor.USR()}
 {
 	if (cursor.IsDefinition())
+	{
+		std::cout << "found definition: " << cursor.Location() << std::endl;
 		m_definition = cursor.Location();
+	}
 }
 
 const std::string& Class::Name() const

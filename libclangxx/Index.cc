@@ -14,6 +14,7 @@
 #include "XStr.hh"
 
 #include <vector>
+#include <ostream>
 
 namespace clx {
 
@@ -139,6 +140,15 @@ bool SourceLocation::IsFromMainFile() const
 bool SourceLocation::IsFromSystemHeader() const
 {
 	return ::clang_Location_isInSystemHeader(m_loc) != 0;
+}
+
+std::ostream& operator<<(std::ostream& os, const SourceLocation& loc)
+{
+	std::string file;
+	unsigned line, column, offset;
+	loc.SpellingLocation(file, line, column, offset);
+	
+	return os << file << ":" << line ;
 }
 
 unsigned Cursor::Hash::operator()(Cursor c) const
