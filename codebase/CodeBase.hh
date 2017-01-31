@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include "CppClass.hh"
+#include "libclangxx/Index.hh"
+
 #include <vector>
 
 namespace clx {
@@ -26,9 +29,14 @@ class CodeBase
 public:
 	CodeBase() = default;
 	
-	void Visit(clx::Cursor current, clx::Cursor parent);
+	void Parse(const std::string& source);
+	
+	void Visit(clx::Cursor cursor, clx::Cursor parent);
 	
 private:
+	clx::Index  m_index;
+	std::vector<clx::TranslationUnit> m_units;
+	
 	std::vector<CppClass> m_classes;
 };
 	
