@@ -37,7 +37,7 @@ public:
 	
 	void Visit(clx::Cursor cursor, clx::Cursor parent);
 	
-	const CppClass* FindClass(clx::Cursor cursor) const;
+	const CppClass* FindClass(const std::string& usr) const;
 	
 private:
 	clx::Index  m_index;
@@ -50,23 +50,12 @@ private:
 		CppClass,
 		boost::multi_index::indexed_by<
 			
-			// hash by cursor
-			boost::multi_index::hashed_unique<
-				boost::multi_index::tag<ByCursor>,
-				boost::multi_index::const_mem_fun<
-					CppClass,
-					clx::Cursor,
-					&CppClass::Cursor
-				>,
-				clx::Cursor::Hash
-			>,
-			    
 			// hash by USR
 			boost::multi_index::hashed_unique<
 			    boost::multi_index::tag<ByUSR>,
 			    boost::multi_index::const_mem_fun<
 			        CppClass,
-			        std::string,
+			        const std::string&,
 			        &CppClass::USR
 				>
 			>

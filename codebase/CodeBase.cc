@@ -30,9 +30,8 @@ void CodeBase::Visit(clx::Cursor cursor, clx::Cursor parent)
 			auto it = m_classes.emplace(cursor);
 			if (it.second)
 				std::cout << "new class " << cursor.Spelling() << "\n";
-			
+
 			auto copy{*it.first};
-			
 			cursor.Visit([&copy](clx::Cursor cursor, clx::Cursor parent)
 			{
 				copy.Visit(cursor, parent);
@@ -67,7 +66,8 @@ void CodeBase::Parse(const std::string& source)
 		source.c_str(),
 		{
 			"-std=c++14",
-			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/"
+			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+			"-I", ".",
 		},
 		CXTranslationUnit_None
 	);
@@ -89,10 +89,10 @@ void CodeBase::Parse(const std::string& source)
 	m_units.push_back(std::move(tu));
 }
 
-const CppClass *CodeBase::FindClass(clx::Cursor cursor) const
+const CppClass *CodeBase::FindClass(const std::string& usr) const
 {
-	auto it = m_classes.get<ByCursor>().find(cursor);
-	return it != m_classes.get<ByCursor>().end() ? &*it : nullptr;
+	auto it = m_classes.get<ByUSR>().find(usr);
+	return it != m_classes.get<ByUSR>().end() ? &*it : nullptr;
 }
 	
 } // end of namespace

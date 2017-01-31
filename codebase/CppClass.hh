@@ -33,12 +33,12 @@ public:
 	void AddMemberFunction(const std::string& name);
 	void AddDataMember(const std::string& name);
 	
-	std::string Name() const;
-	clx::Cursor Cursor() const;
-	std::string USR() const;
+	const std::string& Name() const;
+	const std::string& USR() const;
 	
 private:
-	clx::Cursor m_cursor;
+	std::string m_name;
+	std::string m_usr;
 };
 	
 } // end of namespace

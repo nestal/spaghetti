@@ -17,23 +17,19 @@
 namespace cb {
 
 CppClass::CppClass(clx::Cursor cursor) :
-	m_cursor{cursor}
+	m_name{cursor.Spelling()},
+	m_usr{cursor.USR()}
 {
 }
 
-std::string CppClass::Name() const
+const std::string& CppClass::Name() const
 {
-	return m_cursor.Spelling();
+	return m_name;
 }
 
-clx::Cursor CppClass::Cursor() const
+const std::string& CppClass::USR() const
 {
-	return m_cursor;
-}
-
-std::string CppClass::USR() const
-{
-	return m_cursor.USR();
+	return m_usr;
 }
 
 void CppClass::Visit(clx::Cursor cursor, clx::Cursor parent)
