@@ -11,7 +11,7 @@
 //
 
 #include "Model.hh"
-#include "ClassItem.hh"
+#include "UMLClassItem.hh"
 
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsItem>
@@ -25,13 +25,14 @@ Model::Model(QObject *parent, QGraphicsView *view) :
 {
 	m_codebase.Parse("codebase/CodeBase.cc");
 	
+	auto dx = 0;
 	for (auto& class_ : m_codebase)
 	{
-		auto item = new ClassItem{class_, nullptr};
-		item->setFlag(QGraphicsItem::ItemIsMovable);
-		item->setFlag(QGraphicsItem::ItemIsSelectable);
+		auto item = new UMLClassItem{class_, nullptr};
+		item->moveBy(dx, 0);
 		
 		m_scene->addItem(item);
+		dx += (item->boundingRect().width() + 10);
 	}
 	
 	view->setScene(m_scene.get());

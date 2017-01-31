@@ -10,7 +10,7 @@
 // Created by nestal on 1/31/17.
 //
 
-#include "ClassItem.hh"
+#include "UMLClassItem.hh"
 
 #include <QFont>
 #include <QGraphicsTextItem>
@@ -18,7 +18,7 @@
 
 namespace gui {
 
-ClassItem::ClassItem(const codebase::Class& class_, QGraphicsItem *parent) :
+UMLClassItem::UMLClassItem(const codebase::Class& class_, QGraphicsItem *parent) :
 	QGraphicsItem{parent},
 	m_class{class_},
 	m_name{new QGraphicsTextItem{QString::fromStdString(m_class.Name()), this}}
@@ -39,14 +39,18 @@ ClassItem::ClassItem(const codebase::Class& class_, QGraphicsItem *parent) :
 	// initialize geometry
 	prepareGeometryChange();
 	m_bounding = childrenBoundingRect();
+	
+	// flags
+	setFlag(QGraphicsItem::ItemIsMovable);
+	setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
-QRectF ClassItem::boundingRect() const
+QRectF UMLClassItem::boundingRect() const
 {
 	return m_bounding;
 }
 
-void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void UMLClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 	// bounding rectangle
 	painter->drawRect(m_bounding);
