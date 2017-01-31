@@ -11,6 +11,7 @@
 //
 
 #include "Model.hh"
+#include "ClassItem.hh"
 
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsItem>
@@ -22,6 +23,17 @@ Model::Model(QObject *parent, QGraphicsView *view) :
 	QObject(parent),
 	m_scene(std::make_unique<QGraphicsScene>(this))
 {
+	m_codebase.Parse("codebase/CodeBase.cc");
+	
+	for (auto& class_ : m_codebase)
+	{
+		auto item = new ClassItem{class_, nullptr};
+		item->setFlag(QGraphicsItem::ItemIsMovable);
+		item->setFlag(QGraphicsItem::ItemIsSelectable);
+		
+		m_scene->addItem(item);
+	}
+	
 	view->setScene(m_scene.get());
 }
 	
