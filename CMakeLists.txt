@@ -16,10 +16,6 @@ file(GLOB LIBCLANGXX_FILES libclx/*.hh libclx/*.cc)
 file(GLOB CODEBASE_FILES codebase/*.hh codebase/*.cc)
 add_library(clangxx ${LIBCLANGXX_FILES} ${CODEBASE_FILES})
 
-set(SOURCE_FILES main.cpp)
-add_executable(spaghetti ${SOURCE_FILES})
-target_link_libraries(spaghetti clangxx clang)
-
 file(GLOB GUI_FILES gui/*.hh gui/*.cc)
 add_executable(spaghetti-gui ${GUI_FILES})
 target_link_libraries(spaghetti-gui clangxx clang Qt5::Widgets)
