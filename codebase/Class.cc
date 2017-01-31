@@ -12,7 +12,7 @@
 
 #include "Class.hh"
 
-#include <ostream>
+#include <iostream>
 
 namespace cb {
 
@@ -49,6 +49,7 @@ void Class::Visit(Data& data, clx::Cursor self) const
 	
 	self.Visit([&data, this](clx::Cursor child, clx::Cursor)
 	{
+		std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
@@ -56,7 +57,6 @@ void Class::Visit(Data& data, clx::Cursor self) const
 			break;
 			
 		default:
-//			std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
 			break;
 		}
 	});
@@ -64,9 +64,12 @@ void Class::Visit(Data& data, clx::Cursor self) const
 
 void Class::Merge(Class::Data&& data)
 {
-	m_data.m_fields = std::move(data.m_fields);
+	m_data.m_fields.insert(m_data.m_fields.end(),
+		make_move_iterator(data.m_fields.begin()),
+		make_move_iterator(data.m_fields.end())
+	);
 	
-	if (data.m_definition)
+	if (!m_data.m_definition && data.m_definition)
 		m_data.m_definition = std::move(data.m_definition);
 }
 
