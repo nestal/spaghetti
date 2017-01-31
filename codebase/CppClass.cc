@@ -24,5 +24,10 @@ std::string CppClass::Name() const
 {
 	return m_cursor.Spelling();
 }
+
+clx::Cursor CppClass::Cursor() const
+{
+	return m_cursor;
+}
 	
 } // end of namespace

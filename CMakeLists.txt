@@ -3,7 +3,9 @@ project(StatStruct)
 
 set(CMAKE_CXX_STANDARD 14)
 
-include_directories(${PROJECT_SOURCE_DIR})
+find_package(Boost REQUIRED)
+
+include_directories(${PROJECT_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
 
 file(GLOB LIBCLANGXX_FILES libclangxx/*.hh libclangxx/*.cc)
 file(GLOB CODEBASE_FILES codebase/*.hh codebase/*.cc)

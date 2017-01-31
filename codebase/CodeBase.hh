@@ -15,6 +15,11 @@
 #include "CppClass.hh"
 #include "libclangxx/Index.hh"
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/mem_fun.hpp>
+
 #include <vector>
 
 namespace clx {
@@ -23,7 +28,6 @@ class Cursor;
 
 namespace cb {
 
-class CppClass;
 class CodeBase
 {
 public:
@@ -33,11 +37,30 @@ public:
 	
 	void Visit(clx::Cursor cursor, clx::Cursor parent);
 	
+	const CppClass* FindClass(clx::Cursor cursor) const;
+	
 private:
 	clx::Index  m_index;
 	std::vector<clx::TranslationUnit> m_units;
 	
-	std::vector<CppClass> m_classes;
+	struct ByCursor {};
+	
+	boost::multi_index_container<
+		CppClass,
+		boost::multi_index::indexed_by<
+			
+			// hash by cursor
+			boost::multi_index::hashed_unique<
+				boost::multi_index::tag<ByCursor>,
+				boost::multi_index::const_mem_fun<
+					CppClass,
+					clx::Cursor,
+					&CppClass::Cursor
+				>,
+				clx::Cursor::Hash
+			>
+		>
+	> m_classes;
 };
 	
 } // end of namespace

@@ -27,13 +27,17 @@ void CodeBase::Visit(clx::Cursor cursor, clx::Cursor parent)
 		case CXCursor_StructDecl:
 		{
 			std::cout << "class: " << cursor.Spelling() << "\n";
-			CppClass a_class{cursor};
-			m_classes.push_back(std::move(a_class));
+			m_classes.emplace(cursor);
 			cursor.Visit([this](clx::Cursor cursor, clx::Cursor parent)
 			{
 				Visit(cursor, parent);
 			});
 			std::cout << "end class: " << cursor.Spelling() << "\n";
+			
+			auto found = FindClass(cursor);
+			if (found)
+				std::cout << "found class: " << found->Name() << std::endl;
+			
 			break;
 		}
 			
@@ -81,6 +85,12 @@ void CodeBase::Parse(const std::string& source)
 	}
 
 	m_units.push_back(std::move(tu));
+}
+
+const CppClass *CodeBase::FindClass(clx::Cursor cursor) const
+{
+	auto it = m_classes.get<ByCursor>().find(cursor);
+	return it != m_classes.get<ByCursor>().end() ? &*it : nullptr;
 }
 	
 } // end of namespace

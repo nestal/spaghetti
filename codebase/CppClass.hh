@@ -29,6 +29,7 @@ public:
 	void AddDataMember(const std::string& name);
 	
 	std::string Name() const;
+	clx::Cursor Cursor() const;
 	
 private:
 	clx::Cursor m_cursor;

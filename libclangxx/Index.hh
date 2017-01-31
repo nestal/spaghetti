@@ -66,6 +66,13 @@ class Cursor
 {
 public:
 	Cursor(CXCursor cursor);
+	Cursor(const Cursor&) = default;
+	Cursor(Cursor&&) = default;
+	Cursor& operator=(const Cursor&) = default;
+	Cursor& operator=(Cursor&&) = default;
+	
+	bool operator==(const Cursor& rhs) const;
+	bool operator!=(const Cursor& rhs) const;
 	
 	CXCursorKind Kind() const;
 	
@@ -74,6 +81,11 @@ public:
 	std::string USR() const;
 	
 	SourceLocation Location() const;
+	
+	struct Hash
+	{
+		unsigned operator()(Cursor c) const;
+	};
 	
 	template <typename Visitor>
 	void Visit(Visitor visitor)

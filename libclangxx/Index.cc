@@ -89,6 +89,16 @@ SourceLocation Cursor::Location() const
 	return SourceLocation{::clang_getCursorLocation(m_cursor)};
 }
 
+bool Cursor::operator==(const Cursor& rhs) const
+{
+	return ::clang_equalCursors(m_cursor, rhs.m_cursor) != 0;
+}
+
+bool Cursor::operator!=(const Cursor& rhs) const
+{
+	return !operator==(rhs);
+}
+
 SourceLocation::SourceLocation(CXSourceLocation loc) :
 	m_loc{loc}
 {
@@ -110,5 +120,9 @@ bool SourceLocation::IsFromSystemHeader() const
 {
 	return ::clang_Location_isInSystemHeader(m_loc) != 0;
 }
-	
+
+unsigned Cursor::Hash::operator()(Cursor c) const
+{
+	return ::clang_hashCursor(c.m_cursor);
+}
 } // end of namespace
