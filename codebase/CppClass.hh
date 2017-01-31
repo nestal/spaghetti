@@ -13,20 +13,25 @@
 
 #pragma once
 
+#include "libclangxx/Index.hh"
 #include <string>
 
 namespace cb {
 
 class CppClass
 {
-private:
-	CppClass(const std::string& name);
+public:
+	CppClass(clx::Cursor cursor);
+	CppClass(const CppClass&) = default;
+	CppClass(CppClass&&) = default;
 	
 	void AddMemberFunction(const std::string& name);
 	void AddDataMember(const std::string& name);
 	
+	std::string Name() const;
+	
 private:
-	std::string m_name;
+	clx::Cursor m_cursor;
 };
 	
 } // end of namespace

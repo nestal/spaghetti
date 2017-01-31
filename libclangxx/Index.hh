@@ -15,6 +15,7 @@
 #include "DeleteWith.hh"
 
 #include <clang-c/Index.h>
+#include <cassert>
 
 namespace clx {
 
@@ -81,10 +82,9 @@ public:
 		{
 			Visitor *pv = reinterpret_cast<Visitor*>(client_data);
 			
-			Cursor current{cursor};
-			(*pv)(current, Cursor{parent});
-			current.Visit(*pv);
-						
+			assert(pv);
+			(*pv)(Cursor{cursor}, Cursor{parent});
+					
 			return CXChildVisit_Continue;
 		};
 		

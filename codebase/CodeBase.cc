@@ -19,9 +19,40 @@ namespace cb {
 void CodeBase::Visit(clx::Cursor cursor, clx::Cursor parent)
 {
 	auto loc = cursor.Location();
-	if (loc.IsFromMainFile())
-		std::cout << '\"' << cursor.DisplayName() << "\", \"" << cursor.Spelling() << "\", " << cursor.Kind() << "\n";
-	
+	if (!loc.IsFromSystemHeader())
+	{
+		switch (cursor.Kind())
+		{
+		case CXCursor_ClassDecl:
+		case CXCursor_StructDecl:
+		{
+			std::cout << "class: " << cursor.Spelling() << "\n";
+			CppClass a_class{cursor};
+			m_classes.push_back(std::move(a_class));
+			cursor.Visit([this](clx::Cursor cursor, clx::Cursor parent)
+			{
+				Visit(cursor, parent);
+			});
+			std::cout << "end class: " << cursor.Spelling() << "\n";
+			break;
+		}
+			
+		case CXCursor_Namespace:
+		{
+			std::cout << "namespace: " << cursor.Spelling() << "\n";
+			cursor.Visit([this](clx::Cursor cursor, clx::Cursor parent)
+			{
+				Visit(cursor, parent);
+			});
+			std::cout << "end namespace: " << cursor.Spelling() << "\n";
+			break;
+		}
+		
+		default:
+			std::cout << "default: " << cursor.Spelling() << " " << cursor.Kind() << "\n";
+			break;
+		}
+	}
 }
 
 void CodeBase::Parse(const std::string& source)

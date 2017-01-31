@@ -15,9 +15,14 @@
 namespace cb {
 
 
-CppClass::CppClass(const std::string& name) :
-	m_name{name}
+CppClass::CppClass(clx::Cursor cursor) :
+	m_cursor{cursor}
 {
 }
 
+std::string CppClass::Name() const
+{
+	return m_cursor.Spelling();
 }
+	
+} // end of namespace
