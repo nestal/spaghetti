@@ -174,8 +174,7 @@ std::string Type::Spelling() const
 
 std::ostream& operator<<(std::ostream& os, const Type& t)
 {
-	return os << t.Spelling() << ": " << XStr{::clang_getTypeKindSpelling(t.m_type.kind)}.Str() << " "
-		<< t.Declaration().Location();
+	return os << t.Spelling() << ": " << " (" << t.Declaration().USR() << ")";
 }
 
 Cursor Type::Declaration() const

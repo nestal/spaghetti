@@ -16,9 +16,11 @@
 #include "libclangxx/Index.hh"
 
 #include <boost/optional.hpp>
+#include <boost/range/iterator_range_core.hpp>
 
 #include <string>
 #include <vector>
+#include <iosfwd>
 
 namespace cb {
 
@@ -37,7 +39,9 @@ public:
 		Field(clx::Cursor field);
 		
 		const std::string& Name() const;
-	
+		
+		friend std::ostream& operator<<(std::ostream& os, const Field& c);
+		
 	private:
 		std::string m_name;
 		std::string m_usr;
@@ -70,17 +74,16 @@ public:
 	Class& operator=(const Class&) = default;
 	Class& operator=(Class&&) = default;
 	
-	void AddMemberFunction(const std::string& name);
-	void AddDataMember(const std::string& name);
-	
 	const std::string& Name() const;
 	const std::string& USR() const;
 	
 	void Visit(Data& data, clx::Cursor self) const;
 	void Merge(Data&& data);
 	
-	std::pair<field_iterator, field_iterator> Fields() const;
+	boost::iterator_range<field_iterator> Fields() const;
 
+	friend std::ostream& operator<<(std::ostream& os, const Class& c);
+	
 private:
 	std::string m_name;
 	std::string m_usr;

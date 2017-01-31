@@ -12,7 +12,7 @@
 
 #include "Class.hh"
 
-#include <iostream>
+#include <ostream>
 
 namespace cb {
 
@@ -28,10 +28,7 @@ Class::Data::Data(clx::Cursor cursor)
 	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl);
 	
 	if (cursor.IsDefinition())
-	{
-		std::cout << "found definition: " << cursor.Location() << std::endl;
 		m_definition = cursor.Location();
-	}
 }
 
 const std::string& Class::Name() const
@@ -59,7 +56,7 @@ void Class::Visit(Data& data, clx::Cursor self) const
 			break;
 			
 		default:
-			std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
+//			std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
 			break;
 		}
 	});
@@ -71,11 +68,9 @@ void Class::Merge(Class::Data&& data)
 	
 	if (data.m_definition)
 		m_data.m_definition = std::move(data.m_definition);
-
-	std::cout << "after merging: " << m_name << std::endl;
 }
 
-std::pair<Class::field_iterator, Class::field_iterator> Class::Fields() const
+boost::iterator_range<Class::field_iterator> Class::Fields() const
 {
 	return {m_data.m_fields.begin(), m_data.m_fields.end()};
 }
@@ -85,12 +80,24 @@ Class::Field::Field(clx::Cursor field) :
 	m_usr{field.USR()},
 	m_type{field.Type()}
 {
-	std::cout << "\tfield: " << m_name << " type: " << m_type << std::endl;
 }
 
 const std::string& Class::Field::Name() const
 {
 	return m_name;
 }
-	
+
+std::ostream& operator<<(std::ostream& os, const Class::Field& c)
+{
+	return os << c.m_name << ": " << c.m_type;
+}
+
+std::ostream& operator<<(std::ostream& os, const Class& c)
+{
+	os << "class: " << c.Name() << " (" << c.USR() << ")\n";
+	for (auto&& field : c.Fields())
+		os << "\t" << field << '\n';
+	return os;
+}
+
 } // end of namespace
