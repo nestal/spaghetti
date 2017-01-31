@@ -12,20 +12,23 @@
 
 #include "ClassItem.hh"
 
+#include <QFont>
+#include <QGraphicsTextItem>
+#include <QPainter>
+
 namespace gui {
 
 ClassItem::ClassItem(const codebase::Class& class_, QGraphicsItem *parent) :
-	QGraphicsWidget{parent},
-	m_class{class_}
+	QGraphicsItem{parent},
+	m_class{class_},
+	m_name{new QGraphicsTextItem{QString::fromStdString(m_class.Name()), this}}
 {
-	auto name = new QGraphicsTextItem{QString::fromStdString(m_class.Name()), this};
-
 	// use a bold font for class names
-	auto font = name->font();
+	auto font = m_name->font();
 	font.setBold(true);
-	name->setFont(font);
+	m_name->setFont(font);
 	
-	double ypos = name->boundingRect().height();
+	double ypos = m_name->boundingRect().height();
 	for (auto& field : m_class.Fields())
 	{
 		auto field_item = new QGraphicsTextItem{QString::fromStdString(field.Name()), this};
@@ -33,8 +36,26 @@ ClassItem::ClassItem(const codebase::Class& class_, QGraphicsItem *parent) :
 		ypos += field_item->boundingRect().height();
 	}
 	
-	// add bounding rectangle
-	new QGraphicsRectItem{boundingRect() | childrenBoundingRect(), this};
+	// initialize geometry
+	prepareGeometryChange();
+	m_bounding = childrenBoundingRect();
 }
 
+QRectF ClassItem::boundingRect() const
+{
+	return m_bounding;
+}
+
+void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+	// bounding rectangle
+	painter->drawRect(m_bounding);
+	
+	// line between class name and fields
+	painter->drawLine(
+		QPointF{0,                  m_name->boundingRect().height()},
+		QPointF{m_bounding.width(), m_name->boundingRect().height()}
+	);
+}
+	
 } // end of namespace

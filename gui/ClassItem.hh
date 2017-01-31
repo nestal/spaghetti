@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <QGraphicsWidget>
+#include <QGraphicsItem>
 
 #include "codebase/Class.hh"
 
@@ -20,14 +20,19 @@ class QGraphicsTextItem;
 
 namespace gui {
 
-class ClassItem : public QGraphicsWidget
+class ClassItem : public QGraphicsItem
 {
 public:
 	ClassItem(const codebase::Class& class_, QGraphicsItem *parent);
 	
+	QRectF boundingRect() const override;
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+	
 private:
 	codebase::Class m_class;
-	QRectF          m_rect;
+	QRectF          m_bounding;
+	
+	QGraphicsTextItem *m_name;
 };
 	
 } // end of namespace
