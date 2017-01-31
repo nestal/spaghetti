@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "CppClass.hh"
+#include "Class.hh"
 #include "libclangxx/Index.hh"
 
 #include <boost/multi_index_container.hpp>
@@ -37,7 +37,7 @@ public:
 	
 	void Visit(clx::Cursor cursor, clx::Cursor parent);
 	
-	const CppClass* FindClass(const std::string& usr) const;
+	const Class* FindClass(const std::string& usr) const;
 	
 private:
 	clx::Index  m_index;
@@ -47,16 +47,16 @@ private:
 	struct ByUSR {};
 	
 	boost::multi_index_container<
-		CppClass,
+		Class,
 		boost::multi_index::indexed_by<
 			
 			// hash by USR
 			boost::multi_index::hashed_unique<
 			    boost::multi_index::tag<ByUSR>,
 			    boost::multi_index::const_mem_fun<
-			        CppClass,
+			        Class,
 			        const std::string&,
-			        &CppClass::USR
+			        &Class::USR
 				>
 			>
 		>

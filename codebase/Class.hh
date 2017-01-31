@@ -19,15 +19,21 @@
 
 namespace cb {
 
-class CppClass
+/**
+ * \brief Represent a C++ class in the CodeBase.
+ *
+ * This class represent particular class in the code base. There will be only one copy of
+ * object for each class in the code base, regardless of how many translation unit uses it.
+ */
+class Class
 {
 public:
-	CppClass(clx::Cursor cursor);
-	CppClass(const CppClass&) = default;
-	CppClass(CppClass&&) = default;
+	Class(clx::Cursor cursor);
+	Class(const Class&) = default;
+	Class(Class&&) = default;
 	
-	CppClass& operator=(const CppClass&) = default;
-	CppClass& operator=(CppClass&&) = default;
+	Class& operator=(const Class&) = default;
+	Class& operator=(Class&&) = default;
 	
 	void Visit(clx::Cursor cursor, clx::Cursor parent);
 	
@@ -41,8 +47,8 @@ private:
 	std::string m_name;
 	std::string m_usr;
 	
-	clx::Type m_type;
-	
+	clx::SourceLocation m_definition;
+		
 	std::vector<std::string> m_field_usr;
 	std::vector<std::string> m_func_usr;
 };

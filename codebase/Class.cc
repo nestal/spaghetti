@@ -10,30 +10,31 @@
 // Created by nestal on 1/31/17.
 //
 
-#include "CppClass.hh"
+#include "Class.hh"
 
 #include <iostream>
 
 namespace cb {
 
-CppClass::CppClass(clx::Cursor cursor) :
+Class::Class(clx::Cursor cursor) :
 	m_name{cursor.Spelling()},
-	m_usr{cursor.USR()},
-	m_type{cursor.Type()}
+	m_usr{cursor.USR()}
 {
+	if (cursor.IsDefinition())
+		m_definition = cursor.Location();
 }
 
-const std::string& CppClass::Name() const
+const std::string& Class::Name() const
 {
 	return m_name;
 }
 
-const std::string& CppClass::USR() const
+const std::string& Class::USR() const
 {
 	return m_usr;
 }
 
-void CppClass::Visit(clx::Cursor cursor, clx::Cursor parent)
+void Class::Visit(clx::Cursor cursor, clx::Cursor parent)
 {
 	std::cout << Name() << " member: " << cursor.Spelling() << " " << cursor.Kind() << "\n";
 	

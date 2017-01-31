@@ -77,6 +77,11 @@ public:
 	
 	CXCursorKind Kind() const;
 	
+	bool IsReference() const;
+	bool IsDefinition() const;
+	
+	Cursor GetDefinition() const;
+	
 	std::string Spelling() const ;
 	std::string DisplayName() const;
 	std::string USR() const;
@@ -112,7 +117,7 @@ private:
 class SourceLocation
 {
 public:
-	SourceLocation(CXSourceLocation loc);
+	SourceLocation(CXSourceLocation loc = {});
 	
 	void SpellingLocation(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const;
 	bool IsFromMainFile() const;

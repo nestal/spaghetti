@@ -89,7 +89,7 @@ void CodeBase::Parse(const std::string& source)
 	m_units.push_back(std::move(tu));
 }
 
-const CppClass *CodeBase::FindClass(const std::string& usr) const
+const Class *CodeBase::FindClass(const std::string& usr) const
 {
 	auto it = m_classes.get<ByUSR>().find(usr);
 	return it != m_classes.get<ByUSR>().end() ? &*it : nullptr;

@@ -104,6 +104,21 @@ clx::Type Cursor::Type() const
 	return {::clang_getCursorType(m_cursor)};
 }
 
+bool Cursor::IsReference() const
+{
+	return ::clang_isCursorDefinition(m_cursor) != 0;
+}
+
+bool Cursor::IsDefinition() const
+{
+	return ::clang_isCursorDefinition(m_cursor) != 0;
+}
+
+Cursor Cursor::GetDefinition() const
+{
+	return {::clang_getCursorDefinition(m_cursor)};
+}
+
 SourceLocation::SourceLocation(CXSourceLocation loc) :
 	m_loc{loc}
 {
