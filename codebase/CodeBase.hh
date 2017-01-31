@@ -44,6 +44,7 @@ private:
 	std::vector<clx::TranslationUnit> m_units;
 	
 	struct ByCursor {};
+	struct ByUSR {};
 	
 	boost::multi_index_container<
 		CppClass,
@@ -58,6 +59,16 @@ private:
 					&CppClass::Cursor
 				>,
 				clx::Cursor::Hash
+			>,
+			    
+			// hash by USR
+			boost::multi_index::hashed_unique<
+			    boost::multi_index::tag<ByUSR>,
+			    boost::multi_index::const_mem_fun<
+			        CppClass,
+			        std::string,
+			        &CppClass::USR
+				>
 			>
 		>
 	> m_classes;

@@ -25,11 +25,17 @@ public:
 	CppClass(const CppClass&) = default;
 	CppClass(CppClass&&) = default;
 	
+	CppClass& operator=(const CppClass&) = default;
+	CppClass& operator=(CppClass&&) = default;
+	
+	void Visit(clx::Cursor cursor, clx::Cursor parent);
+	
 	void AddMemberFunction(const std::string& name);
 	void AddDataMember(const std::string& name);
 	
 	std::string Name() const;
 	clx::Cursor Cursor() const;
+	std::string USR() const;
 	
 private:
 	clx::Cursor m_cursor;

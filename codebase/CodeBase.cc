@@ -27,17 +27,19 @@ void CodeBase::Visit(clx::Cursor cursor, clx::Cursor parent)
 		case CXCursor_StructDecl:
 		{
 			std::cout << "class: " << cursor.Spelling() << "\n";
-			m_classes.emplace(cursor);
-			cursor.Visit([this](clx::Cursor cursor, clx::Cursor parent)
+			auto it = m_classes.emplace(cursor);
+			if (it.second)
+				std::cout << "new class " << cursor.Spelling() << "\n";
+			
+			auto copy{*it.first};
+			
+			cursor.Visit([&copy](clx::Cursor cursor, clx::Cursor parent)
 			{
-				Visit(cursor, parent);
+				copy.Visit(cursor, parent);
 			});
 			std::cout << "end class: " << cursor.Spelling() << "\n";
 			
-			auto found = FindClass(cursor);
-			if (found)
-				std::cout << "found class: " << found->Name() << std::endl;
-			
+			m_classes.replace(it.first, copy);
 			break;
 		}
 			

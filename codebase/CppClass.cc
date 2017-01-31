@@ -12,8 +12,9 @@
 
 #include "CppClass.hh"
 
-namespace cb {
+#include <iostream>
 
+namespace cb {
 
 CppClass::CppClass(clx::Cursor cursor) :
 	m_cursor{cursor}
@@ -28,6 +29,16 @@ std::string CppClass::Name() const
 clx::Cursor CppClass::Cursor() const
 {
 	return m_cursor;
+}
+
+std::string CppClass::USR() const
+{
+	return m_cursor.USR();
+}
+
+void CppClass::Visit(clx::Cursor cursor, clx::Cursor parent)
+{
+	std::cout << Name() << " member: " << cursor.Spelling() << " " << cursor.Kind() << "\n";
 }
 	
 } // end of namespace
