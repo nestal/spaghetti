@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv)
 {
-	cb::CodeBase base;
+	codebase::CodeBase base;
 	base.Parse(argv[1]);
 	
 	for (auto&& class_ : base)

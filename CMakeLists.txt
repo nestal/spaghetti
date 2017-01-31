@@ -7,7 +7,7 @@ find_package(Boost REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
 
-file(GLOB LIBCLANGXX_FILES libclangxx/*.hh libclangxx/*.cc)
+file(GLOB LIBCLANGXX_FILES libclx/*.hh libclx/*.cc)
 file(GLOB CODEBASE_FILES codebase/*.hh codebase/*.cc)
 add_library(clangxx ${LIBCLANGXX_FILES} ${CODEBASE_FILES})
 

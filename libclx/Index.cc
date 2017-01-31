@@ -17,7 +17,7 @@
 #include <ostream>
 #include <clang-c/Index.h>
 
-namespace clx {
+namespace libclx {
 
 Index::Index() :
 	m_index{::clang_createIndex(0, 0)}
@@ -101,7 +101,7 @@ bool Cursor::operator!=(const Cursor& rhs) const
 	return !operator==(rhs);
 }
 
-clx::Type Cursor::Type() const
+libclx::Type Cursor::Type() const
 {
 	return {::clang_getCursorType(m_cursor)};
 }

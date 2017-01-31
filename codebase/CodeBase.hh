@@ -13,7 +13,7 @@
 #pragma once
 
 #include "Class.hh"
-#include "libclangxx/Index.hh"
+#include "libclx/Index.hh"
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>
@@ -26,7 +26,7 @@ namespace clx {
 class Cursor;
 }
 
-namespace cb {
+namespace codebase {
 
 class CodeBase
 {
@@ -57,15 +57,15 @@ public:
 	
 	void Parse(const std::string& source);
 	
-	void Visit(clx::Cursor cursor, clx::Cursor parent);
+	void Visit(libclx::Cursor cursor, libclx::Cursor parent);
 	
 	usr_iterator begin() const;
 	usr_iterator end() const;
 	usr_iterator find(const std::string& usr) const;
 	
 private:
-	clx::Index  m_index;
-	std::vector<clx::TranslationUnit> m_units;
+	libclx::Index  m_index;
+	std::vector<libclx::TranslationUnit> m_units;
 	
 	ClassDB m_classes;
 };

@@ -10,23 +10,25 @@
 // Created by nestal on 1/30/17.
 //
 
-#include "XStr.hh"
+#pragma once
 
-namespace clx {
+#include <clang-c/CXString.h>
 
-XStr::XStr(CXString s) :
-	m_str{s}
+#include <string>
+
+namespace libclx {
+
+class XStr
 {
-}
-
-XStr::~XStr()
-{
-	::clang_disposeString(m_str);
-}
-
-std::string XStr::Str() const
-{
-	return {clang_getCString(m_str)};
-}
+public:
+	XStr(CXString s);
+	XStr(XStr&&) = default;
+	~XStr();
 	
-}
+	std::string Str() const;
+	
+private:
+	CXString m_str;
+};
+	
+} // end of namespace

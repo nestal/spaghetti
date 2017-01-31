@@ -19,7 +19,7 @@
 #include <cassert>
 #include <iosfwd>
 
-namespace clx {
+namespace libclx {
 
 // forward declarations
 class Cursor;
@@ -90,7 +90,7 @@ public:
 	std::string USR() const;
 	
 	SourceLocation Location() const;
-	clx::Type Type() const;
+	libclx::Type Type() const;
 	
 	struct Hash
 	{
@@ -146,4 +146,4 @@ private:
 	CXType m_type;
 };
 
-} // end of namespace clx
+} // end of namespace libclx

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "libclangxx/Index.hh"
+#include "libclx/Index.hh"
 
 #include <boost/optional.hpp>
 #include <boost/range/iterator_range_core.hpp>
@@ -22,7 +22,7 @@
 #include <vector>
 #include <iosfwd>
 
-namespace cb {
+namespace codebase {
 
 /**
  * \brief Represent a C++ class in the CodeBase.
@@ -36,7 +36,7 @@ public:
 	class Field
 	{
 	public:
-		Field(clx::Cursor field);
+		Field(libclx::Cursor field);
 		
 		const std::string& Name() const;
 		
@@ -45,7 +45,7 @@ public:
 	private:
 		std::string m_name;
 		std::string m_usr;
-		clx::Type   m_type;
+		libclx::Type   m_type;
 	};
 	
 	using FieldList = std::vector<Field>;
@@ -54,12 +54,12 @@ public:
 	{
 	public:
 		Data() = default;
-		Data(clx::Cursor cursor);
+		Data(libclx::Cursor cursor);
 		
 		friend class Class;
 	
 	private:
-		boost::optional<clx::SourceLocation> m_definition;
+		boost::optional<libclx::SourceLocation> m_definition;
 		
 		FieldList m_fields;
 	};
@@ -67,7 +67,7 @@ public:
 	using field_iterator = std::vector<Field>::const_iterator;
 	
 public:
-	Class(clx::Cursor cursor);
+	Class(libclx::Cursor cursor);
 	Class(const Class&) = default;
 	Class(Class&&) = default;
 	
@@ -77,7 +77,7 @@ public:
 	const std::string& Name() const;
 	const std::string& USR() const;
 	
-	void Visit(Data& data, clx::Cursor self) const;
+	void Visit(Data& data, libclx::Cursor self) const;
 	void Merge(Data&& data);
 	
 	boost::iterator_range<field_iterator> Fields() const;

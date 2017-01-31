@@ -14,9 +14,9 @@
 
 #include <iostream>
 
-namespace cb {
+namespace codebase {
 
-void CodeBase::Visit(clx::Cursor cursor, clx::Cursor parent)
+void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor parent)
 {
 	auto loc = cursor.Location();
 	if (!loc.IsFromSystemHeader())
@@ -40,7 +40,7 @@ void CodeBase::Visit(clx::Cursor cursor, clx::Cursor parent)
 		case CXCursor_Namespace:
 		{
 			std::cout << "namespace: " << cursor.Spelling() << "\n";
-			cursor.Visit([this](clx::Cursor cursor, clx::Cursor parent)
+			cursor.Visit([this](libclx::Cursor cursor, libclx::Cursor parent)
 			{
 				Visit(cursor, parent);
 			});
@@ -68,7 +68,7 @@ void CodeBase::Parse(const std::string& source)
 	);
 	
 	std::cout << "translated " << tu.Spelling() << "\n";
-	tu.Root().Visit([this](clx::Cursor cursor, clx::Cursor parent)
+	tu.Root().Visit([this](libclx::Cursor cursor, libclx::Cursor parent)
 	{
 		Visit(cursor, parent);
 	});

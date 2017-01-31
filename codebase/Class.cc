@@ -14,16 +14,16 @@
 
 #include <iostream>
 
-namespace cb {
+namespace codebase {
 
-Class::Class(clx::Cursor cursor) :
+Class::Class(libclx::Cursor cursor) :
 	m_name{cursor.Spelling()},
 	m_usr{cursor.USR()},
 	m_data{cursor}
 {
 }
 
-Class::Data::Data(clx::Cursor cursor)
+Class::Data::Data(libclx::Cursor cursor)
 {
 	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl);
 	
@@ -41,13 +41,13 @@ const std::string& Class::USR() const
 	return m_usr;
 }
 
-void Class::Visit(Data& data, clx::Cursor self) const
+void Class::Visit(Data& data, libclx::Cursor self) const
 {
 	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl);
 	assert(!m_name.empty() && m_name == self.Spelling());
 	assert(!m_usr.empty() && m_usr == self.USR());
 	
-	self.Visit([&data, this](clx::Cursor child, clx::Cursor)
+	self.Visit([&data, this](libclx::Cursor child, libclx::Cursor)
 	{
 		std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
 		switch (child.Kind())
@@ -78,7 +78,7 @@ boost::iterator_range<Class::field_iterator> Class::Fields() const
 	return {m_data.m_fields.begin(), m_data.m_fields.end()};
 }
 
-Class::Field::Field(clx::Cursor field) :
+Class::Field::Field(libclx::Cursor field) :
 	m_name{field.Spelling()},
 	m_usr{field.USR()},
 	m_type{field.Type()}
