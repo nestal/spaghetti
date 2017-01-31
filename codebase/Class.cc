@@ -49,7 +49,6 @@ void Class::Visit(Data& data, libclx::Cursor self) const
 	
 	self.Visit([&data, this](libclx::Cursor child, libclx::Cursor)
 	{
-		std::cout << Name() << " member: " << child.Spelling() << " " << child.Kind() << "\n";
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:

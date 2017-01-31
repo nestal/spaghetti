@@ -22,10 +22,6 @@
 
 #include <vector>
 
-namespace clx {
-class Cursor;
-}
-
 namespace codebase {
 
 class CodeBase

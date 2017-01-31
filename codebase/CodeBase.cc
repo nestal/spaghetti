@@ -39,17 +39,14 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor parent)
 			
 		case CXCursor_Namespace:
 		{
-			std::cout << "namespace: " << cursor.Spelling() << "\n";
 			cursor.Visit([this](libclx::Cursor cursor, libclx::Cursor parent)
 			{
 				Visit(cursor, parent);
 			});
-			std::cout << "end namespace: " << cursor.Spelling() << "\n";
 			break;
 		}
 		
 		default:
-			std::cout << "default: " << cursor.Spelling() << " " << cursor.Kind() << "\n";
 			break;
 		}
 	}
