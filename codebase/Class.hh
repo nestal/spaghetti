@@ -14,6 +14,9 @@
 #pragma once
 
 #include "libclangxx/Index.hh"
+
+#include <boost/optional.hpp>
+
 #include <string>
 #include <vector>
 
@@ -35,22 +38,36 @@ public:
 	Class& operator=(const Class&) = default;
 	Class& operator=(Class&&) = default;
 	
-	void Visit(clx::Cursor cursor, clx::Cursor parent);
-	
 	void AddMemberFunction(const std::string& name);
 	void AddDataMember(const std::string& name);
 	
 	const std::string& Name() const;
 	const std::string& USR() const;
 	
-private:
-	std::string m_name;
-	std::string m_usr;
-	
-	clx::SourceLocation m_definition;
+	class Data
+	{
+	public:
+		Data() = default;
+		Data(clx::Cursor cursor);
 		
-	std::vector<std::string> m_field_usr;
-	std::vector<std::string> m_func_usr;
+		friend class Class;
+		
+	private:
+		std::string m_name;
+		std::string m_usr;
+		
+		boost::optional<clx::SourceLocation> m_definition;
+		
+		std::vector<std::string> m_field_usr;
+		std::vector<std::string> m_func_usr;
+		
+	};
+	
+	void VisitChild(Data& data, clx::Cursor child) const;
+	void Merge(Data&& data);
+
+private:
+	Data m_data;
 };
 	
 } // end of namespace

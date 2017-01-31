@@ -28,17 +28,15 @@ void CodeBase::Visit(clx::Cursor cursor, clx::Cursor parent)
 		{
 			std::cout << "class: " << cursor.Spelling() << "\n";
 			auto it = m_classes.emplace(cursor);
-			if (it.second)
-				std::cout << "new class " << cursor.Spelling() << "\n";
 
-			auto copy{*it.first};
-			cursor.Visit([&copy](clx::Cursor cursor, clx::Cursor parent)
+			Class::Data data;
+			cursor.Visit([&data, it](clx::Cursor child, clx::Cursor)
 			{
-				copy.Visit(cursor, parent);
+				it.first->VisitChild(data, child);
 			});
 			std::cout << "end class: " << cursor.Spelling() << "\n";
 			
-			m_classes.replace(it.first, copy);
+			m_classes.modify(it.first, [&data](Class& c){c.Merge(std::move(data));});
 			break;
 		}
 			
