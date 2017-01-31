@@ -16,9 +16,20 @@ namespace gui {
 
 ClassItem::ClassItem(const codebase::Class& class_, QGraphicsItem *parent) :
 	QGraphicsWidget{parent},
-	m_class{class_},
-	m_name{new QGraphicsTextItem{QString::fromStdString(m_class.Name()), this}}
+	m_class{class_}
 {
+	auto name = new QGraphicsTextItem{QString::fromStdString(m_class.Name()), this};
+	
+	double ypos = name->boundingRect().height();
+	for (auto& field : m_class.Fields())
+	{
+		auto field_item = new QGraphicsTextItem{QString::fromStdString(field.Name()), this};
+		field_item->moveBy(0, ypos);
+		ypos += field_item->boundingRect().height();
+	}
+	
+	// add bounding rectangle
+	new QGraphicsRectItem{boundingRect() | childrenBoundingRect(), this};
 }
 
 } // end of namespace

@@ -28,8 +28,6 @@ public:
 private:
 	codebase::Class m_class;
 	QRectF          m_rect;
-	
-	QGraphicsTextItem *m_name;
 };
 	
 } // end of namespace
