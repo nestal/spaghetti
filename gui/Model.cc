@@ -14,17 +14,33 @@
 #include "UMLClassItem.hh"
 
 #include <QtWidgets/QGraphicsScene>
-#include <QtWidgets/QGraphicsItem>
 #include <QtWidgets/QGraphicsView>
+
+#include <cassert>
 
 namespace gui {
 
 Model::Model(QObject *parent, QGraphicsView *view) :
-	QObject(parent),
-	m_scene(std::make_unique<QGraphicsScene>(this))
+	QObject{parent},
+	m_scene{std::make_unique<QGraphicsScene>(this)}
 {
-	m_codebase.Parse("codebase/CodeBase.cc");
+	assert(view);
 	
+//	m_codebase.Parse("codebase/CodeBase.cc");
+	view->setScene(m_scene.get());
+}
+
+void Model::Parse(const QString& file)
+{
+	// delete all items
+	for (auto&& item : m_scene->items())
+	{
+		m_scene->removeItem(item);
+		delete item;
+	}
+	
+	m_codebase.Parse(file.toStdString());
+
 	auto dx = 0;
 	for (auto& class_ : m_codebase)
 	{
@@ -34,8 +50,6 @@ Model::Model(QObject *parent, QGraphicsView *view) :
 		m_scene->addItem(item);
 		dx += (item->boundingRect().width() + 10);
 	}
-	
-	view->setScene(m_scene.get());
 }
 	
-}
+} // end of namespace

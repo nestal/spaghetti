@@ -18,6 +18,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#include <cassert>
+
 namespace gui {
 
 MainWnd::MainWnd() :
@@ -27,15 +29,17 @@ MainWnd::MainWnd() :
 	// need to promote widget
 	
 	m_ui->setupUi(this);
-	
+	m_model = std::make_unique<Model>(this, m_ui->m_main);
+		
 	connect(m_ui->m_action_about, &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_open,  &QAction::triggered, [this]
 	{
-		m_model = std::make_unique<Model>(
-//			QFileDialog::getExistingDirectory(this, tr("Open Repository")).toStdString(),
-			this,
-			m_ui->m_main
-		);
+		assert(m_model);
+		auto file = QFileDialog::getOpenFileName(this, tr("Open Source Code"));
+		
+		// string will be null if user press cancel
+		if (!file.isNull())
+			m_model->Parse(file);
 	});
 }
 

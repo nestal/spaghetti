@@ -30,6 +30,8 @@ public:
 	Model(QObject *parent, QGraphicsView *view);
 	~Model() = default;
 
+	void Parse(const QString& file);
+	
 private:
 	// order is important here, since m_scene depends on m_repo.
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed
