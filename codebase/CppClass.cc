@@ -18,7 +18,8 @@ namespace cb {
 
 CppClass::CppClass(clx::Cursor cursor) :
 	m_name{cursor.Spelling()},
-	m_usr{cursor.USR()}
+	m_usr{cursor.USR()},
+	m_type{cursor.Type()}
 {
 }
 
@@ -35,6 +36,17 @@ const std::string& CppClass::USR() const
 void CppClass::Visit(clx::Cursor cursor, clx::Cursor parent)
 {
 	std::cout << Name() << " member: " << cursor.Spelling() << " " << cursor.Kind() << "\n";
+	
+	switch (cursor.Kind())
+	{
+	case CXCursor_FieldDecl:
+	{
+		std::cout << '\t' << cursor.Spelling() << ": " << cursor.Type().Spelling() << " " << cursor.USR() << "\n";
+		m_field_usr.push_back(cursor.USR());
+		break;
+	}
+	
+	}
 }
 	
 } // end of namespace

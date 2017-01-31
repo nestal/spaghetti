@@ -15,6 +15,7 @@
 
 #include "libclangxx/Index.hh"
 #include <string>
+#include <vector>
 
 namespace cb {
 
@@ -39,6 +40,11 @@ public:
 private:
 	std::string m_name;
 	std::string m_usr;
+	
+	clx::Type m_type;
+	
+	std::vector<std::string> m_field_usr;
+	std::vector<std::string> m_func_usr;
 };
 	
 } // end of namespace

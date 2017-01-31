@@ -24,6 +24,7 @@ class Cursor;
 class Index;
 class SourceLocation;
 class TranslationUnit;
+class Type;
 
 class Index
 {
@@ -81,6 +82,7 @@ public:
 	std::string USR() const;
 	
 	SourceLocation Location() const;
+	clx::Type Type() const;
 	
 	struct Hash
 	{
@@ -118,6 +120,17 @@ public:
 	
 private:
 	CXSourceLocation m_loc;
+};
+
+class Type
+{
+public:
+	Type(CXType type);
+	
+	std::string Spelling() const;
+
+private:
+	CXType m_type;
 };
 
 } // end of namespace clx

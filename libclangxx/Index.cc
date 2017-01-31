@@ -99,6 +99,11 @@ bool Cursor::operator!=(const Cursor& rhs) const
 	return !operator==(rhs);
 }
 
+clx::Type Cursor::Type() const
+{
+	return {::clang_getCursorType(m_cursor)};
+}
+
 SourceLocation::SourceLocation(CXSourceLocation loc) :
 	m_loc{loc}
 {
@@ -125,4 +130,15 @@ unsigned Cursor::Hash::operator()(Cursor c) const
 {
 	return ::clang_hashCursor(c.m_cursor);
 }
+
+Type::Type(CXType type) :
+	m_type{type}
+{
+}
+
+std::string Type::Spelling() const
+{
+	return XStr{::clang_getTypeSpelling(m_type)}.Str();
+}
+
 } // end of namespace
