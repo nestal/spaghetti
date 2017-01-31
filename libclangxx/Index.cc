@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <ostream>
+#include <clang-c/Index.h>
 
 namespace clx {
 
@@ -171,4 +172,15 @@ std::string Type::Spelling() const
 	return XStr{::clang_getTypeSpelling(m_type)}.Str();
 }
 
+std::ostream& operator<<(std::ostream& os, const Type& t)
+{
+	return os << t.Spelling() << ": " << XStr{::clang_getTypeKindSpelling(t.m_type.kind)}.Str() << " "
+		<< t.Declaration().Location();
+}
+
+Cursor Type::Declaration() const
+{
+	return {::clang_getTypeDeclaration(m_type)};
+}
+	
 } // end of namespace

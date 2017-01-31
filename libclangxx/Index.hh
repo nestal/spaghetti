@@ -138,7 +138,10 @@ public:
 	Type(CXType type);
 	
 	std::string Spelling() const;
+	Cursor Declaration() const;
 
+	friend std::ostream& operator<<(std::ostream& os, const Type& t);
+	
 private:
 	CXType m_type;
 };

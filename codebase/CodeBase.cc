@@ -73,6 +73,7 @@ void CodeBase::Parse(const std::string& source)
 		Visit(cursor, parent);
 	});
 	
+	// TODO: write wrapper for diagnostic
 	for (unsigned i = 0, n = clang_getNumDiagnostics(tu.Get()); i != n; ++i)
 	{
 		auto diag = ::clang_getDiagnostic(tu.Get(), i);

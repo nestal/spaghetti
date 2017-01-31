@@ -85,7 +85,7 @@ Class::Field::Field(clx::Cursor field) :
 	m_usr{field.USR()},
 	m_type{field.Type()}
 {
-	std::cout << "\tfield: " << m_name << " type: " << m_type.Spelling() << std::endl;
+	std::cout << "\tfield: " << m_name << " type: " << m_type << std::endl;
 }
 
 const std::string& Class::Field::Name() const
