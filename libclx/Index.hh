@@ -14,10 +14,14 @@
 
 #include "DeleteWith.hh"
 
+#include <boost/iterator/iterator_facade.hpp>
+#include <boost/range/iterator_range_core.hpp>
+
 #include <clang-c/Index.h>
 
 #include <cassert>
 #include <iosfwd>
+#include <boost/operators.hpp>
 
 namespace libclx {
 
@@ -27,6 +31,7 @@ class Index;
 class SourceLocation;
 class TranslationUnit;
 class Type;
+class Diagnostic;
 
 class Index
 {
@@ -35,8 +40,6 @@ public:
 	Index(Index&&) = default;
 	
 	TranslationUnit Parse(const std::string& filename, std::initializer_list<std::string> args, unsigned options);
-	
-	CXIndex Get();
 	
 private:
 	util::DeleteWith<
@@ -55,7 +58,34 @@ public:
 	std::string Spelling() const;
 	Cursor Root();
 	
-	CXTranslationUnit Get();
+	class diag_iterator : public boost::iterator_facade<
+		diag_iterator,
+		Diagnostic,
+		boost::single_pass_traversal_tag,
+		Diagnostic
+	>
+	{
+	public:
+		diag_iterator() = default;
+		diag_iterator(std::size_t idx, CXTranslationUnit parent) :
+			m_idx{idx},
+			m_parent{parent}
+		{}
+		
+	private:
+		friend class boost::iterator_core_access;
+		
+		void increment();
+		bool equal(const diag_iterator& other) const;
+		
+		Diagnostic dereference() const;
+		
+	private:
+		std::size_t       m_idx{};
+		CXTranslationUnit m_parent{nullptr};
+	};
+	
+	boost::iterator_range<diag_iterator> Diagnostics() const;
 	
 private:
 	util::DeleteWith<
@@ -63,6 +93,21 @@ private:
 		void,
 		&::clang_disposeTranslationUnit
 	> m_unit;
+};
+
+class Diagnostic
+{
+public:
+	Diagnostic(CXDiagnostic diag) : m_diag{diag} {}
+	
+	std::string Str() const;
+	
+private:
+	util::DeleteWith<
+		std::remove_pointer_t<CXDiagnostic >,
+		void,
+		&::clang_disposeDiagnostic
+	> m_diag;
 };
 
 class Cursor
@@ -88,6 +133,7 @@ public:
 	std::string Spelling() const ;
 	std::string DisplayName() const;
 	std::string USR() const;
+	std::string Comment() const;
 	
 	SourceLocation Location() const;
 	libclx::Type Type() const;
@@ -106,7 +152,7 @@ public:
 			
 			assert(pv);
 			(*pv)(Cursor{cursor}, Cursor{parent});
-					
+
 			return CXChildVisit_Continue;
 		};
 		

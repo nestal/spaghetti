@@ -51,7 +51,7 @@ public:
 public:
 	CodeBase() = default;
 	
-	void Parse(const std::string& source);
+	std::string Parse(const std::string& source);
 	
 	void Visit(libclx::Cursor cursor, libclx::Cursor parent);
 	

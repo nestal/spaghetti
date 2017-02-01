@@ -36,19 +36,9 @@ TranslationUnit Index::Parse(const std::string& filename, std::initializer_list<
 	)};
 }
 
-CXIndex Index::Get()
-{
-	return m_index.get();
-}
-
 TranslationUnit::TranslationUnit(CXTranslationUnit tu) :
 	m_unit{tu}
 {
-}
-
-CXTranslationUnit TranslationUnit::Get()
-{
-	return m_unit.get();
 }
 
 std::string TranslationUnit::Spelling() const
@@ -59,6 +49,14 @@ std::string TranslationUnit::Spelling() const
 Cursor TranslationUnit::Root()
 {
 	return Cursor{::clang_getTranslationUnitCursor(m_unit.get())};
+}
+
+boost::iterator_range<TranslationUnit::diag_iterator> TranslationUnit::Diagnostics() const
+{
+	return {
+		diag_iterator{0, m_unit.get()},
+		diag_iterator{::clang_getNumDiagnostics(m_unit.get()), m_unit.get()}
+	};
 }
 
 Cursor::Cursor(CXCursor cursor) :
@@ -126,6 +124,11 @@ bool Cursor::IsDeclaration() const
 	return ::clang_isDeclaration(Kind()) != 0 ;
 }
 
+std::string Cursor::Comment() const
+{
+	return XStr{::clang_Cursor_getRawCommentText(m_cursor)}.Str();
+}
+
 SourceLocation::SourceLocation(CXSourceLocation loc) :
 	m_loc{loc}
 {
@@ -181,5 +184,24 @@ Cursor Type::Declaration() const
 {
 	return {::clang_getTypeDeclaration(m_type)};
 }
-	
+
+void TranslationUnit::diag_iterator::increment()
+{
+	m_idx++;
+}
+
+bool TranslationUnit::diag_iterator::equal(const TranslationUnit::diag_iterator& other) const
+{
+	return m_idx == other.m_idx && m_parent == other.m_parent;
+}
+
+Diagnostic TranslationUnit::diag_iterator::dereference() const
+{
+	return Diagnostic{::clang_getDiagnostic(m_parent, m_idx)};
+}
+
+std::string Diagnostic::Str() const
+{
+	return XStr{::clang_formatDiagnostic(m_diag.get(), ::clang_defaultDiagnosticDisplayOptions())}.Str();
+}
 } // end of namespace

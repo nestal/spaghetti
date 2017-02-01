@@ -52,7 +52,7 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 	}
 }
 
-void CodeBase::Parse(const std::string& source)
+std::string CodeBase::Parse(const std::string& source)
 {
 	auto tu = m_index.Parse(
 		source.c_str(),
@@ -64,22 +64,17 @@ void CodeBase::Parse(const std::string& source)
 		CXTranslationUnit_None
 	);
 	
-	std::cout << "translated " << tu.Spelling() << "\n";
 	tu.Root().Visit([this](libclx::Cursor cursor, libclx::Cursor parent)
 	{
 		Visit(cursor, parent);
 	});
 	
-	// TODO: write wrapper for diagnostic
-	for (unsigned i = 0, n = clang_getNumDiagnostics(tu.Get()); i != n; ++i)
-	{
-		auto diag = ::clang_getDiagnostic(tu.Get(), i);
-		auto str = ::clang_formatDiagnostic(diag, clang_defaultDiagnosticDisplayOptions());
-		std::cerr << ::clang_getCString(str) << "\n";
-		::clang_disposeString(str);
-	}
-
+	for (auto&& diag : tu.Diagnostics())
+		std::cerr << diag.Str() << "\n";
+	
 	m_units.push_back(std::move(tu));
+	
+	return tu.Spelling();
 }
 
 CodeBase::usr_iterator CodeBase::find(const std::string& usr) const
