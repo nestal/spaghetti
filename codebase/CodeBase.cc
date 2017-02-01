@@ -16,7 +16,7 @@
 
 namespace codebase {
 
-void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor parent)
+void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 {
 	auto loc = cursor.Location();
 	if (!loc.IsFromSystemHeader())

@@ -50,7 +50,7 @@ QRectF UMLClassItem::boundingRect() const
 	return m_bounding;
 }
 
-void UMLClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void UMLClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget *)
 {
 	// bounding rectangle
 	painter->drawRect(m_bounding);

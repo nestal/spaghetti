@@ -10,6 +10,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+
 include_directories(${Boost_INCLUDE_DIRS})
 
 file(GLOB LIBCLANGXX_FILES libclx/*.hh libclx/*.cc)
