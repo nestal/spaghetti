@@ -21,7 +21,7 @@ namespace gui {
 UMLClassItem::UMLClassItem(const codebase::Class& class_, QGraphicsItem *parent) :
 	QGraphicsItem{parent},
 	m_class{class_},
-	m_name{new QGraphicsTextItem{QString::fromStdString(m_class.Name()), this}}
+	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}
 {
 	// use a bold font for class names
 	auto font = m_name->font();
@@ -31,7 +31,7 @@ UMLClassItem::UMLClassItem(const codebase::Class& class_, QGraphicsItem *parent)
 	double ypos = m_name->boundingRect().height();
 	for (auto& field : m_class.Fields())
 	{
-		auto field_item = new QGraphicsTextItem{QString::fromStdString(field.Name()), this};
+		auto field_item = new QGraphicsSimpleTextItem{QString::fromStdString(field.Name()), this};
 		field_item->moveBy(0, ypos);
 		ypos += field_item->boundingRect().height();
 	}

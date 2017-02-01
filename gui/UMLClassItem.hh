@@ -16,7 +16,7 @@
 
 #include "codebase/Class.hh"
 
-class QGraphicsTextItem;
+class QGraphicsSimpleTextItem;
 
 namespace gui {
 
@@ -32,7 +32,7 @@ private:
 	codebase::Class m_class;
 	QRectF          m_bounding;
 	
-	QGraphicsTextItem *m_name;
+	QGraphicsSimpleTextItem *m_name;
 };
 	
 } // end of namespace
