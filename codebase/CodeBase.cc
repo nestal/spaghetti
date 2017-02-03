@@ -26,14 +26,15 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
 		{
-			auto it = m_classes.find(cursor.USR());
-			if (it == m_classes.end())
-				it = m_classes.emplace(cursor).first;
+			auto& usr = m_classes.get<ByUSR>();
+			auto it = usr.find(cursor.USR());
+			if (it == usr.end())
+				it = usr.emplace(cursor).first;
 
 			Class::Data data;
 			it->Visit(data, cursor);
 			
-			m_classes.modify(it, [&data](Class& c){c.Merge(std::move(data));});
+			usr.modify(it, [&data](Class& c){c.Merge(std::move(data));});
 			break;
 		}
 			
@@ -95,6 +96,11 @@ CodeBase::usr_iterator CodeBase::end() const
 std::size_t CodeBase::size() const
 {
 	return m_classes.size();
+}
+
+const Class& CodeBase::at(std::size_t index) const
+{
+	return m_classes.get<ByIndex>().at(index);
 }
 	
 } // end of namespace

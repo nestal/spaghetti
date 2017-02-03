@@ -17,6 +17,7 @@
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 
 #include <vector>
@@ -27,10 +28,15 @@ class CodeBase
 {
 public:
 	struct ByUSR {};
+	struct ByIndex {};
 	
 	using ClassDB = boost::multi_index_container<
 		Class,
 		boost::multi_index::indexed_by<
+			
+			boost::multi_index::random_access<
+				boost::multi_index::tag<ByIndex>
+			>,
 			
 			// hash by USR
 			boost::multi_index::hashed_unique<
@@ -58,6 +64,8 @@ public:
 	usr_iterator end() const;
 	usr_iterator find(const std::string& usr) const;
 	std::size_t size() const;
+	
+	const Class& at(std::size_t index) const;
 	
 private:
 	libclx::Index  m_index;

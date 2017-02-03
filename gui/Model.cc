@@ -68,14 +68,16 @@ int Model::rowCount(const QModelIndex& /*parent*/) const
 
 QVariant Model::data(const QModelIndex& index, int role) const
 {
-	switch (role)
+	if (index.row() >= 0 && static_cast<std::size_t>(index.row()) < m_codebase.size())
 	{
-	case Qt::DisplayRole:
-	{
-		auto it = m_codebase.begin();
-		advance(it, index.row());
-		return QString::fromStdString(it->Name());
-	}
+		auto& class_ = m_codebase.at(static_cast<std::size_t>(index.row()));
+		switch (role)
+		{
+		case Qt::DisplayRole:
+			return QString::fromStdString(index.column() == 0 ? class_.Name() : class_.USR());
+		default:
+			break;
+		}
 	}
 	
 	return QVariant();
