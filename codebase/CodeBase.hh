@@ -57,6 +57,7 @@ public:
 	usr_iterator begin() const;
 	usr_iterator end() const;
 	usr_iterator find(const std::string& usr) const;
+	std::size_t size() const;
 	
 private:
 	libclx::Index  m_index;

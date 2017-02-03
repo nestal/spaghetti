@@ -91,5 +91,10 @@ CodeBase::usr_iterator CodeBase::end() const
 {
 	return m_classes.get<ByUSR>().end();
 }
+
+std::size_t CodeBase::size() const
+{
+	return m_classes.size();
+}
 	
 } // end of namespace

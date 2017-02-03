@@ -31,7 +31,8 @@ MainWnd::MainWnd() :
 	
 	m_ui->setupUi(this);
 	m_model->AttachView(m_ui->m_main);
-		
+	m_ui->m_class_view->setModel(m_model.get());
+	
 	connect(m_ui->m_action_about, &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_open,  &QAction::triggered, [this]
 	{

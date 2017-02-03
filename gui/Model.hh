@@ -13,7 +13,7 @@
 #pragma once
 
 // parent class comes first
-#include <QObject>
+#include <QAbstractListModel>
 
 #include "codebase/CodeBase.hh"
 #include "UMLClassItem.hh"
@@ -29,7 +29,7 @@ class QGraphicsView;
 
 namespace gui {
 
-class Model : public QObject
+class Model : public QAbstractListModel
 {
 public:
 	Model(QObject *parent);
@@ -37,6 +37,11 @@ public:
 
 	void AttachView(QGraphicsView *view);
 	void Parse(const QString& file);
+	
+	int rowCount(const QModelIndex &parent) const override;
+	int columnCount(const QModelIndex&) const override;
+	QVariant data(const QModelIndex &index, int role) const override;
+	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	
 private:
 	// order is important here, since m_scene depends on m_repo.
