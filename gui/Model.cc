@@ -61,9 +61,9 @@ void Model::AttachView(QGraphicsView *view)
 	view->setScene(m_scene.get());
 }
 
-int Model::rowCount(const QModelIndex& /*parent*/) const
+int Model::rowCount(const QModelIndex& parent) const
 {
-	return static_cast<int>(m_codebase.size());
+	return static_cast<int>(parent == QModelIndex() ? m_codebase.size() : ClassAt(parent)->FieldCount());
 }
 
 QVariant Model::data(const QModelIndex& index, int role) const
@@ -100,6 +100,14 @@ QVariant Model::headerData(int section, Qt::Orientation orientation, int role) c
 int Model::columnCount(const QModelIndex&) const
 {
 	return 2;
+}
+
+boost::optional<const codebase::Class&> Model::ClassAt(const QModelIndex& index) const
+{
+	auto row = static_cast<std::size_t>(index.row());
+	return index.parent() == QModelIndex() && row < m_codebase.size() ?
+		m_codebase.at(row) :
+		boost::optional<const codebase::Class&>{};
 }
 	
 } // end of namespace

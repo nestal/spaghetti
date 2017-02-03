@@ -81,6 +81,7 @@ public:
 	void Merge(Data&& data);
 	
 	boost::iterator_range<field_iterator> Fields() const;
+	std::size_t FieldCount() const;
 
 	friend std::ostream& operator<<(std::ostream& os, const Class& c);
 	

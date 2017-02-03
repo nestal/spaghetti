@@ -22,6 +22,8 @@
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 
+#include <boost/optional.hpp>
+
 #include <memory>
 
 class QGraphicsScene;
@@ -42,6 +44,9 @@ public:
 	int columnCount(const QModelIndex&) const override;
 	QVariant data(const QModelIndex &index, int role) const override;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+	
+private:
+	boost::optional<const codebase::Class&> ClassAt(const QModelIndex& index) const;
 	
 private:
 	// order is important here, since m_scene depends on m_repo.

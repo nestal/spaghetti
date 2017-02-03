@@ -77,6 +77,11 @@ boost::iterator_range<Class::field_iterator> Class::Fields() const
 	return {m_data.m_fields.begin(), m_data.m_fields.end()};
 }
 
+std::size_t Class::FieldCount() const
+{
+	return m_data.m_fields.size();
+}
+
 Class::Field::Field(libclx::Cursor field) :
 	m_name{field.Spelling()},
 	m_usr{field.USR()},
