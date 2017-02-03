@@ -16,6 +16,11 @@
 #include <QObject>
 
 #include "codebase/CodeBase.hh"
+#include "UMLClassItem.hh"
+
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/mem_fun.hpp>
 
 #include <memory>
 
@@ -39,6 +44,26 @@ private:
 	// before the Repository is destroyed.
 	codebase::CodeBase              m_codebase;
 	std::unique_ptr<QGraphicsScene> m_scene;
+	
+	struct ByUSR {};
+	
+	using ClassDB = boost::multi_index_container<
+		UMLClassItem*,
+		boost::multi_index::indexed_by<
+			
+			// hash by USR
+			boost::multi_index::hashed_unique<
+				boost::multi_index::tag<ByUSR>,
+				boost::multi_index::const_mem_fun<
+					UMLClassItem,
+					const std::string&,
+					&UMLClassItem::USR
+				>
+			>
+		>
+	>;
+	
+	ClassDB m_classes;
 };
 	
 } // end of namespace

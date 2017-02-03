@@ -45,6 +45,8 @@ void Model::Parse(const QString& file)
 		
 		m_scene->addItem(item);
 		dx += (item->boundingRect().width() + 10);
+		
+		m_classes.insert(item);
 	}
 }
 

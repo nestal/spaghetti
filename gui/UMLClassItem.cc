@@ -13,7 +13,7 @@
 #include "UMLClassItem.hh"
 
 #include <QFont>
-#include <QGraphicsTextItem>
+#include <QGraphicsSimpleTextItem>
 #include <QPainter>
 
 namespace gui {
@@ -45,6 +45,8 @@ UMLClassItem::UMLClassItem(const codebase::Class& class_, QGraphicsItem *parent)
 	setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
+UMLClassItem::~UMLClassItem() = default;
+
 QRectF UMLClassItem::boundingRect() const
 {
 	return m_bounding;
@@ -60,6 +62,11 @@ void UMLClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWi
 		QPointF{0,                  m_name->boundingRect().height()},
 		QPointF{m_bounding.width(), m_name->boundingRect().height()}
 	);
+}
+
+const std::string& UMLClassItem::USR() const
+{
+	return m_class.USR();
 }
 	
 } // end of namespace

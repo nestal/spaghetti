@@ -24,9 +24,12 @@ class UMLClassItem : public QGraphicsItem
 {
 public:
 	UMLClassItem(const codebase::Class& class_, QGraphicsItem *parent = {});
+	~UMLClassItem();
 	
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+	
+	const std::string& USR() const;
 	
 private:
 	codebase::Class m_class;
