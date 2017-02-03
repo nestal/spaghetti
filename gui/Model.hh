@@ -27,9 +27,10 @@ namespace gui {
 class Model : public QObject
 {
 public:
-	Model(QObject *parent, QGraphicsView *view);
+	Model(QObject *parent);
 	~Model() = default;
 
+	void AttachView(QGraphicsView *view);
 	void Parse(const QString& file);
 	
 private:

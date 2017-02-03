@@ -20,14 +20,10 @@
 
 namespace gui {
 
-Model::Model(QObject *parent, QGraphicsView *view) :
+Model::Model(QObject *parent) :
 	QObject{parent},
 	m_scene{std::make_unique<QGraphicsScene>(this)}
 {
-	assert(view);
-	
-//	m_codebase.Parse("codebase/CodeBase.cc");
-	view->setScene(m_scene.get());
 }
 
 void Model::Parse(const QString& file)
@@ -44,12 +40,18 @@ void Model::Parse(const QString& file)
 	auto dx = 0;
 	for (auto& class_ : m_codebase)
 	{
-		auto item = new UMLClassItem{class_, nullptr};
+		auto item = new UMLClassItem{class_};
 		item->moveBy(dx, 0);
 		
 		m_scene->addItem(item);
 		dx += (item->boundingRect().width() + 10);
 	}
+}
+
+void Model::AttachView(QGraphicsView *view)
+{
+	assert(view);
+	view->setScene(m_scene.get());
 }
 	
 } // end of namespace

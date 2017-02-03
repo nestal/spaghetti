@@ -23,13 +23,14 @@
 namespace gui {
 
 MainWnd::MainWnd() :
-	m_ui(std::make_unique<Ui::MainWnd>())
+	m_ui{std::make_unique<Ui::MainWnd>()},
+	m_model{std::make_unique<Model>(this)}
 {
 	// http://stackoverflow.com/questions/31522637/how-do-i-render-a-triangle-in-qopenglwidget
 	// need to promote widget
 	
 	m_ui->setupUi(this);
-	m_model = std::make_unique<Model>(this, m_ui->m_main);
+	m_model->AttachView(m_ui->m_main);
 		
 	connect(m_ui->m_action_about, &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_open,  &QAction::triggered, [this]

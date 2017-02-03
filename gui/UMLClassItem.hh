@@ -23,7 +23,7 @@ namespace gui {
 class UMLClassItem : public QGraphicsItem
 {
 public:
-	UMLClassItem(const codebase::Class& class_, QGraphicsItem *parent);
+	UMLClassItem(const codebase::Class& class_, QGraphicsItem *parent = {});
 	
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
