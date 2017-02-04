@@ -77,11 +77,12 @@ public:
 
 	const std::string& Name() const override;
 	const Entity* Parent() const override;
-	void Reparent(const Entity *parent) override;
+	void OnReparent(const Entity *parent) override;
 	std::string Type() const override;
 	
 	std::size_t ChildCount() const override;
 	const Entity* Child(std::size_t idx) const override;
+	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
 	
 	const DataType* Find(const SourceLocation& loc) const override;

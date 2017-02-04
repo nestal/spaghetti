@@ -103,7 +103,11 @@ std::size_t CodeBase::ChildCount() const
 
 const Entity* CodeBase::Child(std::size_t idx) const
 {
-	assert(m_types.Parent() == this);
+	return idx == 0 ? &m_types : nullptr;
+}
+
+Entity *CodeBase::Child(std::size_t idx)
+{
 	return idx == 0 ? &m_types : nullptr;
 }
 
@@ -128,9 +132,8 @@ void CodeBase::Add(const DataType *, const SourceLocation& )
 //	m_classes.get<ByLocation>().emplace(type);
 }
 
-void CodeBase::Reparent(const Entity *)
+void CodeBase::OnReparent(const Entity *)
 {
-	m_types.Reparent(this);
 }
 
 CodeBase::CodeBase()

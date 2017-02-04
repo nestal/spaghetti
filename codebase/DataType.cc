@@ -96,7 +96,11 @@ std::size_t DataType::ChildCount() const
 
 const Entity *DataType::Child(std::size_t idx) const
 {
-	assert(m_fields.Parent() == this);
+	return idx == 0 ? &m_fields : nullptr;
+}
+
+Entity *DataType::Child(std::size_t idx)
+{
 	return idx == 0 ? &m_fields : nullptr;
 }
 
@@ -115,11 +119,10 @@ libclx::SourceLocation DataType::DefinitionLocation() const
 	return m_definition;
 }
 
-void DataType::Reparent(const Entity *parent)
+void DataType::OnReparent(const Entity *parent)
 {
 	assert(m_parent == nullptr);
 	m_parent = parent;
-	m_fields.Reparent(this);
 }
 
 std::ostream& operator<<(std::ostream& os, const DataType& c)

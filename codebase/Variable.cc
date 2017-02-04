@@ -48,6 +48,11 @@ const Entity *Variable::Child(std::size_t) const
 	return nullptr;
 }
 
+Entity *Variable::Child(std::size_t)
+{
+	return nullptr;
+}
+
 std::size_t Variable::IndexOf(const Entity*) const
 {
 	return 0;
@@ -60,7 +65,7 @@ std::string Variable::Type() const
 	return oss.str();
 }
 
-void Variable::Reparent(const Entity *parent)
+void Variable::OnReparent(const Entity *parent)
 {
 	assert(m_parent == nullptr);
 	m_parent = parent;

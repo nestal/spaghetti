@@ -42,20 +42,19 @@ public:
 		assert(m_parent && m_parent->HasChild(this));
 		return m_parent;
 	}
-	void Reparent(const Entity *parent) override
+	void OnReparent(const Entity *parent) override
 	{
 		assert(m_parent == parent || m_parent == nullptr);
 		m_parent = parent;
-		std::for_each(m_children.begin(), m_children.end(), [this](auto& c)
-		{
-			c.Reparent(this);
-		});
 	}
 	
 	std::size_t ChildCount() const override {return m_children.size();}
 	const EntityType* Child(std::size_t idx) const override
 	{
-		assert(m_children.at(idx).Parent() == this);
+		return &m_children.at(idx);
+	}
+	EntityType* Child(std::size_t idx) override
+	{
 		return &m_children.at(idx);
 	}
 	std::size_t IndexOf(const Entity* child) const override {return &dynamic_cast<const EntityType&>(*child) - &m_children[0];}
