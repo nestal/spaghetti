@@ -79,36 +79,6 @@ std::string CodeBase::Parse(const std::string& source)
 	return tu.Spelling();
 }
 
-CodeBase::usr_iterator CodeBase::find(const std::string& usr) const
-{
-	return m_classes.get<ByUSR>().find(usr);
-}
-
-CodeBase::usr_iterator CodeBase::begin() const
-{
-	return m_classes.get<ByUSR>().begin();
-}
-
-CodeBase::usr_iterator CodeBase::end() const
-{
-	return m_classes.get<ByUSR>().end();
-}
-
-std::size_t CodeBase::size() const
-{
-	return m_classes.size();
-}
-
-const DataType& CodeBase::at(std::size_t index) const
-{
-	return m_classes.get<ByIndex>().at(index);
-}
-
-std::size_t CodeBase::IndexOf(usr_iterator it) const
-{
-	return m_classes.project<ByIndex>(it) - m_classes.get<ByIndex>().begin();
-}
-
 const std::string& CodeBase::Name() const
 {
 	static std::string name{"codebase"};
@@ -125,7 +95,7 @@ std::size_t CodeBase::ChildCount() const
 	return m_classes.size();
 }
 
-const Entity *CodeBase::Child(std::size_t idx) const
+const DataType* CodeBase::Child(std::size_t idx) const
 {
 	return &m_classes.get<ByIndex>().at(idx);
 }
@@ -139,6 +109,17 @@ std::size_t CodeBase::IndexOf(const Entity *child) const
 std::string CodeBase::Type() const
 {
 	return "Code base";
+}
+
+const DataType* CodeBase::Find(const SourceLocation& loc) const
+{
+	auto it = m_classes.get<ByLocation>().find(loc);
+	return it != m_classes.get<ByLocation>().end() ? &*it : nullptr;
+}
+
+void CodeBase::Add(const DataType *, const SourceLocation& )
+{
+//	m_classes.get<ByLocation>().emplace(type);
 }
 	
 } // end of namespace

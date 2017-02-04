@@ -15,6 +15,7 @@
 #include "Entity.hh"
 
 #include <vector>
+#include <memory>
 
 namespace codebase {
 

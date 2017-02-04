@@ -13,6 +13,8 @@
 #pragma once
 
 #include "Entity.hh"
+#include "TypeDB.hh"
+
 #include "DataType.hh"
 #include "libclx/Index.hh"
 
@@ -26,12 +28,12 @@
 
 namespace codebase {
 
-class CodeBase : public Entity
+class CodeBase : public Entity, public TypeDB
 {
 public:
 	struct ByUSR {};
 	struct ByIndex {};
-	struct BySelf {};
+	struct ByLocation {};
 	
 	using ClassDB = boost::multi_index_container<
 		DataType,
@@ -49,39 +51,39 @@ public:
 					const std::string&,
 					&DataType::USR
 				>
-			>
+			>,
 			
 			// hash by SourceLocation
+			boost::multi_index::hashed_non_unique<
+				boost::multi_index::tag<ByLocation>,
+				boost::multi_index::const_mem_fun<
+					DataType,
+					libclx::SourceLocation,
+					&DataType::DefinitionLocation
+				>,
+				libclx::SourceLocation::Hash
+			>
 		>
 	>;
 	
-	using USRIndex = ClassDB::index<ByUSR>::type ;
-	using usr_iterator = USRIndex::iterator;
-
 public:
 	CodeBase() = default;
 	
 	std::string Parse(const std::string& source);
 	
 	void Visit(libclx::Cursor cursor, libclx::Cursor parent);
-	
-	usr_iterator begin() const;
-	usr_iterator end() const;
-	usr_iterator find(const std::string& usr) const;
-	std::size_t size() const;
-	
-	std::size_t IndexOf(usr_iterator it) const;
-	
-	const DataType& at(std::size_t index) const;
-	
+
 	const std::string& Name() const override;
 	const Entity* Parent() const override;
 	std::string Type() const override;
 	
 	std::size_t ChildCount() const override;
-	const Entity* Child(std::size_t idx) const override;
+	const DataType* Child(std::size_t idx) const override;
 	std::size_t IndexOf(const Entity* child) const override;
 	
+	const DataType* Find(const SourceLocation& loc) const override;
+	void Add(const DataType *type, const SourceLocation& loc) override;
+
 private:
 	libclx::Index  m_index;
 	std::vector<libclx::TranslationUnit> m_units;

@@ -43,9 +43,9 @@ void Model::Parse(const QString& file)
 	m_class_model.beginResetModel();
 	
 	auto dx = 0;
-	for (auto& class_ : m_codebase)
+	for (std::size_t i = 0 ; i < m_codebase.ChildCount(); ++i)
 	{
-		auto item = new UMLClassItem{class_};
+		auto item = new UMLClassItem{*m_codebase.Child(i)};
 		item->moveBy(dx, 0);
 		
 		m_scene->addItem(item);
