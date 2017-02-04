@@ -22,7 +22,6 @@ public:
 	virtual ~Entity() = default;
 	
 	virtual const std::string& Name() const = 0;
-	virtual const std::string& USR() const = 0;
 	virtual const Entity* Parent() const = 0;
 	
 	virtual std::size_t ChildCount() const = 0;

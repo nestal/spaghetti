@@ -73,7 +73,6 @@ public:
 	const Class& at(std::size_t index) const;
 	
 	const std::string& Name() const override;
-	const std::string& USR() const override;
 	const Entity* Parent() const override;
 	
 	std::size_t ChildCount() const override;

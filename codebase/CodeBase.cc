@@ -114,12 +114,6 @@ const std::string& CodeBase::Name() const
 	return name;
 }
 
-const std::string& CodeBase::USR() const
-{
-	static std::string usr;
-	return usr;
-}
-
 const Entity* CodeBase::Parent() const
 {
 	return this;
@@ -137,8 +131,8 @@ const Entity *CodeBase::Child(std::size_t idx) const
 
 std::size_t CodeBase::IndexOf(const Entity *child) const
 {
-	auto it = m_classes.get<ByUSR>().find(child->USR());
+	auto it = m_classes.get<ByUSR>().find(dynamic_cast<const Class&>(*child).USR());
 	return m_classes.project<ByIndex>(it) - m_classes.get<ByIndex>().begin();
 }
-	
+
 } // end of namespace

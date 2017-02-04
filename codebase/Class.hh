@@ -42,7 +42,7 @@ public:
 		
 		const std::string& Name() const override;
 		const Class* Parent() const override;
-		const std::string& USR() const override;
+		const std::string& USR() const;
 		
 		std::size_t ChildCount() const override;
 		const Entity* Child(std::size_t idx) const override;
@@ -84,7 +84,7 @@ public:
 	Class& operator=(Class&&) = default;
 	
 	const std::string& Name() const override;
-	const std::string& USR() const override;
+	const std::string& USR() const;
 	const Entity* Parent() const override;
 	
 	void Visit(Data& data, libclx::Cursor self) const;
