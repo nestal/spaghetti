@@ -31,7 +31,7 @@ class QGraphicsView;
 
 namespace gui {
 
-class Model : public QAbstractListModel
+class Model : public QAbstractItemModel
 {
 public:
 	Model(QObject *parent);
@@ -44,6 +44,10 @@ public:
 	int columnCount(const QModelIndex&) const override;
 	QVariant data(const QModelIndex &index, int role) const override;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+	bool hasChildren(const QModelIndex& parent) const override;
+	
+	QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+	QModelIndex parent(const QModelIndex &child) const override;
 	
 private:
 	boost::optional<const codebase::Class&> ClassAt(const QModelIndex& index) const;

@@ -18,11 +18,12 @@
 
 #include <iterator>
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 
 Model::Model(QObject *parent) :
-	QAbstractListModel{parent},
+	QAbstractItemModel{parent},
 	m_scene{std::make_unique<QGraphicsScene>(this)}
 {
 }
@@ -63,23 +64,35 @@ void Model::AttachView(QGraphicsView *view)
 
 int Model::rowCount(const QModelIndex& parent) const
 {
+	std::cout << "rowCount(): " << parent.row() << std::endl;
 	return static_cast<int>(parent == QModelIndex() ? m_codebase.size() : ClassAt(parent)->FieldCount());
 }
 
 QVariant Model::data(const QModelIndex& index, int role) const
 {
-	if (index.row() >= 0 && static_cast<std::size_t>(index.row()) < m_codebase.size())
+	auto *pclass = reinterpret_cast<const codebase::Class*>(index.internalPointer());
+	if (pclass)
 	{
-		auto& class_ = m_codebase.at(static_cast<std::size_t>(index.row()));
 		switch (role)
 		{
 		case Qt::DisplayRole:
-			return QString::fromStdString(index.column() == 0 ? class_.Name() : class_.USR());
+			return QString::fromStdString(index.column() == 0 ? pclass->Name() : pclass->USR());
 		default:
 			break;
 		}
 	}
-	
+	else if (index != QModelIndex())
+	{
+		pclass = reinterpret_cast<const codebase::Class*>(index.parent().internalPointer());
+		switch (role)
+		{
+		case Qt::DisplayRole:
+			return QString::fromStdString(index.column() == 0 ? pclass->Name() : pclass->USR());
+		default:
+			break;
+		}
+	}
+
 	return QVariant();
 }
 
@@ -102,6 +115,17 @@ int Model::columnCount(const QModelIndex&) const
 	return 2;
 }
 
+bool Model::hasChildren(const QModelIndex& parent) const
+{
+	return false;
+	std::cout << "hasChildren(): " << parent.row() << std::endl;
+	if (parent != QModelIndex())
+	{
+		std::cout << parent.row() << " has children??" << std::endl;
+	}
+	return parent == QModelIndex() || parent.parent() == QModelIndex();
+}
+
 boost::optional<const codebase::Class&> Model::ClassAt(const QModelIndex& index) const
 {
 	auto row = static_cast<std::size_t>(index.row());
@@ -109,5 +133,32 @@ boost::optional<const codebase::Class&> Model::ClassAt(const QModelIndex& index)
 		m_codebase.at(row) :
 		boost::optional<const codebase::Class&>{};
 }
-	
+
+QModelIndex Model::index(int row, int column, const QModelIndex& parent) const
+{
+	auto urow = static_cast<std::size_t>(row);
+	if (parent == QModelIndex() && urow < m_codebase.size())
+	{
+		return createIndex(row, column, const_cast<char*>(&m_codebase.at(urow).USR().at(0)));
+	}
+	else if (parent.parent() == QModelIndex())
+	{
+//		auto prow = static_cast<std::size_t>(parent.row());
+//		return createIndex(row, column, const_cast<char*>(&m_codebase.at(prow).USR().at(0)));
+	}
+//	else
+		return {};
+}
+
+QModelIndex Model::parent(const QModelIndex& child) const
+{
+	if (child.internalPointer())
+	{
+		auto it = m_codebase.find(reinterpret_cast<char*>(child.internalPointer()));
+		if (it != m_codebase.end())
+			return {};
+	}
+	return {};
+}
+
 } // end of namespace
