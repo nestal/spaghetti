@@ -33,12 +33,7 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 			});
 			if (it == m_types.end())
 				it = m_types.Add(DataType(cursor));
-			
-			EditAction data;
-			it->Visit(data, cursor);
-//			it->Merge(std::move(data));
-			
-			//usr.modify(it, [&data](DataType& c){c.Merge(std::move(data));});
+			it->Visit(cursor);
 			break;
 		}
 			

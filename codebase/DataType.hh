@@ -55,8 +55,7 @@ public:
 	const Entity* Parent() const override;
 	void OnReparent(const Entity *parent) override;
 	
-	void Visit(EditAction& data, libclx::Cursor self);
-	void Merge(EditAction&& data);
+	void Visit(libclx::Cursor self);
 	
 	boost::iterator_range<field_iterator> Fields() const;
 

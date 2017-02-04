@@ -37,7 +37,7 @@ const std::string& DataType::USR() const
 	return m_usr;
 }
 
-void DataType::Visit(EditAction& data, libclx::Cursor self)
+void DataType::Visit(libclx::Cursor self)
 {
 	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl);
 	assert(!m_name.empty() && m_name == self.Spelling());
@@ -46,7 +46,7 @@ void DataType::Visit(EditAction& data, libclx::Cursor self)
 	if (self.IsDefinition())
 		m_definition = self.Location();
 	
-	self.Visit([&data, this](libclx::Cursor child, libclx::Cursor)
+	self.Visit([this](libclx::Cursor child, libclx::Cursor)
 	{
 		switch (child.Kind())
 		{
@@ -56,23 +56,6 @@ void DataType::Visit(EditAction& data, libclx::Cursor self)
 	
 		default:
 		std::cout << child.Spelling() << ' ' << child.Kind() << std::endl;
-			break;
-		}
-	});
-}
-
-void DataType::Merge(EditAction&& data)
-{
-	data.ForEach([this](auto type, auto& entity, auto& location)
-	{
-		switch (type)
-		{
-		case EditAction::Action::addEntity:
-			m_fields.Add(std::move(dynamic_cast<Variable&>(*entity)));
-			break;
-			
-		case EditAction::Action::setDefinition:
-			m_definition = std::move(location);
 			break;
 		}
 	});
