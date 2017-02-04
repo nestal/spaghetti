@@ -11,6 +11,7 @@
 //
 
 #include "Class.hh"
+#include "EditAction.hh"
 
 #include <iostream>
 
@@ -42,35 +43,44 @@ const std::string& Class::USR() const
 	return m_usr;
 }
 
-void Class::Visit(Data& data, libclx::Cursor self) const
+void Class::Visit(EditAction& data, libclx::Cursor self) const
 {
 	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl);
 	assert(!m_name.empty() && m_name == self.Spelling());
 	assert(!m_usr.empty() && m_usr == self.USR());
+	
+	if (self.IsDefinition())
+		data.SetDefinition(self.Location());
 	
 	self.Visit([&data, this](libclx::Cursor child, libclx::Cursor)
 	{
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			data.m_fields.emplace_back(child, this);
+			data.AddEntity(Variable{child, this});
 			break;
-			
+	
 		default:
 			break;
 		}
 	});
 }
 
-void Class::Merge(Class::Data&& data)
+void Class::Merge(EditAction&& data)
 {
-	m_data.m_fields.insert(m_data.m_fields.end(),
-		make_move_iterator(data.m_fields.begin()),
-		make_move_iterator(data.m_fields.end())
-	);
-	
-	if (!m_data.m_definition && data.m_definition)
-		m_data.m_definition = std::move(data.m_definition);
+	data.ForEach([this](auto type, auto& entity, auto& location)
+	{
+		switch (type)
+		{
+		case EditAction::Action::addEntity:
+			m_data.m_fields.push_back(std::move(dynamic_cast<Variable&>(*entity)));
+			break;
+			
+		case EditAction::Action::setDefinition:
+			m_data.m_definition = std::move(location);
+			break;
+		}
+	});
 }
 
 boost::iterator_range<Class::field_iterator> Class::Fields() const

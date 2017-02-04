@@ -11,6 +11,7 @@
 //
 
 #include "CodeBase.hh"
+#include "EditAction.hh"
 
 #include <iostream>
 
@@ -31,7 +32,7 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 			if (it == usr.end())
 				it = usr.emplace(cursor, this).first;
 
-			Class::Data data;
+			EditAction data;
 			it->Visit(data, cursor);
 			
 			usr.modify(it, [&data](Class& c){c.Merge(std::move(data));});

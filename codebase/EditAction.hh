@@ -12,15 +12,53 @@
 
 #pragma once
 
+#include "libclx/Index.hh"
+
+#include <boost/optional.hpp>
+
+#include <memory>
+
 namespace codebase {
+
+class Entity;
 
 class EditAction
 {
 public:
-	enum class Type {add, remove, modify};
+	enum class Action {addEntity, setDefinition};
 	
+	EditAction() = default;
+	
+	template <typename EntityType>
+	void AddEntity(EntityType&& entity)
+	{
+		m_ent.emplace_back(Action::addEntity);
+		m_ent.back().entity = std::make_unique<EntityType>(std::forward<EntityType>(entity));
+	}
+	
+	void SetDefinition(const libclx::SourceLocation& loc)
+	{
+		m_ent.emplace_back(Action::setDefinition);
+		m_ent.back().location = loc;
+	}
+	
+	template <typename Func>
+	void ForEach(Func func)
+	{
+		for (auto&& e : m_ent)
+			func(e.type, e.entity, e.location);
+	}
+
 private:
-	Type    m_type;
+	struct Entry
+	{
+		Entry(Action t) : type{t} {}
+		
+		Action type;
+		std::unique_ptr<Entity> entity;
+		boost::optional<libclx::SourceLocation> location;
+	};
+	std::vector<Entry> m_ent;
 };
 	
 } // end of namespace

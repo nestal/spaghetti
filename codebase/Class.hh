@@ -25,6 +25,8 @@
 
 namespace codebase {
 
+class EditAction;
+
 /**
  * \brief Represent a C++ class in the CodeBase.
  *
@@ -64,8 +66,8 @@ public:
 	const std::string& USR() const;
 	const Entity* Parent() const override;
 	
-	void Visit(Data& data, libclx::Cursor self) const;
-	void Merge(Data&& data);
+	void Visit(EditAction& data, libclx::Cursor self) const;
+	void Merge(EditAction&& data);
 	
 	boost::iterator_range<field_iterator> Fields() const;
 
