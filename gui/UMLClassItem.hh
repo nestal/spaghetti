@@ -14,7 +14,7 @@
 
 #include <QGraphicsItem>
 
-#include "codebase/Class.hh"
+#include "codebase/DataType.hh"
 
 class QGraphicsSimpleTextItem;
 
@@ -23,7 +23,7 @@ namespace gui {
 class UMLClassItem : public QGraphicsItem
 {
 public:
-	UMLClassItem(const codebase::Class& class_, QGraphicsItem *parent = {});
+	UMLClassItem(const codebase::DataType& class_, QGraphicsItem *parent = {});
 	~UMLClassItem();
 	
 	QRectF boundingRect() const override;
@@ -32,7 +32,7 @@ public:
 	const std::string& USR() const;
 	
 private:
-	codebase::Class m_class;
+	codebase::DataType m_class;
 	QRectF          m_bounding;
 	
 	QGraphicsSimpleTextItem *m_name;

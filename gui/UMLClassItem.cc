@@ -18,7 +18,7 @@
 
 namespace gui {
 
-UMLClassItem::UMLClassItem(const codebase::Class& class_, QGraphicsItem *parent) :
+UMLClassItem::UMLClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	QGraphicsItem{parent},
 	m_class{class_},
 	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}

@@ -15,7 +15,6 @@
 #include "codebase/Entity.hh"
 
 #include <cassert>
-#include <codebase/Class.hh>
 
 namespace gui {
 
@@ -28,7 +27,7 @@ EntityModel::EntityModel(const codebase::Entity *root, QObject *parent) :
 
 int EntityModel::rowCount(const QModelIndex& parent) const
 {
-	return Get(parent)->ChildCount();
+	return static_cast<int>(Get(parent)->ChildCount());
 }
 
 const codebase::Entity *EntityModel::Get(const QModelIndex& idx) const
@@ -83,7 +82,10 @@ QModelIndex EntityModel::parent(const QModelIndex& child) const
 {
 	auto pchild = Get(child);
 	auto parent = pchild->Parent();
-	return pchild == parent ? QModelIndex{} : createIndex(parent->IndexOf(pchild), 0, const_cast<codebase::Entity*>(parent));
+	return pchild == parent ? QModelIndex{} : createIndex(
+		static_cast<int>(parent->IndexOf(pchild)), 0,
+		const_cast<codebase::Entity*>(parent)
+	);
 }
 
 } // end of namespace

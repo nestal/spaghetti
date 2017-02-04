@@ -10,14 +10,14 @@
 // Created by nestal on 1/31/17.
 //
 
-#include "Class.hh"
+#include "DataType.hh"
 #include "EditAction.hh"
 
 #include <iostream>
 
 namespace codebase {
 
-Class::Class(libclx::Cursor cursor, const Entity *parent) :
+DataType::DataType(libclx::Cursor cursor, const Entity *parent) :
 	m_name{cursor.Spelling()},
 	m_usr{cursor.USR()},
 	m_parent{parent}
@@ -27,17 +27,17 @@ Class::Class(libclx::Cursor cursor, const Entity *parent) :
 		m_definition = cursor.Location();
 }
 
-const std::string& Class::Name() const
+const std::string& DataType::Name() const
 {
 	return m_name;
 }
 
-const std::string& Class::USR() const
+const std::string& DataType::USR() const
 {
 	return m_usr;
 }
 
-void Class::Visit(EditAction& data, libclx::Cursor self) const
+void DataType::Visit(EditAction& data, libclx::Cursor self) const
 {
 	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl);
 	assert(!m_name.empty() && m_name == self.Spelling());
@@ -61,7 +61,7 @@ void Class::Visit(EditAction& data, libclx::Cursor self) const
 	});
 }
 
-void Class::Merge(EditAction&& data)
+void DataType::Merge(EditAction&& data)
 {
 	data.ForEach([this](auto type, auto& entity, auto& location)
 	{
@@ -78,37 +78,37 @@ void Class::Merge(EditAction&& data)
 	});
 }
 
-boost::iterator_range<Class::field_iterator> Class::Fields() const
+boost::iterator_range<DataType::field_iterator> DataType::Fields() const
 {
 	return {m_fields.begin(), m_fields.end()};
 }
 
-const Entity* Class::Parent() const
+const Entity* DataType::Parent() const
 {
 	return m_parent;
 }
 
-std::size_t Class::ChildCount() const
+std::size_t DataType::ChildCount() const
 {
 	return m_fields.size();
 }
 
-const Entity *Class::Child(std::size_t idx) const
+const Entity *DataType::Child(std::size_t idx) const
 {
 	return &m_fields.at(idx);
 }
 
-std::size_t Class::IndexOf(const Entity *child) const
+std::size_t DataType::IndexOf(const Entity *child) const
 {
 	return dynamic_cast<const Variable*>(child) - &m_fields[0];
 }
 
-std::string Class::Type() const
+std::string DataType::Type() const
 {
-	return "Class";
+	return "DataType";
 }
 
-std::ostream& operator<<(std::ostream& os, const Class& c)
+std::ostream& operator<<(std::ostream& os, const DataType& c)
 {
 	os << "class: " << c.Name() << " (" << c.USR() << ")\n";
 	for (auto&& field : c.Fields())

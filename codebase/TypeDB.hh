@@ -12,15 +12,15 @@
 
 namespace codebase {
 
-class Class;
+class DataType;
 class SourceLocation;
 
 class TypeDB
 {
 public:
 	virtual ~TypeDB() = default;
-	virtual const Class* Find(const SourceLocation& loc) const = 0;
-	virtual void Add(const Class *class_, const SourceLocation& loc) = 0;
+	virtual const DataType* Find(const SourceLocation& loc) const = 0;
+	virtual void Add(const DataType *class_, const SourceLocation& loc) = 0;
 };
 
 } // end of namespace

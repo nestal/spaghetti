@@ -13,7 +13,7 @@
 #pragma once
 
 #include "Entity.hh"
-#include "Class.hh"
+#include "DataType.hh"
 #include "libclx/Index.hh"
 
 #include <boost/multi_index_container.hpp>
@@ -34,7 +34,7 @@ public:
 	struct BySelf {};
 	
 	using ClassDB = boost::multi_index_container<
-		Class,
+		DataType,
 		boost::multi_index::indexed_by<
 			
 			boost::multi_index::random_access<
@@ -45,9 +45,9 @@ public:
 			boost::multi_index::hashed_unique<
 				boost::multi_index::tag<ByUSR>,
 				boost::multi_index::const_mem_fun<
-					Class,
+					DataType,
 					const std::string&,
-					&Class::USR
+					&DataType::USR
 				>
 			>
 		>
@@ -70,7 +70,7 @@ public:
 	
 	std::size_t IndexOf(usr_iterator it) const;
 	
-	const Class& at(std::size_t index) const;
+	const DataType& at(std::size_t index) const;
 	
 	const std::string& Name() const override;
 	const Entity* Parent() const override;

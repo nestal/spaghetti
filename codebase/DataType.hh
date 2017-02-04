@@ -28,24 +28,24 @@ namespace codebase {
 class EditAction;
 
 /**
- * \brief Represent a C++ class in the CodeBase.
+ * \brief Represent a C++ class/struct in the CodeBase.
  *
- * This class represent particular class in the code base. There will be only one copy of
- * object for each class in the code base, regardless of how many translation unit uses it.
+ * This class represent particular data type in the code base. A data type is an
+ * entity that can be used to definite data in C++.
  */
-class Class : public Entity
+class DataType : public Entity
 {
 public:
 	using FieldList = std::vector<Variable>;
 	using field_iterator = FieldList::const_iterator;
 	
 public:
-	Class(libclx::Cursor cursor, const Entity *parent);
-	Class(const Class&) = default;
-	Class(Class&&) = default;
+	DataType(libclx::Cursor cursor, const Entity *parent);
+	DataType(const DataType&) = default;
+	DataType(DataType&&) = default;
 	
-	Class& operator=(const Class&) = default;
-	Class& operator=(Class&&) = default;
+	DataType& operator=(const DataType&) = default;
+	DataType& operator=(DataType&&) = default;
 	
 	const std::string& Name() const override;
 	const std::string& USR() const;
@@ -61,7 +61,7 @@ public:
 	const Entity* Child(std::size_t idx) const override;
 	std::size_t IndexOf(const Entity* child) const override;
 	
-	friend std::ostream& operator<<(std::ostream& os, const Class& c);
+	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 	
 private:
 	std::string m_name;
@@ -72,7 +72,7 @@ private:
 	boost::optional<libclx::SourceLocation> m_definition;
 	FieldList m_fields;
 	
-	std::vector<Class> m_nested_classes;
+	std::vector<DataType> m_nested_classes;
 };
 	
 } // end of namespace

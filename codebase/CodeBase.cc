@@ -35,7 +35,7 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 			EditAction data;
 			it->Visit(data, cursor);
 			
-			usr.modify(it, [&data](Class& c){c.Merge(std::move(data));});
+			usr.modify(it, [&data](DataType& c){c.Merge(std::move(data));});
 			break;
 		}
 			
@@ -99,7 +99,7 @@ std::size_t CodeBase::size() const
 	return m_classes.size();
 }
 
-const Class& CodeBase::at(std::size_t index) const
+const DataType& CodeBase::at(std::size_t index) const
 {
 	return m_classes.get<ByIndex>().at(index);
 }
@@ -132,7 +132,7 @@ const Entity *CodeBase::Child(std::size_t idx) const
 
 std::size_t CodeBase::IndexOf(const Entity *child) const
 {
-	auto it = m_classes.get<ByUSR>().find(dynamic_cast<const Class&>(*child).USR());
+	auto it = m_classes.get<ByUSR>().find(dynamic_cast<const DataType&>(*child).USR());
 	return m_classes.project<ByIndex>(it) - m_classes.get<ByIndex>().begin();
 }
 
