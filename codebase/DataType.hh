@@ -15,6 +15,7 @@
 
 #include "Entity.hh"
 #include "Variable.hh"
+#include "EntityVec.hh"
 
 #include <boost/range/iterator_range_core.hpp>
 
@@ -39,23 +40,22 @@ class EditAction;
 class DataType : public Entity
 {
 public:
-	using FieldList = std::vector<Variable>;
-	using field_iterator = FieldList::const_iterator;
+	using field_iterator = EntityVec<Variable>::const_iterator;
 	
 public:
-	DataType(libclx::Cursor cursor, const Entity *parent);
-	DataType(const DataType&) = default;
+	DataType(libclx::Cursor cursor);
 	DataType(DataType&&) = default;
-	
-	DataType& operator=(const DataType&) = default;
+	DataType(const DataType&) = delete;
 	DataType& operator=(DataType&&) = default;
+	DataType& operator=(const DataType&) = delete;
 	
 	const std::string& Name() const override;
 	const std::string& USR() const;
 	std::string Type() const override;
 	const Entity* Parent() const override;
+	void Reparent(const Entity *parent) override;
 	
-	void Visit(EditAction& data, libclx::Cursor self) const;
+	void Visit(EditAction& data, libclx::Cursor self);
 	void Merge(EditAction&& data);
 	
 	boost::iterator_range<field_iterator> Fields() const;
@@ -75,9 +75,9 @@ private:
 	const Entity *m_parent{};
 	
 	libclx::SourceLocation m_definition;
-	FieldList m_fields;
+	EntityVec<Variable>    m_fields;
 	
-	std::vector<DataType> m_nested_classes;
+//	std::vector<DataType> m_nested_classes;
 };
 	
 } // end of namespace

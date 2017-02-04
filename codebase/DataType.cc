@@ -17,10 +17,10 @@
 
 namespace codebase {
 
-DataType::DataType(libclx::Cursor cursor, const Entity *parent) :
+DataType::DataType(libclx::Cursor cursor) :
 	m_name{cursor.Spelling()},
 	m_usr{cursor.USR()},
-	m_parent{parent}
+	m_fields{"Fields"}
 {
 	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl);
 	if (cursor.IsDefinition())
@@ -37,21 +37,21 @@ const std::string& DataType::USR() const
 	return m_usr;
 }
 
-void DataType::Visit(EditAction& data, libclx::Cursor self) const
+void DataType::Visit(EditAction& data, libclx::Cursor self)
 {
 	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl);
 	assert(!m_name.empty() && m_name == self.Spelling());
 	assert(!m_usr.empty() && m_usr == self.USR());
 	
 	if (self.IsDefinition())
-		data.SetDefinition(self.Location());
+		m_definition = self.Location();
 	
 	self.Visit([&data, this](libclx::Cursor child, libclx::Cursor)
 	{
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			data.AddEntity(Variable{child, this});
+			m_fields.Add(Variable{child});
 			break;
 	
 		default:
@@ -68,7 +68,7 @@ void DataType::Merge(EditAction&& data)
 		switch (type)
 		{
 		case EditAction::Action::addEntity:
-			m_fields.push_back(std::move(dynamic_cast<Variable&>(*entity)));
+			m_fields.Add(std::move(dynamic_cast<Variable&>(*entity)));
 			break;
 			
 		case EditAction::Action::setDefinition:
@@ -85,32 +85,41 @@ boost::iterator_range<DataType::field_iterator> DataType::Fields() const
 
 const Entity* DataType::Parent() const
 {
+	assert(m_parent && m_parent->HasChild(this));
 	return m_parent;
 }
 
 std::size_t DataType::ChildCount() const
 {
-	return m_fields.size();
+	return 1;
 }
 
 const Entity *DataType::Child(std::size_t idx) const
 {
-	return &m_fields.at(idx);
+	assert(m_fields.Parent() == this);
+	return idx == 0 ? &m_fields : nullptr;
 }
 
 std::size_t DataType::IndexOf(const Entity *child) const
 {
-	return dynamic_cast<const Variable*>(child) - &m_fields[0];
+	return child == &m_fields ? 0 : ChildCount();
 }
 
 std::string DataType::Type() const
 {
-	return "DataType";
+	return "Class";
 }
 
 libclx::SourceLocation DataType::DefinitionLocation() const
 {
 	return m_definition;
+}
+
+void DataType::Reparent(const Entity *parent)
+{
+	assert(m_parent == nullptr);
+	m_parent = parent;
+	m_fields.Reparent(this);
 }
 
 std::ostream& operator<<(std::ostream& os, const DataType& c)

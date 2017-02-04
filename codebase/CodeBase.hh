@@ -69,7 +69,7 @@ public:
 	>;
 */
 public:
-	CodeBase() = default;
+	CodeBase();
 	
 	std::string Parse(const std::string& source);
 	
@@ -77,6 +77,7 @@ public:
 
 	const std::string& Name() const override;
 	const Entity* Parent() const override;
+	void Reparent(const Entity *parent) override;
 	std::string Type() const override;
 	
 	std::size_t ChildCount() const override;
@@ -91,7 +92,7 @@ private:
 	std::vector<libclx::TranslationUnit> m_units;
 	
 //	ClassDB m_classes;
-	EntityVec<DataType> m_types{nullptr, "Data Types"};
+	EntityVec<DataType> m_types{"Data Types"};
 };
 
 } // end of namespace

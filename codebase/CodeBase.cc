@@ -33,11 +33,11 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 				return t.USR() == usr;
 			});
 			if (it == m_types.end())
-				it = m_types.Add(DataType(cursor, &m_types));
+				it = m_types.Add(DataType(cursor));
 			
 			EditAction data;
 			it->Visit(data, cursor);
-			it->Merge(std::move(data));
+//			it->Merge(std::move(data));
 			
 			//usr.modify(it, [&data](DataType& c){c.Merge(std::move(data));});
 			break;
@@ -78,6 +78,8 @@ std::string CodeBase::Parse(const std::string& source)
 	for (auto&& diag : tu.Diagnostics())
 		std::cerr << diag.Str() << "\n";
 	
+	Reparent(nullptr);
+	
 	m_units.push_back(std::move(tu));
 	
 	return tu.Spelling();
@@ -91,7 +93,7 @@ const std::string& CodeBase::Name() const
 
 const Entity* CodeBase::Parent() const
 {
-	return this;
+	return nullptr;
 }
 
 std::size_t CodeBase::ChildCount() const
@@ -101,6 +103,7 @@ std::size_t CodeBase::ChildCount() const
 
 const Entity* CodeBase::Child(std::size_t idx) const
 {
+	assert(m_types.Parent() == this);
 	return idx == 0 ? &m_types : nullptr;
 }
 
@@ -125,4 +128,14 @@ void CodeBase::Add(const DataType *, const SourceLocation& )
 //	m_classes.get<ByLocation>().emplace(type);
 }
 
+void CodeBase::Reparent(const Entity *)
+{
+	m_types.Reparent(this);
+}
+
+CodeBase::CodeBase()
+{
+	m_types.Reparent(this);
+}
+	
 } // end of namespace

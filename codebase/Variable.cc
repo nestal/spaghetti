@@ -16,10 +16,9 @@
 
 namespace codebase {
 
-Variable::Variable(libclx::Cursor field, const Entity *parent) :
+Variable::Variable(libclx::Cursor field) :
 	m_name{field.Spelling()},
 	m_usr{field.USR()},
-	m_parent{parent},
 	m_type{field.Type()}
 {
 }
@@ -59,6 +58,12 @@ std::string Variable::Type() const
 	std::ostringstream oss;
 	oss << m_type.Spelling() << " " << m_type.Declaration().GetDefinition().Location();
 	return oss.str();
+}
+
+void Variable::Reparent(const Entity *parent)
+{
+	assert(m_parent == nullptr);
+	m_parent = parent;
 }
 
 std::ostream& operator<<(std::ostream& os, const Variable& c)

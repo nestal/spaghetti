@@ -32,7 +32,7 @@ public:
 	const std::string& USR() const;
 	
 private:
-	codebase::DataType m_class;
+	const codebase::DataType& m_class;
 	QRectF          m_bounding;
 	
 	QGraphicsSimpleTextItem *m_name;

@@ -14,6 +14,7 @@
 
 #include "Entity.hh"
 
+#include <cassert>
 #include <vector>
 #include <memory>
 
@@ -28,17 +29,35 @@ public:
 	using const_iterator = typename Vec::const_iterator;
 	
 public:
-	EntityVec(
-		const Entity *parent,
-		const std::string& name
-	) : m_parent{parent}, m_name{name} {}
-	
+	EntityVec( const std::string& name) : m_name{name} {}
+	EntityVec(EntityVec&&) = default;
+	EntityVec(const EntityVec&) = delete;
+	EntityVec& operator=(EntityVec&&) = default;
+	EntityVec& operator=(const EntityVec&) = delete;
+
 	const std::string& Name() const override {return m_name;}
 	std::string Type() const override {return {};}
-	const Entity* Parent() const override {return m_parent;}
+	const Entity* Parent() const override
+	{
+		assert(m_parent && m_parent->HasChild(this));
+		return m_parent;
+	}
+	void Reparent(const Entity *parent) override
+	{
+		assert(m_parent == parent || m_parent == nullptr);
+		m_parent = parent;
+		std::for_each(m_children.begin(), m_children.end(), [this](auto& c)
+		{
+			c.Reparent(this);
+		});
+	}
 	
 	std::size_t ChildCount() const override {return m_children.size();}
-	const EntityType* Child(std::size_t idx) const override {return &m_children.at(idx);}
+	const EntityType* Child(std::size_t idx) const override
+	{
+		assert(m_children.at(idx).Parent() == this);
+		return &m_children.at(idx);
+	}
 	std::size_t IndexOf(const Entity* child) const override {return &dynamic_cast<const EntityType&>(*child) - &m_children[0];}
 	
 	iterator begin() {return m_children.begin();}
@@ -53,7 +72,7 @@ public:
 	}
 	
 private:
-	const Entity *m_parent;
+	const Entity *m_parent{};
 	std::string m_name;
 	
 	std::vector<EntityType> m_children;

@@ -20,12 +20,13 @@ namespace codebase {
 class Variable : public Entity
 {
 public:
-	Variable(libclx::Cursor field, const Entity *parent);
+	Variable(libclx::Cursor field);
 	
 	const std::string& Name() const override;
 	const Entity* Parent() const override;
 	const std::string& USR() const;
 	std::string Type() const override;
+	void Reparent(const Entity *parent) override;
 	
 	std::size_t ChildCount() const override;
 	const Entity* Child(std::size_t idx) const override;
@@ -36,7 +37,7 @@ public:
 private:
 	std::string m_name;
 	std::string m_usr;
-	const Entity *m_parent;
+	const Entity *m_parent{};
 	libclx::Type   m_type;
 };
 	
