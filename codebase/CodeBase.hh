@@ -30,7 +30,7 @@
 
 namespace codebase {
 
-class CodeBase : public TypeDB
+class CodeBase : public Entity, public TypeDB
 {
 public:
 /*	struct ByUSR {};
@@ -75,7 +75,13 @@ public:
 	
 	void Visit(libclx::Cursor cursor, libclx::Cursor parent);
 
-	const Entity* Root() const;
+	const std::string& Name() const override;
+	const Entity* Parent() const override;
+	std::string Type() const override;
+	
+	std::size_t ChildCount() const override;
+	const Entity* Child(std::size_t idx) const override;
+	std::size_t IndexOf(const Entity* child) const override;
 	
 	const DataType* Find(const SourceLocation& loc) const override;
 	void Add(const DataType *type, const SourceLocation& loc) override;

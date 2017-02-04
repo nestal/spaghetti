@@ -34,7 +34,7 @@ public:
 	) : m_parent{parent}, m_name{name} {}
 	
 	const std::string& Name() const override {return m_name;}
-	std::string Type() const override {return "Group";}
+	std::string Type() const override {return {};}
 	const Entity* Parent() const override {return m_parent;}
 	
 	std::size_t ChildCount() const override {return m_children.size();}

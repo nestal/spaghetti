@@ -83,6 +83,37 @@ std::string CodeBase::Parse(const std::string& source)
 	return tu.Spelling();
 }
 
+const std::string& CodeBase::Name() const
+{
+	static std::string name{"codebase"};
+	return name;
+}
+
+const Entity* CodeBase::Parent() const
+{
+	return this;
+}
+
+std::size_t CodeBase::ChildCount() const
+{
+	return 1;
+}
+
+const Entity* CodeBase::Child(std::size_t idx) const
+{
+	return idx == 0 ? &m_types : nullptr;
+}
+
+std::size_t CodeBase::IndexOf(const Entity *) const
+{
+	return 0;
+}
+
+std::string CodeBase::Type() const
+{
+	return "Code base";
+}
+
 const DataType* CodeBase::Find(const SourceLocation& /*loc*/) const
 {
 //	auto it = m_classes.get<ByLocation>().find(loc);
@@ -92,11 +123,6 @@ const DataType* CodeBase::Find(const SourceLocation& /*loc*/) const
 void CodeBase::Add(const DataType *, const SourceLocation& )
 {
 //	m_classes.get<ByLocation>().emplace(type);
-}
-
-const Entity *CodeBase::Root() const
-{
-	return &m_types;
 }
 
 } // end of namespace
