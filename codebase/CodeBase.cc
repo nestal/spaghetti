@@ -19,8 +19,7 @@ namespace codebase {
 
 CodeBase::CodeBase()
 {
-	m_search_index.insert(this);
-	m_search_index.insert(&m_types);
+	AddToIndex(this);
 }
 
 void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
@@ -70,13 +69,12 @@ std::string CodeBase::Parse(const std::string& source)
 		CXTranslationUnit_None
 	);
 	
+	m_search_index.clear();
 	tu.Root().Visit([this](libclx::Cursor cursor, libclx::Cursor parent)
 	{
 		Visit(cursor, parent);
 	});
-	
-	for (auto&& t : m_types)
-		AddToIndex(&t);
+	AddToIndex(this);
 	
 	for (auto&& diag : tu.Diagnostics())
 		std::cerr << diag.Str() << "\n";
