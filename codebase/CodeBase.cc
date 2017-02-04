@@ -27,7 +27,6 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
 		{
-//			auto& usr = m_classes.get<ByUSR>();
 			auto it = std::find_if(m_types.begin(), m_types.end(), [usr=cursor.USR()](auto& t)
 			{
 				return t.USR() == usr;

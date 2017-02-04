@@ -24,11 +24,6 @@ template <typename EntityType>
 class EntityVec : public Entity
 {
 public:
-	using Vec = std::vector<EntityType>;
-	using iterator       = typename Vec::iterator;
-	using const_iterator = typename Vec::const_iterator;
-	
-public:
 	EntityVec( const std::string& name) : m_name{name} {}
 	EntityVec(EntityVec&&) = default;
 	EntityVec(const EntityVec&) = delete;
@@ -59,15 +54,18 @@ public:
 	}
 	std::size_t IndexOf(const Entity* child) const override {return &dynamic_cast<const EntityType&>(*child) - &m_children[0];}
 	
-	iterator begin() {return m_children.begin();}
-	iterator end() {return m_children.end();}
-	const_iterator begin() const {return m_children.begin();}
-	const_iterator end() const {return m_children.end();}
+	using iterator       = EntityIterator<EntityVec, EntityType>;
+	using const_iterator = EntityIterator<const EntityVec, const EntityType>;
+	
+	iterator begin() {return iterator{0,                 this};}
+	iterator end()   {return iterator{m_children.size(), this};}
+	const_iterator begin() const {return const_iterator{0,                 this};}
+	const_iterator end()   const {return const_iterator{m_children.size(), this};}
 	
 	iterator Add(EntityType&& ent)
 	{
 		m_children.push_back(std::move(ent));
-		return --m_children.end();
+		return --end();
 	}
 	
 private:

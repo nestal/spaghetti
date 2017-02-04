@@ -43,40 +43,5 @@ Entity::const_iterator Entity::end() const
 	return const_iterator(ChildCount(), this);
 }
 
-void Entity::iterator::increment()
-{
-	m_idx++;
-}
-
-bool Entity::iterator::equal(const Entity::iterator& other) const
-{
-	return m_parent == other.m_parent && m_idx == other.m_idx;
-}
-
-Entity& Entity::iterator::dereference() const
-{
-	return *m_parent->Child(m_idx);
-}
-
-Entity::const_iterator::const_iterator(const Entity::iterator& it) :
-	m_idx{it.m_idx},
-	m_parent{it.m_parent}
-{
-}
-
-void Entity::const_iterator::increment()
-{
-	m_idx++;
-}
-
-bool Entity::const_iterator::equal(const Entity::iterator& other) const
-{
-	return m_parent == other.m_parent && m_idx == other.m_idx;
-}
-
-const Entity& Entity::const_iterator::dereference() const
-{
-	return *m_parent->Child(m_idx);
-}
-
+	
 } // end of namespace
