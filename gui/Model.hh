@@ -50,9 +50,6 @@ public:
 	QModelIndex parent(const QModelIndex &child) const override;
 	
 private:
-	boost::optional<const codebase::Class&> ClassAt(const QModelIndex& index) const;
-	
-private:
 	// order is important here, since m_scene depends on m_repo.
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed
 	// before the Repository is destroyed.

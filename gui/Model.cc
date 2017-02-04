@@ -64,36 +64,29 @@ void Model::AttachView(QGraphicsView *view)
 
 int Model::rowCount(const QModelIndex& parent) const
 {
-	std::cout << "rowCount(): " << parent.row() << std::endl;
-	return static_cast<int>(parent == QModelIndex() ? m_codebase.size() : ClassAt(parent)->FieldCount());
+	if (auto class_ = reinterpret_cast<const codebase::Class*>(parent.internalPointer()))
+		return static_cast<int>(class_->FieldCount());
+	else if (parent == QModelIndex{})
+		return static_cast<int>(m_codebase.size());
+	else
+		return 0;
 }
 
 QVariant Model::data(const QModelIndex& index, int role) const
 {
-	auto *pclass = reinterpret_cast<const codebase::Class*>(index.internalPointer());
-	if (pclass)
+	auto entity = reinterpret_cast<const codebase::Entity*>(index.internalPointer());
+	if (entity)
 	{
 		switch (role)
 		{
 		case Qt::DisplayRole:
-			return QString::fromStdString(index.column() == 0 ? pclass->Name() : pclass->USR());
-		default:
-			break;
-		}
-	}
-	else if (index != QModelIndex())
-	{
-		pclass = reinterpret_cast<const codebase::Class*>(index.parent().internalPointer());
-		switch (role)
-		{
-		case Qt::DisplayRole:
-			return QString::fromStdString(index.column() == 0 ? pclass->Name() : pclass->USR());
+			return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->USR());
 		default:
 			break;
 		}
 	}
 
-	return QVariant();
+	return {};
 }
 
 QVariant Model::headerData(int section, Qt::Orientation orientation, int role) const
@@ -117,21 +110,8 @@ int Model::columnCount(const QModelIndex&) const
 
 bool Model::hasChildren(const QModelIndex& parent) const
 {
-	return false;
-	std::cout << "hasChildren(): " << parent.row() << std::endl;
-	if (parent != QModelIndex())
-	{
-		std::cout << parent.row() << " has children??" << std::endl;
-	}
-	return parent == QModelIndex() || parent.parent() == QModelIndex();
-}
-
-boost::optional<const codebase::Class&> Model::ClassAt(const QModelIndex& index) const
-{
-	auto row = static_cast<std::size_t>(index.row());
-	return index.parent() == QModelIndex() && row < m_codebase.size() ?
-		m_codebase.at(row) :
-		boost::optional<const codebase::Class&>{};
+	return parent == QModelIndex{} ||
+		(parent.internalPointer() && dynamic_cast<const codebase::Class*>(static_cast<const codebase::Entity*>(parent.internalPointer())));
 }
 
 QModelIndex Model::index(int row, int column, const QModelIndex& parent) const
@@ -139,14 +119,14 @@ QModelIndex Model::index(int row, int column, const QModelIndex& parent) const
 	auto urow = static_cast<std::size_t>(row);
 	if (parent == QModelIndex() && urow < m_codebase.size())
 	{
-		return createIndex(row, column, const_cast<char*>(&m_codebase.at(urow).USR().at(0)));
+		return createIndex(row, column, const_cast<codebase::Class*>(&m_codebase.at(urow)));
 	}
 	else if (parent.parent() == QModelIndex())
 	{
-//		auto prow = static_cast<std::size_t>(parent.row());
-//		return createIndex(row, column, const_cast<char*>(&m_codebase.at(prow).USR().at(0)));
+		auto prow = static_cast<std::size_t>(parent.row());
+		return createIndex(row, column, const_cast<codebase::Class::Field*>(&m_codebase.at(prow).FieldAt(urow)));
 	}
-//	else
+	else
 		return {};
 }
 
@@ -154,9 +134,12 @@ QModelIndex Model::parent(const QModelIndex& child) const
 {
 	if (child.internalPointer())
 	{
-		auto it = m_codebase.find(reinterpret_cast<char*>(child.internalPointer()));
-		if (it != m_codebase.end())
-			return {};
+		if (auto field = dynamic_cast<const codebase::Class::Field*>(static_cast<const codebase::Entity*>(child.internalPointer())))
+		{
+			auto it = m_codebase.find(field->Parent());
+			if (it != m_codebase.end())
+				return createIndex(m_codebase.IndexOf(it), 0, const_cast<codebase::Class*>(&*it));
+		}
 	}
 	return {};
 }

@@ -52,7 +52,7 @@ void Class::Visit(Data& data, libclx::Cursor self) const
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			data.m_fields.emplace_back(child);
+			data.m_fields.emplace_back(child, m_usr);
 			break;
 			
 		default:
@@ -82,9 +82,21 @@ std::size_t Class::FieldCount() const
 	return m_data.m_fields.size();
 }
 
-Class::Field::Field(libclx::Cursor field) :
+const std::string& Class::Parent() const
+{
+	static const std::string parent;
+	return parent;
+}
+
+const Class::Field& Class::FieldAt(std::size_t idx) const
+{
+	return m_data.m_fields.at(idx);
+}
+
+Class::Field::Field(libclx::Cursor field, const std::string& parent) :
 	m_name{field.Spelling()},
 	m_usr{field.USR()},
+	m_parent{parent},
 	m_type{field.Type()}
 {
 }
@@ -92,6 +104,16 @@ Class::Field::Field(libclx::Cursor field) :
 const std::string& Class::Field::Name() const
 {
 	return m_name;
+}
+
+const std::string& Class::Field::Parent() const
+{
+	return m_parent;
+}
+
+const std::string& Class::Field::USR() const
+{
+	return m_usr;
 }
 
 std::ostream& operator<<(std::ostream& os, const Class::Field& c)

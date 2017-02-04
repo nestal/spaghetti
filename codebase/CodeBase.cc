@@ -102,5 +102,10 @@ const Class& CodeBase::at(std::size_t index) const
 {
 	return m_classes.get<ByIndex>().at(index);
 }
+
+std::size_t CodeBase::IndexOf(usr_iterator it) const
+{
+	return m_classes.project<ByIndex>(it) - m_classes.get<ByIndex>().begin();
+}
 	
 } // end of namespace

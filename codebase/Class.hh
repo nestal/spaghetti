@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include "Entity.hh"
+
 #include "libclx/Index.hh"
 
 #include <boost/optional.hpp>
@@ -30,21 +32,24 @@ namespace codebase {
  * This class represent particular class in the code base. There will be only one copy of
  * object for each class in the code base, regardless of how many translation unit uses it.
  */
-class Class
+class Class : public Entity
 {
 public:
-	class Field
+	class Field : public Entity
 	{
 	public:
-		Field(libclx::Cursor field);
+		Field(libclx::Cursor field, const std::string& parent);
 		
-		const std::string& Name() const;
+		const std::string& Name() const override;
+		const std::string& Parent() const override;
+		const std::string& USR() const override;
 		
 		friend std::ostream& operator<<(std::ostream& os, const Field& c);
 		
 	private:
 		std::string m_name;
 		std::string m_usr;
+		std::string m_parent;
 		libclx::Type   m_type;
 	};
 	
@@ -74,14 +79,16 @@ public:
 	Class& operator=(const Class&) = default;
 	Class& operator=(Class&&) = default;
 	
-	const std::string& Name() const;
-	const std::string& USR() const;
+	const std::string& Name() const override;
+	const std::string& USR() const override;
+	const std::string& Parent() const override;
 	
 	void Visit(Data& data, libclx::Cursor self) const;
 	void Merge(Data&& data);
 	
 	boost::iterator_range<field_iterator> Fields() const;
 	std::size_t FieldCount() const;
+	const Field& FieldAt(std::size_t idx) const;
 
 	friend std::ostream& operator<<(std::ostream& os, const Class& c);
 	

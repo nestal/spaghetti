@@ -65,6 +65,8 @@ public:
 	usr_iterator find(const std::string& usr) const;
 	std::size_t size() const;
 	
+	std::size_t IndexOf(usr_iterator it) const;
+	
 	const Class& at(std::size_t index) const;
 	
 private:
