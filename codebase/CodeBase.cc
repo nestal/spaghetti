@@ -29,7 +29,7 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 			auto& usr = m_classes.get<ByUSR>();
 			auto it = usr.find(cursor.USR());
 			if (it == usr.end())
-				it = usr.emplace(cursor).first;
+				it = usr.emplace(cursor, this).first;
 
 			Class::Data data;
 			it->Visit(data, cursor);
@@ -105,6 +105,39 @@ const Class& CodeBase::at(std::size_t index) const
 
 std::size_t CodeBase::IndexOf(usr_iterator it) const
 {
+	return m_classes.project<ByIndex>(it) - m_classes.get<ByIndex>().begin();
+}
+
+const std::string& CodeBase::Name() const
+{
+	static std::string name{"codebase"};
+	return name;
+}
+
+const std::string& CodeBase::USR() const
+{
+	static std::string usr;
+	return usr;
+}
+
+const Entity* CodeBase::Parent() const
+{
+	return this;
+}
+
+std::size_t CodeBase::ChildCount() const
+{
+	return m_classes.size();
+}
+
+const Entity *CodeBase::Child(std::size_t idx) const
+{
+	return &m_classes.get<ByIndex>().at(idx);
+}
+
+std::size_t CodeBase::IndexOf(const Entity *child) const
+{
+	auto it = m_classes.get<ByUSR>().find(child->USR());
 	return m_classes.project<ByIndex>(it) - m_classes.get<ByIndex>().begin();
 }
 	

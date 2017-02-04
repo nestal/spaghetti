@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "Entity.hh"
 #include "Class.hh"
 #include "libclx/Index.hh"
 
@@ -19,16 +20,18 @@
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/random_access_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
+#include <boost/multi_index/identity.hpp>
 
 #include <vector>
 
 namespace codebase {
 
-class CodeBase
+class CodeBase : public Entity
 {
 public:
 	struct ByUSR {};
 	struct ByIndex {};
+	struct BySelf {};
 	
 	using ClassDB = boost::multi_index_container<
 		Class,
@@ -68,6 +71,14 @@ public:
 	std::size_t IndexOf(usr_iterator it) const;
 	
 	const Class& at(std::size_t index) const;
+	
+	const std::string& Name() const override;
+	const std::string& USR() const override;
+	const Entity* Parent() const override;
+	
+	std::size_t ChildCount() const override;
+	const Entity* Child(std::size_t idx) const override;
+	std::size_t IndexOf(const Entity* child) const override;
 	
 private:
 	libclx::Index  m_index;

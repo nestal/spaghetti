@@ -12,10 +12,11 @@
 
 #pragma once
 
-// parent class comes first
-#include <QAbstractListModel>
+#include <QObject>
 
+#include "EntityModel.hh"
 #include "codebase/CodeBase.hh"
+
 #include "UMLClassItem.hh"
 
 #include <boost/multi_index_container.hpp>
@@ -28,10 +29,11 @@
 
 class QGraphicsScene;
 class QGraphicsView;
+class QAbstractItemModel;
 
 namespace gui {
 
-class Model : public QAbstractItemModel
+class Model : public QObject
 {
 public:
 	Model(QObject *parent);
@@ -40,14 +42,7 @@ public:
 	void AttachView(QGraphicsView *view);
 	void Parse(const QString& file);
 	
-	int rowCount(const QModelIndex &parent) const override;
-	int columnCount(const QModelIndex&) const override;
-	QVariant data(const QModelIndex &index, int role) const override;
-	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-	bool hasChildren(const QModelIndex& parent) const override;
-	
-	QModelIndex index(int row, int column, const QModelIndex &parent) const override;
-	QModelIndex parent(const QModelIndex &child) const override;
+	QAbstractItemModel* ClassModel();
 	
 private:
 	// order is important here, since m_scene depends on m_repo.
@@ -55,6 +50,8 @@ private:
 	// before the Repository is destroyed.
 	codebase::CodeBase              m_codebase;
 	std::unique_ptr<QGraphicsScene> m_scene;
+
+	EntityModel m_class_model;
 	
 	struct ByUSR {};
 	

@@ -38,18 +38,22 @@ public:
 	class Field : public Entity
 	{
 	public:
-		Field(libclx::Cursor field, const std::string& parent);
+		Field(libclx::Cursor field, const Class *parent);
 		
 		const std::string& Name() const override;
-		const std::string& Parent() const override;
+		const Class* Parent() const override;
 		const std::string& USR() const override;
+		
+		std::size_t ChildCount() const override;
+		const Entity* Child(std::size_t idx) const override;
+		std::size_t IndexOf(const Entity* child) const override;
 		
 		friend std::ostream& operator<<(std::ostream& os, const Field& c);
 		
 	private:
 		std::string m_name;
 		std::string m_usr;
-		std::string m_parent;
+		const Class *m_parent;
 		libclx::Type   m_type;
 	};
 	
@@ -72,7 +76,7 @@ public:
 	using field_iterator = std::vector<Field>::const_iterator;
 	
 public:
-	Class(libclx::Cursor cursor);
+	Class(libclx::Cursor cursor, const Entity *parent);
 	Class(const Class&) = default;
 	Class(Class&&) = default;
 	
@@ -81,7 +85,7 @@ public:
 	
 	const std::string& Name() const override;
 	const std::string& USR() const override;
-	const std::string& Parent() const override;
+	const Entity* Parent() const override;
 	
 	void Visit(Data& data, libclx::Cursor self) const;
 	void Merge(Data&& data);
@@ -90,11 +94,17 @@ public:
 	std::size_t FieldCount() const;
 	const Field& FieldAt(std::size_t idx) const;
 
+	std::size_t ChildCount() const override;
+	const Entity* Child(std::size_t idx) const override;
+	std::size_t IndexOf(const Entity* child) const override;
+	
 	friend std::ostream& operator<<(std::ostream& os, const Class& c);
 	
 private:
 	std::string m_name;
 	std::string m_usr;
+	
+	const Entity *m_parent{};
 	
 	Data m_data;
 };

@@ -16,9 +16,10 @@
 
 namespace codebase {
 
-Class::Class(libclx::Cursor cursor) :
+Class::Class(libclx::Cursor cursor, const Entity *parent) :
 	m_name{cursor.Spelling()},
 	m_usr{cursor.USR()},
+	m_parent{parent},
 	m_data{cursor}
 {
 }
@@ -52,7 +53,7 @@ void Class::Visit(Data& data, libclx::Cursor self) const
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			data.m_fields.emplace_back(child, m_usr);
+			data.m_fields.emplace_back(child, this);
 			break;
 			
 		default:
@@ -82,10 +83,9 @@ std::size_t Class::FieldCount() const
 	return m_data.m_fields.size();
 }
 
-const std::string& Class::Parent() const
+const Entity* Class::Parent() const
 {
-	static const std::string parent;
-	return parent;
+	return m_parent;
 }
 
 const Class::Field& Class::FieldAt(std::size_t idx) const
@@ -93,7 +93,22 @@ const Class::Field& Class::FieldAt(std::size_t idx) const
 	return m_data.m_fields.at(idx);
 }
 
-Class::Field::Field(libclx::Cursor field, const std::string& parent) :
+std::size_t Class::ChildCount() const
+{
+	return m_data.m_fields.size();
+}
+
+const Entity *Class::Child(std::size_t idx) const
+{
+	return &m_data.m_fields.at(idx);
+}
+
+std::size_t Class::IndexOf(const Entity *child) const
+{
+	return dynamic_cast<const Field*>(child) - &m_data.m_fields[0];
+}
+
+Class::Field::Field(libclx::Cursor field, const Class *parent) :
 	m_name{field.Spelling()},
 	m_usr{field.USR()},
 	m_parent{parent},
@@ -106,7 +121,7 @@ const std::string& Class::Field::Name() const
 	return m_name;
 }
 
-const std::string& Class::Field::Parent() const
+const Class* Class::Field::Parent() const
 {
 	return m_parent;
 }
@@ -114,6 +129,21 @@ const std::string& Class::Field::Parent() const
 const std::string& Class::Field::USR() const
 {
 	return m_usr;
+}
+
+std::size_t Class::Field::ChildCount() const
+{
+	return 0;
+}
+
+const Entity *Class::Field::Child(std::size_t) const
+{
+	return nullptr;
+}
+
+std::size_t Class::Field::IndexOf(const Entity*) const
+{
+	return 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const Class::Field& c)
