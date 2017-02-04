@@ -74,6 +74,7 @@ public:
 	
 	const std::string& Name() const override;
 	const Entity* Parent() const override;
+	std::string Type() const override;
 	
 	std::size_t ChildCount() const override;
 	const Entity* Child(std::size_t idx) const override;

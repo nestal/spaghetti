@@ -136,4 +136,9 @@ std::size_t CodeBase::IndexOf(const Entity *child) const
 	return m_classes.project<ByIndex>(it) - m_classes.get<ByIndex>().begin();
 }
 
+std::string CodeBase::Type() const
+{
+	return "Code base";
+}
+	
 } // end of namespace

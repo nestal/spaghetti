@@ -42,7 +42,7 @@ QVariant EntityModel::data(const QModelIndex& index, int role) const
 	switch (role)
 	{
 	case Qt::DisplayRole:
-		return QString::fromStdString(index.column() == 0 ? entity->Name() : typeid(*entity).name());
+		return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->Type());
 	default:
 		break;
 	}

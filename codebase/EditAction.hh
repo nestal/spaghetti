@@ -28,6 +28,8 @@ public:
 	enum class Action {addEntity, setDefinition};
 	
 	EditAction() = default;
+	EditAction(EditAction&&) = default;
+	EditAction(const EditAction&) = default;
 	
 	template <typename EntityType>
 	void AddEntity(EntityType&& entity)

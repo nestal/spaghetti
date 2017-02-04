@@ -52,6 +52,11 @@ std::size_t Variable::IndexOf(const Entity*) const
 	return 0;
 }
 
+std::string Variable::Type() const
+{
+	return m_type.Spelling();
+}
+
 std::ostream& operator<<(std::ostream& os, const Variable& c)
 {
 	return os << c.m_name << ": " << c.m_type;

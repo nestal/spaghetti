@@ -64,6 +64,7 @@ public:
 	
 	const std::string& Name() const override;
 	const std::string& USR() const;
+	std::string Type() const override;
 	const Entity* Parent() const override;
 	
 	void Visit(EditAction& data, libclx::Cursor self) const;

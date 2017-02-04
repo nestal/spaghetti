@@ -108,6 +108,11 @@ std::size_t Class::IndexOf(const Entity *child) const
 	return dynamic_cast<const Variable*>(child) - &m_data.m_fields[0];
 }
 
+std::string Class::Type() const
+{
+	return "Class";
+}
+
 std::ostream& operator<<(std::ostream& os, const Class& c)
 {
 	os << "class: " << c.Name() << " (" << c.USR() << ")\n";
