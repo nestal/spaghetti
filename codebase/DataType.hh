@@ -16,12 +16,15 @@
 #include "Entity.hh"
 #include "Variable.hh"
 
-#include <boost/optional.hpp>
 #include <boost/range/iterator_range_core.hpp>
 
 #include <string>
 #include <vector>
 #include <iosfwd>
+
+namespace libclx {
+class SourceLocation;
+}
 
 namespace codebase {
 
@@ -63,13 +66,15 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 	
+	libclx::SourceLocation DefinitionLocation() const;
+	
 private:
 	std::string m_name;
 	std::string m_usr;
 	
 	const Entity *m_parent{};
 	
-	boost::optional<libclx::SourceLocation> m_definition;
+	libclx::SourceLocation m_definition;
 	FieldList m_fields;
 	
 	std::vector<DataType> m_nested_classes;

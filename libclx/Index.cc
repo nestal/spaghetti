@@ -131,6 +131,11 @@ std::string Cursor::Comment() const
 	return XStr{::clang_Cursor_getRawCommentText(m_cursor)}.Str();
 }
 
+SourceLocation::SourceLocation() :
+	SourceLocation{::clang_getNullLocation()}
+{
+}
+
 SourceLocation::SourceLocation(CXSourceLocation loc) :
 	m_loc{loc}
 {
@@ -151,6 +156,11 @@ bool SourceLocation::IsFromMainFile() const
 bool SourceLocation::IsFromSystemHeader() const
 {
 	return ::clang_Location_isInSystemHeader(m_loc) != 0;
+}
+
+bool SourceLocation::operator==(const SourceLocation& rhs) const
+{
+	return ::clang_equalLocations(m_loc, rhs.m_loc) != 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const SourceLocation& loc)

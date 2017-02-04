@@ -56,7 +56,7 @@ private:
 		
 		Action type;
 		std::unique_ptr<Entity> entity;
-		boost::optional<libclx::SourceLocation> location;
+		libclx::SourceLocation  location;
 	};
 	std::vector<Entry> m_ent;
 };

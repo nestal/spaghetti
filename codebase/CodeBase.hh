@@ -50,6 +50,8 @@ public:
 					&DataType::USR
 				>
 			>
+			
+			// hash by SourceLocation
 		>
 	>;
 	

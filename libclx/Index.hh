@@ -166,7 +166,14 @@ private:
 class SourceLocation
 {
 public:
-	SourceLocation(CXSourceLocation loc = {});
+	SourceLocation();
+	SourceLocation(CXSourceLocation loc);
+	SourceLocation(SourceLocation&&) = default;
+	SourceLocation(const SourceLocation&) = default;
+	SourceLocation& operator=(const SourceLocation&) = default;
+	SourceLocation& operator=(SourceLocation&&) = default;
+	
+	bool operator==(const SourceLocation& rhs) const;
 	
 	void Get(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const;
 	bool IsFromMainFile() const;

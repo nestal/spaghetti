@@ -108,6 +108,11 @@ std::string DataType::Type() const
 	return "DataType";
 }
 
+libclx::SourceLocation DataType::DefinitionLocation() const
+{
+	return m_definition;
+}
+
 std::ostream& operator<<(std::ostream& os, const DataType& c)
 {
 	os << "class: " << c.Name() << " (" << c.USR() << ")\n";
