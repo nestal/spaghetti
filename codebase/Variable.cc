@@ -12,13 +12,14 @@
 
 #include "Variable.hh"
 
-#include <sstream>
+#include <ostream>
 
 namespace codebase {
 
-Variable::Variable(libclx::Cursor field) :
+Variable::Variable(libclx::Cursor field, const std::string& parent) :
 	m_name{field.Spelling()},
 	m_usr{field.USR()},
+	m_parent{parent},
 	m_type{field.Type()}
 {
 }
@@ -28,12 +29,12 @@ const std::string& Variable::Name() const
 	return m_name;
 }
 
-const Entity* Variable::Parent() const
+const std::string& Variable::Parent() const
 {
 	return m_parent;
 }
 
-const std::string& Variable::USR() const
+const std::string& Variable::ID() const
 {
 	return m_usr;
 }
@@ -60,15 +61,7 @@ std::size_t Variable::IndexOf(const Entity*) const
 
 std::string Variable::Type() const
 {
-	std::ostringstream oss;
-	oss << m_type.Spelling() << " " << m_type.Declaration().GetDefinition().Location();
-	return oss.str();
-}
-
-void Variable::OnReparent(const Entity *parent)
-{
-	assert(m_parent == nullptr);
-	m_parent = parent;
+	return m_type.Spelling();
 }
 
 std::ostream& operator<<(std::ostream& os, const Variable& c)

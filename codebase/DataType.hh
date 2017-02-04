@@ -43,17 +43,16 @@ public:
 	using field_iterator = EntityVec<Variable>::const_iterator;
 	
 public:
-	DataType(libclx::Cursor cursor);
+	DataType(libclx::Cursor cursor, const std::string& parent);
 	DataType(DataType&&) = default;
 	DataType(const DataType&) = delete;
 	DataType& operator=(DataType&&) = default;
 	DataType& operator=(const DataType&) = delete;
 	
 	const std::string& Name() const override;
-	const std::string& USR() const;
+	const std::string& ID() const override;
 	std::string Type() const override;
-	const Entity* Parent() const override;
-	void OnReparent(const Entity *parent) override;
+	const std::string& Parent() const override;
 	
 	void Visit(libclx::Cursor self);
 	
@@ -71,13 +70,10 @@ public:
 private:
 	std::string m_name;
 	std::string m_usr;
-	
-	const Entity *m_parent{};
+	std::string m_parent;
 	
 	libclx::SourceLocation m_definition;
-	EntityVec<Variable>    m_fields;
-	
-//	std::vector<DataType> m_nested_classes;
+	EntityVec<Variable>    m_fields{"Fields", m_usr};
 };
 	
 } // end of namespace

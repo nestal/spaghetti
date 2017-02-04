@@ -24,7 +24,13 @@ template <typename EntityType>
 class EntityVec : public Entity
 {
 public:
-	EntityVec( const std::string& name) : m_name{name} {}
+	EntityVec( const std::string& name, const std::string& parent) :
+		m_name{name},
+		m_parent{parent},
+		m_id{parent + "EntityVec-" + name}
+	{
+	}
+	
 	EntityVec(EntityVec&&) = default;
 	EntityVec(const EntityVec&) = delete;
 	EntityVec& operator=(EntityVec&&) = default;
@@ -32,15 +38,13 @@ public:
 
 	const std::string& Name() const override {return m_name;}
 	std::string Type() const override {return {};}
-	const Entity* Parent() const override
+	const std::string& ID() const override
 	{
-		assert(m_parent && m_parent->HasChild(this));
-		return m_parent;
+		return m_id;
 	}
-	void OnReparent(const Entity *parent) override
+	const std::string& Parent() const override
 	{
-		assert(m_parent == parent || m_parent == nullptr);
-		m_parent = parent;
+		return m_parent;
 	}
 	
 	std::size_t ChildCount() const override {return m_children.size();}
@@ -69,8 +73,9 @@ public:
 	}
 	
 private:
-	const Entity *m_parent{};
 	std::string m_name;
+	std::string m_parent;
+	std::string m_id;
 	
 	std::vector<EntityType> m_children;
 };

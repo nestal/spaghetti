@@ -59,13 +59,13 @@ private:
 		UMLClassItem*,
 		boost::multi_index::indexed_by<
 			
-			// hash by USR
+			// hash by ID
 			boost::multi_index::hashed_unique<
 				boost::multi_index::tag<ByUSR>,
 				boost::multi_index::const_mem_fun<
 					UMLClassItem,
 					const std::string&,
-					&UMLClassItem::USR
+					&UMLClassItem::ID
 				>
 			>
 		>

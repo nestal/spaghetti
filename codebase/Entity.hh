@@ -21,15 +21,27 @@ namespace codebase {
 template <typename Parent, typename Child>
 class EntityIterator;
 
+class Entity;
+
+class EntityMap
+{
+public:
+	virtual ~EntityMap() = default;
+	
+	virtual const Entity* Find(const std::string& id) const = 0;
+};
+
 class Entity
 {
 public:
 	virtual ~Entity() = default;
 	
+	static const std::string& NullID();
+	
 	virtual const std::string& Name() const = 0;
+	virtual const std::string& ID() const = 0;
+	virtual const std::string& Parent() const = 0;
 	virtual std::string Type() const = 0;
-	virtual const Entity* Parent() const = 0;
-	virtual void OnReparent(const Entity *parent) = 0;
 	
 	virtual std::size_t ChildCount() const = 0;
 	virtual const Entity* Child(std::size_t idx) const = 0;
@@ -46,7 +58,6 @@ public:
 	
 public:
 	bool HasChild(const Entity *child) const {return IndexOf(child) < ChildCount();}
-	void Reparent(const Entity *parent);
 };
 
 template <typename ParentEntity, typename ChildEntity>

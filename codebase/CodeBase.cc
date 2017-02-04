@@ -17,6 +17,12 @@
 
 namespace codebase {
 
+CodeBase::CodeBase()
+{
+	m_search_index.insert(this);
+	m_search_index.insert(&m_types);
+}
+
 void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 {
 	auto loc = cursor.Location();
@@ -29,10 +35,10 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 		{
 			auto it = std::find_if(m_types.begin(), m_types.end(), [usr=cursor.USR()](auto& t)
 			{
-				return t.USR() == usr;
+				return t.ID() == usr;
 			});
 			if (it == m_types.end())
-				it = m_types.Add(DataType(cursor));
+				it = m_types.Add(DataType{cursor, m_types.ID()});
 			it->Visit(cursor);
 			break;
 		}
@@ -69,10 +75,11 @@ std::string CodeBase::Parse(const std::string& source)
 		Visit(cursor, parent);
 	});
 	
+	for (auto&& t : m_types)
+		AddToIndex(&t);
+	
 	for (auto&& diag : tu.Diagnostics())
 		std::cerr << diag.Str() << "\n";
-	
-	Reparent(nullptr);
 	
 	m_units.push_back(std::move(tu));
 	
@@ -85,9 +92,9 @@ const std::string& CodeBase::Name() const
 	return name;
 }
 
-const Entity* CodeBase::Parent() const
+const std::string& CodeBase::Parent() const
 {
-	return nullptr;
+	return NullID();
 }
 
 std::size_t CodeBase::ChildCount() const
@@ -105,9 +112,9 @@ Entity *CodeBase::Child(std::size_t idx)
 	return idx == 0 ? &m_types : nullptr;
 }
 
-std::size_t CodeBase::IndexOf(const Entity *) const
+std::size_t CodeBase::IndexOf(const Entity *entity) const
 {
-	return 0;
+	return entity == &m_types ? 0 : ChildCount();
 }
 
 std::string CodeBase::Type() const
@@ -115,24 +122,23 @@ std::string CodeBase::Type() const
 	return "Code base";
 }
 
-const DataType* CodeBase::Find(const SourceLocation& /*loc*/) const
+const std::string& CodeBase::ID() const
 {
-//	auto it = m_classes.get<ByLocation>().find(loc);
-	return /*it != m_classes.get<ByLocation>().end() ? &*it : */nullptr;
+	return NullID();
 }
 
-void CodeBase::Add(const DataType *, const SourceLocation& )
+const Entity *CodeBase::Find(const std::string& id) const
 {
-//	m_classes.get<ByLocation>().emplace(type);
+	auto it = m_search_index.find(id);
+	return it != m_search_index.end() ? *it : nullptr;
 }
 
-void CodeBase::OnReparent(const Entity *)
+void CodeBase::AddToIndex(const Entity *entity)
 {
-}
-
-CodeBase::CodeBase()
-{
-	m_types.Reparent(this);
+	m_search_index.insert(entity);
+	
+	for (auto&& c : *entity)
+		AddToIndex(&c);
 }
 	
 } // end of namespace

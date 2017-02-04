@@ -29,7 +29,7 @@ public:
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 	
-	const std::string& USR() const;
+	const std::string& ID() const;
 	
 private:
 	const codebase::DataType& m_class;

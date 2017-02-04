@@ -17,10 +17,11 @@
 
 namespace codebase {
 
-DataType::DataType(libclx::Cursor cursor) :
+DataType::DataType(libclx::Cursor cursor, const std::string& parent) :
 	m_name{cursor.Spelling()},
 	m_usr{cursor.USR()},
-	m_fields{"Fields"}
+	m_parent{parent},
+	m_fields{"Fields", m_usr}
 {
 	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl);
 	if (cursor.IsDefinition())
@@ -32,7 +33,7 @@ const std::string& DataType::Name() const
 	return m_name;
 }
 
-const std::string& DataType::USR() const
+const std::string& DataType::ID() const
 {
 	return m_usr;
 }
@@ -51,7 +52,7 @@ void DataType::Visit(libclx::Cursor self)
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			m_fields.Add(Variable{child});
+			m_fields.Add(Variable{child, m_fields.ID()});
 			break;
 	
 		default:
@@ -66,9 +67,8 @@ boost::iterator_range<DataType::field_iterator> DataType::Fields() const
 	return {m_fields.begin(), m_fields.end()};
 }
 
-const Entity* DataType::Parent() const
+const std::string& DataType::Parent() const
 {
-	assert(m_parent && m_parent->HasChild(this));
 	return m_parent;
 }
 
@@ -102,15 +102,9 @@ libclx::SourceLocation DataType::DefinitionLocation() const
 	return m_definition;
 }
 
-void DataType::OnReparent(const Entity *parent)
-{
-	assert(m_parent == nullptr);
-	m_parent = parent;
-}
-
 std::ostream& operator<<(std::ostream& os, const DataType& c)
 {
-	os << "class: " << c.Name() << " (" << c.USR() << ")\n";
+	os << "class: " << c.Name() << " (" << c.ID() << ")\n";
 	for (auto&& field : c.Fields())
 		os << "\t" << field << '\n';
 	return os;

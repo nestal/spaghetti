@@ -18,11 +18,13 @@
 
 namespace gui {
 
-EntityModel::EntityModel(const codebase::Entity *root, QObject *parent) :
+EntityModel::EntityModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent) :
 	QAbstractItemModel{parent},
-	m_root{root}
+	m_root{root},
+	m_index{index}
 {
 	assert(m_root);
+	assert(m_index);
 }
 
 int EntityModel::rowCount(const QModelIndex& parent) const
@@ -38,6 +40,8 @@ const codebase::Entity *EntityModel::Get(const QModelIndex& idx) const
 QVariant EntityModel::data(const QModelIndex& index, int role) const
 {
 	auto entity = Get(index);
+	assert(entity);
+	
 	switch (role)
 	{
 	case Qt::DisplayRole:
@@ -75,13 +79,25 @@ bool EntityModel::hasChildren(const QModelIndex& parent) const
 QModelIndex EntityModel::index(int row, int column, const QModelIndex& parent) const
 {
 	auto parent_entity = Get(parent);
-	return createIndex(row, column, const_cast<codebase::Entity*>(parent_entity->Child(static_cast<std::size_t>(row))));
+	assert(parent_entity);
+	assert(static_cast<std::size_t>(row) < parent_entity->ChildCount());
+	
+	return createIndex(
+		row,
+		column,
+		const_cast<codebase::Entity*>(parent_entity->Child(static_cast<std::size_t>(row)))
+	);
 }
 
 QModelIndex EntityModel::parent(const QModelIndex& child) const
 {
 	auto pchild = Get(child);
-	auto parent = pchild->Parent();
+	assert(pchild);
+	
+	auto parent = m_index->Find(pchild->Parent());
+	
+	assert(parent);
+	
 	return (pchild == parent || parent == nullptr) ? QModelIndex{} : createIndex(
 		static_cast<int>(parent->IndexOf(pchild)), 0,
 		const_cast<codebase::Entity*>(parent)

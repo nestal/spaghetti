@@ -17,6 +17,7 @@
 
 namespace codebase {
 class Entity;
+class EntityMap;
 }
 
 namespace gui {
@@ -24,7 +25,7 @@ namespace gui {
 class EntityModel : public QAbstractItemModel
 {
 public:
-	EntityModel(const codebase::Entity *root, QObject *parent);
+	EntityModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent);
 	
 	using QAbstractItemModel::beginResetModel;
 	using QAbstractItemModel::endResetModel;
@@ -43,7 +44,8 @@ private:
 	const codebase::Entity* Get(const QModelIndex& idx) const;
 	
 private:
-	const codebase::Entity *m_root{};
+	const codebase::Entity    *m_root{};
+	const codebase::EntityMap *m_index{};
 };
 	
 } // end of namespace

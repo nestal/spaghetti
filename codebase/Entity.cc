@@ -16,13 +16,6 @@
 
 namespace codebase {
 
-void Entity::Reparent(const Entity *parent)
-{
-	OnReparent(parent);
-	for (auto&& child : *this)
-		child.Reparent(this);
-}
-
 Entity::iterator Entity::begin()
 {
 	return iterator(0, this);
@@ -43,5 +36,10 @@ Entity::const_iterator Entity::end() const
 	return const_iterator(ChildCount(), this);
 }
 
+const std::string& Entity::NullID()
+{
+	static const std::string id;
+	return id;
+}
 	
 } // end of namespace

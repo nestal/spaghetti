@@ -30,44 +30,27 @@
 
 namespace codebase {
 
-class CodeBase : public Entity, public TypeDB
+class CodeBase : public Entity, public EntityMap
 {
 public:
-/*	struct ByUSR {};
-	struct ByIndex {};
-	struct ByLocation {};
+	struct ByID {};
 	
-	using ClassDB = boost::multi_index_container<
-		DataType,
+	using EntityIndex = boost::multi_index_container<
+		const Entity*,
 		boost::multi_index::indexed_by<
 			
-			boost::multi_index::random_access<
-				boost::multi_index::tag<ByIndex>
-			>,
-			
-			// hash by USR
+			// hash by ID
 			boost::multi_index::hashed_unique<
-				boost::multi_index::tag<ByUSR>,
+				boost::multi_index::tag<ByID>,
 				boost::multi_index::const_mem_fun<
-					DataType,
+					Entity,
 					const std::string&,
-					&DataType::USR
+					&Entity::ID
 				>
-			>,
-			
-			// hash by SourceLocation
-			boost::multi_index::hashed_non_unique<
-				boost::multi_index::tag<ByLocation>,
-				boost::multi_index::const_mem_fun<
-					DataType,
-					libclx::SourceLocation,
-					&DataType::DefinitionLocation
-				>,
-				libclx::SourceLocation::Hash
 			>
 		>
 	>;
-*/
+
 public:
 	CodeBase();
 	
@@ -76,8 +59,8 @@ public:
 	void Visit(libclx::Cursor cursor, libclx::Cursor parent);
 
 	const std::string& Name() const override;
-	const Entity* Parent() const override;
-	void OnReparent(const Entity *parent) override;
+	const std::string& Parent() const override;
+	const std::string& ID() const override;
 	std::string Type() const override;
 	
 	std::size_t ChildCount() const override;
@@ -85,15 +68,17 @@ public:
 	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
 	
-	const DataType* Find(const SourceLocation& loc) const override;
-	void Add(const DataType *type, const SourceLocation& loc) override;
+	const Entity* Find(const std::string& id) const override;
+
+private:
+	void AddToIndex(const Entity *entity) ;
 
 private:
 	libclx::Index  m_index;
 	std::vector<libclx::TranslationUnit> m_units;
 	
-//	ClassDB m_classes;
-	EntityVec<DataType> m_types{"Data Types"};
+	EntityVec<DataType> m_types{"DataTypes", NullID()};
+	EntityIndex         m_search_index;
 };
 
 } // end of namespace

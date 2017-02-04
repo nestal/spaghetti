@@ -64,9 +64,9 @@ void UMLClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWi
 	);
 }
 
-const std::string& UMLClassItem::USR() const
+const std::string& UMLClassItem::ID() const
 {
-	return m_class.USR();
+	return m_class.ID();
 }
 	
 } // end of namespace
