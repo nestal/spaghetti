@@ -14,8 +14,7 @@
 #pragma once
 
 #include "Entity.hh"
-
-#include "libclx/Index.hh"
+#include "Variable.hh"
 
 #include <boost/optional.hpp>
 #include <boost/range/iterator_range_core.hpp>
@@ -35,29 +34,7 @@ namespace codebase {
 class Class : public Entity
 {
 public:
-	class Field : public Entity
-	{
-	public:
-		Field(libclx::Cursor field, const Class *parent);
-		
-		const std::string& Name() const override;
-		const Class* Parent() const override;
-		const std::string& USR() const;
-		
-		std::size_t ChildCount() const override;
-		const Entity* Child(std::size_t idx) const override;
-		std::size_t IndexOf(const Entity* child) const override;
-		
-		friend std::ostream& operator<<(std::ostream& os, const Field& c);
-		
-	private:
-		std::string m_name;
-		std::string m_usr;
-		const Class *m_parent;
-		libclx::Type   m_type;
-	};
-	
-	using FieldList = std::vector<Field>;
+	using FieldList = std::vector<Variable>;
 	
 	class Data
 	{
@@ -73,7 +50,7 @@ public:
 		FieldList m_fields;
 	};
 
-	using field_iterator = std::vector<Field>::const_iterator;
+	using field_iterator = FieldList::const_iterator;
 	
 public:
 	Class(libclx::Cursor cursor, const Entity *parent);
@@ -91,8 +68,6 @@ public:
 	void Merge(Data&& data);
 	
 	boost::iterator_range<field_iterator> Fields() const;
-	std::size_t FieldCount() const;
-	const Field& FieldAt(std::size_t idx) const;
 
 	std::size_t ChildCount() const override;
 	const Entity* Child(std::size_t idx) const override;
@@ -107,6 +82,8 @@ private:
 	const Entity *m_parent{};
 	
 	Data m_data;
+	
+	std::vector<Class> m_nested_classes;
 };
 	
 } // end of namespace

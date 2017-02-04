@@ -78,19 +78,9 @@ boost::iterator_range<Class::field_iterator> Class::Fields() const
 	return {m_data.m_fields.begin(), m_data.m_fields.end()};
 }
 
-std::size_t Class::FieldCount() const
-{
-	return m_data.m_fields.size();
-}
-
 const Entity* Class::Parent() const
 {
 	return m_parent;
-}
-
-const Class::Field& Class::FieldAt(std::size_t idx) const
-{
-	return m_data.m_fields.at(idx);
 }
 
 std::size_t Class::ChildCount() const
@@ -105,50 +95,7 @@ const Entity *Class::Child(std::size_t idx) const
 
 std::size_t Class::IndexOf(const Entity *child) const
 {
-	return dynamic_cast<const Field*>(child) - &m_data.m_fields[0];
-}
-
-Class::Field::Field(libclx::Cursor field, const Class *parent) :
-	m_name{field.Spelling()},
-	m_usr{field.USR()},
-	m_parent{parent},
-	m_type{field.Type()}
-{
-}
-
-const std::string& Class::Field::Name() const
-{
-	return m_name;
-}
-
-const Class* Class::Field::Parent() const
-{
-	return m_parent;
-}
-
-const std::string& Class::Field::USR() const
-{
-	return m_usr;
-}
-
-std::size_t Class::Field::ChildCount() const
-{
-	return 0;
-}
-
-const Entity *Class::Field::Child(std::size_t) const
-{
-	return nullptr;
-}
-
-std::size_t Class::Field::IndexOf(const Entity*) const
-{
-	return 0;
-}
-
-std::ostream& operator<<(std::ostream& os, const Class::Field& c)
-{
-	return os << c.m_name << ": " << c.m_type;
+	return dynamic_cast<const Variable*>(child) - &m_data.m_fields[0];
 }
 
 std::ostream& operator<<(std::ostream& os, const Class& c)

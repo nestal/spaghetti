@@ -35,7 +35,7 @@ public:
 	std::size_t IndexOf(const Entity* child) const override {return &dynamic_cast<const EntityType&>(*child) - &m_children[0];}
 	
 private:
-	Entity *m_parent;
+	const Entity *m_parent;
 	std::string m_name;
 	
 	std::vector<EntityType> m_children;
