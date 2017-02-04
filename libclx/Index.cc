@@ -13,6 +13,8 @@
 #include "Index.hh"
 #include "XStr.hh"
 
+#include <boost/functional/hash.hpp>
+
 #include <vector>
 #include <ostream>
 #include <clang-c/Index.h>
@@ -134,10 +136,10 @@ SourceLocation::SourceLocation(CXSourceLocation loc) :
 {
 }
 
-void SourceLocation::SpellingLocation(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const
+void SourceLocation::Get(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const
 {
 	CXFile xfile;
-	::clang_getSpellingLocation(m_loc, &xfile, &line, &column, &offset);
+	::clang_getFileLocation(m_loc, &xfile, &line, &column, &offset);
 	file = XStr{::clang_getFileName(xfile)}.Str();
 }
 
@@ -155,7 +157,7 @@ std::ostream& operator<<(std::ostream& os, const SourceLocation& loc)
 {
 	std::string file;
 	unsigned line, column, offset;
-	loc.SpellingLocation(file, line, column, offset);
+	loc.Get(file, line, column, offset);
 	
 	return os << file << ":" << line ;
 }
@@ -209,4 +211,24 @@ std::string Diagnostic::Str() const
 {
 	return XStr{::clang_formatDiagnostic(m_diag.get(), ::clang_defaultDiagnosticDisplayOptions())}.Str();
 }
+
+std::size_t SourceLocation::Hash::operator()(const SourceLocation& loc) const
+{
+	CXFile file{};
+	unsigned line, column, offset;
+	::clang_getFileLocation(loc.m_loc, &file, &line, &column, &offset);
+	
+	CXFileUniqueID uid{};
+	if (::clang_getFileUniqueID(file, &uid))
+	{
+		std::size_t seed{};
+		for (auto&& data : uid.data)
+			boost::hash_combine(seed, data);
+		
+		boost::hash_combine(seed, offset);
+		return seed;
+	}
+	return 0;
+}
+
 } // end of namespace

@@ -20,15 +20,9 @@ namespace codebase {
 Class::Class(libclx::Cursor cursor, const Entity *parent) :
 	m_name{cursor.Spelling()},
 	m_usr{cursor.USR()},
-	m_parent{parent},
-	m_data{cursor}
-{
-}
-
-Class::Data::Data(libclx::Cursor cursor)
+	m_parent{parent}
 {
 	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl);
-	
 	if (cursor.IsDefinition())
 		m_definition = cursor.Location();
 }
@@ -74,11 +68,11 @@ void Class::Merge(EditAction&& data)
 		switch (type)
 		{
 		case EditAction::Action::addEntity:
-			m_data.m_fields.push_back(std::move(dynamic_cast<Variable&>(*entity)));
+			m_fields.push_back(std::move(dynamic_cast<Variable&>(*entity)));
 			break;
 			
 		case EditAction::Action::setDefinition:
-			m_data.m_definition = std::move(location);
+			m_definition = std::move(location);
 			break;
 		}
 	});
@@ -86,7 +80,7 @@ void Class::Merge(EditAction&& data)
 
 boost::iterator_range<Class::field_iterator> Class::Fields() const
 {
-	return {m_data.m_fields.begin(), m_data.m_fields.end()};
+	return {m_fields.begin(), m_fields.end()};
 }
 
 const Entity* Class::Parent() const
@@ -96,17 +90,17 @@ const Entity* Class::Parent() const
 
 std::size_t Class::ChildCount() const
 {
-	return m_data.m_fields.size();
+	return m_fields.size();
 }
 
 const Entity *Class::Child(std::size_t idx) const
 {
-	return &m_data.m_fields.at(idx);
+	return &m_fields.at(idx);
 }
 
 std::size_t Class::IndexOf(const Entity *child) const
 {
-	return dynamic_cast<const Variable*>(child) - &m_data.m_fields[0];
+	return dynamic_cast<const Variable*>(child) - &m_fields[0];
 }
 
 std::string Class::Type() const

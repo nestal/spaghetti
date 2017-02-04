@@ -168,9 +168,15 @@ class SourceLocation
 public:
 	SourceLocation(CXSourceLocation loc = {});
 	
-	void SpellingLocation(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const;
+	void Get(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const;
 	bool IsFromMainFile() const;
 	bool IsFromSystemHeader() const;
+	
+	struct Hash
+	{
+		std::size_t operator()(const SourceLocation& loc) const;
+	};
+	friend class hash;
 	
 private:
 	CXSourceLocation m_loc;

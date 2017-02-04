@@ -37,21 +37,6 @@ class Class : public Entity
 {
 public:
 	using FieldList = std::vector<Variable>;
-	
-	class Data
-	{
-	public:
-		Data() = default;
-		Data(libclx::Cursor cursor);
-		
-		friend class Class;
-	
-	private:
-		boost::optional<libclx::SourceLocation> m_definition;
-		
-		FieldList m_fields;
-	};
-
 	using field_iterator = FieldList::const_iterator;
 	
 public:
@@ -84,7 +69,8 @@ private:
 	
 	const Entity *m_parent{};
 	
-	Data m_data;
+	boost::optional<libclx::SourceLocation> m_definition;
+	FieldList m_fields;
 	
 	std::vector<Class> m_nested_classes;
 };
