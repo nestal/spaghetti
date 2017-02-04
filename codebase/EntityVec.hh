@@ -23,17 +23,34 @@ template <typename EntityType>
 class EntityVec : public Entity
 {
 public:
+	using Vec = std::vector<EntityType>;
+	using iterator       = typename Vec::iterator;
+	using const_iterator = typename Vec::const_iterator;
+	
+public:
 	EntityVec(
 		const Entity *parent,
 		const std::string& name
 	) : m_parent{parent}, m_name{name} {}
 	
 	const std::string& Name() const override {return m_name;}
+	std::string Type() const override {return "Group";}
 	const Entity* Parent() const override {return m_parent;}
 	
 	std::size_t ChildCount() const override {return m_children.size();}
 	const EntityType* Child(std::size_t idx) const override {return &m_children.at(idx);}
 	std::size_t IndexOf(const Entity* child) const override {return &dynamic_cast<const EntityType&>(*child) - &m_children[0];}
+	
+	iterator begin() {return m_children.begin();}
+	iterator end() {return m_children.end();}
+	const_iterator begin() const {return m_children.begin();}
+	const_iterator end() const {return m_children.end();}
+	
+	iterator Add(EntityType&& ent)
+	{
+		m_children.push_back(std::move(ent));
+		return --m_children.end();
+	}
 	
 private:
 	const Entity *m_parent;

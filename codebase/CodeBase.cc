@@ -27,15 +27,19 @@ void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
 		{
-			auto& usr = m_classes.get<ByUSR>();
-			auto it = usr.find(cursor.USR());
-			if (it == usr.end())
-				it = usr.emplace(cursor, this).first;
-
+//			auto& usr = m_classes.get<ByUSR>();
+			auto it = std::find_if(m_types.begin(), m_types.end(), [usr=cursor.USR()](auto& t)
+			{
+				return t.USR() == usr;
+			});
+			if (it == m_types.end())
+				it = m_types.Add(DataType(cursor, &m_types));
+			
 			EditAction data;
 			it->Visit(data, cursor);
+			it->Merge(std::move(data));
 			
-			usr.modify(it, [&data](DataType& c){c.Merge(std::move(data));});
+			//usr.modify(it, [&data](DataType& c){c.Merge(std::move(data));});
 			break;
 		}
 			
@@ -79,47 +83,20 @@ std::string CodeBase::Parse(const std::string& source)
 	return tu.Spelling();
 }
 
-const std::string& CodeBase::Name() const
+const DataType* CodeBase::Find(const SourceLocation& /*loc*/) const
 {
-	static std::string name{"codebase"};
-	return name;
-}
-
-const Entity* CodeBase::Parent() const
-{
-	return this;
-}
-
-std::size_t CodeBase::ChildCount() const
-{
-	return m_classes.size();
-}
-
-const DataType* CodeBase::Child(std::size_t idx) const
-{
-	return &m_classes.get<ByIndex>().at(idx);
-}
-
-std::size_t CodeBase::IndexOf(const Entity *child) const
-{
-	auto it = m_classes.get<ByUSR>().find(dynamic_cast<const DataType&>(*child).USR());
-	return m_classes.project<ByIndex>(it) - m_classes.get<ByIndex>().begin();
-}
-
-std::string CodeBase::Type() const
-{
-	return "Code base";
-}
-
-const DataType* CodeBase::Find(const SourceLocation& loc) const
-{
-	auto it = m_classes.get<ByLocation>().find(loc);
-	return it != m_classes.get<ByLocation>().end() ? &*it : nullptr;
+//	auto it = m_classes.get<ByLocation>().find(loc);
+	return /*it != m_classes.get<ByLocation>().end() ? &*it : */nullptr;
 }
 
 void CodeBase::Add(const DataType *, const SourceLocation& )
 {
 //	m_classes.get<ByLocation>().emplace(type);
 }
-	
+
+const Entity *CodeBase::Root() const
+{
+	return &m_types;
+}
+
 } // end of namespace

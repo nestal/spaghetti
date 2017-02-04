@@ -25,7 +25,7 @@ namespace gui {
 Model::Model(QObject *parent) :
 	QObject{parent},
 	m_scene{std::make_unique<QGraphicsScene>(this)},
-	m_class_model{&m_codebase, this}
+	m_class_model{m_codebase.Root(), this}
 {
 }
 
@@ -38,11 +38,10 @@ void Model::Parse(const QString& file)
 		delete item;
 	}
 	
-	m_codebase.Parse(file.toStdString());
-	
 	m_class_model.beginResetModel();
-	
-	auto dx = 0;
+	m_codebase.Parse(file.toStdString());
+
+/*	auto dx = 0;
 	for (std::size_t i = 0 ; i < m_codebase.ChildCount(); ++i)
 	{
 		auto item = new UMLClassItem{*m_codebase.Child(i)};
@@ -52,7 +51,7 @@ void Model::Parse(const QString& file)
 		dx += (item->boundingRect().width() + 10);
 		
 		m_classes.insert(item);
-	}
+	}*/
 	
 	m_class_model.endResetModel();
 }

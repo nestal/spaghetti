@@ -82,7 +82,7 @@ QModelIndex EntityModel::parent(const QModelIndex& child) const
 {
 	auto pchild = Get(child);
 	auto parent = pchild->Parent();
-	return pchild == parent ? QModelIndex{} : createIndex(
+	return (pchild == parent || parent == nullptr) ? QModelIndex{} : createIndex(
 		static_cast<int>(parent->IndexOf(pchild)), 0,
 		const_cast<codebase::Entity*>(parent)
 	);

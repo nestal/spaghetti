@@ -16,6 +16,8 @@
 #include "TypeDB.hh"
 
 #include "DataType.hh"
+#include "EntityVec.hh"
+
 #include "libclx/Index.hh"
 
 #include <boost/multi_index_container.hpp>
@@ -28,10 +30,10 @@
 
 namespace codebase {
 
-class CodeBase : public Entity, public TypeDB
+class CodeBase : public TypeDB
 {
 public:
-	struct ByUSR {};
+/*	struct ByUSR {};
 	struct ByIndex {};
 	struct ByLocation {};
 	
@@ -65,7 +67,7 @@ public:
 			>
 		>
 	>;
-	
+*/
 public:
 	CodeBase() = default;
 	
@@ -73,13 +75,7 @@ public:
 	
 	void Visit(libclx::Cursor cursor, libclx::Cursor parent);
 
-	const std::string& Name() const override;
-	const Entity* Parent() const override;
-	std::string Type() const override;
-	
-	std::size_t ChildCount() const override;
-	const DataType* Child(std::size_t idx) const override;
-	std::size_t IndexOf(const Entity* child) const override;
+	const Entity* Root() const;
 	
 	const DataType* Find(const SourceLocation& loc) const override;
 	void Add(const DataType *type, const SourceLocation& loc) override;
@@ -88,7 +84,8 @@ private:
 	libclx::Index  m_index;
 	std::vector<libclx::TranslationUnit> m_units;
 	
-	ClassDB m_classes;
+//	ClassDB m_classes;
+	EntityVec<DataType> m_types{nullptr, "Data Types"};
 };
-	
+
 } // end of namespace
