@@ -185,6 +185,11 @@ Cursor Type::Declaration() const
 	return {::clang_getTypeDeclaration(m_type)};
 }
 
+std::string Type::Kind() const
+{
+	return XStr{::clang_getTypeKindSpelling(m_type.kind)}.Str();
+}
+
 void TranslationUnit::diag_iterator::increment()
 {
 	m_idx++;

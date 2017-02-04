@@ -185,7 +185,9 @@ public:
 	
 	std::string Spelling() const;
 	Cursor Declaration() const;
-
+	
+	std::string Kind() const;
+	
 	friend std::ostream& operator<<(std::ostream& os, const Type& t);
 	
 private:

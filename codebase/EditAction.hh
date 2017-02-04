@@ -17,6 +17,7 @@
 #include <boost/optional.hpp>
 
 #include <memory>
+#include <vector>
 
 namespace codebase {
 
@@ -28,6 +29,7 @@ public:
 	enum class Action {addEntity, setDefinition};
 	
 	EditAction() = default;
+	~EditAction();
 	EditAction(EditAction&&) = default;
 	EditAction(const EditAction&) = default;
 	
@@ -38,11 +40,7 @@ public:
 		m_ent.back().entity = std::make_unique<EntityType>(std::forward<EntityType>(entity));
 	}
 	
-	void SetDefinition(const libclx::SourceLocation& loc)
-	{
-		m_ent.emplace_back(Action::setDefinition);
-		m_ent.back().location = loc;
-	}
+	void SetDefinition(const libclx::SourceLocation& loc);
 	
 	template <typename Func>
 	void ForEach(Func func)

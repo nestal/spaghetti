@@ -11,8 +11,11 @@
 //
 
 #include "EditAction.hh"
+#include "Entity.hh"
 
 namespace codebase {
+
+EditAction::~EditAction() = default;
 
 void EditAction::SetDefinition(const libclx::SourceLocation& loc)
 {
@@ -20,4 +23,4 @@ void EditAction::SetDefinition(const libclx::SourceLocation& loc)
 	m_ent.back().location = loc;
 }
 
-}
+} // end of namespace

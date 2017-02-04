@@ -12,6 +12,8 @@
 
 #include "Variable.hh"
 
+#include <sstream>
+
 namespace codebase {
 
 Variable::Variable(libclx::Cursor field, const Entity *parent) :
@@ -54,7 +56,9 @@ std::size_t Variable::IndexOf(const Entity*) const
 
 std::string Variable::Type() const
 {
-	return m_type.Spelling();
+	std::ostringstream oss;
+	oss << m_type.Spelling() << " " << m_type.Declaration().GetDefinition().Location();
+	return oss.str();
 }
 
 std::ostream& operator<<(std::ostream& os, const Variable& c)

@@ -61,6 +61,7 @@ void Class::Visit(EditAction& data, libclx::Cursor self) const
 			break;
 	
 		default:
+		std::cout << child.Spelling() << ' ' << child.Kind() << std::endl;
 			break;
 		}
 	});

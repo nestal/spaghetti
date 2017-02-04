@@ -26,7 +26,8 @@ XStr::~XStr()
 
 std::string XStr::Str() const
 {
-	return {clang_getCString(m_str)};
+	auto s = clang_getCString(m_str);
+	return {s ? s : ""};
 }
 	
 }
