@@ -109,7 +109,7 @@ void Namespace::Visit(libclx::Cursor self)
 				}
 			);
 			if (it == m_types.end())
-				it = m_types.Add(DataType{cursor, m_types.ID()});
+				it = m_types.Add(cursor, m_types.ID());
 			it->Visit(cursor);
 			break;
 		}
@@ -123,14 +123,14 @@ void Namespace::Visit(libclx::Cursor self)
 				}
 			);
 			if (it == m_ns.end())
-				it = m_ns.Add(Namespace{cursor, m_ns.ID()});
+				it = m_ns.Add(cursor, m_ns.ID());
 			it->Visit(cursor);
 			break;
 		}
 		
 		case CXCursor_FieldDecl:
 		{
-			m_vars.Add(Variable{cursor, m_vars.ID()});
+			m_vars.Add(cursor, m_vars.ID());
 			break;
 		}
 		

@@ -69,9 +69,10 @@ public:
 	const_iterator begin() const {return const_iterator{0,                 this};}
 	const_iterator end()   const {return const_iterator{m_children.size(), this};}
 	
-	iterator Add(EntityType&& ent)
+	template <typename... Args>
+	iterator Add(Args... arg)
 	{
-		m_children.push_back(std::move(ent));
+		m_children.emplace_back(std::forward<Args>(arg)...);
 		return --end();
 	}
 	

@@ -52,7 +52,7 @@ void DataType::Visit(libclx::Cursor self)
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			m_fields.Add(Variable{child, m_fields.ID()});
+			m_fields.Add(child, m_fields.ID());
 			break;
 	
 		default:
