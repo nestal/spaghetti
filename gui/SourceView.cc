@@ -54,6 +54,9 @@ public:
 		format.setForeground(QBrush{m_colour});
 		format.setFontFamily("monospace");
 		edit.setCurrentCharFormat(format);
+		
+		cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+		edit.setTextCursor(cursor);
 	}
 	
 private:
@@ -68,10 +71,13 @@ void SourceView::Open(const libclx::SourceLocation& file)
 	unsigned line, column, offset;
 	file.Get(filename, line, column, offset);
 	
+	// set the font before inserting text
+	setFontFamily("monospace");
+	
 	QFile qfile{QString::fromStdString(filename)};
 	if (qfile.open(QIODevice::ReadOnly))
-		setText(qfile.readAll());
-	
+		setPlainText(qfile.readAll());
+		
 	static const std::map<CXTokenKind, QColor> text_colour = {
 		{CXToken_Punctuation, QColor{"black"}},
 		{CXToken_Keyword,     QColor{"blue"}},
