@@ -23,7 +23,7 @@
       <widget class="QTreeView" name="m_class_view">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-         <horstretch>5</horstretch>
+         <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
@@ -31,7 +31,7 @@
       <widget class="QSplitter" name="splitter">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>10</horstretch>
+         <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
@@ -86,6 +86,7 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="m_action_about_Qt"/>
     <addaction name="m_action_about"/>
    </widget>
    <addaction name="menu_File"/>
@@ -105,6 +106,11 @@
   <action name="m_action_open">
    <property name="text">
     <string>&amp;Open...</string>
+   </property>
+  </action>
+  <action name="m_action_about_Qt">
+   <property name="text">
+    <string>About &amp;Qt</string>
    </property>
   </action>
  </widget>

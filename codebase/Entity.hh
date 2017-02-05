@@ -2,7 +2,7 @@
 	Copyright © 2017 Wan Wai Ho <me@nestal.net>
     
     This file is subject to the terms and conditions of the GNU General Public
-    License.  See the file COPYING in the main directory of the SongBits
+    License.  See the file COPYING in the main directory of the spaghetti
     distribution for more details.
 */
 
@@ -74,6 +74,9 @@ public:
 		m_parent{parent}
 	{}
 
+	// iterators can be converted if the parent and child entity types
+	// can be converted.
+	// for example, non-const iterator can be converted to const_iterator.
 	template <
 		typename OtherParentEntity, typename OtherChildEntity,
 		typename std::enable_if<
@@ -88,11 +91,13 @@ public:
 	
 private:
 	friend class boost::iterator_core_access;
+	template <typename P, typename C>
+	friend class EntityIterator;
 	
 	void increment() {m_idx++;}
 	void decrement() {m_idx--;}
-	void advance(long n) {m_idx += n;}
-	long distance_to(const EntityIterator& other) const {return other.m_idx - m_idx;}
+	void advance(std::ptrdiff_t n) {m_idx += n;}
+	std::ptrdiff_t distance_to(const EntityIterator& other) const {return other.m_idx - m_idx;}
 	bool equal(const EntityIterator& other) const
 	{
 		return m_idx == other.m_idx && m_parent == other.m_parent;
@@ -103,7 +108,7 @@ private:
 		return *m_parent->Child(m_idx);
 	}
 
-public:
+private:
 	std::size_t  m_idx{};
 	ParentEntity *m_parent{};
 };
