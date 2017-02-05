@@ -27,8 +27,8 @@ MainWnd::MainWnd() :
 	m_model{std::make_unique<Model>(this)}
 {
 	m_ui->setupUi(this);
-	m_model->AttachView(m_ui->m_main);
-	m_ui->m_class_view->setModel(m_model->ClassModel());
+	m_model->AttachView(m_ui->m_class_gfx);
+	m_ui->m_class_tree->setModel(m_model->ClassModel());
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
