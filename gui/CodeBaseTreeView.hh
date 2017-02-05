@@ -19,7 +19,7 @@ namespace gui {
 class CodeBaseTreeView : public QTreeView
 {
 public:
-	using QTreeView::QTreeView;
+	CodeBaseTreeView(QWidget *parent);
 };
 	
 } // end of namespace

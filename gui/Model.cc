@@ -62,7 +62,7 @@ void Model::AttachView(QGraphicsView *view)
 	view->setScene(m_scene.get());
 }
 
-QAbstractItemModel *Model::ClassModel()
+EntityModel *Model::ClassModel()
 {
 	return &m_class_model;
 }

@@ -19,6 +19,7 @@
 #include <QMessageBox>
 
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 
@@ -49,6 +50,17 @@ MainWnd::MainWnd() :
 		if (!file.isNull())
 			m_model->Parse(file);
 	});
+	connect(m_ui->m_class_tree, &QAbstractItemView::doubleClicked, [this](const QModelIndex& idx)
+	{
+		OnDoubleClickItem(idx);
+	});
+}
+
+void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
+{
+	auto entity = m_model->ClassModel()->Get(idx);
+	if (entity)
+		std::cout << entity << std::endl;
 }
 
 MainWnd::~MainWnd() = default;

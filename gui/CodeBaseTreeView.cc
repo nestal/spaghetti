@@ -11,3 +11,13 @@
 //
 
 #include "CodeBaseTreeView.hh"
+
+namespace gui {
+
+
+CodeBaseTreeView::CodeBaseTreeView(QWidget *parent) :
+	QTreeView(parent)
+{
+}
+
+} // end of namespace
