@@ -26,7 +26,7 @@ class SourceView : public QTextEdit
 public:
 	using QTextEdit::QTextEdit;
 	
-	void Open(const libclx::SourceLocation& location, const libclx::TranslationUnit& tu);
+	void Open(const libclx::SourceLocation& location);
 
 private:
 	void Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour);

@@ -21,11 +21,22 @@
 
 namespace gui {
 
-void SourceView::Open(const libclx::SourceLocation& file, const libclx::TranslationUnit& tu)
+void SourceView::Open(const libclx::SourceLocation& file)
 {
 	std::string filename;
 	unsigned line, column, offset;
 	file.Get(filename, line, column, offset);
+	
+	libclx::Index clx;
+	auto tu = clx.Parse(
+		filename,
+		{
+			"-std=c++14",
+			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+			"-I", ".",
+		},
+		CXTranslationUnit_None
+	);
 	
 	QFile qfile{QString::fromStdString(filename)};
 	if (qfile.open(QIODevice::ReadOnly))
@@ -47,12 +58,8 @@ void SourceView::Open(const libclx::SourceLocation& file, const libclx::Translat
 		std::string token_fn;
 		tloc.Get(token_fn, line, column, offset);
 		
-		std::cout << tstr << " " << filename << std::endl;
-		
 		if (token_fn == filename)
 		{
-			std::cout << token_fn << std::endl;
-			
 			auto cit = text_colour.find(::clang_getTokenKind(token));
 			if (cit != text_colour.end())
 				Highlight(line, column, tstr.size(), cit->second);
@@ -71,6 +78,7 @@ void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, c
 	setTextCursor(cursor);
 	QTextCharFormat format;
 	format.setForeground(QBrush{colour});
+	format.setFontFamily("monospace");
 	setCurrentCharFormat(format);
 }
 	

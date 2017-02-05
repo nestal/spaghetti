@@ -24,7 +24,7 @@ CodeBase::CodeBase()
 std::string CodeBase::Parse(const std::string& source)
 {
 	auto tu = m_index.Parse(
-		source.c_str(),
+		source,
 		{
 			"-std=c++14",
 			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",

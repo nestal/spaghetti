@@ -56,18 +56,13 @@ MainWnd::MainWnd() :
 	{
 		OnDoubleClickItem(idx);
 	});
-	
-	m_ui->m_code_view->setFontFamily("monospace");
 }
 
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 {
 	auto entity = m_model->ClassModel()->Get(idx);
 	if (entity && entity->Location() != libclx::SourceLocation{})
-		m_ui->m_code_view->Open(
-			entity->Location(),
-			*m_model->Locate(entity->Location())
-		);
+		m_ui->m_code_view->Open(entity->Location());
 }
 
 MainWnd::~MainWnd() = default;
