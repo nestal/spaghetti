@@ -22,3 +22,11 @@ TEST(EntityVecTest, Constructor_Wont_Throw)
 {
 	EntityVec<MockEntity> subject{"", ""};
 }
+
+TEST(EntityVecTest, Add_Return_Iterator_To_Added_Item)
+{
+	EntityVec<MockEntity> subject{"", "vec-ID"};
+	auto it = subject.Add(MockEntity{subject.ChildCount(), subject.ID()});
+	
+	ASSERT_EQ(subject.ID(), it->Parent());
+}

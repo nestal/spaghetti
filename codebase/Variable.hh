@@ -17,7 +17,7 @@
 
 namespace codebase {
 
-class Variable : public Entity
+class Variable : public LeafEntity
 {
 public:
 	Variable(libclx::Cursor field, const std::string& parent);
@@ -26,11 +26,6 @@ public:
 	const std::string& Parent() const override;
 	const std::string& ID() const override;
 	std::string Type() const override;
-	
-	std::size_t ChildCount() const override;
-	Entity* Child(std::size_t idx) override;
-	const Entity* Child(std::size_t idx) const override;
-	std::size_t IndexOf(const Entity* child) const override;
 	
 	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 

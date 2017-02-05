@@ -30,6 +30,9 @@
 
 namespace codebase {
 
+/**
+ * \brief The root of the Entity tree in a code base.
+ */
 class CodeBase : public Entity, public EntityMap
 {
 public:

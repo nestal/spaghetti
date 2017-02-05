@@ -39,26 +39,6 @@ const std::string& Variable::ID() const
 	return m_usr;
 }
 
-std::size_t Variable::ChildCount() const
-{
-	return 0;
-}
-
-const Entity *Variable::Child(std::size_t) const
-{
-	return nullptr;
-}
-
-Entity *Variable::Child(std::size_t)
-{
-	return nullptr;
-}
-
-std::size_t Variable::IndexOf(const Entity*) const
-{
-	return 0;
-}
-
 std::string Variable::Type() const
 {
 	return m_type.Spelling();

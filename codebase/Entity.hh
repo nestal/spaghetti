@@ -31,6 +31,15 @@ public:
 	virtual const Entity* Find(const std::string& id) const = 0;
 };
 
+/**
+ * \brief Represent an entity in the code base.
+ *
+ * An Entity is an addressable thing in the code base. It can be a class, a data member, a
+ * member function, a namespace and anything. Entities are organized in a tree structure.
+ * Each Entity has a parent (except for the root) and optionally a list of child entities.
+ *
+ * Each Entity has an ID to unique identify them in the code base.
+ */
 class Entity
 {
 public:
@@ -48,6 +57,8 @@ public:
 	virtual Entity* Child(std::size_t idx) = 0;
 	virtual std::size_t IndexOf(const Entity* child) const = 0;
 
+	static const std::size_t npos = std::string::npos;
+	
 	using iterator       = EntityIterator<Entity, Entity>;
 	using const_iterator = EntityIterator<const Entity, const Entity>;
 	
@@ -111,6 +122,15 @@ private:
 private:
 	std::size_t  m_idx{};
 	ParentEntity *m_parent{};
+};
+
+class LeafEntity : public Entity
+{
+public:
+	std::size_t ChildCount() const override;
+	Entity* Child(std::size_t idx) override;
+	const Entity* Child(std::size_t idx) const override;
+	std::size_t IndexOf(const Entity* child) const override;
 };
 
 } // end of namespace
