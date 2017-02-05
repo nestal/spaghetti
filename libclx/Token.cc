@@ -34,5 +34,15 @@ const CXToken& TokenSet::at(std::size_t idx) const
 {
 	return m_set[idx];
 }
+
+TokenSet::iterator TokenSet::begin() const
+{
+	return &m_set[0];
+}
+
+TokenSet::iterator TokenSet::end() const
+{
+	return &m_set[m_count];
+}
 	
 } // end of namespace

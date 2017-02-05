@@ -66,5 +66,10 @@ EntityModel *Model::ClassModel()
 {
 	return &m_class_model;
 }
+
+boost::optional<const libclx::TranslationUnit&> Model::Locate(const libclx::SourceLocation& loc) const
+{
+	return m_codebase.Locate(loc);
+}
 	
 } // end of namespace

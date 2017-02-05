@@ -72,6 +72,21 @@ TokenSet TranslationUnit::Tokenize() const
 	return TokenSet{m_unit.get(), Root().Extent().m_range};
 }
 
+std::string TranslationUnit::TokenSpelling(const CXToken& token) const
+{
+	return XStr{::clang_getTokenSpelling(m_unit.get(), token)}.Str();
+}
+
+SourceLocation TranslationUnit::TokenLocation(const CXToken& token) const
+{
+	return {::clang_getTokenLocation(m_unit.get(), token)};
+}
+
+Cursor::Cursor() :
+	Cursor{::clang_getNullCursor()}
+{
+}
+
 Cursor::Cursor(CXCursor cursor) :
 	m_cursor{cursor}
 {
@@ -145,6 +160,11 @@ std::string Cursor::Comment() const
 SourceRange Cursor::Extent() const
 {
 	return SourceRange{::clang_getCursorExtent(m_cursor)};
+}
+
+Cursor::operator bool() const
+{
+	return ::clang_equalCursors(m_cursor, ::clang_getNullCursor()) == 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const SourceLocation& loc)

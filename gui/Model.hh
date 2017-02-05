@@ -43,6 +43,8 @@ public:
 	
 	EntityModel* ClassModel();
 	
+	boost::optional<const libclx::TranslationUnit&> Locate(const libclx::SourceLocation& loc) const;
+	
 private:
 	// order is important here, since m_scene depends on m_repo.
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed

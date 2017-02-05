@@ -64,8 +64,9 @@ public:
 	Cursor Root() const;
 	
 	Cursor Locate(const SourceLocation& loc) const;
-	
 	TokenSet Tokenize() const;
+	std::string TokenSpelling(const CXToken& token) const;
+	SourceLocation TokenLocation(const CXToken& token) const;
 	
 	class diag_iterator : public boost::iterator_facade<
 		diag_iterator,
@@ -122,6 +123,7 @@ private:
 class Cursor
 {
 public:
+	Cursor();
 	Cursor(CXCursor cursor);
 	Cursor(const Cursor&) = default;
 	Cursor(Cursor&&) = default;
@@ -132,6 +134,8 @@ public:
 	bool operator!=(const Cursor& rhs) const;
 	
 	CXCursorKind Kind() const;
+	
+	explicit operator bool() const;
 	
 	bool IsReference() const;
 	bool IsDefinition() const;

@@ -16,6 +16,7 @@
 
 namespace libclx {
 class SourceLocation;
+class TranslationUnit;
 }
 
 namespace gui {
@@ -25,7 +26,10 @@ class SourceView : public QTextEdit
 public:
 	using QTextEdit::QTextEdit;
 	
-	void Open(const libclx::SourceLocation& location);
+	void Open(const libclx::SourceLocation& location, const libclx::TranslationUnit& tu);
+
+private:
+	void Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour);
 };
 	
 } // end of namespace

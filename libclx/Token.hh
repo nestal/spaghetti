@@ -31,6 +31,11 @@ public:
 	std::size_t size() const;
 	const CXToken& at(std::size_t idx) const;
 	
+	using iterator = const CXToken*;
+	
+	iterator begin() const;
+	iterator end() const;
+	
 private:
 	CXTranslationUnit m_tu{};
 	CXToken *m_set{};

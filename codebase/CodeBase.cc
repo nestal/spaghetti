@@ -63,5 +63,16 @@ const Entity *CodeBase::Root() const
 {
 	return &m_root;
 }
+
+boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const SourceLocation& loc) const
+{
+	for (auto&& c : m_units)
+	{
+		auto cursor = c.Locate(loc);
+		if (cursor)
+			return c;
+	}
+	return {};
+}
 	
 } // end of namespace
