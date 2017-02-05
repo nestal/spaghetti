@@ -19,38 +19,7 @@ namespace codebase {
 
 CodeBase::CodeBase()
 {
-	AddToIndex(this);
-}
-
-void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
-{
-	switch (cursor.Kind())
-	{
-	case CXCursor_ClassDecl:
-	case CXCursor_StructDecl:
-	{
-		auto it = std::find_if(m_types.begin(), m_types.end(), [usr=cursor.USR()](auto& t)
-		{
-			return t.ID() == usr;
-		});
-		if (it == m_types.end())
-			it = m_types.Add(DataType{cursor, m_types.ID()});
-		it->Visit(cursor);
-		break;
-	}
-		
-	case CXCursor_Namespace:
-	{
-		cursor.Visit([this](libclx::Cursor cursor, libclx::Cursor parent)
-		{
-			Visit(cursor, parent);
-		});
-		break;
-	}
-	
-	default:
-		break;
-	}
+	AddToIndex(&m_root);
 }
 
 std::string CodeBase::Parse(const std::string& source)
@@ -66,11 +35,8 @@ std::string CodeBase::Parse(const std::string& source)
 	);
 	
 	m_search_index.clear();
-	tu.Root().Visit([this](libclx::Cursor cursor, libclx::Cursor parent)
-	{
-		Visit(cursor, parent);
-	});
-	AddToIndex(this);
+	m_root.Visit(tu.Root());
+	AddToIndex(&m_root);
 	
 	for (auto&& diag : tu.Diagnostics())
 		std::cerr << diag.Str() << "\n";
@@ -78,47 +44,6 @@ std::string CodeBase::Parse(const std::string& source)
 	m_units.push_back(std::move(tu));
 	
 	return tu.Spelling();
-}
-
-const std::string& CodeBase::Name() const
-{
-	static std::string name{"codebase"};
-	return name;
-}
-
-const std::string& CodeBase::Parent() const
-{
-	return NullID();
-}
-
-std::size_t CodeBase::ChildCount() const
-{
-	return 1;
-}
-
-const Entity* CodeBase::Child(std::size_t idx) const
-{
-	return idx == 0 ? &m_types : nullptr;
-}
-
-Entity *CodeBase::Child(std::size_t idx)
-{
-	return idx == 0 ? &m_types : nullptr;
-}
-
-std::size_t CodeBase::IndexOf(const Entity *entity) const
-{
-	return entity == &m_types ? 0 : ChildCount();
-}
-
-std::string CodeBase::Type() const
-{
-	return "Code base";
-}
-
-const std::string& CodeBase::ID() const
-{
-	return NullID();
 }
 
 const Entity *CodeBase::Find(const std::string& id) const
@@ -133,6 +58,11 @@ void CodeBase::AddToIndex(const Entity *entity)
 	
 	for (auto&& c : *entity)
 		AddToIndex(&c);
+}
+
+const Entity *CodeBase::Root() const
+{
+	return &m_root;
 }
 	
 } // end of namespace
