@@ -22,6 +22,11 @@ class EntityMap;
 
 namespace gui {
 
+/**
+ * \brief Model for entity tree
+ *
+ * Used with Qt model-view architecture.
+ */
 class EntityModel : public QAbstractItemModel
 {
 public:
