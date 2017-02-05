@@ -56,6 +56,8 @@ MainWnd::MainWnd() :
 	{
 		OnDoubleClickItem(idx);
 	});
+	
+	m_ui->m_code_view->setFontFamily("monospace");
 }
 
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
@@ -73,7 +75,8 @@ void MainWnd::OpenSourceCode(const libclx::SourceLocation& file)
 	file.Get(filename, line, column, offset);
 	
 	QFile qfile{QString::fromStdString(filename)};
-	m_ui->m_code_view->setPlainText(QString{qfile.readAll()});
+	if (qfile.open(QIODevice::ReadOnly | QIODevice::Text))
+		m_ui->m_code_view->setPlainText(QString{qfile.readAll()});
 }
 
 MainWnd::~MainWnd() = default;
