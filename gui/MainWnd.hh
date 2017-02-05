@@ -15,6 +15,7 @@
 #include <QMainWindow>
 
 #include <memory>
+#include <libclx/Index.hh>
 
 namespace Ui {
 class MainWnd;
@@ -34,6 +35,9 @@ public:
 	MainWnd();
 	~MainWnd();
 
+private:
+	void OnDoubleClickItem(const QModelIndex& idx);
+	
 private:
 	std::unique_ptr<Ui::MainWnd>    m_ui;
 	std::unique_ptr<Model>          m_model;

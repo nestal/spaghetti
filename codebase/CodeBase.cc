@@ -11,7 +11,6 @@
 //
 
 #include "CodeBase.hh"
-#include "EditAction.hh"
 
 #include <iostream>
 
@@ -25,7 +24,7 @@ CodeBase::CodeBase()
 std::string CodeBase::Parse(const std::string& source)
 {
 	auto tu = m_index.Parse(
-		source.c_str(),
+		source,
 		{
 			"-std=c++14",
 			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
@@ -63,6 +62,17 @@ void CodeBase::AddToIndex(const Entity *entity)
 const Entity *CodeBase::Root() const
 {
 	return &m_root;
+}
+
+boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const SourceLocation& loc) const
+{
+	for (auto&& c : m_units)
+	{
+		auto cursor = c.Locate(loc);
+		if (cursor)
+			return c;
+	}
+	return {};
 }
 	
 } // end of namespace

@@ -5,6 +5,8 @@ project. It uses [libclang-c](http://clang.llvm.org/doxygen/group__CINDEX.html)
 to parse the source code, and use [Qt](http://doc.qt.io/qt-5/index.html) to
 render it.
 
+![snapshot-1](./doc/snapshot1.png)
+
 # Requirements
 
 Spaghetti depends on the following software to build:

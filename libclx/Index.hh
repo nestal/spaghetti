@@ -29,9 +29,11 @@ namespace libclx {
 class Cursor;
 class Index;
 class SourceLocation;
+class SourceRange;
 class TranslationUnit;
 class Type;
 class Diagnostic;
+class TokenSet;
 
 class Index
 {
@@ -53,10 +55,18 @@ class TranslationUnit
 {
 public:
 	TranslationUnit(CXTranslationUnit tu);
+	TranslationUnit(const TranslationUnit&) = delete;
 	TranslationUnit(TranslationUnit&&) = default;
+	TranslationUnit& operator=(const TranslationUnit&) = delete;
+	TranslationUnit& operator=(TranslationUnit&&) = default;
 	
 	std::string Spelling() const;
-	Cursor Root();
+	Cursor Root() const;
+	
+	Cursor Locate(const SourceLocation& loc) const;
+	TokenSet Tokenize() const;
+	std::string TokenSpelling(const CXToken& token) const;
+	SourceLocation TokenLocation(const CXToken& token) const;
 	
 	class diag_iterator : public boost::iterator_facade<
 		diag_iterator,
@@ -113,6 +123,7 @@ private:
 class Cursor
 {
 public:
+	Cursor();
 	Cursor(CXCursor cursor);
 	Cursor(const Cursor&) = default;
 	Cursor(Cursor&&) = default;
@@ -123,6 +134,8 @@ public:
 	bool operator!=(const Cursor& rhs) const;
 	
 	CXCursorKind Kind() const;
+	
+	explicit operator bool() const;
 	
 	bool IsReference() const;
 	bool IsDefinition() const;
@@ -136,6 +149,7 @@ public:
 	std::string Comment() const;
 	
 	SourceLocation Location() const;
+	SourceRange Extent() const;
 	libclx::Type Type() const;
 	
 	struct Hash
@@ -161,32 +175,6 @@ public:
 
 private:
 	CXCursor m_cursor;
-};
-
-class SourceLocation
-{
-public:
-	SourceLocation();
-	SourceLocation(CXSourceLocation loc);
-	SourceLocation(SourceLocation&&) = default;
-	SourceLocation(const SourceLocation&) = default;
-	SourceLocation& operator=(const SourceLocation&) = default;
-	SourceLocation& operator=(SourceLocation&&) = default;
-	
-	bool operator==(const SourceLocation& rhs) const;
-	
-	void Get(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const;
-	bool IsFromMainFile() const;
-	bool IsFromSystemHeader() const;
-	
-	struct Hash
-	{
-		std::size_t operator()(const SourceLocation& loc) const;
-	};
-	friend class hash;
-	
-private:
-	CXSourceLocation m_loc;
 };
 
 std::ostream& operator<<(std::ostream& os, const SourceLocation& loc);

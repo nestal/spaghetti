@@ -13,7 +13,9 @@
 #pragma once
 
 #include "Entity.hh"
+
 #include "libclx/Index.hh"
+#include "libclx/SourceRange.hh"
 
 namespace codebase {
 
@@ -26,6 +28,7 @@ public:
 	const std::string& Parent() const override;
 	const std::string& ID() const override;
 	std::string Type() const override;
+	libclx::SourceLocation Location() const override;
 	
 	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 
@@ -33,6 +36,8 @@ private:
 	std::string m_name;
 	std::string m_usr;
 	std::string m_parent;
+	
+	libclx::SourceLocation m_location;
 	libclx::Type   m_type;
 };
 	

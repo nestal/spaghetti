@@ -29,7 +29,6 @@
 
 class QGraphicsScene;
 class QGraphicsView;
-class QAbstractItemModel;
 
 namespace gui {
 
@@ -42,7 +41,9 @@ public:
 	void AttachView(QGraphicsView *view);
 	void Parse(const QString& file);
 	
-	QAbstractItemModel* ClassModel();
+	EntityModel* ClassModel();
+	
+	boost::optional<const libclx::TranslationUnit&> Locate(const libclx::SourceLocation& loc) const;
 	
 private:
 	// order is important here, since m_scene depends on m_repo.

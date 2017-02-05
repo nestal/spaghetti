@@ -15,10 +15,13 @@
 
 #include "ui_MainWnd.h"
 
+#include "libclx/Index.hh"
+
 #include <QFileDialog>
 #include <QMessageBox>
 
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 
@@ -27,12 +30,17 @@ MainWnd::MainWnd() :
 	m_model{std::make_unique<Model>(this)}
 {
 	m_ui->setupUi(this);
-	m_model->AttachView(m_ui->m_main);
-	m_ui->m_class_view->setModel(m_model->ClassModel());
+	m_model->AttachView(m_ui->m_class_gfx);
+	m_ui->m_class_tree->setModel(m_model->ClassModel());
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
-		QMessageBox::aboutQt(this);
+		QMessageBox::about(this,
+			tr("About Spaghetti"),
+			tr("Spaghetti: version 0.1\n"
+			"License: GNU General Public License Version 2\n"
+			"(C) 2017 Wan Wai Ho (Nestal)")
+		);
 	});
 	connect(m_ui->m_action_about_Qt, &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_open,     &QAction::triggered, [this]
@@ -44,6 +52,17 @@ MainWnd::MainWnd() :
 		if (!file.isNull())
 			m_model->Parse(file);
 	});
+	connect(m_ui->m_class_tree, &QAbstractItemView::doubleClicked, [this](const QModelIndex& idx)
+	{
+		OnDoubleClickItem(idx);
+	});
+}
+
+void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
+{
+	auto entity = m_model->ClassModel()->Get(idx);
+	if (entity && entity->Location() != libclx::SourceLocation{})
+		m_ui->m_code_view->Open(entity->Location());
 }
 
 MainWnd::~MainWnd() = default;

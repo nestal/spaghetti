@@ -11,6 +11,7 @@
 //
 
 #include "Entity.hh"
+#include "libclx/SourceRange.hh"
 
 #include <cassert>
 
@@ -40,6 +41,11 @@ const std::string& Entity::NullID()
 {
 	static const std::string id;
 	return id;
+}
+
+libclx::SourceLocation Entity::Location() const
+{
+	return libclx::SourceLocation();
 }
 
 std::size_t LeafEntity::ChildCount() const

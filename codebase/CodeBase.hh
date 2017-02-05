@@ -27,6 +27,8 @@
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/identity.hpp>
 
+#include <boost/optional.hpp>
+
 #include <vector>
 
 namespace codebase {
@@ -63,6 +65,8 @@ public:
 	const Entity* Root() const;
 	const Entity* Find(const std::string& id) const override;
 
+	boost::optional<const libclx::TranslationUnit&> Locate(const libclx::SourceLocation& loc) const;
+	
 private:
 	void AddToIndex(const Entity *entity) ;
 
