@@ -71,8 +71,11 @@ void SourceView::Open(const libclx::SourceLocation& file)
 	unsigned line, column, offset;
 	file.Get(filename, line, column, offset);
 	
-	// set the font before inserting text
-	setFontFamily("monospace");
+	// set the default format before inserting text
+	QTextCharFormat format;
+	format.setForeground(QBrush{QColor{"black"}});
+	format.setFontFamily("monospace");
+	setCurrentCharFormat(format);
 	
 	QFile qfile{QString::fromStdString(filename)};
 	if (qfile.open(QIODevice::ReadOnly))
@@ -82,7 +85,7 @@ void SourceView::Open(const libclx::SourceLocation& file)
 		{CXToken_Punctuation, QColor{"black"}},
 		{CXToken_Keyword,     QColor{"blue"}},
 		{CXToken_Comment,     QColor{"green"}},
-		{CXToken_Identifier,  QColor{"purple"}},
+		{CXToken_Identifier,  QColor{"black"}},
 		{CXToken_Literal,     QColor{"red"}},
 	};
 	
