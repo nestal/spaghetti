@@ -56,7 +56,10 @@ public:
 	{
 		return &m_children.at(idx);
 	}
-	std::size_t IndexOf(const Entity* child) const override {return &dynamic_cast<const EntityType&>(*child) - &m_children[0];}
+	std::size_t IndexOf(const Entity* child) const override
+	{
+		return &dynamic_cast<const EntityType&>(*child) - &m_children[0];
+	}
 	
 	using iterator       = EntityIterator<EntityVec, EntityType>;
 	using const_iterator = EntityIterator<const EntityVec, const EntityType>;
