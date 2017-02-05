@@ -39,6 +39,7 @@ MainWnd::MainWnd() :
 			tr("About Spaghetti"),
 			tr("Spaghetti: version 0.1\n"
 			"License: GNU General Public License Version 2\n"
+			"https://gitlab.com/nestal/spaghetti\n"
 			"(C) 2017 Wan Wai Ho (Nestal)")
 		);
 	});
