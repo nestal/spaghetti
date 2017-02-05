@@ -17,26 +17,56 @@
 #include "libclx/Token.hh"
 
 #include <QtCore/QFile>
-#include <iostream>
+#include <QtCore/QEvent>
+#include <thread>
+#include <QtCore/QCoreApplication>
 
 namespace gui {
+
+class SourceView::HighlightEvent : public QEvent
+{
+public:
+	HighlightEvent(unsigned line, unsigned column, std::size_t stride, const QColor& colour) :
+		QEvent{static_cast<QEvent::Type>(TypeEnum())},
+		m_line{line},
+		m_column{column},
+		m_stride{stride},
+		m_colour{colour}
+	{
+	}
+	
+	static int TypeEnum()
+	{
+		static const int type = QEvent::registerEventType();
+		return type;
+	}
+	
+	void Highlight(QTextEdit& edit)
+	{
+		QTextCursor cursor(edit.document());
+		cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+		cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, m_line-1);
+		cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, m_column-1);
+		cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(m_stride));
+		
+		edit.setTextCursor(cursor);
+		QTextCharFormat format;
+		format.setForeground(QBrush{m_colour});
+		format.setFontFamily("monospace");
+		edit.setCurrentCharFormat(format);
+	}
+	
+private:
+	unsigned m_line, m_column;
+	std::size_t m_stride;
+	QColor m_colour;
+};
 
 void SourceView::Open(const libclx::SourceLocation& file)
 {
 	std::string filename;
 	unsigned line, column, offset;
 	file.Get(filename, line, column, offset);
-	
-	libclx::Index clx;
-	auto tu = clx.Parse(
-		filename,
-		{
-			"-std=c++14",
-			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-			"-I", ".",
-		},
-		CXTranslationUnit_None
-	);
 	
 	QFile qfile{QString::fromStdString(filename)};
 	if (qfile.open(QIODevice::ReadOnly))
@@ -50,36 +80,49 @@ void SourceView::Open(const libclx::SourceLocation& file)
 		{CXToken_Literal,     QColor{"red"}},
 	};
 	
-	for (auto&& token: tu.Tokenize())
+	std::thread worker([this, filename]
 	{
-		auto tloc = tu.TokenLocation(token);
-		auto tstr = tu.TokenSpelling(token);
-				
-		std::string token_fn;
-		tloc.Get(token_fn, line, column, offset);
+		libclx::Index clx;
+		auto tu = clx.Parse(
+			filename,
+			{
+				"-std=c++14",
+				"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+				"-I", ".",
+			},
+			CXTranslationUnit_None
+		);
 		
-		if (token_fn == filename)
+		for (auto&& token: tu.Tokenize())
 		{
-			auto cit = text_colour.find(::clang_getTokenKind(token));
-			if (cit != text_colour.end())
-				Highlight(line, column, tstr.size(), cit->second);
+			auto tloc = tu.TokenLocation(token);
+			auto tstr = tu.TokenSpelling(token);
+			
+			std::string token_fn;
+			unsigned line, column, offset;
+			tloc.Get(token_fn, line, column, offset);
+			
+			if (token_fn == filename)
+			{
+				auto cit = text_colour.find(::clang_getTokenKind(token));
+				if (cit != text_colour.end())
+					QCoreApplication::postEvent(this, new HighlightEvent{line, column, tstr.size(), cit->second});
+			}
 		}
-	}
+	});
+	worker.detach();
 }
 
-void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
+bool SourceView::event(QEvent *ev)
 {
-	QTextCursor cursor(document());
-	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
-	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
-	cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
-
-	setTextCursor(cursor);
-	QTextCharFormat format;
-	format.setForeground(QBrush{colour});
-	format.setFontFamily("monospace");
-	setCurrentCharFormat(format);
+	if (ev->type() == HighlightEvent::TypeEnum())
+	{
+		auto highlight = static_cast<HighlightEvent*>(ev);
+		highlight->Highlight(*this);
+		return true;
+	}
+	
+	return QTextEdit::event(ev);
 }
 	
 } // end of namespace
