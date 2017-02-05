@@ -20,7 +20,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QTreeView" name="m_class_tree">
+      <widget class="gui::CodeBaseTreeView" name="m_class_tree">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -119,6 +119,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>gui::CodeBaseTreeView</class>
+   <extends>QTreeView</extends>
+   <header>gui/CodeBaseTreeView.hh</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
