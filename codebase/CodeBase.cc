@@ -24,36 +24,32 @@ CodeBase::CodeBase()
 
 void CodeBase::Visit(libclx::Cursor cursor, libclx::Cursor)
 {
-	auto loc = cursor.Location();
-	if (!loc.IsFromSystemHeader())
+	switch (cursor.Kind())
 	{
-		switch (cursor.Kind())
+	case CXCursor_ClassDecl:
+	case CXCursor_StructDecl:
+	{
+		auto it = std::find_if(m_types.begin(), m_types.end(), [usr=cursor.USR()](auto& t)
 		{
-		case CXCursor_ClassDecl:
-		case CXCursor_StructDecl:
-		{
-			auto it = std::find_if(m_types.begin(), m_types.end(), [usr=cursor.USR()](auto& t)
-			{
-				return t.ID() == usr;
-			});
-			if (it == m_types.end())
-				it = m_types.Add(DataType{cursor, m_types.ID()});
-			it->Visit(cursor);
-			break;
-		}
-			
-		case CXCursor_Namespace:
-		{
-			cursor.Visit([this](libclx::Cursor cursor, libclx::Cursor parent)
-			{
-				Visit(cursor, parent);
-			});
-			break;
-		}
+			return t.ID() == usr;
+		});
+		if (it == m_types.end())
+			it = m_types.Add(DataType{cursor, m_types.ID()});
+		it->Visit(cursor);
+		break;
+	}
 		
-		default:
-			break;
-		}
+	case CXCursor_Namespace:
+	{
+		cursor.Visit([this](libclx::Cursor cursor, libclx::Cursor parent)
+		{
+			Visit(cursor, parent);
+		});
+		break;
+	}
+	
+	default:
+		break;
 	}
 }
 

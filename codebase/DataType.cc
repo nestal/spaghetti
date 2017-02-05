@@ -41,7 +41,7 @@ const std::string& DataType::ID() const
 void DataType::Visit(libclx::Cursor self)
 {
 	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl);
-	assert(!m_name.empty() && m_name == self.Spelling());
+	assert(m_name == self.Spelling());
 	assert(!m_usr.empty() && m_usr == self.USR());
 	
 	if (self.IsDefinition())
