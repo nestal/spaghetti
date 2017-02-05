@@ -10,14 +10,20 @@
 // Created by nestal on 2/5/17.
 //
 
-#include "CodeBaseTreeView.hh"
+#pragma once
+
+#include <QTextEdit>
+
+#include "libclx/Index.hh"
 
 namespace gui {
 
-
-CodeBaseTreeView::CodeBaseTreeView(QWidget *parent) :
-	QTreeView(parent)
+class SourceView : public QTextEdit
 {
-}
-
+public:
+	using QTextEdit::QTextEdit;
+	
+	void Open(const libclx::SourceLocation& location);
+};
+	
 } // end of namespace

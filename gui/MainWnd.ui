@@ -20,7 +20,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="gui::CodeBaseTreeView" name="m_class_tree">
+      <widget class="QTreeView" name="m_class_tree">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -61,7 +61,7 @@
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QTextEdit" name="m_code_view">
+          <widget class="gui::SourceView" name="m_code_view">
            <property name="acceptRichText">
             <bool>false</bool>
            </property>
@@ -125,9 +125,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>gui::CodeBaseTreeView</class>
-   <extends>QTreeView</extends>
-   <header>gui/CodeBaseTreeView.hh</header>
+   <class>gui::SourceView</class>
+   <extends>QTextEdit</extends>
+   <header>gui/SourceView.hh</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -35,8 +35,6 @@ public:
 	MainWnd();
 	~MainWnd();
 
-	void OpenSourceCode(const libclx::SourceLocation& file);
-	
 private:
 	void OnDoubleClickItem(const QModelIndex& idx);
 	
