@@ -20,6 +20,7 @@ Variable::Variable(libclx::Cursor field, const std::string& parent) :
 	m_name{field.Spelling()},
 	m_usr{field.USR()},
 	m_parent{parent},
+	m_location{field.Location()},
 	m_type{field.Type()}
 {
 }
@@ -49,4 +50,9 @@ std::ostream& operator<<(std::ostream& os, const Variable& c)
 	return os << c.m_name << ": " << c.m_type;
 }
 
+libclx::SourceLocation Variable::Location() const
+{
+	return m_location;
+}
+	
 } // end of namespace

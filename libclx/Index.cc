@@ -163,6 +163,11 @@ bool SourceLocation::operator==(const SourceLocation& rhs) const
 	return ::clang_equalLocations(m_loc, rhs.m_loc) != 0;
 }
 
+bool SourceLocation::operator!=(const SourceLocation& rhs) const
+{
+	return !operator==(rhs);
+}
+
 std::ostream& operator<<(std::ostream& os, const SourceLocation& loc)
 {
 	std::string file;

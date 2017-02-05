@@ -42,6 +42,11 @@ const std::string& Entity::NullID()
 	return id;
 }
 
+libclx::SourceLocation Entity::Location() const
+{
+	return libclx::SourceLocation();
+}
+
 std::size_t LeafEntity::ChildCount() const
 {
 	return 0;

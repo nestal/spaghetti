@@ -15,6 +15,8 @@
 
 #include "ui_MainWnd.h"
 
+#include "libclx/Index.hh"
+
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -59,8 +61,19 @@ MainWnd::MainWnd() :
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 {
 	auto entity = m_model->ClassModel()->Get(idx);
-	if (entity)
-		std::cout << entity << std::endl;
+	if (entity && entity->Location() != libclx::SourceLocation{})
+		OpenSourceCode(entity->Location());
+}
+
+void MainWnd::OpenSourceCode(const libclx::SourceLocation& file)
+{
+	std::cout << "opening " << file << std::endl;
+	std::string filename;
+	unsigned line, column, offset;
+	file.Get(filename, line, column, offset);
+	
+	QFile qfile{QString::fromStdString(filename)};
+	m_ui->m_code_view->setPlainText(QString{qfile.readAll()});
 }
 
 MainWnd::~MainWnd() = default;

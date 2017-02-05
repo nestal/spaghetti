@@ -54,6 +54,8 @@ public:
 	std::string Type() const override;
 	const std::string& Parent() const override;
 	
+	libclx::SourceLocation Location() const override;
+	
 	void Visit(libclx::Cursor self);
 	
 	boost::iterator_range<field_iterator> Fields() const;
@@ -64,9 +66,7 @@ public:
 	std::size_t IndexOf(const Entity* child) const override;
 	
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
-	
-	libclx::SourceLocation DefinitionLocation() const;
-	
+
 private:
 	std::string m_name;
 	std::string m_usr;

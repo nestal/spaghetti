@@ -15,6 +15,7 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <string>
 #include <type_traits>
+#include <libclx/Index.hh>
 
 namespace codebase {
 
@@ -57,6 +58,8 @@ public:
 	virtual Entity* Child(std::size_t idx) = 0;
 	virtual std::size_t IndexOf(const Entity* child) const = 0;
 
+	virtual libclx::SourceLocation Location() const;
+	
 	static const std::size_t npos = std::string::npos;
 	
 	using iterator       = EntityIterator<Entity, Entity>;

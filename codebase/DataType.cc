@@ -44,7 +44,7 @@ void DataType::Visit(libclx::Cursor self)
 	assert(m_name == self.Spelling());
 	assert(!m_usr.empty() && m_usr == self.USR());
 	
-	if (self.IsDefinition())
+	if (self.IsDefinition() || m_definition == libclx::SourceLocation{})
 		m_definition = self.Location();
 	
 	self.Visit([this](libclx::Cursor child, libclx::Cursor)
@@ -97,7 +97,7 @@ std::string DataType::Type() const
 	return "Class";
 }
 
-libclx::SourceLocation DataType::DefinitionLocation() const
+libclx::SourceLocation DataType::Location() const
 {
 	return m_definition;
 }

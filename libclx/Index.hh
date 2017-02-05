@@ -174,6 +174,7 @@ public:
 	SourceLocation& operator=(SourceLocation&&) = default;
 	
 	bool operator==(const SourceLocation& rhs) const;
+	bool operator!=(const SourceLocation& rhs) const;
 	
 	void Get(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const;
 	bool IsFromMainFile() const;
