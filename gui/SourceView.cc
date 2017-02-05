@@ -18,7 +18,6 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QEvent>
-#include <thread>
 #include <QtCore/QCoreApplication>
 
 namespace gui {
@@ -65,6 +64,12 @@ private:
 	QColor m_colour;
 };
 
+SourceView::~SourceView()
+{
+	if (m_worker.joinable())
+		m_worker.join();
+}
+
 void SourceView::Open(const libclx::SourceLocation& file)
 {
 	std::string filename;
@@ -80,46 +85,52 @@ void SourceView::Open(const libclx::SourceLocation& file)
 	QFile qfile{QString::fromStdString(filename)};
 	if (qfile.open(QIODevice::ReadOnly))
 		setPlainText(qfile.readAll());
-		
+	
+	// only start 1 thread at a time
+	if (m_worker.joinable())
+		m_worker.join();
+	
+	// to improve latency, use a separate thread to parse the file
+	m_worker = std::thread([this, filename]{ Parse(filename);});
+}
+
+void SourceView::Parse(const std::string& filename)
+{
 	static const std::map<CXTokenKind, QColor> text_colour = {
 		{CXToken_Punctuation, QColor{"black"}},
-		{CXToken_Keyword,     QColor{"blue"}},
-		{CXToken_Comment,     QColor{"green"}},
-		{CXToken_Identifier,  QColor{"black"}},
-		{CXToken_Literal,     QColor{"red"}},
+		{CXToken_Keyword, QColor{"blue"}},
+		{CXToken_Comment, QColor{"green"}},
+		{CXToken_Identifier, QColor{"black"}},
+		{CXToken_Literal, QColor{"red"}},
 	};
 	
-	std::thread worker([this, filename]
-	{
-		libclx::Index clx;
-		auto tu = clx.Parse(
-			filename,
-			{
-				"-std=c++14",
-				"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-				"-I", ".",
-			},
-			CXTranslationUnit_None
-		);
-		
-		for (auto&& token: tu.Tokenize())
+	libclx::Index clx;
+	auto tu = clx.Parse(
+		filename,
 		{
-			auto tloc = tu.TokenLocation(token);
-			auto tstr = tu.TokenSpelling(token);
-			
-			std::string token_fn;
-			unsigned line, column, offset;
-			tloc.Get(token_fn, line, column, offset);
-			
-			if (token_fn == filename)
-			{
-				auto cit = text_colour.find(::clang_getTokenKind(token));
-				if (cit != text_colour.end())
-					QCoreApplication::postEvent(this, new HighlightEvent{line, column, tstr.size(), cit->second});
-			}
+			"-std=c++14",
+			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+			"-I", ".",
+		},
+		CXTranslationUnit_None
+	);
+	
+	for (auto&& token: tu.Tokenize())
+	{
+		auto tloc = tu.TokenLocation(token);
+		auto tstr = tu.TokenSpelling(token);
+		
+		std::string token_fn;
+		unsigned line, column, offset;
+		tloc.Get(token_fn, line, column, offset);
+		
+		if (token_fn == filename)
+		{
+			auto cit = text_colour.find(::clang_getTokenKind(token));
+			if (cit != text_colour.end())
+				QCoreApplication::postEvent(this, new HighlightEvent{line, column, tstr.size(), cit->second});
 		}
-	});
-	worker.detach();
+	}
 }
 
 bool SourceView::event(QEvent *ev)
