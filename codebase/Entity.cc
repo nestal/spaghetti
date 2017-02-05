@@ -41,5 +41,25 @@ const std::string& Entity::NullID()
 	static const std::string id;
 	return id;
 }
-	
+
+std::size_t LeafEntity::ChildCount() const
+{
+	return 0;
+}
+
+const Entity *LeafEntity::Child(std::size_t) const
+{
+	return nullptr;
+}
+
+Entity *LeafEntity::Child(std::size_t)
+{
+	return nullptr;
+}
+
+std::size_t LeafEntity::IndexOf(const Entity*) const
+{
+	return npos;
+}
+
 } // end of namespace

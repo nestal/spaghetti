@@ -25,7 +25,7 @@ namespace gui {
 Model::Model(QObject *parent) :
 	QObject{parent},
 	m_scene{std::make_unique<QGraphicsScene>(this)},
-	m_class_model{&m_codebase, &m_codebase, this}
+	m_class_model{m_codebase.Root(), &m_codebase, this}
 {
 }
 

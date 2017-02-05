@@ -25,6 +25,9 @@ are shipped with Fedora.
 
 See the [COPYING](./COPYING) file for details.
 
+Any code contributed to the project must be licensed under GPLv2 to be
+accepted. There is no need to assign copyright to any party. 
+
 # Authors and Contributors
 
 [Nestal W.H. Wan](https://gitlab.com/nestal)

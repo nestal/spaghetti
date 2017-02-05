@@ -17,6 +17,7 @@
 
 #include "DataType.hh"
 #include "EntityVec.hh"
+#include "Namespace.hh"
 
 #include "libclx/Index.hh"
 
@@ -30,7 +31,10 @@
 
 namespace codebase {
 
-class CodeBase : public Entity, public EntityMap
+/**
+ * \brief The root of the Entity tree in a code base.
+ */
+class CodeBase : public EntityMap
 {
 public:
 	struct ByID {};
@@ -56,18 +60,7 @@ public:
 	
 	std::string Parse(const std::string& source);
 	
-	void Visit(libclx::Cursor cursor, libclx::Cursor parent);
-
-	const std::string& Name() const override;
-	const std::string& Parent() const override;
-	const std::string& ID() const override;
-	std::string Type() const override;
-	
-	std::size_t ChildCount() const override;
-	const Entity* Child(std::size_t idx) const override;
-	Entity* Child(std::size_t idx) override;
-	std::size_t IndexOf(const Entity* child) const override;
-	
+	const Entity* Root() const;
 	const Entity* Find(const std::string& id) const override;
 
 private:
@@ -77,8 +70,8 @@ private:
 	libclx::Index  m_index;
 	std::vector<libclx::TranslationUnit> m_units;
 	
-	EntityVec<DataType> m_types{"DataTypes", NullID()};
-	EntityIndex         m_search_index;
+	Namespace    m_root;
+	EntityIndex  m_search_index;
 };
 
 } // end of namespace

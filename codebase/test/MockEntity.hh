@@ -7,33 +7,33 @@
 */
 
 //
-// Created by nestal on 2/4/17.
+// Created by nestal on 2/5/17.
 //
 
 #pragma once
 
-#include "Entity.hh"
-#include "libclx/Index.hh"
+#include "codebase/Entity.hh"
 
 namespace codebase {
+namespace ut {
 
-class Variable : public LeafEntity
+class MockEntity : public LeafEntity
 {
 public:
-	Variable(libclx::Cursor field, const std::string& parent);
+	MockEntity(std::size_t idx = 0, const std::string& parent = {});
 	
 	const std::string& Name() const override;
 	const std::string& Parent() const override;
 	const std::string& ID() const override;
 	std::string Type() const override;
 	
-	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
-
+	std::size_t Index() const;
+	
 private:
+	std::size_t m_index{};
 	std::string m_name;
-	std::string m_usr;
 	std::string m_parent;
-	libclx::Type   m_type;
+	std::string m_id;
 };
 	
-} // end of namespace
+}} // end of namespace
