@@ -32,7 +32,12 @@ MainWnd::MainWnd() :
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
-		QMessageBox::aboutQt(this);
+		QMessageBox::about(this,
+			tr("About Spaghetti"),
+			tr("Spaghetti: version 0.1\n"
+			"License: GNU General Public License Version 2\n"
+			"(C) 2017 Wan Wai Ho (Nestal)")
+		);
 	});
 	connect(m_ui->m_action_about_Qt, &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_open,     &QAction::triggered, [this]
