@@ -12,22 +12,25 @@
 
 #include "SourceView.hh"
 
-#include <QtCore/QFile>
+#include "libclx/Index.hh"
+#include "libclx/SourceRange.hh"
+#include "libclx/Token.hh"
 
-#include <iostream>
+#include <QtCore/QFile>
 
 namespace gui {
 
 void SourceView::Open(const libclx::SourceLocation& file)
 {
-	std::cout << "opening " << file << std::endl;
 	std::string filename;
 	unsigned line, column, offset;
 	file.Get(filename, line, column, offset);
 	
 	QFile qfile{QString::fromStdString(filename)};
-	if (qfile.open(QIODevice::ReadOnly | QIODevice::Text))
-		setPlainText(QString{qfile.readAll()});
+	if (qfile.open(QIODevice::ReadOnly))
+		setText(qfile.readAll());
+	
+ 
 }
 
 } // end of namespace

@@ -14,7 +14,9 @@
 
 #include <QTextEdit>
 
-#include "libclx/Index.hh"
+namespace libclx {
+class SourceLocation;
+}
 
 namespace gui {
 

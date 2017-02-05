@@ -11,13 +11,14 @@
 //
 
 #include "Index.hh"
+#include "SourceRange.hh"
+#include "Token.hh"
 #include "XStr.hh"
 
 #include <boost/functional/hash.hpp>
 
 #include <vector>
 #include <ostream>
-#include <clang-c/Index.h>
 
 namespace libclx {
 
@@ -48,7 +49,7 @@ std::string TranslationUnit::Spelling() const
 	return XStr{::clang_getTranslationUnitSpelling(m_unit.get())}.Str();
 }
 
-Cursor TranslationUnit::Root()
+Cursor TranslationUnit::Root() const
 {
 	return Cursor{::clang_getTranslationUnitCursor(m_unit.get())};
 }
@@ -59,6 +60,16 @@ boost::iterator_range<TranslationUnit::diag_iterator> TranslationUnit::Diagnosti
 		diag_iterator{0, m_unit.get()},
 		diag_iterator{::clang_getNumDiagnostics(m_unit.get()), m_unit.get()}
 	};
+}
+
+Cursor TranslationUnit::Locate(const SourceLocation& loc) const
+{
+	return {::clang_getCursor(m_unit.get(), loc.m_loc)};
+}
+
+TokenSet TranslationUnit::Tokenize() const
+{
+	return TokenSet{m_unit.get(), Root().Extent().m_range};
 }
 
 Cursor::Cursor(CXCursor cursor) :
@@ -131,41 +142,9 @@ std::string Cursor::Comment() const
 	return XStr{::clang_Cursor_getRawCommentText(m_cursor)}.Str();
 }
 
-SourceLocation::SourceLocation() :
-	SourceLocation{::clang_getNullLocation()}
+SourceRange Cursor::Extent() const
 {
-}
-
-SourceLocation::SourceLocation(CXSourceLocation loc) :
-	m_loc{loc}
-{
-}
-
-void SourceLocation::Get(std::string& file, unsigned& line, unsigned& column, unsigned& offset) const
-{
-	CXFile xfile;
-	::clang_getFileLocation(m_loc, &xfile, &line, &column, &offset);
-	file = XStr{::clang_getFileName(xfile)}.Str();
-}
-
-bool SourceLocation::IsFromMainFile() const
-{
-	return ::clang_Location_isFromMainFile(m_loc) != 0;
-}
-
-bool SourceLocation::IsFromSystemHeader() const
-{
-	return ::clang_Location_isInSystemHeader(m_loc) != 0;
-}
-
-bool SourceLocation::operator==(const SourceLocation& rhs) const
-{
-	return ::clang_equalLocations(m_loc, rhs.m_loc) != 0;
-}
-
-bool SourceLocation::operator!=(const SourceLocation& rhs) const
-{
-	return !operator==(rhs);
+	return SourceRange{::clang_getCursorExtent(m_cursor)};
 }
 
 std::ostream& operator<<(std::ostream& os, const SourceLocation& loc)
@@ -227,23 +206,5 @@ std::string Diagnostic::Str() const
 	return XStr{::clang_formatDiagnostic(m_diag.get(), ::clang_defaultDiagnosticDisplayOptions())}.Str();
 }
 
-std::size_t SourceLocation::Hash::operator()(const SourceLocation& loc) const
-{
-	CXFile file{};
-	unsigned line, column, offset;
-	::clang_getFileLocation(loc.m_loc, &file, &line, &column, &offset);
-	
-	CXFileUniqueID uid{};
-	if (::clang_getFileUniqueID(file, &uid))
-	{
-		std::size_t seed{};
-		for (auto&& data : uid.data)
-			boost::hash_combine(seed, data);
-		
-		boost::hash_combine(seed, offset);
-		return seed;
-	}
-	return 0;
-}
 
 } // end of namespace

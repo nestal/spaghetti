@@ -11,7 +11,6 @@
 //
 
 #include "DataType.hh"
-#include "EditAction.hh"
 
 #include <iostream>
 

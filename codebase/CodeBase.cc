@@ -11,7 +11,6 @@
 //
 
 #include "CodeBase.hh"
-#include "EditAction.hh"
 
 #include <iostream>
 

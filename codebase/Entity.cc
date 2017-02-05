@@ -11,6 +11,7 @@
 //
 
 #include "Entity.hh"
+#include "libclx/SourceRange.hh"
 
 #include <cassert>
 

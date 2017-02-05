@@ -13,7 +13,9 @@
 #pragma once
 
 #include "Entity.hh"
+
 #include "libclx/Index.hh"
+#include "libclx/SourceRange.hh"
 
 namespace codebase {
 
