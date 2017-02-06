@@ -31,7 +31,10 @@ MainWnd::MainWnd() :
 {
 	m_ui->setupUi(this);
 	m_model->AttachView(m_ui->m_class_gfx);
+	
+	// initialize tree view
 	m_ui->m_class_tree->setModel(m_model->ClassModel());
+	m_ui->m_class_tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
@@ -63,8 +66,6 @@ MainWnd::MainWnd() :
 		if (loc != libclx::SourceLocation{})
 			m_ui->m_code_view->Open(loc);
 	});
-	
-	m_ui->m_class_tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 MainWnd::~MainWnd() = default;
