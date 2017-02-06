@@ -53,7 +53,6 @@ MainWnd::MainWnd() :
 		if (!file.isNull())
 		{
 			m_model->Parse(file);
-			m_ui->m_class_tree->header()->resizeSections(QHeaderView::ResizeToContents);
 		}
 	});
 	
@@ -65,7 +64,7 @@ MainWnd::MainWnd() :
 			m_ui->m_code_view->Open(loc);
 	});
 	
-	m_ui->m_class_tree->header()->resizeSections(QHeaderView::ResizeToContents);
+	m_ui->m_class_tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 MainWnd::~MainWnd() = default;
