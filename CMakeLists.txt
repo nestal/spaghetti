@@ -15,6 +15,7 @@ find_package(Boost REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(GTest)
 find_package(Doxygen)
+find_package(Threads)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -31,7 +32,7 @@ target_link_libraries(spag clang)
 
 file(GLOB GUI_FILES gui/*.hh gui/*.cc)
 add_executable(spaghetti-gui ${GUI_FILES})
-target_link_libraries(spaghetti-gui spag Qt5::Widgets)
+target_link_libraries(spaghetti-gui spag Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
 
 if (GTEST_FOUND)
 	file(GLOB TEST_FILES */test/*.hh */test/*.cc)

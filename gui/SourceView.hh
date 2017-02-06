@@ -14,6 +14,8 @@
 
 #include <QTextEdit>
 
+#include <thread>
+
 namespace libclx {
 class SourceLocation;
 class TranslationUnit;
@@ -25,11 +27,17 @@ class SourceView : public QTextEdit
 {
 public:
 	using QTextEdit::QTextEdit;
+	~SourceView();
 	
 	void Open(const libclx::SourceLocation& location);
 
 private:
+	class HighlightEvent;
+	
+	void Parse(const std::string& filename);
 	void Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour);
+	
+	std::thread m_worker;
 };
 	
 } // end of namespace

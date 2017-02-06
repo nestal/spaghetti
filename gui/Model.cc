@@ -16,9 +16,7 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsView>
 
-#include <iterator>
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 
@@ -28,6 +26,8 @@ Model::Model(QObject *parent) :
 	m_class_model{m_codebase.Root(), &m_codebase, this}
 {
 }
+
+Model::~Model() = default;
 
 void Model::Parse(const QString& file)
 {
@@ -62,14 +62,15 @@ void Model::AttachView(QGraphicsView *view)
 	view->setScene(m_scene.get());
 }
 
-EntityModel *Model::ClassModel()
+QAbstractItemModel *Model::ClassModel()
 {
 	return &m_class_model;
 }
 
-boost::optional<const libclx::TranslationUnit&> Model::Locate(const libclx::SourceLocation& loc) const
+libclx::SourceLocation Model::LocateEntity(const QModelIndex& idx) const
 {
-	return m_codebase.Locate(loc);
+	auto entity = m_class_model.At(idx);
+	return entity ? entity->Location() : libclx::SourceLocation{};
 }
 	
 } // end of namespace

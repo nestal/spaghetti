@@ -6,6 +6,7 @@ to parse the source code, and use [Qt](http://doc.qt.io/qt-5/index.html) to
 render it.
 
 ![snapshot-1](./doc/snapshot1.png)
+Screenshoot of Spaghetti pre-v0.1 (5 Feb 2017)
 
 # Requirements
 
@@ -37,4 +38,3 @@ accepted. There is no need to assign copyright to any party.
 # Help Wanted
 
 * Icon/Logo
-* Source code viewer with syntax highlighting

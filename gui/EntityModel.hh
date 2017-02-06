@@ -22,6 +22,11 @@ class EntityMap;
 
 namespace gui {
 
+/**
+ * \brief Model for entity tree
+ *
+ * Used with Qt model-view architecture.
+ */
 class EntityModel : public QAbstractItemModel
 {
 public:
@@ -30,7 +35,7 @@ public:
 	using QAbstractItemModel::beginResetModel;
 	using QAbstractItemModel::endResetModel;
 	
-	const codebase::Entity* Get(const QModelIndex& idx) const;
+	const codebase::Entity* At(const QModelIndex& idx) const;
 
 private:
 	int rowCount(const QModelIndex &parent) const override;
@@ -41,6 +46,7 @@ private:
 	
 	QModelIndex index(int row, int column, const QModelIndex &parent) const override;
 	QModelIndex parent(const QModelIndex &child) const override;
+	Qt::ItemFlags flags(const QModelIndex& idx) const override;
 	
 private:
 	const codebase::Entity    *m_root{};

@@ -16,14 +16,13 @@
 
 #include "EntityModel.hh"
 #include "codebase/CodeBase.hh"
-
+/*
 #include "UMLClassItem.hh"
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
-
-#include <boost/optional.hpp>
+*/
 
 #include <memory>
 
@@ -32,18 +31,20 @@ class QGraphicsView;
 
 namespace gui {
 
+class UMLClassItem;
+
 class Model : public QObject
 {
 public:
 	Model(QObject *parent);
-	~Model() = default;
+	~Model();
 
 	void AttachView(QGraphicsView *view);
 	void Parse(const QString& file);
 	
-	EntityModel* ClassModel();
+	QAbstractItemModel* ClassModel();
 	
-	boost::optional<const libclx::TranslationUnit&> Locate(const libclx::SourceLocation& loc) const;
+	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
 	
 private:
 	// order is important here, since m_scene depends on m_repo.
@@ -53,7 +54,7 @@ private:
 	std::unique_ptr<QGraphicsScene> m_scene;
 
 	EntityModel m_class_model;
-	
+	/*
 	struct ByUSR {};
 	
 	using ClassDB = boost::multi_index_container<
@@ -72,7 +73,7 @@ private:
 		>
 	>;
 	
-	ClassDB m_classes;
+	ClassDB m_classes;*/
 };
 	
 } // end of namespace

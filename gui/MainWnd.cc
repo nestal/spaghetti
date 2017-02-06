@@ -31,7 +31,10 @@ MainWnd::MainWnd() :
 {
 	m_ui->setupUi(this);
 	m_model->AttachView(m_ui->m_class_gfx);
+	
+	// initialize tree view
 	m_ui->m_class_tree->setModel(m_model->ClassModel());
+	m_ui->m_class_tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
@@ -39,6 +42,7 @@ MainWnd::MainWnd() :
 			tr("About Spaghetti"),
 			tr("Spaghetti: version 0.1\n"
 			"License: GNU General Public License Version 2\n"
+			"https://gitlab.com/nestal/spaghetti\n"
 			"(C) 2017 Wan Wai Ho (Nestal)")
 		);
 	});
@@ -50,19 +54,18 @@ MainWnd::MainWnd() :
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
+		{
 			m_model->Parse(file);
+		}
 	});
+	
+	// open source code when the user double click the item
 	connect(m_ui->m_class_tree, &QAbstractItemView::doubleClicked, [this](const QModelIndex& idx)
 	{
-		OnDoubleClickItem(idx);
+		auto loc = m_model->LocateEntity(idx);
+		if (loc != libclx::SourceLocation{})
+			m_ui->m_code_view->Open(loc);
 	});
-}
-
-void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
-{
-	auto entity = m_model->ClassModel()->Get(idx);
-	if (entity && entity->Location() != libclx::SourceLocation{})
-		m_ui->m_code_view->Open(entity->Location());
 }
 
 MainWnd::~MainWnd() = default;
