@@ -12,57 +12,15 @@
 
 #include "SourceView.hh"
 
+#include "SendFunctorEvent.hh"
+
 #include "libclx/Index.hh"
 #include "libclx/SourceRange.hh"
 #include "libclx/Token.hh"
 
 #include <QtCore/QFile>
-#include <QtCore/QEvent>
-#include <QtCore/QCoreApplication>
 
 namespace gui {
-
-class SourceView::HighlightEvent : public QEvent
-{
-public:
-	HighlightEvent(unsigned line, unsigned column, std::size_t stride, const QColor& colour) :
-		QEvent{static_cast<QEvent::Type>(TypeEnum())},
-		m_line{line},
-		m_column{column},
-		m_stride{stride},
-		m_colour{colour}
-	{
-	}
-	
-	static int TypeEnum()
-	{
-		static const int type = QEvent::registerEventType();
-		return type;
-	}
-	
-	void Highlight(QTextEdit& edit)
-	{
-		QTextCursor cursor(edit.document());
-		cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-		cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, m_line-1);
-		cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, m_column-1);
-		cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(m_stride));
-		
-		edit.setTextCursor(cursor);
-		QTextCharFormat format;
-		format.setForeground(QBrush{m_colour});
-		format.setFontFamily("monospace");
-		edit.setCurrentCharFormat(format);
-		
-		cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-		edit.setTextCursor(cursor);
-	}
-	
-private:
-	unsigned m_line, m_column;
-	std::size_t m_stride;
-	QColor m_colour;
-};
 
 SourceView::~SourceView()
 {
@@ -91,7 +49,7 @@ void SourceView::Open(const libclx::SourceLocation& file)
 		m_worker.join();
 	
 	// to improve latency, use a separate thread to parse the file
-	m_worker = std::thread([this, filename]{ Parse(filename);});
+	m_worker = std::thread([this, filename]{Parse(filename);});
 }
 
 void SourceView::Parse(const std::string& filename)
@@ -127,22 +85,33 @@ void SourceView::Parse(const std::string& filename)
 		if (token_fn == filename)
 		{
 			auto cit = text_colour.find(::clang_getTokenKind(token));
+			auto stride = tstr.size();
+			auto colour = cit->second;
 			if (cit != text_colour.end())
-				QCoreApplication::postEvent(this, new HighlightEvent{line, column, tstr.size(), cit->second});
+				SendFunctorEvent(this, [this, line, column, stride, colour]
+				{
+					Highlight(line, column, stride, colour);
+				});
 		}
 	}
 }
 
-bool SourceView::event(QEvent *ev)
+void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
 {
-	if (ev->type() == HighlightEvent::TypeEnum())
-	{
-		auto highlight = static_cast<HighlightEvent*>(ev);
-		highlight->Highlight(*this);
-		return true;
-	}
+	QTextCursor cursor(document());
+	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
+	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
+	cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
 	
-	return QTextEdit::event(ev);
+	setTextCursor(cursor);
+	QTextCharFormat format;
+	format.setForeground(QBrush{colour});
+	format.setFontFamily("monospace");
+	setCurrentCharFormat(format);
+	
+	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+	setTextCursor(cursor);
 }
 	
 } // end of namespace
