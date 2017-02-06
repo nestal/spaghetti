@@ -51,7 +51,10 @@ MainWnd::MainWnd() :
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
+		{
 			m_model->Parse(file);
+			m_ui->m_class_tree->header()->resizeSections(QHeaderView::ResizeToContents);
+		}
 	});
 	
 	// open source code when the user double click the item
@@ -61,6 +64,8 @@ MainWnd::MainWnd() :
 		if (loc != libclx::SourceLocation{})
 			m_ui->m_code_view->Open(loc);
 	});
+	
+	m_ui->m_class_tree->header()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 MainWnd::~MainWnd() = default;

@@ -22,10 +22,22 @@
       </property>
       <widget class="QTreeView" name="m_class_tree">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>400</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
        </property>
        <property name="dragEnabled">
         <bool>true</bool>
@@ -33,16 +45,16 @@
        <property name="dragDropMode">
         <enum>QAbstractItemView::DragOnly</enum>
        </property>
-       <attribute name="headerDefaultSectionSize">
-        <number>300</number>
-       </attribute>
-       <attribute name="headerMinimumSectionSize">
-        <number>100</number>
-       </attribute>
       </widget>
       <widget class="QTabWidget" name="m_tab">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="m_class_tab">
         <attribute name="title">
