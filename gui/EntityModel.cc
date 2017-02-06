@@ -29,17 +29,17 @@ EntityModel::EntityModel(const codebase::Entity *root, const codebase::EntityMap
 
 int EntityModel::rowCount(const QModelIndex& parent) const
 {
-	return static_cast<int>(Get(parent)->ChildCount());
+	return static_cast<int>(At(parent)->ChildCount());
 }
 
-const codebase::Entity *EntityModel::Get(const QModelIndex& idx) const
+const codebase::Entity *EntityModel::At(const QModelIndex& idx) const
 {
 	return idx == QModelIndex{} ? m_root : reinterpret_cast<const codebase::Entity*>(idx.internalPointer());
 }
 
 QVariant EntityModel::data(const QModelIndex& index, int role) const
 {
-	auto entity = Get(index);
+	auto entity = At(index);
 	assert(entity);
 	
 	switch (role)
@@ -81,12 +81,12 @@ int EntityModel::columnCount(const QModelIndex&) const
 
 bool EntityModel::hasChildren(const QModelIndex& parent) const
 {
-	return Get(parent)->ChildCount() > 0;
+	return At(parent)->ChildCount() > 0;
 }
 
 QModelIndex EntityModel::index(int row, int column, const QModelIndex& parent) const
 {
-	auto parent_entity = Get(parent);
+	auto parent_entity = At(parent);
 	assert(parent_entity);
 
 	auto urow = static_cast<std::size_t>(row);
@@ -100,7 +100,7 @@ QModelIndex EntityModel::index(int row, int column, const QModelIndex& parent) c
 
 QModelIndex EntityModel::parent(const QModelIndex& child) const
 {
-	auto pchild = Get(child);
+	auto pchild = At(child);
 	assert(pchild);
 	
 	auto parent = m_index->Find(pchild->Parent());

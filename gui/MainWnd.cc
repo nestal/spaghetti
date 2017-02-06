@@ -53,17 +53,14 @@ MainWnd::MainWnd() :
 		if (!file.isNull())
 			m_model->Parse(file);
 	});
+	
+	// open source code when the user double click the item
 	connect(m_ui->m_class_tree, &QAbstractItemView::doubleClicked, [this](const QModelIndex& idx)
 	{
-		OnDoubleClickItem(idx);
+		auto loc = m_model->LocateEntity(idx);
+		if (loc != libclx::SourceLocation{})
+			m_ui->m_code_view->Open(loc);
 	});
-}
-
-void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
-{
-	auto entity = m_model->ClassModel()->Get(idx);
-	if (entity && entity->Location() != libclx::SourceLocation{})
-		m_ui->m_code_view->Open(entity->Location());
 }
 
 MainWnd::~MainWnd() = default;

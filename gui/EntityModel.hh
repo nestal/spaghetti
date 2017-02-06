@@ -35,7 +35,7 @@ public:
 	using QAbstractItemModel::beginResetModel;
 	using QAbstractItemModel::endResetModel;
 	
-	const codebase::Entity* Get(const QModelIndex& idx) const;
+	const codebase::Entity* At(const QModelIndex& idx) const;
 
 private:
 	int rowCount(const QModelIndex &parent) const override;
