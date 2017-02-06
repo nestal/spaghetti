@@ -80,13 +80,14 @@ QModelIndex EntityModel::index(int row, int column, const QModelIndex& parent) c
 {
 	auto parent_entity = Get(parent);
 	assert(parent_entity);
-	assert(static_cast<std::size_t>(row) < parent_entity->ChildCount());
+
+	auto urow = static_cast<std::size_t>(row);
 	
-	return createIndex(
+	return urow < parent_entity->ChildCount() ? createIndex(
 		row,
 		column,
-		const_cast<codebase::Entity*>(parent_entity->Child(static_cast<std::size_t>(row)))
-	);
+		const_cast<codebase::Entity*>(parent_entity->Child(urow))
+	) : QModelIndex{};
 }
 
 QModelIndex EntityModel::parent(const QModelIndex& child) const
@@ -95,10 +96,9 @@ QModelIndex EntityModel::parent(const QModelIndex& child) const
 	assert(pchild);
 	
 	auto parent = m_index->Find(pchild->Parent());
-	
 	assert(parent);
 	
-	return (pchild == parent || parent == nullptr) ? QModelIndex{} : createIndex(
+	return pchild == parent ? QModelIndex{} : createIndex(
 		static_cast<int>(parent->IndexOf(pchild)), 0,
 		const_cast<codebase::Entity*>(parent)
 	);

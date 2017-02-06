@@ -27,6 +27,18 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragOnly</enum>
+       </property>
+       <attribute name="headerDefaultSectionSize">
+        <number>300</number>
+       </attribute>
+       <attribute name="headerMinimumSectionSize">
+        <number>100</number>
+       </attribute>
       </widget>
       <widget class="QTabWidget" name="m_tab">
        <property name="currentIndex">
