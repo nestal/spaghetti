@@ -52,6 +52,14 @@ QVariant EntityModel::data(const QModelIndex& index, int role) const
 	return {};
 }
 
+Qt::ItemFlags EntityModel::flags(const QModelIndex& idx) const
+{
+	auto flag = QAbstractItemModel::flags(idx);
+	if (idx != QModelIndex{})
+		flag |= Qt::ItemIsDragEnabled;
+	return flag;
+}
+
 QVariant EntityModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (orientation == Qt::Orientation::Horizontal && role == Qt::DisplayRole)

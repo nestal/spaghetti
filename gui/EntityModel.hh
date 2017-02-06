@@ -46,6 +46,7 @@ private:
 	
 	QModelIndex index(int row, int column, const QModelIndex &parent) const override;
 	QModelIndex parent(const QModelIndex &child) const override;
+	Qt::ItemFlags flags(const QModelIndex& idx) const override;
 	
 private:
 	const codebase::Entity    *m_root{};
