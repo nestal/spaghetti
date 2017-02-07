@@ -42,19 +42,6 @@ void Model::Parse(const QString& file)
 	
 	m_class_model.beginResetModel();
 	m_codebase.Parse(file.toStdString());
-
-/*	auto dx = 0;
-	for (std::size_t i = 0 ; i < m_codebase.ChildCount(); ++i)
-	{
-		auto item = new UMLClassItem{*m_codebase.Child(i)};
-		item->moveBy(dx, 0);
-		
-		m_scene->addItem(item);
-		dx += (item->boundingRect().width() + 10);
-		
-		m_classes.insert(item);
-	}*/
-	
 	m_class_model.endResetModel();
 }
 
@@ -62,6 +49,7 @@ void Model::AttachView(QGraphicsView *view)
 {
 	assert(view);
 	view->setScene(m_scene.get());
+	m_scene->setSceneRect(view->rect());
 }
 
 QAbstractItemModel *Model::ClassModel()
