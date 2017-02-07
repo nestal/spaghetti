@@ -30,6 +30,9 @@ namespace gui {
 class EntityModel : public QAbstractItemModel
 {
 public:
+	static const QString m_mime_type;
+	
+public:
 	EntityModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent);
 	
 	using QAbstractItemModel::beginResetModel;
@@ -47,6 +50,8 @@ private:
 	QModelIndex index(int row, int column, const QModelIndex &parent) const override;
 	QModelIndex parent(const QModelIndex &child) const override;
 	Qt::ItemFlags flags(const QModelIndex& idx) const override;
+	
+	QMimeData* mimeData(const QModelIndexList& ids) const override;
 	
 private:
 	const codebase::Entity    *m_root{};

@@ -45,6 +45,9 @@
        <property name="dragDropMode">
         <enum>QAbstractItemView::DragOnly</enum>
        </property>
+       <property name="defaultDropAction">
+        <enum>Qt::CopyAction</enum>
+       </property>
        <property name="uniformRowHeights">
         <bool>true</bool>
        </property>
@@ -68,7 +71,7 @@
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QGraphicsView" name="m_class_gfx">
+          <widget class="gui::ClassDiagramView" name="m_class_gfx">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -158,6 +161,11 @@
    <class>gui::SourceView</class>
    <extends>QTextEdit</extends>
    <header>gui/SourceView.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>gui::ClassDiagramView</class>
+   <extends>QGraphicsView</extends>
+   <header>gui/ClassDiagramView.hh</header>
   </customwidget>
  </customwidgets>
  <resources/>

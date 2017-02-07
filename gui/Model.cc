@@ -16,6 +16,8 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsView>
 
+#include <iostream>
+
 #include <cassert>
 
 namespace gui {
@@ -40,19 +42,6 @@ void Model::Parse(const QString& file)
 	
 	m_class_model.beginResetModel();
 	m_codebase.Parse(file.toStdString());
-
-/*	auto dx = 0;
-	for (std::size_t i = 0 ; i < m_codebase.ChildCount(); ++i)
-	{
-		auto item = new UMLClassItem{*m_codebase.Child(i)};
-		item->moveBy(dx, 0);
-		
-		m_scene->addItem(item);
-		dx += (item->boundingRect().width() + 10);
-		
-		m_classes.insert(item);
-	}*/
-	
 	m_class_model.endResetModel();
 }
 
@@ -60,6 +49,7 @@ void Model::AttachView(QGraphicsView *view)
 {
 	assert(view);
 	view->setScene(m_scene.get());
+	m_scene->setSceneRect(view->rect());
 }
 
 QAbstractItemModel *Model::ClassModel()
@@ -71,6 +61,20 @@ libclx::SourceLocation Model::LocateEntity(const QModelIndex& idx) const
 {
 	auto entity = m_class_model.At(idx);
 	return entity ? entity->Location() : libclx::SourceLocation{};
+}
+
+void Model::AddEntity(const std::string& id, const QPointF& pos)
+{
+	std::cout << "adding " << id << " to " << pos.x() << " " << pos.y() << '\n';
+	
+	auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase.Find(id));
+	if (data_type)
+	{
+		auto item = new UMLClassItem{*data_type};
+		item->moveBy(pos.x(), pos.y());
+		
+		m_scene->addItem(item);
+	}
 }
 	
 } // end of namespace

@@ -45,6 +45,7 @@ public:
 	QAbstractItemModel* ClassModel();
 	
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
+	void AddEntity(const std::string& id, const QPointF& pos);
 	
 private:
 	// order is important here, since m_scene depends on m_repo.

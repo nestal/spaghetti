@@ -66,6 +66,12 @@ MainWnd::MainWnd() :
 		if (loc != libclx::SourceLocation{})
 			m_ui->m_code_view->Open(loc);
 	});
+	
+	// spaghetti's first signal
+	connect(m_ui->m_class_gfx, &ClassDiagramView::DropEntity, [this](const std::string& id, const QPointF& pos)
+	{
+		m_model->AddEntity(id, pos);
+	});
 }
 
 MainWnd::~MainWnd() = default;

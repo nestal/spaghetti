@@ -14,9 +14,16 @@
 
 #include "codebase/Entity.hh"
 
+#include <QMimeData>
+#include <QtCore/QIODevice>
+#include <QtCore/QDataStream>
+
 #include <cassert>
+#include <sstream>
 
 namespace gui {
+
+const QString EntityModel::m_mime_type{"application/vnd.spag.usr"};
 
 EntityModel::EntityModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent) :
 	QAbstractItemModel{parent},
@@ -112,4 +119,26 @@ QModelIndex EntityModel::parent(const QModelIndex& child) const
 	);
 }
 
+QMimeData *EntityModel::mimeData(const QModelIndexList& ids) const
+{
+	std::ostringstream usrs;
+	
+	for (auto&& id : ids)
+	{
+		// the user always select the whole row, so all the model index of
+		// the whole row will be included in "ids"
+		// we only want one
+		if (id.isValid() && id.column() == 0)
+		{
+			auto entity = At(id);
+			assert(entity);
+			usrs << entity->ID() << '\n';
+		}
+	}
+	
+	auto mime = new QMimeData;
+	mime->setData(m_mime_type, usrs.str().c_str());
+	return mime;
+}
+	
 } // end of namespace
