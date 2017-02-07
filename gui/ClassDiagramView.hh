@@ -18,11 +18,17 @@ namespace gui {
 
 class ClassDiagramView : public QGraphicsView
 {
+	Q_OBJECT
+	
 public:
 	ClassDiagramView(QWidget *parent);
 	
+signals:
+	void DropEntity(const std::string& id, const QPointF& pos);
+	
 protected:
 	void dragEnterEvent(QDragEnterEvent *event) override;
+	void dragMoveEvent(QDragMoveEvent *event) override;
 	void dropEvent(QDropEvent *event) override;
 };
 	

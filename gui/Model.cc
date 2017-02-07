@@ -16,6 +16,8 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsView>
 
+#include <iostream>
+
 #include <cassert>
 
 namespace gui {
@@ -71,6 +73,20 @@ libclx::SourceLocation Model::LocateEntity(const QModelIndex& idx) const
 {
 	auto entity = m_class_model.At(idx);
 	return entity ? entity->Location() : libclx::SourceLocation{};
+}
+
+void Model::AddEntity(const std::string& id, const QPointF& pos)
+{
+	std::cout << "adding " << id << " to " << pos.x() << " " << pos.y() << '\n';
+	
+	auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase.Find(id));
+	if (data_type)
+	{
+		auto item = new UMLClassItem{*data_type};
+		item->moveBy(pos.x(), pos.y());
+		
+		m_scene->addItem(item);
+	}
 }
 	
 } // end of namespace

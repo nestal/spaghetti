@@ -17,6 +17,7 @@
 #include <QMimeData>
 
 #include <sstream>
+#include <iostream>
 
 namespace gui {
 
@@ -30,20 +31,25 @@ ClassDiagramView::ClassDiagramView(QWidget *parent) :
 void ClassDiagramView::dragEnterEvent(QDragEnterEvent *event)
 {
 	if (event->mimeData()->hasFormat(EntityModel::m_mime_type))
-	{
-		std::istringstream usrs{event->mimeData()->data(EntityModel::m_mime_type).toStdString()};
-		
-		std::string usr;
-//		while (usrs >> usr)
-//			std::cout << usr << " " << i++ << std::endl;
-		
 		event->acceptProposedAction();
-	}
 }
 
 void ClassDiagramView::dropEvent(QDropEvent *event)
 {
+	auto scene_pos = mapToScene(event->pos());
+	std::istringstream usrs{event->mimeData()->data(EntityModel::m_mime_type).toStdString()};
+	
+	std::string usr;
+	while (usrs >> usr)
+		emit DropEntity(usr, scene_pos);
+	
 	event->acceptProposedAction();
 }
 
+void ClassDiagramView::dragMoveEvent(QDragMoveEvent *event)
+{
+	if (event->mimeData()->hasFormat(EntityModel::m_mime_type))
+		event->acceptProposedAction();
+}
+	
 } // end of namespace

@@ -45,6 +45,9 @@
        <property name="dragDropMode">
         <enum>QAbstractItemView::DragOnly</enum>
        </property>
+       <property name="defaultDropAction">
+        <enum>Qt::CopyAction</enum>
+       </property>
        <property name="uniformRowHeights">
         <bool>true</bool>
        </property>
