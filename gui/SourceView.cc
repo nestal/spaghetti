@@ -28,7 +28,7 @@ SourceView::~SourceView()
 		m_worker.join();
 }
 
-void SourceView::Open(const libclx::SourceLocation& file)
+std::string SourceView::Open(const libclx::SourceLocation& file)
 {
 	std::string filename;
 	unsigned line, column, offset;
@@ -50,6 +50,8 @@ void SourceView::Open(const libclx::SourceLocation& file)
 	
 	// to improve latency, use a separate thread to parse the file
 	m_worker = std::thread([this, filename]{Parse(filename);});
+	
+	return filename;
 }
 
 void SourceView::Parse(const std::string& filename)

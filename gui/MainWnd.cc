@@ -12,6 +12,7 @@
 
 #include "MainWnd.hh"
 #include "Model.hh"
+#include "SourceView.hh"
 
 #include "ui_MainWnd.h"
 
@@ -64,7 +65,10 @@ MainWnd::MainWnd() :
 	{
 		auto loc = m_model->LocateEntity(idx);
 		if (loc != libclx::SourceLocation{})
-			m_ui->m_code_view->Open(loc);
+		{
+			auto view = new SourceView{m_ui->m_tab};
+			m_ui->m_tab->addTab(view, QString::fromStdString(view->Open(loc)));
+		}
 	});
 	
 	// spaghetti's first signal

@@ -29,7 +29,7 @@ public:
 	using QTextEdit::QTextEdit;
 	~SourceView();
 	
-	void Open(const libclx::SourceLocation& location);
+	std::string Open(const libclx::SourceLocation& location);
 
 private:
 	class HighlightEvent;

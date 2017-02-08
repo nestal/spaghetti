@@ -63,8 +63,7 @@ libclx::SourceLocation Model::LocateEntity(const QModelIndex& idx) const
 
 void Model::AddEntity(const std::string& id, const QPointF& pos)
 {
-	auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase.Find(id));
-	if (data_type)
+	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase.Find(id)))
 	{
 		auto item = new UMLClassItem{*data_type};
 		item->moveBy(pos.x(), pos.y());
