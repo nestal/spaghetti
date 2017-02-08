@@ -62,6 +62,14 @@ MainWnd::MainWnd() :
 	// open source code when the user double click the item
 	connect(m_ui->m_class_tree, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
 	
+	// close widget when user clicks it
+	connect(m_ui->m_tab, &QTabWidget::tabCloseRequested, [this](int tab)
+	{
+		auto w = m_ui->m_tab->widget(tab);
+		m_ui->m_tab->removeTab(tab);
+		delete w;
+	});
+	
 	// spaghetti's first signal
 	connect(m_ui->m_class_gfx, &ClassDiagramView::DropEntity, m_model.get(), &Model::AddEntity);
 }
