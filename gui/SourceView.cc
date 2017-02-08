@@ -48,10 +48,10 @@ void SourceView::Open(const libclx::SourceLocation& file)
 		m_worker.join();
 	
 	// to improve latency, use a separate thread to parse the file
-	m_worker = std::thread([this]{Parse();});
+	m_worker = std::thread([this, line, column]{Parse(line, column);});
 }
 
-void SourceView::Parse()
+void SourceView::Parse(unsigned line, unsigned column)
 {
 	static const std::map<CXTokenKind, QColor> text_colour = {
 		{CXToken_Punctuation, QColor{"black"}},
@@ -78,8 +78,8 @@ void SourceView::Parse()
 		auto tstr = tu.TokenSpelling(token);
 		
 		std::string token_fn;
-		unsigned line, column, offset;
-		tloc.Get(token_fn, line, column, offset);
+		unsigned tline, tcolumn, toffset;
+		tloc.Get(token_fn, tline, tcolumn, toffset);
 		
 		if (token_fn == m_filename)
 		{
@@ -87,35 +87,46 @@ void SourceView::Parse()
 			auto stride = tstr.size();
 			auto colour = cit->second;
 			if (cit != text_colour.end())
-				SendFunctorEvent(this, [this, line, column, stride, colour]
+				SendFunctorEvent(this, [this, tline, tcolumn, stride, colour]
 				{
-					Highlight(line, column, stride, colour);
+					Highlight(tline, tcolumn, stride, colour);
 				});
 		}
 	}
+	
+	SendFunctorEvent(this, [this, line, column]
+	{
+		GoTo(line, column);
+	});
 }
 
 void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
 {
-	QTextCursor cursor(document());
+	QTextCursor cursor{document()};
 	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
 	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
 	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
 	cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
-	
 	setTextCursor(cursor);
+	
 	QTextCharFormat format;
 	format.setForeground(QBrush{colour});
 	format.setFontFamily("monospace");
 	setCurrentCharFormat(format);
-	
-	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-	setTextCursor(cursor);
 }
 
 const std::string& SourceView::Filename() const
 {
 	return m_filename;
+}
+
+void SourceView::GoTo(unsigned line, unsigned column)
+{
+	QTextCursor cursor{document()};
+	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
+	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
+	setTextCursor(cursor);
 }
 	
 } // end of namespace

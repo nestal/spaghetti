@@ -86,7 +86,13 @@ MainWnd::MainWnd() :
 				m_ui->m_tab->setCurrentIndex(m_ui->m_tab->addTab(view, QString::fromStdString(filename)));
 			}
 			else
+			{
 				m_ui->m_tab->setCurrentWidget(view);
+				
+				unsigned line, column, offset;
+				loc.Get(filename, line, column, offset);
+				view->GoTo(line, column);
+			}
 		}
 	});
 	
