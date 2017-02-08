@@ -30,9 +30,8 @@ SourceView::~SourceView()
 
 void SourceView::Open(const libclx::SourceLocation& file)
 {
-	std::string filename;
 	unsigned line, column, offset;
-	file.Get(filename, line, column, offset);
+	file.Get(m_filename, line, column, offset);
 	
 	// set the default format before inserting text
 	QTextCharFormat format;
@@ -40,7 +39,7 @@ void SourceView::Open(const libclx::SourceLocation& file)
 	format.setFontFamily("monospace");
 	setCurrentCharFormat(format);
 	
-	QFile qfile{QString::fromStdString(filename)};
+	QFile qfile{QString::fromStdString(m_filename)};
 	if (qfile.open(QIODevice::ReadOnly))
 		setPlainText(qfile.readAll());
 	
@@ -49,10 +48,10 @@ void SourceView::Open(const libclx::SourceLocation& file)
 		m_worker.join();
 	
 	// to improve latency, use a separate thread to parse the file
-	m_worker = std::thread([this, filename]{Parse(filename);});
+	m_worker = std::thread([this, line, column]{Parse(line, column);});
 }
 
-void SourceView::Parse(const std::string& filename)
+void SourceView::Parse(unsigned line, unsigned column)
 {
 	static const std::map<CXTokenKind, QColor> text_colour = {
 		{CXToken_Punctuation, QColor{"black"}},
@@ -64,7 +63,7 @@ void SourceView::Parse(const std::string& filename)
 	
 	libclx::Index clx;
 	auto tu = clx.Parse(
-		filename,
+		m_filename,
 		{
 			"-std=c++14",
 			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
@@ -79,38 +78,52 @@ void SourceView::Parse(const std::string& filename)
 		auto tstr = tu.TokenSpelling(token);
 		
 		std::string token_fn;
-		unsigned line, column, offset;
-		tloc.Get(token_fn, line, column, offset);
+		unsigned tline, tcolumn, toffset;
+		tloc.Get(token_fn, tline, tcolumn, toffset);
 		
-		if (token_fn == filename)
+		if (token_fn == m_filename)
 		{
 			auto cit = text_colour.find(::clang_getTokenKind(token));
 			auto stride = tstr.size();
 			auto colour = cit->second;
 			if (cit != text_colour.end())
-				SendFunctorEvent(this, [this, line, column, stride, colour]
+				SendFunctorEvent(this, [this, tline, tcolumn, stride, colour]
 				{
-					Highlight(line, column, stride, colour);
+					Highlight(tline, tcolumn, stride, colour);
 				});
 		}
 	}
+	
+	SendFunctorEvent(this, [this, line, column]
+	{
+		GoTo(line, column);
+	});
 }
 
 void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
 {
-	QTextCursor cursor(document());
+	QTextCursor cursor{document()};
 	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
 	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
 	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
 	cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
 	
-	setTextCursor(cursor);
 	QTextCharFormat format;
 	format.setForeground(QBrush{colour});
-	format.setFontFamily("monospace");
-	setCurrentCharFormat(format);
-	
+	cursor.mergeCharFormat(format);
+}
+
+const std::string& SourceView::Filename() const
+{
+	return m_filename;
+}
+
+void SourceView::GoTo(unsigned line, unsigned column)
+{
+	QTextCursor cursor{document()};
 	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
+	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
 	setTextCursor(cursor);
 }
 	

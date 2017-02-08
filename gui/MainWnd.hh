@@ -36,6 +36,9 @@ public:
 	~MainWnd();
 
 private:
+	void OnDoubleClickItem(const QModelIndex& idx);
+	
+private:
 	std::unique_ptr<Ui::MainWnd>    m_ui;
 	std::unique_ptr<Model>          m_model;
 };

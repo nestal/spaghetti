@@ -30,14 +30,18 @@ public:
 	~SourceView();
 	
 	void Open(const libclx::SourceLocation& location);
+	void GoTo(unsigned line, unsigned column);
 
+	const std::string& Filename() const;
+	
 private:
 	class HighlightEvent;
 	
-	void Parse(const std::string& filename);
+	void Parse(unsigned line, unsigned column);
 	void Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour);
 	
 	std::thread m_worker;
+	std::string m_filename;
 };
 	
 } // end of namespace

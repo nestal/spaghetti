@@ -47,8 +47,8 @@ std::string CodeBase::Parse(const std::string& source)
 
 const Entity *CodeBase::Find(const std::string& id) const
 {
-	auto it = m_search_index.find(id);
-	return it != m_search_index.end() ? *it : nullptr;
+	auto it = m_search_index.get<ByID>().find(id);
+	return it != m_search_index.get<ByID>().end() ? *it : nullptr;
 }
 
 void CodeBase::AddToIndex(const Entity *entity)

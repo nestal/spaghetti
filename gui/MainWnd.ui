@@ -62,8 +62,20 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="tabShape">
+        <enum>QTabWidget::Rounded</enum>
+       </property>
        <property name="currentIndex">
         <number>0</number>
+       </property>
+       <property name="elideMode">
+        <enum>Qt::ElideLeft</enum>
+       </property>
+       <property name="documentMode">
+        <bool>false</bool>
+       </property>
+       <property name="tabsClosable">
+        <bool>true</bool>
        </property>
        <widget class="QWidget" name="m_class_tab">
         <attribute name="title">
@@ -77,26 +89,6 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="m_code_tab">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="accessibleName">
-         <string/>
-        </property>
-        <attribute name="title">
-         <string>Code View</string>
-        </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="gui::SourceView" name="m_code_view">
-           <property name="acceptRichText">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -157,11 +149,6 @@
   </action>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>gui::SourceView</class>
-   <extends>QTextEdit</extends>
-   <header>gui/SourceView.hh</header>
-  </customwidget>
   <customwidget>
    <class>gui::ClassDiagramView</class>
    <extends>QGraphicsView</extends>
