@@ -18,27 +18,32 @@
 
 namespace gui {
 
+const qreal UMLClassItem::m_margin = 10.0;
+
 UMLClassItem::UMLClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	QGraphicsItem{parent},
 	m_class{class_},
 	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}
 {
+	
 	// use a bold font for class names
 	auto font = m_name->font();
 	font.setBold(true);
 	m_name->setFont(font);
+	m_name->moveBy(m_margin, m_margin);
 	
 	double ypos = m_name->boundingRect().height();
 	for (auto& field : m_class.Fields())
 	{
 		auto field_item = new QGraphicsSimpleTextItem{QString::fromStdString(field.Name()), this};
-		field_item->moveBy(0, ypos);
+		field_item->moveBy(m_margin, ypos + m_margin);
 		ypos += field_item->boundingRect().height();
 	}
 	
 	// initialize geometry
 	prepareGeometryChange();
 	m_bounding = childrenBoundingRect();
+	m_bounding.adjust(-m_margin, -m_margin, m_margin, m_margin);
 	
 	// flags
 	setFlag(QGraphicsItem::ItemIsMovable);
@@ -59,8 +64,8 @@ void UMLClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWi
 	
 	// line between class name and fields
 	painter->drawLine(
-		QPointF{0,                  m_name->boundingRect().height()},
-		QPointF{m_bounding.width(), m_name->boundingRect().height()}
+		QPointF{0,                  m_name->boundingRect().height() + m_margin},
+		QPointF{m_bounding.width(), m_name->boundingRect().height() + m_margin}
 	);
 }
 

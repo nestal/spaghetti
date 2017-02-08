@@ -36,6 +36,8 @@ private:
 	QRectF          m_bounding;
 	
 	QGraphicsSimpleTextItem *m_name;
+	
+	static const qreal m_margin;
 };
 	
 } // end of namespace
