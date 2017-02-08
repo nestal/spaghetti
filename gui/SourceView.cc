@@ -107,12 +107,10 @@ void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, c
 	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
 	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
 	cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
-	setTextCursor(cursor);
 	
 	QTextCharFormat format;
 	format.setForeground(QBrush{colour});
-	format.setFontFamily("monospace");
-	setCurrentCharFormat(format);
+	cursor.mergeCharFormat(format);
 }
 
 const std::string& SourceView::Filename() const

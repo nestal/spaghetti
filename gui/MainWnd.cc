@@ -22,7 +22,6 @@
 #include <QMessageBox>
 
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 
@@ -61,48 +60,48 @@ MainWnd::MainWnd() :
 	});
 	
 	// open source code when the user double click the item
-	connect(m_ui->m_class_tree, &QAbstractItemView::doubleClicked, [this](const QModelIndex& idx)
-	{
-		auto loc = m_model->LocateEntity(idx);
-		if (loc != libclx::SourceLocation{})
-		{
-			SourceView *view{};
-			auto filename = loc.Filename();
-			
-			std::cout << "tabs = " << m_ui->m_tab->count() << std::endl;
-			
-			// search for existing tab showing the file
-			for (int i = 0 ; i < m_ui->m_tab->count() ; ++i)
-			{
-				auto w = dynamic_cast<SourceView*>(m_ui->m_tab->widget(i));
-				if (w && w->Filename() == filename)
-					view = w;
-			}
-			
-			if (!view)
-			{
-				view = new SourceView{m_ui->m_tab};
-				view->Open(loc);
-				m_ui->m_tab->setCurrentIndex(m_ui->m_tab->addTab(view, QString::fromStdString(filename)));
-			}
-			else
-			{
-				m_ui->m_tab->setCurrentWidget(view);
-				
-				unsigned line, column, offset;
-				loc.Get(filename, line, column, offset);
-				view->GoTo(line, column);
-			}
-		}
-	});
+	connect(m_ui->m_class_tree, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
 	
 	// spaghetti's first signal
-	connect(m_ui->m_class_gfx, &ClassDiagramView::DropEntity, [this](const std::string& id, const QPointF& pos)
-	{
-		m_model->AddEntity(id, pos);
-	});
+	connect(m_ui->m_class_gfx, &ClassDiagramView::DropEntity, m_model.get(), &Model::AddEntity);
 }
 
 MainWnd::~MainWnd() = default;
+
+void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
+{
+	auto loc = m_model->LocateEntity(idx);
+	if (loc != libclx::SourceLocation{})
+	{
+		SourceView *view{};
+		auto filename = loc.Filename();
+		
+		// search for existing tab showing the file
+		for (int i = 0; i < m_ui->m_tab->count(); ++i)
+		{
+			auto w = dynamic_cast<SourceView *>(m_ui->m_tab->widget(i));
+			if (w && w->Filename() == filename)
+				view = w;
+		}
+		
+		if (!view)
+		{
+			view = new SourceView{m_ui->m_tab};
+			view->Open(loc);
+			m_ui->m_tab->setCurrentIndex(m_ui->m_tab->addTab(view, QString::fromStdString(filename)));
+		}
+		else
+		{
+			m_ui->m_tab->setCurrentWidget(view);
+			
+			unsigned line, column, offset;
+			loc.Get(filename, line, column, offset);
+			view->GoTo(line, column);
+		}
+		
+		assert(view);
+		view->setFocus(Qt::OtherFocusReason);
+	}
+}
 	
 } // end of namespace
