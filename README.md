@@ -6,13 +6,13 @@ to parse the source code, and use [Qt](http://doc.qt.io/qt-5/index.html) to
 render it.
 
 ![snapshot-1](./doc/snapshot1.png)
-Screenshoot of Spaghetti pre-v0.1 (5 Feb 2017)
+Screenshot of Spaghetti pre-v0.1 (8 Feb 2017)
 
 # Requirements
 
 Spaghetti depends on the following software to build:
 
-* A C++14 compiler (e.g. gcc)
+* A C++14 compiler (e.g. [gcc](http://gcc.gnu.org))
 * [libclang-c](http://clang.llvm.org/doxygen/group__CINDEX.html)
 * [Qt 5.8](http://doc.qt.io/qt-5/index.html)
 * [Boost 1.60](http://www.boost.org/doc/libs/1_60_0/) (older version should
