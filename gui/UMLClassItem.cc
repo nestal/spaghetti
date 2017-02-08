@@ -18,7 +18,8 @@
 
 namespace gui {
 
-const qreal UMLClassItem::m_margin = 10.0;
+const qreal UMLClassItem::m_margin{10.0};
+const qreal UMLClassItem::m_max_width{200.0};
 
 UMLClassItem::UMLClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	QGraphicsItem{parent},
@@ -35,7 +36,14 @@ UMLClassItem::UMLClassItem(const codebase::DataType& class_, QGraphicsItem *pare
 	double ypos = m_name->boundingRect().height();
 	for (auto& field : m_class.Fields())
 	{
-		auto field_item = new QGraphicsSimpleTextItem{QString::fromStdString(field.Name()), this};
+		auto field_item = new QGraphicsSimpleTextItem{
+			QFontMetrics{QFont{}}.elidedText(QString::fromStdString(field.Name() + ":" + field.Type()),
+				Qt::ElideRight,
+				static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
+			    0
+			),
+			this
+		};
 		field_item->moveBy(m_margin, ypos + m_margin);
 		ypos += field_item->boundingRect().height();
 	}
@@ -59,6 +67,10 @@ QRectF UMLClassItem::boundingRect() const
 
 void UMLClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget *)
 {
+	// TODO: make it configurable
+	painter->setPen(QPen{QColor{"purple"}});
+	painter->setBrush(QBrush{QColor{"yellow"}});
+	
 	// bounding rectangle
 	painter->drawRect(m_bounding);
 	

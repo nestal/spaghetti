@@ -37,7 +37,7 @@ private:
 	
 	QGraphicsSimpleTextItem *m_name;
 	
-	static const qreal m_margin;
+	static const qreal m_margin, m_max_width;
 };
 	
 } // end of namespace
