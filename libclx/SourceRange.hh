@@ -35,6 +35,8 @@ public:
 	bool IsFromMainFile() const;
 	bool IsFromSystemHeader() const;
 	
+	std::string Filename() const;
+	
 	struct Hash
 	{
 		std::size_t operator()(const SourceLocation& loc) const;

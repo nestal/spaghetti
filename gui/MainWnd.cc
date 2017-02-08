@@ -66,8 +66,27 @@ MainWnd::MainWnd() :
 		auto loc = m_model->LocateEntity(idx);
 		if (loc != libclx::SourceLocation{})
 		{
-			auto view = new SourceView{m_ui->m_tab};
-			m_ui->m_tab->addTab(view, QString::fromStdString(view->Open(loc)));
+			SourceView *view{};
+			auto filename = loc.Filename();
+			
+			std::cout << "tabs = " << m_ui->m_tab->count() << std::endl;
+			
+			// search for existing tab showing the file
+			for (int i = 0 ; i < m_ui->m_tab->count() ; ++i)
+			{
+				auto w = dynamic_cast<SourceView*>(m_ui->m_tab->widget(i));
+				if (w && w->Filename() == filename)
+					view = w;
+			}
+			
+			if (!view)
+			{
+				view = new SourceView{m_ui->m_tab};
+				view->Open(loc);
+				m_ui->m_tab->setCurrentIndex(m_ui->m_tab->addTab(view, QString::fromStdString(filename)));
+			}
+			else
+				m_ui->m_tab->setCurrentWidget(view);
 		}
 	});
 	

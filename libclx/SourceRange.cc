@@ -73,6 +73,14 @@ std::size_t SourceLocation::Hash::operator()(const SourceLocation& loc) const
 	return 0;
 }
 
+std::string SourceLocation::Filename() const
+{
+	std::string filename;
+	unsigned line, column, offset;
+	Get(filename, line, column, offset);
+	return filename;
+}
+
 SourceRange::SourceRange(CXSourceRange range) :
 	m_range{range}
 {

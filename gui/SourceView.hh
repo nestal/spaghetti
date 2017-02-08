@@ -29,15 +29,18 @@ public:
 	using QTextEdit::QTextEdit;
 	~SourceView();
 	
-	std::string Open(const libclx::SourceLocation& location);
+	void Open(const libclx::SourceLocation& location);
 
+	const std::string& Filename() const;
+	
 private:
 	class HighlightEvent;
 	
-	void Parse(const std::string& filename);
+	void Parse();
 	void Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour);
 	
 	std::thread m_worker;
+	std::string m_filename;
 };
 	
 } // end of namespace
