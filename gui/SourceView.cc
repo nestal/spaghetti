@@ -39,10 +39,6 @@ void SourceView::Open(const libclx::SourceLocation& file)
 	format.setFontFamily("monospace");
 	setCurrentCharFormat(format);
 	
-	QFile qfile{QString::fromStdString(m_filename)};
-	if (qfile.open(QIODevice::ReadOnly))
-		setPlainText(qfile.readAll());
-	
 	// only start 1 thread at a time
 	if (m_worker.joinable())
 		m_worker.join();
@@ -53,6 +49,13 @@ void SourceView::Open(const libclx::SourceLocation& file)
 
 void SourceView::Parse(unsigned line, unsigned column)
 {
+	QFile qfile{QString::fromStdString(m_filename)};
+	if (qfile.open(QIODevice::ReadOnly))
+	{
+		auto all = qfile.readAll();
+		SendFunctorEvent(this, [this, all]{setPlainText(all);});
+	}
+		
 	static const std::map<CXTokenKind, QColor> text_colour = {
 		{CXToken_Punctuation, QColor{"black"}},
 		{CXToken_Keyword, QColor{"blue"}},

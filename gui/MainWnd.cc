@@ -96,18 +96,17 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		{
 			view = new SourceView{m_ui->m_tab};
 			view->Open(loc);
-			m_ui->m_tab->setCurrentIndex(m_ui->m_tab->addTab(view, QString::fromStdString(filename)));
+			m_ui->m_tab->addTab(view, QString::fromStdString(filename));
 		}
 		else
 		{
-			m_ui->m_tab->setCurrentWidget(view);
-			
 			unsigned line, column, offset;
 			loc.Get(filename, line, column, offset);
 			view->GoTo(line, column);
 		}
 		
 		assert(view);
+		m_ui->m_tab->setCurrentWidget(view);
 		view->setFocus(Qt::OtherFocusReason);
 	}
 }
