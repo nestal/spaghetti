@@ -60,7 +60,7 @@ public:
 public:
 	CodeBase();
 	
-	std::string Parse(const std::string& source);
+	std::string Parse(const std::string& source, const std::vector<std::string>& ops);
 	
 	const Entity* Root() const;
 	const Entity* Find(const std::string& id) const override;

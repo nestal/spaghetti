@@ -11,7 +11,7 @@ project(spaghetti)
 
 set(CMAKE_CXX_STANDARD 14)
 
-find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS filesystem REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(GTest)
 find_package(Doxygen)
@@ -28,7 +28,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 file(GLOB LIBCLANGXX_FILES libclx/*.hh libclx/*.cc)
 file(GLOB CODEBASE_FILES codebase/*.hh codebase/*.cc)
 add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES})
-target_link_libraries(spag clang)
+target_link_libraries(spag clang ${Boost_LIBRARIES})
 
 file(GLOB GUI_FILES gui/*.hh gui/*.cc)
 add_executable(spaghetti-gui ${GUI_FILES})

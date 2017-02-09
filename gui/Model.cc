@@ -39,7 +39,12 @@ void Model::Parse(const QString& file)
 	}
 	
 	m_class_model.beginResetModel();
-	m_codebase.Parse(file.toStdString());
+	m_codebase.Parse(file.toStdString(), {
+		"-std=c++14",
+		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+		"-I", SRC_DIR,
+		"-DSRC_DIR=" + std::string{SRC_DIR}
+	});
 	m_class_model.endResetModel();
 }
 

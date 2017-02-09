@@ -21,17 +21,9 @@ CodeBase::CodeBase()
 	AddToIndex(&m_root);
 }
 
-std::string CodeBase::Parse(const std::string& source)
+std::string CodeBase::Parse(const std::string& source, const std::vector<std::string>& ops)
 {
-	auto tu = m_index.Parse(
-		source,
-		{
-			"-std=c++14",
-			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-			"-I", ".",
-		},
-		CXTranslationUnit_None
-	);
+	auto tu = m_index.Parse(source, ops, CXTranslationUnit_None);
 	
 	m_search_index.clear();
 	m_root.Visit(tu.Root());
