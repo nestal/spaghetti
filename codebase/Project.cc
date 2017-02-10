@@ -22,19 +22,21 @@ namespace codebase {
 
 void Project::Open(const std::string& dir, const std::regex& filter)
 {
-	recursive_directory_iterator it{dir};
+	m_project_dir     = dir;
+	m_compile_options = {
+		"-std=c++14",
+		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+		"-I", dir,
+		"-DSRC_DIR=" + dir
+	};
+	
+	recursive_directory_iterator it{m_project_dir};
 	
 	for (auto&& file : it)
 	{
 		auto p = file.path().string();
 		if (std::regex_match(p, filter))
-			m_code_base.Parse(p,
-			{
-				"-std=c++14",
-				"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-				"-I", dir,
-				"-DSRC_DIR=" + dir
-			});
+			m_code_base.Parse(p, m_compile_options);
 	}
 }
 
