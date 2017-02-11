@@ -73,6 +73,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="m_action_open"/>
+    <addaction name="m_action_save_as"/>
     <addaction name="separator"/>
     <addaction name="m_action_exit"/>
    </widget>
@@ -83,7 +84,14 @@
     <addaction name="m_action_about_Qt"/>
     <addaction name="m_action_about"/>
    </widget>
+   <widget class="QMenu" name="menu_Project">
+    <property name="title">
+     <string>Pro&amp;ject</string>
+    </property>
+    <addaction name="m_action_add_source"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Project"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -154,6 +162,16 @@
   <action name="m_action_about_Qt">
    <property name="text">
     <string>About &amp;Qt</string>
+   </property>
+  </action>
+  <action name="m_action_save_as">
+   <property name="text">
+    <string>Save &amp;As...</string>
+   </property>
+  </action>
+  <action name="m_action_add_source">
+   <property name="text">
+    <string>&amp;Add Source...</string>
    </property>
   </action>
  </widget>

@@ -34,6 +34,9 @@ public:
 	ProjectModel(QObject *parent);
 	~ProjectModel();
 
+	void Open(const QString& file);
+	void SaveAs(const QString& file);
+	
 	void AttachView(QGraphicsView *view);
 	void Parse(const QString& file);
 	

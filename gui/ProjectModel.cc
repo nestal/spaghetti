@@ -17,6 +17,7 @@
 #include <QtWidgets/QGraphicsView>
 
 #include <cassert>
+#include <QtWidgets/QFileDialog>
 
 namespace gui {
 
@@ -40,7 +41,7 @@ void ProjectModel::Parse(const QString& file)
 	
 	m_class_model.beginResetModel();
 	m_project.AddSource(file.toStdString());
-	m_project.Save("");
+//	m_project.Save("");
 	m_class_model.endResetModel();
 }
 
@@ -71,6 +72,25 @@ void ProjectModel::AddEntity(const std::string& id, const QPointF& pos)
 		
 		m_scene->addItem(item);
 	}
+}
+
+void ProjectModel::Open(const QString& file)
+{
+	// delete all items
+	for (auto&& item : m_scene->items())
+	{
+		m_scene->removeItem(item);
+		delete item;
+	}
+	
+	m_class_model.beginResetModel();
+	m_project.Load(file.toStdString());
+	m_class_model.endResetModel();
+}
+
+void ProjectModel::SaveAs(const QString& file)
+{
+	m_project.Save(file.toStdString());
 }
 	
 } // end of namespace

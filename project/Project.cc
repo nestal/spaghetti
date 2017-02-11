@@ -13,6 +13,8 @@
 #include "Project.hh"
 
 #include <boost/filesystem.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 #include <iostream>
 
@@ -65,12 +67,18 @@ const std::string& Project::Dir() const
 	return m_dir;
 }
 
-void Project::Save(const std::string& ) const
+void Project::Save(const std::string& filename) const
 {
-	for (auto&& tu : m_code_base.TranslationUnits())
-	{
-		std::cout << "TU: " << tu.Spelling() << std::endl;
-	}
+	std::ofstream str{filename};
+	boost::archive::text_oarchive oa{str};
+	oa << *this;
+}
+
+void Project::Load(const std::string& filename)
+{
+	std::ifstream str{filename};
+	boost::archive::text_iarchive ia{str};
+	ia >> *this;
 }
 	
 } // end of namespace

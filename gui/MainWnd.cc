@@ -46,8 +46,26 @@ MainWnd::MainWnd() :
 			"(C) 2017 Wan Wai Ho (Nestal)")
 		);
 	});
-	connect(m_ui->m_action_about_Qt, &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
-	connect(m_ui->m_action_open,     &QAction::triggered, [this]
+	connect(m_ui->m_action_open,       &QAction::triggered, [this]
+	{
+		assert(m_model);
+		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));
+		
+		// string will be null if user press cancel
+		if (!file.isNull())
+			m_model->Open(file);
+	});
+	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
+	{
+		assert(m_model);
+		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"));
+		
+		// string will be null if user press cancel
+		if (!file.isNull())
+			m_model->SaveAs(file);
+	});
+	connect(m_ui->m_action_about_Qt,   &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
+	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
 	{
 		assert(m_model);
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Source Code"));
