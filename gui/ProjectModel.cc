@@ -10,7 +10,7 @@
 // Created by nestal on 9/16/16.
 //
 
-#include "Model.hh"
+#include "ProjectModel.hh"
 #include "UMLClassItem.hh"
 
 #include <QtWidgets/QGraphicsScene>
@@ -20,16 +20,16 @@
 
 namespace gui {
 
-Model::Model(QObject *parent) :
+ProjectModel::ProjectModel(QObject *parent) :
 	QObject{parent},
 	m_scene{std::make_unique<QGraphicsScene>(this)},
 	m_class_model{m_codebase.Root(), &m_codebase, this}
 {
 }
 
-Model::~Model() = default;
+ProjectModel::~ProjectModel() = default;
 
-void Model::Parse(const QString& file)
+void ProjectModel::Parse(const QString& file)
 {
 	// delete all items
 	for (auto&& item : m_scene->items())
@@ -48,25 +48,25 @@ void Model::Parse(const QString& file)
 	m_class_model.endResetModel();
 }
 
-void Model::AttachView(QGraphicsView *view)
+void ProjectModel::AttachView(QGraphicsView *view)
 {
 	assert(view);
 	view->setScene(m_scene.get());
 	m_scene->setSceneRect(view->rect());
 }
 
-QAbstractItemModel *Model::ClassModel()
+QAbstractItemModel *ProjectModel::ClassModel()
 {
 	return &m_class_model;
 }
 
-libclx::SourceLocation Model::LocateEntity(const QModelIndex& idx) const
+libclx::SourceLocation ProjectModel::LocateEntity(const QModelIndex& idx) const
 {
 	auto entity = m_class_model.At(idx);
 	return entity ? entity->Location() : libclx::SourceLocation{};
 }
 
-void Model::AddEntity(const std::string& id, const QPointF& pos)
+void ProjectModel::AddEntity(const std::string& id, const QPointF& pos)
 {
 	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase.Find(id)))
 	{

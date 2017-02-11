@@ -11,7 +11,7 @@
 //
 
 #include "MainWnd.hh"
-#include "Model.hh"
+#include "ProjectModel.hh"
 #include "SourceView.hh"
 
 #include "ui_MainWnd.h"
@@ -27,7 +27,7 @@ namespace gui {
 
 MainWnd::MainWnd() :
 	m_ui{std::make_unique<Ui::MainWnd>()},
-	m_model{std::make_unique<Model>(this)}
+	m_model{std::make_unique<ProjectModel>(this)}
 {
 	m_ui->setupUi(this);
 	m_model->AttachView(m_ui->m_class_gfx);
@@ -71,7 +71,7 @@ MainWnd::MainWnd() :
 	});
 	
 	// spaghetti's first signal
-	connect(m_ui->m_class_gfx, &ClassDiagramView::DropEntity, m_model.get(), &Model::AddEntity);
+	connect(m_ui->m_class_gfx, &ClassDiagramView::DropEntity, m_model.get(), &ProjectModel::AddEntity);
 }
 
 MainWnd::~MainWnd() = default;

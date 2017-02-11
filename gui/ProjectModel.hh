@@ -14,7 +14,7 @@
 
 #include <QObject>
 
-#include "EntityModel.hh"
+#include "logical_view/Model.hh"
 #include "codebase/CodeBase.hh"
 
 #include <memory>
@@ -26,11 +26,11 @@ namespace gui {
 
 class UMLClassItem;
 
-class Model : public QObject
+class ProjectModel : public QObject
 {
 public:
-	Model(QObject *parent);
-	~Model();
+	ProjectModel(QObject *parent);
+	~ProjectModel();
 
 	void AttachView(QGraphicsView *view);
 	void Parse(const QString& file);
@@ -47,7 +47,7 @@ private:
 	codebase::CodeBase              m_codebase;
 	std::unique_ptr<QGraphicsScene> m_scene;
 
-	EntityModel m_class_model;
+	logical_view::Model m_class_model;
 };
 	
 } // end of namespace

@@ -30,7 +30,7 @@ file(GLOB CODEBASE_FILES codebase/*.hh codebase/*.cc)
 add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES})
 target_link_libraries(spag clang ${Boost_LIBRARIES})
 
-file(GLOB GUI_FILES gui/*.hh gui/*.cc)
+file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh)
 add_executable(spaghetti-gui ${GUI_FILES})
 target_link_libraries(spaghetti-gui spag Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
 

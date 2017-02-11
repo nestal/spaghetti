@@ -25,7 +25,7 @@ class QGraphicsScene;
 
 namespace gui {
 
-class Model;
+class ProjectModel;
 
 class MainWnd : public QMainWindow
 {
@@ -40,7 +40,7 @@ private:
 	
 private:
 	std::unique_ptr<Ui::MainWnd>    m_ui;
-	std::unique_ptr<Model>          m_model;
+	std::unique_ptr<ProjectModel>          m_model;
 };
 	
 } // end of namespace

@@ -11,7 +11,7 @@
 //
 
 #include "ClassDiagramView.hh"
-#include "EntityModel.hh"
+#include "logical_view/Model.hh"
 
 #include <QDragEnterEvent>
 #include <QMimeData>
@@ -30,14 +30,14 @@ ClassDiagramView::ClassDiagramView(QWidget *parent) :
 
 void ClassDiagramView::dragEnterEvent(QDragEnterEvent *event)
 {
-	if (event->mimeData()->hasFormat(EntityModel::m_mime_type))
+	if (event->mimeData()->hasFormat(logical_view::Model::m_mime_type))
 		event->acceptProposedAction();
 }
 
 void ClassDiagramView::dropEvent(QDropEvent *event)
 {
 	auto scene_pos = mapToScene(event->pos());
-	std::istringstream usrs{event->mimeData()->data(EntityModel::m_mime_type).toStdString()};
+	std::istringstream usrs{event->mimeData()->data(logical_view::Model::m_mime_type).toStdString()};
 	
 	std::string usr;
 	while (usrs >> usr)
@@ -48,7 +48,7 @@ void ClassDiagramView::dropEvent(QDropEvent *event)
 
 void ClassDiagramView::dragMoveEvent(QDragMoveEvent *event)
 {
-	if (event->mimeData()->hasFormat(EntityModel::m_mime_type))
+	if (event->mimeData()->hasFormat(logical_view::Model::m_mime_type))
 		event->acceptProposedAction();
 }
 	

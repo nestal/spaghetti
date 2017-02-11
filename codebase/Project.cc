@@ -40,4 +40,9 @@ void Project::Open(const std::string& dir, const std::regex& filter)
 	}
 }
 
+void Project::AddCompileOptions(std::initializer_list<std::string> opts)
+{
+	m_compile_options.insert(m_compile_options.end(), opts.begin(), opts.end());
+}
+	
 } // end of namespace
