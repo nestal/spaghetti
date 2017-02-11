@@ -12,11 +12,20 @@
 
 #pragma once
 
-#include "CodeBase.hh"
+#include "codebase/CodeBase.hh"
 
 #include <regex>
 
-namespace codebase {
+/**
+ * \brief Namespace for project layer.
+ *
+ * This layer contains the classes that abstract elements of a project, e.g.
+ * loading projects from file, compiling the project etc. It is responsible
+ * to manage all user input data that cannot be deduced from the code base.
+ * These data includes the class diagram data (e.g. how many diagrams, what
+ * classes does these diagrams contains).
+ */
+namespace project {
 
 class Project
 {
@@ -24,14 +33,19 @@ public:
 	Project() = default;
 	
 	void Open(const std::string& dir, const std::regex& filter);
+	void AddSource(const std::string& file);
 	
 	void AddCompileOptions(std::initializer_list<std::string> opts);
+	
+	codebase::CodeBase& CodeBase();
+	
+	const std::string& Dir() const;
 	
 private:
 	std::vector<std::string>    m_compile_options;
 	std::string                 m_project_dir;
 	
-	CodeBase m_code_base;
+	codebase::CodeBase m_code_base;
 };
 	
 } // end of namespace

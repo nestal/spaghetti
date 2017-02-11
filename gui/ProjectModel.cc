@@ -23,7 +23,7 @@ namespace gui {
 ProjectModel::ProjectModel(QObject *parent) :
 	QObject{parent},
 	m_scene{std::make_unique<QGraphicsScene>(this)},
-	m_class_model{m_codebase.Root(), &m_codebase, this}
+	m_class_model{m_project.CodeBase().Root(), &m_project.CodeBase(), this}
 {
 }
 
@@ -39,12 +39,7 @@ void ProjectModel::Parse(const QString& file)
 	}
 	
 	m_class_model.beginResetModel();
-	m_codebase.Parse(file.toStdString(), {
-		"-std=c++14",
-		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-		"-I", SRC_DIR,
-		"-DSRC_DIR=" + std::string{SRC_DIR}
-	});
+	m_project.AddSource(file.toStdString());
 	m_class_model.endResetModel();
 }
 
@@ -68,7 +63,7 @@ libclx::SourceLocation ProjectModel::LocateEntity(const QModelIndex& idx) const
 
 void ProjectModel::AddEntity(const std::string& id, const QPointF& pos)
 {
-	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase.Find(id)))
+	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_project.CodeBase().Find(id)))
 	{
 		auto item = new class_diagram::ClassItem{*data_type};
 		item->moveBy(pos.x(), pos.y());

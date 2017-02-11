@@ -12,10 +12,11 @@
 
 #pragma once
 
-#include <QObject>
+// base class includes first
+#include <QtCore/QObject>
 
 #include "logical_view/Model.hh"
-#include "codebase/CodeBase.hh"
+#include "project/Project.hh"
 
 #include <memory>
 
@@ -45,7 +46,7 @@ private:
 	// order is important here, since m_scene depends on m_repo.
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed
 	// before the Repository is destroyed.
-	codebase::CodeBase              m_codebase;
+	project::Project                m_project;
 	std::unique_ptr<QGraphicsScene> m_scene;
 
 	logical_view::Model m_class_model;

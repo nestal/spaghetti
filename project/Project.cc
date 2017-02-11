@@ -18,7 +18,7 @@
 
 using namespace boost::filesystem;
 
-namespace codebase {
+namespace project {
 
 void Project::Open(const std::string& dir, const std::regex& filter)
 {
@@ -36,13 +36,23 @@ void Project::Open(const std::string& dir, const std::regex& filter)
 	{
 		auto p = file.path().string();
 		if (std::regex_match(p, filter))
-			m_code_base.Parse(p, m_compile_options);
+			AddSource(p);
 	}
 }
 
 void Project::AddCompileOptions(std::initializer_list<std::string> opts)
 {
 	m_compile_options.insert(m_compile_options.end(), opts.begin(), opts.end());
+}
+
+codebase::CodeBase& Project::CodeBase()
+{
+	return m_code_base;
+}
+
+void Project::AddSource(const std::string& file)
+{
+	m_code_base.Parse(file, m_compile_options);
 }
 	
 } // end of namespace

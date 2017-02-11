@@ -10,11 +10,11 @@
 // Created by nestal on 2/9/17.
 //
 
-#include "codebase/Project.hh"
+#include "project/Project.hh"
 
 #include <gtest/gtest.h>
 
-using namespace codebase;
+using namespace project;
 
 TEST(PROJECT_TEST, Test_Open_Project)
 {
