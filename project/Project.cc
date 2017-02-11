@@ -20,9 +20,14 @@ using namespace boost::filesystem;
 
 namespace project {
 
+Project::Project(const std::string& dir) :
+	m_dir{dir}
+{
+}
+
 void Project::Open(const std::string& dir, const std::regex& filter)
 {
-	m_project_dir     = dir;
+	m_dir     = dir;
 	m_compile_options = {
 		"-std=c++14",
 		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
@@ -30,7 +35,7 @@ void Project::Open(const std::string& dir, const std::regex& filter)
 		"-DSRC_DIR=" + dir
 	};
 	
-	recursive_directory_iterator it{m_project_dir};
+	recursive_directory_iterator it{m_dir};
 	
 	for (auto&& file : it)
 	{
@@ -53,6 +58,11 @@ codebase::CodeBase& Project::CodeBase()
 void Project::AddSource(const std::string& file)
 {
 	m_code_base.Parse(file, m_compile_options);
+}
+
+const std::string& Project::Dir() const
+{
+	return m_dir;
 }
 	
 } // end of namespace

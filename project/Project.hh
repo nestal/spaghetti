@@ -30,7 +30,7 @@ namespace project {
 class Project
 {
 public:
-	Project() = default;
+	Project(const std::string& dir = ".");
 	
 	void Open(const std::string& dir, const std::regex& filter);
 	void AddSource(const std::string& file);
@@ -42,8 +42,12 @@ public:
 	const std::string& Dir() const;
 	
 private:
-	std::vector<std::string>    m_compile_options;
-	std::string                 m_project_dir;
+	std::vector<std::string>    m_compile_options{
+		"-std=c++14",
+		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+		"-I", "."
+	};
+	std::string        m_dir;
 	
 	codebase::CodeBase m_code_base;
 };
