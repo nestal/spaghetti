@@ -19,25 +19,26 @@
 class QGraphicsSimpleTextItem;
 
 namespace gui {
+namespace class_diagram {
 
-class UMLClassItem : public QGraphicsItem
+class ClassItem: public QGraphicsItem
 {
 public:
-	UMLClassItem(const codebase::DataType& class_, QGraphicsItem *parent = {});
-	~UMLClassItem();
+	ClassItem(const codebase::DataType& class_, QGraphicsItem *parent = {});
+	~ClassItem();
 	
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 	
 	const std::string& ID() const;
-	
+
 private:
 	const codebase::DataType& m_class;
-	QRectF          m_bounding;
+	QRectF m_bounding;
 	
 	QGraphicsSimpleTextItem *m_name;
 	
 	static const qreal m_margin, m_max_width;
 };
 	
-} // end of namespace
+}} // end of namespace

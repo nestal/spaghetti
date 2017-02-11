@@ -10,8 +10,8 @@
 // Created by nestal on 2/7/17.
 //
 
-#include "ClassDiagramView.hh"
-#include "logical_view/Model.hh"
+#include "View.hh"
+#include "gui/logical_view/Model.hh"
 
 #include <QDragEnterEvent>
 #include <QMimeData>
@@ -20,21 +20,21 @@
 #include <iostream>
 
 namespace gui {
+namespace class_diagram {
 
-
-ClassDiagramView::ClassDiagramView(QWidget *parent) :
+View::View(QWidget *parent) :
 	QGraphicsView{parent}
 {
 	setAcceptDrops(true);
 }
 
-void ClassDiagramView::dragEnterEvent(QDragEnterEvent *event)
+void View::dragEnterEvent(QDragEnterEvent *event)
 {
 	if (event->mimeData()->hasFormat(logical_view::Model::m_mime_type))
 		event->acceptProposedAction();
 }
 
-void ClassDiagramView::dropEvent(QDropEvent *event)
+void View::dropEvent(QDropEvent *event)
 {
 	auto scene_pos = mapToScene(event->pos());
 	std::istringstream usrs{event->mimeData()->data(logical_view::Model::m_mime_type).toStdString()};
@@ -46,10 +46,10 @@ void ClassDiagramView::dropEvent(QDropEvent *event)
 	event->acceptProposedAction();
 }
 
-void ClassDiagramView::dragMoveEvent(QDragMoveEvent *event)
+void View::dragMoveEvent(QDragMoveEvent *event)
 {
 	if (event->mimeData()->hasFormat(logical_view::Model::m_mime_type))
 		event->acceptProposedAction();
 }
 	
-} // end of namespace
+}} // end of namespace

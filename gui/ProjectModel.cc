@@ -11,7 +11,7 @@
 //
 
 #include "ProjectModel.hh"
-#include "UMLClassItem.hh"
+#include "gui/class_diagram/ClassItem.hh"
 
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsView>
@@ -70,7 +70,7 @@ void ProjectModel::AddEntity(const std::string& id, const QPointF& pos)
 {
 	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase.Find(id)))
 	{
-		auto item = new UMLClassItem{*data_type};
+		auto item = new class_diagram::ClassItem{*data_type};
 		item->moveBy(pos.x(), pos.y());
 		
 		m_scene->addItem(item);

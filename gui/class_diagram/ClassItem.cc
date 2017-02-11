@@ -10,18 +10,20 @@
 // Created by nestal on 1/31/17.
 //
 
-#include "UMLClassItem.hh"
+#include "ClassItem.hh"
 
 #include <QFont>
 #include <QGraphicsSimpleTextItem>
 #include <QPainter>
 
 namespace gui {
+namespace class_diagram {
 
-const qreal UMLClassItem::m_margin{10.0};
-const qreal UMLClassItem::m_max_width{200.0};
+const qreal ClassItem::m_margin{10.0};
 
-UMLClassItem::UMLClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
+const qreal ClassItem::m_max_width{200.0};
+
+ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	QGraphicsItem{parent},
 	m_class{class_},
 	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}
@@ -37,10 +39,11 @@ UMLClassItem::UMLClassItem(const codebase::DataType& class_, QGraphicsItem *pare
 	for (auto& field : m_class.Fields())
 	{
 		auto field_item = new QGraphicsSimpleTextItem{
-			QFontMetrics{QFont{}}.elidedText(QString::fromStdString(field.Name() + ":" + field.Type()),
+			QFontMetrics{QFont{}}.elidedText(
+				QString::fromStdString(field.Name() + ":" + field.Type()),
 				Qt::ElideRight,
 				static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
-			    0
+				0
 			),
 			this
 		};
@@ -58,14 +61,14 @@ UMLClassItem::UMLClassItem(const codebase::DataType& class_, QGraphicsItem *pare
 	setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
-UMLClassItem::~UMLClassItem() = default;
+ClassItem::~ClassItem() = default;
 
-QRectF UMLClassItem::boundingRect() const
+QRectF ClassItem::boundingRect() const
 {
 	return m_bounding;
 }
 
-void UMLClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget *)
+void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
 	// TODO: make it configurable
 	painter->setPen(QPen{QColor{"purple"}});
@@ -76,14 +79,14 @@ void UMLClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWi
 	
 	// line between class name and fields
 	painter->drawLine(
-		QPointF{0,                  m_name->boundingRect().height() + m_margin},
+		QPointF{0, m_name->boundingRect().height() + m_margin},
 		QPointF{m_bounding.width(), m_name->boundingRect().height() + m_margin}
 	);
 }
 
-const std::string& UMLClassItem::ID() const
+const std::string& ClassItem::ID() const
 {
 	return m_class.ID();
 }
 	
-} // end of namespace
+}} // end of namespace

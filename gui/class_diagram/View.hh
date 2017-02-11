@@ -15,21 +15,22 @@
 #include <QGraphicsView>
 
 namespace gui {
+namespace class_diagram {
 
-class ClassDiagramView : public QGraphicsView
+class View: public QGraphicsView
 {
-	Q_OBJECT
-	
+Q_OBJECT
+
 public:
-	ClassDiagramView(QWidget *parent);
-	
+	View(QWidget *parent);
+
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);
-	
+
 protected:
 	void dragEnterEvent(QDragEnterEvent *event) override;
 	void dragMoveEvent(QDragMoveEvent *event) override;
 	void dropEvent(QDropEvent *event) override;
 };
 	
-} // end of namespace
+}} // end of namespace

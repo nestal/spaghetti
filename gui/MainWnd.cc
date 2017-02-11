@@ -71,7 +71,7 @@ MainWnd::MainWnd() :
 	});
 	
 	// spaghetti's first signal
-	connect(m_ui->m_class_gfx, &ClassDiagramView::DropEntity, m_model.get(), &ProjectModel::AddEntity);
+	connect(m_ui->m_class_gfx, &class_diagram::View::DropEntity, m_model.get(), &ProjectModel::AddEntity);
 }
 
 MainWnd::~MainWnd() = default;

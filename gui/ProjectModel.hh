@@ -23,8 +23,9 @@ class QGraphicsScene;
 class QGraphicsView;
 
 namespace gui {
-
-class UMLClassItem;
+namespace class_diagram {
+class ClassItem;
+}
 
 class ProjectModel : public QObject
 {

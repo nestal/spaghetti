@@ -83,7 +83,7 @@
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="gui::ClassDiagramView" name="m_class_gfx">
+          <widget class="gui::class_diagram::View" name="m_class_gfx">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -150,9 +150,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>gui::ClassDiagramView</class>
+   <class>gui::class_diagram::View</class>
    <extends>QGraphicsView</extends>
-   <header>gui/ClassDiagramView.hh</header>
+   <header>gui/class_diagram/View.hh</header>
   </customwidget>
  </customwidgets>
  <resources/>
