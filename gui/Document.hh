@@ -12,30 +12,46 @@
 
 #pragma once
 
-#include <QObject>
+// base class includes first
+#include <QtCore/QObject>
 
-#include "EntityModel.hh"
-#include "codebase/CodeBase.hh"
+#include "project/Project.hh"
 
 #include <memory>
 
+class QAbstractItemModel;
 class QGraphicsScene;
 class QGraphicsView;
 
 namespace gui {
+namespace class_diagram {
+class ClassItem;
+}
 
-class UMLClassItem;
+namespace logical_view {
+class Model;
+}
 
-class Model : public QObject
+/**
+ * \brief Aggregates all models in this application
+ *
+ * The Document contains all other models: class diagram models, logical view model,
+ * and the Project instance.
+ */
+class Document : public QObject
 {
 public:
-	Model(QObject *parent);
-	~Model();
+	Document(QObject *parent);
+	~Document();
 
+	void Open(const QString& file);
+	void SaveAs(const QString& file);
+	
 	void AttachView(QGraphicsView *view);
-	void Parse(const QString& file);
+	void AddSource(const QString& file);
 	
 	QAbstractItemModel* ClassModel();
+	QAbstractItemModel* ProjectModel();
 	
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
 	void AddEntity(const std::string& id, const QPointF& pos);
@@ -44,10 +60,13 @@ private:
 	// order is important here, since m_scene depends on m_repo.
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed
 	// before the Repository is destroyed.
-	codebase::CodeBase              m_codebase;
+	project::Project                m_project;
 	std::unique_ptr<QGraphicsScene> m_scene;
 
-	EntityModel m_class_model;
+	class ProjectModel_;
+	std::unique_ptr<ProjectModel_>  m_project_model;
+	
+	std::unique_ptr<logical_view::Model> m_class_model;
 };
 	
 } // end of namespace

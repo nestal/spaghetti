@@ -11,7 +11,7 @@
 //
 
 #include "MainWnd.hh"
-#include "Model.hh"
+#include "Document.hh"
 #include "SourceView.hh"
 
 #include "ui_MainWnd.h"
@@ -27,14 +27,17 @@ namespace gui {
 
 MainWnd::MainWnd() :
 	m_ui{std::make_unique<Ui::MainWnd>()},
-	m_model{std::make_unique<Model>(this)}
+	m_model{std::make_unique<Document>(this)}
 {
 	m_ui->setupUi(this);
 	m_model->AttachView(m_ui->m_class_gfx);
 	
-	// initialize tree view
-	m_ui->m_class_tree->setModel(m_model->ClassModel());
-	m_ui->m_class_tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	// initialize logical view
+	m_ui->m_logical_view->setModel(m_model->ClassModel());
+	m_ui->m_logical_view->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	
+	// initialize project view
+	m_ui->m_project_view->setModel(m_model->ProjectModel());
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
@@ -46,8 +49,26 @@ MainWnd::MainWnd() :
 			"(C) 2017 Wan Wai Ho (Nestal)")
 		);
 	});
-	connect(m_ui->m_action_about_Qt, &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
-	connect(m_ui->m_action_open,     &QAction::triggered, [this]
+	connect(m_ui->m_action_open,       &QAction::triggered, [this]
+	{
+		assert(m_model);
+		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));
+		
+		// string will be null if user press cancel
+		if (!file.isNull())
+			m_model->Open(file);
+	});
+	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
+	{
+		assert(m_model);
+		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"));
+		
+		// string will be null if user press cancel
+		if (!file.isNull())
+			m_model->SaveAs(file);
+	});
+	connect(m_ui->m_action_about_Qt,   &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
+	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
 	{
 		assert(m_model);
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Source Code"));
@@ -55,12 +76,12 @@ MainWnd::MainWnd() :
 		// string will be null if user press cancel
 		if (!file.isNull())
 		{
-			m_model->Parse(file);
+			m_model->AddSource(file);
 		}
 	});
 	
 	// open source code when the user double click the item
-	connect(m_ui->m_class_tree, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
+	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
 	
 	// close widget when user clicks it
 	connect(m_ui->m_tab, &QTabWidget::tabCloseRequested, [this](int tab)
@@ -71,7 +92,7 @@ MainWnd::MainWnd() :
 	});
 	
 	// spaghetti's first signal
-	connect(m_ui->m_class_gfx, &ClassDiagramView::DropEntity, m_model.get(), &Model::AddEntity);
+	connect(m_ui->m_class_gfx, &class_diagram::View::DropEntity, m_model.get(), &Document::AddEntity);
 }
 
 MainWnd::~MainWnd() = default;
@@ -96,18 +117,17 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		{
 			view = new SourceView{m_ui->m_tab};
 			view->Open(loc);
-			m_ui->m_tab->setCurrentIndex(m_ui->m_tab->addTab(view, QString::fromStdString(filename)));
+			m_ui->m_tab->addTab(view, QString::fromStdString(filename));
 		}
 		else
 		{
-			m_ui->m_tab->setCurrentWidget(view);
-			
 			unsigned line, column, offset;
 			loc.Get(filename, line, column, offset);
 			view->GoTo(line, column);
 		}
 		
 		assert(view);
+		m_ui->m_tab->setCurrentWidget(view);
 		view->setFocus(Qt::OtherFocusReason);
 	}
 }

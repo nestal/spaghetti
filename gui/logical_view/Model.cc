@@ -10,7 +10,7 @@
 // Created by nestal on 2/4/17.
 //
 
-#include "EntityModel.hh"
+#include "Model.hh"
 
 #include "codebase/Entity.hh"
 
@@ -22,10 +22,11 @@
 #include <sstream>
 
 namespace gui {
+namespace logical_view {
 
-const QString EntityModel::m_mime_type{"application/vnd.spag.usr"};
+const QString Model::m_mime_type{"application/vnd.spag.usr"};
 
-EntityModel::EntityModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent) :
+Model::Model(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent) :
 	QAbstractItemModel{parent},
 	m_root{root},
 	m_index{index}
@@ -34,32 +35,30 @@ EntityModel::EntityModel(const codebase::Entity *root, const codebase::EntityMap
 	assert(m_index);
 }
 
-int EntityModel::rowCount(const QModelIndex& parent) const
+int Model::rowCount(const QModelIndex& parent) const
 {
 	return static_cast<int>(At(parent)->ChildCount());
 }
 
-const codebase::Entity *EntityModel::At(const QModelIndex& idx) const
+const codebase::Entity *Model::At(const QModelIndex& idx) const
 {
-	return idx == QModelIndex{} ? m_root : reinterpret_cast<const codebase::Entity*>(idx.internalPointer());
+	return idx == QModelIndex{} ? m_root : reinterpret_cast<const codebase::Entity *>(idx.internalPointer());
 }
 
-QVariant EntityModel::data(const QModelIndex& index, int role) const
+QVariant Model::data(const QModelIndex& index, int role) const
 {
 	auto entity = At(index);
 	assert(entity);
 	
 	switch (role)
 	{
-	case Qt::DisplayRole:
-		return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->Type());
-	default:
-		break;
+	case Qt::DisplayRole: return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->Type());
+	default: break;
 	}
 	return {};
 }
 
-Qt::ItemFlags EntityModel::flags(const QModelIndex& idx) const
+Qt::ItemFlags Model::flags(const QModelIndex& idx) const
 {
 	auto flag = QAbstractItemModel::flags(idx);
 	if (idx != QModelIndex{})
@@ -67,7 +66,7 @@ Qt::ItemFlags EntityModel::flags(const QModelIndex& idx) const
 	return flag;
 }
 
-QVariant EntityModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant Model::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (orientation == Qt::Orientation::Horizontal && role == Qt::DisplayRole)
 	{
@@ -81,31 +80,31 @@ QVariant EntityModel::headerData(int section, Qt::Orientation orientation, int r
 	return {};
 }
 
-int EntityModel::columnCount(const QModelIndex&) const
+int Model::columnCount(const QModelIndex&) const
 {
 	return 2;
 }
 
-bool EntityModel::hasChildren(const QModelIndex& parent) const
+bool Model::hasChildren(const QModelIndex& parent) const
 {
 	return At(parent)->ChildCount() > 0;
 }
 
-QModelIndex EntityModel::index(int row, int column, const QModelIndex& parent) const
+QModelIndex Model::index(int row, int column, const QModelIndex& parent) const
 {
 	auto parent_entity = At(parent);
 	assert(parent_entity);
-
+	
 	auto urow = static_cast<std::size_t>(row);
 	
 	return urow < parent_entity->ChildCount() ? createIndex(
 		row,
 		column,
-		const_cast<codebase::Entity*>(parent_entity->Child(urow))
+		const_cast<codebase::Entity *>(parent_entity->Child(urow))
 	) : QModelIndex{};
 }
 
-QModelIndex EntityModel::parent(const QModelIndex& child) const
+QModelIndex Model::parent(const QModelIndex& child) const
 {
 	auto pchild = At(child);
 	assert(pchild);
@@ -115,11 +114,11 @@ QModelIndex EntityModel::parent(const QModelIndex& child) const
 	
 	return pchild == parent ? QModelIndex{} : createIndex(
 		static_cast<int>(parent->IndexOf(pchild)), 0,
-		const_cast<codebase::Entity*>(parent)
+		const_cast<codebase::Entity *>(parent)
 	);
 }
 
-QMimeData *EntityModel::mimeData(const QModelIndexList& ids) const
+QMimeData *Model::mimeData(const QModelIndexList& ids) const
 {
 	std::ostringstream usrs;
 	
@@ -141,4 +140,4 @@ QMimeData *EntityModel::mimeData(const QModelIndexList& ids) const
 	return mime;
 }
 	
-} // end of namespace
+}} // end of namespace

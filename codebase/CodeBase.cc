@@ -21,17 +21,9 @@ CodeBase::CodeBase()
 	AddToIndex(&m_root);
 }
 
-std::string CodeBase::Parse(const std::string& source)
+std::string CodeBase::Parse(const std::string& source, const std::vector<std::string>& ops)
 {
-	auto tu = m_index.Parse(
-		source,
-		{
-			"-std=c++14",
-			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-			"-I", ".",
-		},
-		CXTranslationUnit_None
-	);
+	auto tu = m_index.Parse(source, ops, CXTranslationUnit_None);
 	
 	m_search_index.clear();
 	m_root.Visit(tu.Root());
@@ -73,6 +65,21 @@ boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const SourceLoc
 			return c;
 	}
 	return {};
+}
+
+boost::iterator_range<CodeBase::iterator> CodeBase::TranslationUnits() const
+{
+	return {m_units.begin(), m_units.end()};
+}
+
+const libclx::TranslationUnit& CodeBase::At(std::size_t idx) const
+{
+	return m_units.at(idx);
+}
+
+std::size_t CodeBase::Size() const
+{
+	return m_units.size();
 }
 	
 } // end of namespace

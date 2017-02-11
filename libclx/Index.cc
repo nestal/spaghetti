@@ -28,7 +28,7 @@ Index::Index() :
 	
 }
 
-TranslationUnit Index::Parse(const std::string& filename, std::initializer_list<std::string> args, unsigned options)
+TranslationUnit Index::Parse(const std::string& filename, const std::vector<std::string>& args, unsigned options)
 {
 	std::vector<const char*> vargs;
 	for (auto&& arg : args)

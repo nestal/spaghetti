@@ -55,7 +55,7 @@ void DataType::Visit(libclx::Cursor self)
 			break;
 	
 		default:
-		std::cout << child.Spelling() << ' ' << child.Kind() << std::endl;
+//		std::cout << child.Spelling() << ' ' << child.Kind() << std::endl;
 			break;
 		}
 	});

@@ -12,16 +12,17 @@
 
 #pragma once
 
-#include "DeleteWith.hh"
-
-#include <boost/iterator/iterator_facade.hpp>
-#include <boost/range/iterator_range_core.hpp>
+#include "util/DeleteWith.hh"
 
 #include <clang-c/Index.h>
 
+#include <boost/iterator/iterator_facade.hpp>
+#include <boost/range/iterator_range_core.hpp>
+#include <boost/operators.hpp>
+
 #include <cassert>
 #include <iosfwd>
-#include <boost/operators.hpp>
+#include <vector>
 
 namespace libclx {
 
@@ -41,7 +42,7 @@ public:
 	Index();
 	Index(Index&&) = default;
 	
-	TranslationUnit Parse(const std::string& filename, std::initializer_list<std::string> args, unsigned options);
+	TranslationUnit Parse(const std::string& filename, const std::vector<std::string>& args, unsigned options);
 	
 private:
 	util::DeleteWith<
