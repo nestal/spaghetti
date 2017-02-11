@@ -71,6 +71,8 @@ public:
 	boost::optional<const libclx::TranslationUnit&> Locate(const libclx::SourceLocation& loc) const;
 	
 	boost::iterator_range<iterator> TranslationUnits() const;
+	const libclx::TranslationUnit& At(std::size_t idx) const;
+	std::size_t Size() const;
 	
 private:
 	void AddToIndex(const Entity *entity) ;

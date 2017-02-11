@@ -55,7 +55,7 @@ private:
 	QMimeData *mimeData(const QModelIndexList& ids) const override;
 
 private:
-	const codebase::Entity *m_root{};
+	const codebase::Entity    *m_root{};
 	const codebase::EntityMap *m_index{};
 };
 	

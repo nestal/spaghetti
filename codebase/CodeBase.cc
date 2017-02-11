@@ -71,5 +71,15 @@ boost::iterator_range<CodeBase::iterator> CodeBase::TranslationUnits() const
 {
 	return {m_units.begin(), m_units.end()};
 }
+
+const libclx::TranslationUnit& CodeBase::At(std::size_t idx) const
+{
+	return m_units.at(idx);
+}
+
+std::size_t CodeBase::Size() const
+{
+	return m_units.size();
+}
 	
 } // end of namespace

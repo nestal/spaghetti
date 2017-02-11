@@ -11,7 +11,7 @@
 //
 
 #include "MainWnd.hh"
-#include "ProjectModel.hh"
+#include "Document.hh"
 #include "SourceView.hh"
 
 #include "ui_MainWnd.h"
@@ -27,14 +27,17 @@ namespace gui {
 
 MainWnd::MainWnd() :
 	m_ui{std::make_unique<Ui::MainWnd>()},
-	m_model{std::make_unique<ProjectModel>(this)}
+	m_model{std::make_unique<Document>(this)}
 {
 	m_ui->setupUi(this);
 	m_model->AttachView(m_ui->m_class_gfx);
 	
-	// initialize tree view
-	m_ui->m_class_tree->setModel(m_model->ClassModel());
-	m_ui->m_class_tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	// initialize logical view
+	m_ui->m_logical_view->setModel(m_model->ClassModel());
+	m_ui->m_logical_view->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	
+	// initialize project view
+	m_ui->m_project_view->setModel(m_model->ProjectModel());
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
@@ -73,12 +76,12 @@ MainWnd::MainWnd() :
 		// string will be null if user press cancel
 		if (!file.isNull())
 		{
-			m_model->Parse(file);
+			m_model->AddSource(file);
 		}
 	});
 	
 	// open source code when the user double click the item
-	connect(m_ui->m_class_tree, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
+	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
 	
 	// close widget when user clicks it
 	connect(m_ui->m_tab, &QTabWidget::tabCloseRequested, [this](int tab)
@@ -89,7 +92,7 @@ MainWnd::MainWnd() :
 	});
 	
 	// spaghetti's first signal
-	connect(m_ui->m_class_gfx, &class_diagram::View::DropEntity, m_model.get(), &ProjectModel::AddEntity);
+	connect(m_ui->m_class_gfx, &class_diagram::View::DropEntity, m_model.get(), &Document::AddEntity);
 }
 
 MainWnd::~MainWnd() = default;
