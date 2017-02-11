@@ -33,7 +33,10 @@ public:
 	Project(const std::string& dir = ".");
 	
 	void Open(const std::string& dir, const std::regex& filter);
-	void AddSource(const std::string& file);
+	void AddSource(const std::string& source_file);
+	
+	void Save(const std::string& filename) const;
+	void Load(const std::string& filename);
 	
 	void AddCompileOptions(std::initializer_list<std::string> opts);
 	
@@ -47,9 +50,8 @@ private:
 		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
 		"-I", "."
 	};
-	std::string        m_dir;
-	
-	codebase::CodeBase m_code_base;
+	std::string             m_dir;
+	codebase::CodeBase      m_code_base;
 };
 	
 } // end of namespace

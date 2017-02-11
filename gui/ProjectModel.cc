@@ -40,6 +40,7 @@ void ProjectModel::Parse(const QString& file)
 	
 	m_class_model.beginResetModel();
 	m_project.AddSource(file.toStdString());
+	m_project.Save("");
 	m_class_model.endResetModel();
 }
 

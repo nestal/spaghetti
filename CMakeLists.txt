@@ -27,7 +27,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 file(GLOB LIBCLANGXX_FILES libclx/*.hh libclx/*.cc)
 file(GLOB CODEBASE_FILES   codebase/*.hh codebase/*.cc)
-file(GLOB PROJECT_FILES    project/*.hh project/*.cc)
+file(GLOB PROJECT_FILES    project/*.hh project/*.cc project/*.h project/*.cpp)
 add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES})
 target_link_libraries(spag clang ${Boost_LIBRARIES})
 

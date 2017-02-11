@@ -66,5 +66,10 @@ boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const SourceLoc
 	}
 	return {};
 }
+
+boost::iterator_range<CodeBase::iterator> CodeBase::TranslationUnits() const
+{
+	return {m_units.begin(), m_units.end()};
+}
 	
 } // end of namespace

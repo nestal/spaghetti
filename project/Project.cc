@@ -55,14 +55,22 @@ codebase::CodeBase& Project::CodeBase()
 	return m_code_base;
 }
 
-void Project::AddSource(const std::string& file)
+void Project::AddSource(const std::string& source_file)
 {
-	m_code_base.Parse(file, m_compile_options);
+	m_code_base.Parse(source_file, m_compile_options);
 }
 
 const std::string& Project::Dir() const
 {
 	return m_dir;
+}
+
+void Project::Save(const std::string& ) const
+{
+	for (auto&& tu : m_code_base.TranslationUnits())
+	{
+		std::cout << "TU: " << tu.Spelling() << std::endl;
+	}
 }
 	
 } // end of namespace

@@ -28,6 +28,7 @@
 #include <boost/multi_index/identity.hpp>
 
 #include <boost/optional.hpp>
+#include <boost/range.hpp>
 
 #include <vector>
 
@@ -57,6 +58,8 @@ public:
 		>
 	>;
 
+	using iterator = std::vector<libclx::TranslationUnit>::const_iterator;
+	
 public:
 	CodeBase();
 	
@@ -66,6 +69,8 @@ public:
 	const Entity* Find(const std::string& id) const override;
 
 	boost::optional<const libclx::TranslationUnit&> Locate(const libclx::SourceLocation& loc) const;
+	
+	boost::iterator_range<iterator> TranslationUnits() const;
 	
 private:
 	void AddToIndex(const Entity *entity) ;
