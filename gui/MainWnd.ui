@@ -72,6 +72,7 @@
      <string>Pro&amp;ject</string>
     </property>
     <addaction name="m_action_add_source"/>
+    <addaction name="m_action_new_class_diagram"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Project"/>
@@ -170,6 +171,11 @@
   <action name="m_action_add_source">
    <property name="text">
     <string>&amp;Add Source...</string>
+   </property>
+  </action>
+  <action name="m_action_new_class_diagram">
+   <property name="text">
+    <string>New &amp;Class Diagram</string>
    </property>
   </action>
  </widget>

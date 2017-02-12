@@ -91,6 +91,8 @@ MainWnd::MainWnd() :
 		m_ui->m_tab->removeTab(tab);
 		delete w;
 	});
+	
+	connect(m_ui->m_action_new_class_diagram, &QAction::triggered, this, &MainWnd::AddClassDiagram);
 
 	// default class diagram
 	AddClassDiagram();
@@ -140,11 +142,13 @@ void MainWnd::AddClassDiagram()
 	auto view   = new class_diagram::View{scene, this};
 	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::Model::AddEntity);
 	
-	m_ui->m_tab->addTab(view, "Class Diagram");
+	auto tab = m_ui->m_tab->addTab(view, tr("Class Diagram"));
 	
 	// after adding the view to the tab widget, it will be resized to fill the whole tab
 	// we can use its size to resize the scene
 	scene->SetRect(rect());
+	
+	m_ui->m_tab->setCurrentIndex(tab);
 }
 	
 } // end of namespace
