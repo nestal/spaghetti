@@ -42,13 +42,13 @@ public:
 	
 	QGraphicsScene* Scene();
 	
+	void AddEntity(const std::string& id, const QPointF& pos) override;
 	void SetRect(const QRectF& rect) override;
+	bool CanRename() const override;
 	QString Name() const override;
 	void SetName(const QString& name) override;
 	void Clear();
-	
-	void AddEntity(const std::string& id, const QPointF& pos) override;
-	
+
 public:
 	QString                         m_name;
 	

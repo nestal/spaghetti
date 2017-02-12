@@ -24,7 +24,7 @@ class TranslationUnit;
 namespace gui {
 namespace source_view {
 
-class View: public QTextEdit
+class View : public QTextEdit
 {
 public:
 	using QTextEdit::QTextEdit;

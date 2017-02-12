@@ -29,6 +29,8 @@ public:
 	
 	virtual void AddEntity(const std::string& id, const QPointF& pos) = 0;
 	virtual void SetRect(const QRectF& rect) = 0;
+	
+	virtual bool CanRename() const = 0;
 	virtual QString Name() const = 0;
 	virtual void SetName(const QString& name) = 0;
 };

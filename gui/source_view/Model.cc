@@ -35,9 +35,13 @@ QString Model::Name() const
 	return m_fname;
 }
 
-void Model::SetName(const QString& name)
+void Model::SetName(const QString&)
 {
-	m_fname = name;
+}
+
+bool Model::CanRename() const
+{
+	return false;
 }
 	
 }} // end of namespace

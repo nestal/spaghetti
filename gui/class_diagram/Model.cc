@@ -74,5 +74,10 @@ void Model::SetName(const QString& name)
 {
 	m_name = name;
 }
+
+bool Model::CanRename() const
+{
+	return true;
+}
 	
 }} // end of namespace

@@ -132,5 +132,5 @@ void View::GoTo(unsigned line, unsigned column)
 	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
 	setTextCursor(cursor);
 }
-	
+
 }} // end of namespace

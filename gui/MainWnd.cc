@@ -161,13 +161,24 @@ void MainWnd::AddClassDiagram()
 
 void MainWnd::OnRenameTab(int idx)
 {
-	bool ok;
-	QString text = QInputDialog::getText(this, tr("Rename Diagram"),
-		tr("Name:"), QLineEdit::Normal,
-		m_model->At(idx)->Name(), &ok);
+	auto model = m_model->At(static_cast<std::size_t>(idx));
+	assert(model);
 	
-	if (ok && !text.isEmpty())
-		m_model->At(idx)->SetName(text);
+	if (model->CanRename())
+	{
+		bool ok;
+		QString text = QInputDialog::getText(
+			this, tr("Rename Diagram"),
+			tr("Name:"), QLineEdit::Normal,
+			model->Name(), &ok
+		);
+		
+		if (ok && !text.isEmpty())
+		{
+			model->SetName(text);
+			m_ui->m_tab->tabBar()->setTabText(idx, text);
+		}
+	}
 }
 
 } // end of namespace
