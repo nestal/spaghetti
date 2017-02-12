@@ -11,7 +11,6 @@
 //
 
 #include "View.hh"
-#include "gui/common/ModelBase.hh"
 #include "gui/logical_view/Model.hh"
 
 #include <QDragEnterEvent>
@@ -19,12 +18,15 @@
 
 #include <sstream>
 #include <iostream>
+#include <QtWidgets/QAbstractItemView>
+#include <QtWidgets/QAbstractScrollArea>
 
 namespace gui {
 namespace class_diagram {
 
-View::View(QGraphicsScene *scene, QWidget *parent) :
-	QGraphicsView{scene, parent}
+View::View(class_diagram::Model *model, QWidget *parent) :
+	QGraphicsView{model->Scene(), parent},
+	m_model{model}
 {
 	setAcceptDrops(true);
 }
@@ -51,6 +53,11 @@ void View::dragMoveEvent(QDragMoveEvent *event)
 {
 	if (event->mimeData()->hasFormat(logical_view::Model::m_mime_type))
 		event->acceptProposedAction();
+}
+
+class_diagram::Model *View::Model()
+{
+	return m_model;
 }
 	
 }} // end of namespace

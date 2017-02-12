@@ -31,16 +31,16 @@ namespace gui {
 
 MainWnd::MainWnd() :
 	m_ui{std::make_unique<Ui::MainWnd>()},
-	m_model{std::make_unique<Document>(this)}
+	m_doc{std::make_unique<Document>(this)}
 {
 	m_ui->setupUi(this);
 
 	// initialize logical view
-	m_ui->m_logical_view->setModel(m_model->ClassModel());
+	m_ui->m_logical_view->setModel(m_doc->ClassModel());
 	m_ui->m_logical_view->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	
 	// initialize project view
-	m_ui->m_project_view->setModel(m_model->ProjectModel());
+	m_ui->m_project_view->setModel(m_doc->ProjectModel());
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
@@ -54,32 +54,32 @@ MainWnd::MainWnd() :
 	});
 	connect(m_ui->m_action_open,       &QAction::triggered, [this]
 	{
-		assert(m_model);
+		assert(m_doc);
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
-			m_model->Open(file);
+			m_doc->Open(file);
 	});
 	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
 	{
-		assert(m_model);
+		assert(m_doc);
 		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"));
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
-			m_model->SaveAs(file);
+			m_doc->SaveAs(file);
 	});
 	connect(m_ui->m_action_about_Qt,   &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
 	{
-		assert(m_model);
+		assert(m_doc);
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Source Code"));
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
 		{
-			m_model->AddSource(file);
+			m_doc->AddSource(file);
 		}
 	});
 	
@@ -107,7 +107,7 @@ MainWnd::~MainWnd() = default;
 
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 {
-	auto loc = m_model->LocateEntity(idx);
+	auto loc = m_doc->LocateEntity(idx);
 	if (loc != libclx::SourceLocation{})
 	{
 		source_view::View *view{};
@@ -123,8 +123,8 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		
 		if (!view)
 		{
-			view = new source_view::View{m_ui->m_tab};
-			auto model = m_model->CreateSourceModel(QString::fromStdString(filename));
+			auto model = m_doc->CreateSourceModel(QString::fromStdString(filename));
+			view = new source_view::View{model, m_ui->m_tab};
 			
 			view->Open(loc);
 			m_ui->m_tab->addTab(view, model->Name());
@@ -145,8 +145,8 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 void MainWnd::AddClassDiagram()
 {
 	// spaghetti's first signal
-	auto scene  = m_model->CreateClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
-	auto view   = new class_diagram::View{scene->Scene(), this};
+	auto scene  = m_doc->CreateClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
+	auto view   = new class_diagram::View{scene, this};
 	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::Model::AddEntity);
 	
 	auto tab = m_ui->m_tab->addTab(view, scene->Name());
@@ -160,22 +160,25 @@ void MainWnd::AddClassDiagram()
 
 void MainWnd::OnRenameTab(int idx)
 {
-	auto model = m_model->At(static_cast<std::size_t>(idx));
-	assert(model);
-	
-	if (model->CanRename())
+	if (auto view = dynamic_cast<common::ViewBase*>(m_ui->m_tab->widget(idx)))
 	{
-		bool ok;
-		QString text = QInputDialog::getText(
-			this, tr("Rename Tab"),
-			tr("New name:"), QLineEdit::Normal,
-			model->Name(), &ok
-		);
+		auto model = view->Model();
+		assert(model);
 		
-		if (ok && !text.isEmpty())
+		if (model->CanRename())
 		{
-			model->SetName(text);
-			m_ui->m_tab->tabBar()->setTabText(idx, text);
+			bool ok;
+			QString text = QInputDialog::getText(
+				this, tr("Rename Tab"),
+				tr("New name:"), QLineEdit::Normal,
+				model->Name(), &ok
+			);
+			
+			if (ok && !text.isEmpty())
+			{
+				model->SetName(text);
+				m_ui->m_tab->tabBar()->setTabText(idx, text);
+			}
 		}
 	}
 }

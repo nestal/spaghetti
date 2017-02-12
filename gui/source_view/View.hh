@@ -12,8 +12,10 @@
 
 #pragma once
 
+#include "gui/common/ViewBase.hh"
 #include <QTextEdit>
 
+#include "Model.hh"
 #include <thread>
 
 namespace libclx {
@@ -24,16 +26,18 @@ class TranslationUnit;
 namespace gui {
 namespace source_view {
 
-class View : public QTextEdit
+class View : public QTextEdit, public common::ViewBase
 {
 public:
-	using QTextEdit::QTextEdit;
+	View(source_view::Model *model, QWidget *parent);
 	~View();
 	
 	void Open(const libclx::SourceLocation& location);
 	void GoTo(unsigned line, unsigned column);
 	
 	const std::string& Filename() const;
+	
+	source_view::Model* Model() override;
 
 private:
 	class HighlightEvent;
@@ -43,6 +47,8 @@ private:
 	
 	std::thread m_worker;
 	std::string m_filename;
+	
+	source_view::Model *m_model{};
 };
 	
 }} // end of namespace

@@ -13,21 +13,22 @@
 #pragma once
 
 #include <QGraphicsView>
+#include "gui/common/ViewBase.hh"
+
+#include "Model.hh"
 
 namespace gui {
-namespace common {
-class ModelBase;
-}
-
 namespace class_diagram {
 
-class View: public QGraphicsView
+class View: public QGraphicsView, public common::ViewBase
 {
 Q_OBJECT
 
 public:
-	View(QGraphicsScene *model, QWidget *parent);
+	View(class_diagram::Model *model, QWidget *parent);
 
+	class_diagram::Model* Model() override;
+	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);
 
@@ -35,6 +36,9 @@ protected:
 	void dragEnterEvent(QDragEnterEvent *event) override;
 	void dragMoveEvent(QDragMoveEvent *event) override;
 	void dropEvent(QDropEvent *event) override;
+	
+private:
+	class_diagram::Model   *m_model{};
 };
 	
 }} // end of namespace

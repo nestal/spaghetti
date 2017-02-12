@@ -12,14 +12,15 @@
 
 #pragma once
 
-
 namespace gui {
 namespace common {
+
+class ModelBase;
 
 class ViewBase
 {
 public:
-	
+	virtual ModelBase* Model() = 0;
 };
 	
 }} // end of namespace

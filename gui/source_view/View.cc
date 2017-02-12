@@ -23,6 +23,12 @@
 namespace gui {
 namespace source_view {
 
+View::View(source_view::Model *model, QWidget *parent) :
+	QTextEdit{parent},
+	m_model{model}
+{
+}
+
 View::~View()
 {
 	if (m_worker.joinable())
@@ -133,4 +139,9 @@ void View::GoTo(unsigned line, unsigned column)
 	setTextCursor(cursor);
 }
 
+source_view::Model* View::Model()
+{
+	return m_model;
+}
+	
 }} // end of namespace

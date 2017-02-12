@@ -112,9 +112,4 @@ QAbstractItemModel *Document::ProjectModel()
 	return m_project_model.get();
 }
 
-common::ModelBase *Document::At(std::size_t idx)
-{
-	return m_models.at(idx).get();
-}
-
 } // end of namespace
