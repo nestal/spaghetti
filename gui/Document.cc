@@ -11,15 +11,13 @@
 //
 
 #include "Document.hh"
-#include "class_diagram/ClassItem.hh"
+#include "class_diagram/SceneModel.hh"
 #include "logical_view/Model.hh"
 
 #include <QtCore/QAbstractListModel>
-#include <QtWidgets/QGraphicsScene>
-#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QFileDialog>
 
 #include <cassert>
-#include <QtWidgets/QFileDialog>
 
 namespace gui {
 
@@ -50,7 +48,7 @@ private:
 
 Document::Document(QObject *parent) :
 	QObject{parent},
-	m_scene{std::make_unique<QGraphicsScene>(this)},
+	m_classes{std::make_unique<class_diagram::SceneModel>(this)},
 	m_project_model{std::make_unique<ProjectModel_>(m_project.CodeBase(), this)},
 	m_class_model{std::make_unique<logical_view::Model>(
 		m_project.CodeBase().Root(), &m_project.CodeBase(), this
@@ -63,11 +61,7 @@ Document::~Document() = default;
 void Document::AddSource(const QString& file)
 {
 	// delete all items
-	for (auto&& item : m_scene->items())
-	{
-		m_scene->removeItem(item);
-		delete item;
-	}
+	m_classes->Clear();
 	
 	m_class_model->beginResetModel();
 	m_project_model->beginResetModel();
@@ -79,8 +73,7 @@ void Document::AddSource(const QString& file)
 void Document::AttachView(QGraphicsView *view)
 {
 	assert(view);
-	view->setScene(m_scene.get());
-	m_scene->setSceneRect(view->rect());
+	m_classes->AttachView(view);
 }
 
 QAbstractItemModel *Document::ClassModel()
@@ -97,22 +90,13 @@ libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 void Document::AddEntity(const std::string& id, const QPointF& pos)
 {
 	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_project.CodeBase().Find(id)))
-	{
-		auto item = new class_diagram::ClassItem{*data_type};
-		item->moveBy(pos.x(), pos.y());
-		
-		m_scene->addItem(item);
-	}
+		m_classes->AddDataType(*data_type, pos);
 }
 
 void Document::Open(const QString& file)
 {
 	// delete all items
-	for (auto&& item : m_scene->items())
-	{
-		m_scene->removeItem(item);
-		delete item;
-	}
+	m_classes->Clear();
 	
 	m_class_model->beginResetModel();
 	m_project_model->beginResetModel();

@@ -14,9 +14,11 @@
 
 #include <QGraphicsItem>
 
-#include "codebase/DataType.hh"
-
 class QGraphicsSimpleTextItem;
+
+namespace codebase {
+class DataType;
+}
 
 namespace gui {
 namespace class_diagram {

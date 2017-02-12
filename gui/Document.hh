@@ -26,6 +26,7 @@ class QGraphicsView;
 namespace gui {
 namespace class_diagram {
 class ClassItem;
+class SceneModel;
 }
 
 namespace logical_view {
@@ -61,7 +62,7 @@ private:
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed
 	// before the Repository is destroyed.
 	project::Project                m_project;
-	std::unique_ptr<QGraphicsScene> m_scene;
+	std::unique_ptr<class_diagram::SceneModel> m_classes;
 
 	class ProjectModel_;
 	std::unique_ptr<ProjectModel_>  m_project_model;

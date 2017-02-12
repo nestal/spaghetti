@@ -12,9 +12,10 @@
 
 #include "ClassItem.hh"
 
-#include <QFont>
-#include <QGraphicsSimpleTextItem>
-#include <QPainter>
+#include "codebase/DataType.hh"
+
+#include <QtGui/QFont>
+#include <QtGui/QPainter>
 
 namespace gui {
 namespace class_diagram {
