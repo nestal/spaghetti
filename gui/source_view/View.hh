@@ -40,8 +40,6 @@ public:
 	source_view::Model* Model() override;
 
 private:
-	class HighlightEvent;
-	
 	void Parse(unsigned line, unsigned column);
 	void Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour);
 	
