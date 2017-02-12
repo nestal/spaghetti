@@ -7,7 +7,7 @@
 #
 
 cmake_minimum_required(VERSION 3.6)
-project(spaghetti)
+project(spaghetti VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -22,8 +22,20 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
-
 include_directories(${Boost_INCLUDE_DIRS})
+
+# get build date
+string(TIMESTAMP BUILD_DATE "%Y-%m-%d")
+
+# get build information from git
+execute_process(
+	COMMAND git log -1 --format=%h
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE GIT_COMMIT_HASH
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+add_definitions(-DVERSION="${PROJECT_VERSION}" -DBUILD_DATE="${BUILD_DATE}" -DGIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
 
 file(GLOB LIBCLANGXX_FILES libclx/*.hh libclx/*.cc)
 file(GLOB CODEBASE_FILES   codebase/*.hh codebase/*.cc)

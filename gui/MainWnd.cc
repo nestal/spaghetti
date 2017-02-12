@@ -46,7 +46,8 @@ MainWnd::MainWnd() :
 	{
 		QMessageBox::about(this,
 			tr("About Spaghetti"),
-			tr("Spaghetti: version 0.1\n"
+			tr("Spaghetti: version " VERSION " (" BUILD_DATE ")\n"
+			"Git commit: " GIT_COMMIT_HASH "\n"
 			"License: GNU General Public License Version 2\n"
 			"https://gitlab.com/nestal/spaghetti\n"
 			"(C) 2017 Wan Wai Ho (Nestal)")
