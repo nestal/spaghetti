@@ -19,8 +19,6 @@
 #include "libclx/Token.hh"
 
 #include <QtCore/QFile>
-#include <iostream>
-#include <chrono>
 
 namespace gui {
 namespace source_view {
@@ -109,12 +107,10 @@ void View::Parse(unsigned line, unsigned column)
 			auto colour = cit->second;
 			if (cit != text_colour.end())
 			{
-				SendFunctorEvent(
-					this, [this, tline, tcolumn, stride, colour]
-					{
-						Highlight(tline, tcolumn, stride, colour);
-					}, Qt::LowEventPriority
-				);
+				SendFunctorEvent(this, [this, tline, tcolumn, stride, colour]
+				{
+					Highlight(tline, tcolumn, stride, colour);
+				}, Qt::LowEventPriority);
 			}
 		}
 	}
@@ -128,11 +124,11 @@ void View::Parse(unsigned line, unsigned column)
 void View::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
 {
 	int block = m_highlight.blockNumber();
-	int col   = m_highlight.columnNumber();
 	
-	m_highlight.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1   - block);
-	m_highlight.movePosition(QTextCursor::Right,     QTextCursor::MoveAnchor, column-1 - col);
-	m_highlight.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
+	m_highlight.movePosition(QTextCursor::StartOfLine,     QTextCursor::MoveAnchor);
+	m_highlight.movePosition(QTextCursor::Down,            QTextCursor::MoveAnchor, line-1   - block);
+	m_highlight.movePosition(QTextCursor::Right,           QTextCursor::MoveAnchor, column-1);
+	m_highlight.movePosition(QTextCursor::Right,           QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
 	
 	QTextCharFormat format;
 	format.setForeground(QBrush{colour});
