@@ -18,12 +18,15 @@
 
 #include <sstream>
 #include <iostream>
+#include <QtWidgets/QAbstractItemView>
+#include <QtWidgets/QAbstractScrollArea>
 
 namespace gui {
 namespace class_diagram {
 
-View::View(QWidget *parent) :
-	QGraphicsView{parent}
+View::View(class_diagram::Model *model, QWidget *parent) :
+	QGraphicsView{model->Scene(), parent},
+	m_model{model}
 {
 	setAcceptDrops(true);
 }
@@ -50,6 +53,11 @@ void View::dragMoveEvent(QDragMoveEvent *event)
 {
 	if (event->mimeData()->hasFormat(logical_view::Model::m_mime_type))
 		event->acceptProposedAction();
+}
+
+class_diagram::Model *View::Model()
+{
+	return m_model;
 }
 	
 }} // end of namespace

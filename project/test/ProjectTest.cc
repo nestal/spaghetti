@@ -18,6 +18,17 @@ using namespace project;
 
 TEST(PROJECT_TEST, Test_Open_Project)
 {
+//	Project p;
+//	p.Open(SRC_DIR, std::regex{".*\\.cc"});
+}
+
+TEST(PROJECT_TEST, Test_Open_Save)
+{
 	Project p;
-	p.Open(SRC_DIR, std::regex{".*\\.cc"});
+	p.AddSource(SRC_DIR + std::string{"project/Project.cc"});
+	p.Save("test_project");
+	
+	Project p2;
+	p2.Open("test_project");
+	ASSERT_EQ(p.CodeBase().Size(), p2.CodeBase().Size());
 }

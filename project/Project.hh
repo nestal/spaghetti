@@ -35,13 +35,12 @@ class Project
 public:
 	Project(const std::string& dir = ".");
 	
-	void Open(const std::string& dir, const std::regex& filter);
 	void AddSource(const std::string& source_file);
 		
 	void Save(const std::string& filename) const;
-	void Load(const std::string& filename);
+	void Open(const std::string& filename);
 	
-	void AddCompileOptions(std::initializer_list<std::string> opts);
+	void SetCompileOptions(std::initializer_list<std::string> opts);
 	
 	codebase::CodeBase& CodeBase();
 	

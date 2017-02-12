@@ -11,15 +11,14 @@
 //
 
 #include "Document.hh"
-#include "class_diagram/ClassItem.hh"
+#include "gui/class_diagram/Model.hh"
+#include "gui/source_view/Model.hh"
 #include "logical_view/Model.hh"
 
 #include <QtCore/QAbstractListModel>
-#include <QtWidgets/QGraphicsScene>
-#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QFileDialog>
 
 #include <cassert>
-#include <QtWidgets/QFileDialog>
 
 namespace gui {
 
@@ -50,9 +49,8 @@ private:
 
 Document::Document(QObject *parent) :
 	QObject{parent},
-	m_scene{std::make_unique<QGraphicsScene>(this)},
 	m_project_model{std::make_unique<ProjectModel_>(m_project.CodeBase(), this)},
-	m_class_model{std::make_unique<logical_view::Model>(
+	m_logical_model{std::make_unique<logical_view::Model>(
 		m_project.CodeBase().Root(), &m_project.CodeBase(), this
 	)}
 {
@@ -62,63 +60,46 @@ Document::~Document() = default;
 
 void Document::AddSource(const QString& file)
 {
-	// delete all items
-	for (auto&& item : m_scene->items())
-	{
-		m_scene->removeItem(item);
-		delete item;
-	}
-	
-	m_class_model->beginResetModel();
+	m_logical_model->beginResetModel();
 	m_project_model->beginResetModel();
 	m_project.AddSource(file.toStdString());
 	m_project_model->endResetModel();
-	m_class_model->endResetModel();
+	m_logical_model->endResetModel();
 }
 
-void Document::AttachView(QGraphicsView *view)
+class_diagram::Model* Document::CreateClassDiagram(const QString& name)
 {
-	assert(view);
-	view->setScene(m_scene.get());
-	m_scene->setSceneRect(view->rect());
+	m_models.emplace_back(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this));
+	return static_cast<class_diagram::Model*>(m_models.back().get());
+}
+
+source_view::Model *Document::CreateSourceModel(const QString& name)
+{
+	m_models.emplace_back(std::make_unique<source_view::Model>(name, this));
+	return static_cast<source_view::Model*>(m_models.back().get());
 }
 
 QAbstractItemModel *Document::ClassModel()
 {
-	return m_class_model.get();
+	return m_logical_model.get();
 }
 
 libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 {
-	auto entity = m_class_model->At(idx);
+	auto entity = m_logical_model->At(idx);
 	return entity ? entity->Location() : libclx::SourceLocation{};
-}
-
-void Document::AddEntity(const std::string& id, const QPointF& pos)
-{
-	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_project.CodeBase().Find(id)))
-	{
-		auto item = new class_diagram::ClassItem{*data_type};
-		item->moveBy(pos.x(), pos.y());
-		
-		m_scene->addItem(item);
-	}
 }
 
 void Document::Open(const QString& file)
 {
 	// delete all items
-	for (auto&& item : m_scene->items())
-	{
-		m_scene->removeItem(item);
-		delete item;
-	}
+//	m_class_diagrams.front()->Clear();
 	
-	m_class_model->beginResetModel();
+	m_logical_model->beginResetModel();
 	m_project_model->beginResetModel();
-	m_project.Load(file.toStdString());
+	m_project.Open(file.toStdString());
 	m_project_model->endResetModel();
-	m_class_model->endResetModel();
+	m_logical_model->endResetModel();
 }
 
 void Document::SaveAs(const QString& file)
@@ -130,5 +111,5 @@ QAbstractItemModel *Document::ProjectModel()
 {
 	return m_project_model.get();
 }
-	
+
 } // end of namespace

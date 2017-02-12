@@ -35,12 +35,15 @@ public:
 	MainWnd();
 	~MainWnd();
 
+	void AddClassDiagram();
+	
 private:
 	void OnDoubleClickItem(const QModelIndex& idx);
+	void OnRenameTab(int idx);
 	
 private:
 	std::unique_ptr<Ui::MainWnd>    m_ui;
-	std::unique_ptr<Document>          m_model;
+	std::unique_ptr<Document>       m_doc;
 };
 	
 } // end of namespace

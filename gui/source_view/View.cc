@@ -10,9 +10,9 @@
 // Created by nestal on 2/5/17.
 //
 
-#include "SourceView.hh"
+#include "View.hh"
 
-#include "SendFunctorEvent.hh"
+#include "gui/common/SendFunctorEvent.hh"
 
 #include "libclx/Index.hh"
 #include "libclx/SourceRange.hh"
@@ -21,17 +21,27 @@
 #include <QtCore/QFile>
 
 namespace gui {
+namespace source_view {
 
-SourceView::~SourceView()
+View::View(source_view::Model *model, QWidget *parent) :
+	QPlainTextEdit{parent},
+	m_model{model},
+	m_highlight{document()}
+{
+}
+
+View::~View()
 {
 	if (m_worker.joinable())
 		m_worker.join();
 }
 
-void SourceView::Open(const libclx::SourceLocation& file)
+void View::Open(const libclx::SourceLocation& file)
 {
 	unsigned line, column, offset;
 	file.Get(m_filename, line, column, offset);
+	
+	setUndoRedoEnabled(false);
 	
 	// set the default format before inserting text
 	QTextCharFormat format;
@@ -47,13 +57,19 @@ void SourceView::Open(const libclx::SourceLocation& file)
 	m_worker = std::thread([this, line, column]{Parse(line, column);});
 }
 
-void SourceView::Parse(unsigned line, unsigned column)
+void View::Parse(unsigned line, unsigned column)
 {
+	using namespace common;
+	
 	QFile qfile{QString::fromStdString(m_filename)};
 	if (qfile.open(QIODevice::ReadOnly))
 	{
 		auto all = qfile.readAll();
-		SendFunctorEvent(this, [this, all]{setPlainText(all);});
+		SendFunctorEvent(this, [this, all]
+		{
+			setPlainText(all);
+			m_highlight.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+		}, Qt::LowEventPriority);
 	}
 		
 	static const std::map<CXTokenKind, QColor> text_colour = {
@@ -72,7 +88,7 @@ void SourceView::Parse(unsigned line, unsigned column)
 			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
 			"-I", ".",
 		},
-		CXTranslationUnit_None
+		CXTranslationUnit_Incomplete
 	);
 	
 	for (auto&& token: tu.Tokenize())
@@ -90,38 +106,41 @@ void SourceView::Parse(unsigned line, unsigned column)
 			auto stride = tstr.size();
 			auto colour = cit->second;
 			if (cit != text_colour.end())
+			{
 				SendFunctorEvent(this, [this, tline, tcolumn, stride, colour]
 				{
 					Highlight(tline, tcolumn, stride, colour);
-				});
+				}, Qt::LowEventPriority);
+			}
 		}
 	}
 	
 	SendFunctorEvent(this, [this, line, column]
 	{
 		GoTo(line, column);
-	});
+	}, Qt::LowEventPriority);
 }
 
-void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
+void View::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
 {
-	QTextCursor cursor{document()};
-	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
-	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
-	cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
+	int block = m_highlight.blockNumber();
+	
+	m_highlight.movePosition(QTextCursor::StartOfLine,     QTextCursor::MoveAnchor);
+	m_highlight.movePosition(QTextCursor::Down,            QTextCursor::MoveAnchor, line-1   - block);
+	m_highlight.movePosition(QTextCursor::Right,           QTextCursor::MoveAnchor, column-1);
+	m_highlight.movePosition(QTextCursor::Right,           QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
 	
 	QTextCharFormat format;
 	format.setForeground(QBrush{colour});
-	cursor.mergeCharFormat(format);
+	m_highlight.mergeCharFormat(format);
 }
 
-const std::string& SourceView::Filename() const
+const std::string& View::Filename() const
 {
 	return m_filename;
 }
 
-void SourceView::GoTo(unsigned line, unsigned column)
+void View::GoTo(unsigned line, unsigned column)
 {
 	QTextCursor cursor{document()};
 	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
@@ -129,5 +148,10 @@ void SourceView::GoTo(unsigned line, unsigned column)
 	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
 	setTextCursor(cursor);
 }
+
+source_view::Model* View::Model()
+{
+	return m_model;
+}
 	
-} // end of namespace
+}} // end of namespace

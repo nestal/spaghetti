@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <QAbstractListModel>
+#include <QAbstractItemModel>
 
 namespace codebase {
 class Entity;

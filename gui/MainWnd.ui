@@ -27,7 +27,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>-1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideLeft</enum>
@@ -38,23 +38,6 @@
       <property name="tabsClosable">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="m_class_tab">
-       <attribute name="title">
-        <string>Class Diagram</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="gui::class_diagram::View" name="m_class_gfx">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -89,6 +72,7 @@
      <string>Pro&amp;ject</string>
     </property>
     <addaction name="m_action_add_source"/>
+    <addaction name="m_action_new_class_diagram"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Project"/>
@@ -146,7 +130,7 @@
   </widget>
   <widget class="QDockWidget" name="m_project_dock">
    <property name="windowTitle">
-    <string>Project View</string>
+    <string>Proje&amp;ct View</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -189,14 +173,12 @@
     <string>&amp;Add Source...</string>
    </property>
   </action>
+  <action name="m_action_new_class_diagram">
+   <property name="text">
+    <string>New &amp;Class Diagram</string>
+   </property>
+  </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>gui::class_diagram::View</class>
-   <extends>QGraphicsView</extends>
-   <header>gui/class_diagram/View.hh</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

@@ -12,13 +12,17 @@
 
 #include "MainWnd.hh"
 #include "Document.hh"
-#include "SourceView.hh"
+#include "gui/source_view/View.hh"
 
 #include "ui_MainWnd.h"
 
+#include "class_diagram/View.hh"
+#include "gui/class_diagram/Model.hh"
+#include "gui/source_view/Model.hh"
 #include "libclx/Index.hh"
 
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 
 #include <cassert>
@@ -27,23 +31,23 @@ namespace gui {
 
 MainWnd::MainWnd() :
 	m_ui{std::make_unique<Ui::MainWnd>()},
-	m_model{std::make_unique<Document>(this)}
+	m_doc{std::make_unique<Document>(this)}
 {
 	m_ui->setupUi(this);
-	m_model->AttachView(m_ui->m_class_gfx);
-	
+
 	// initialize logical view
-	m_ui->m_logical_view->setModel(m_model->ClassModel());
+	m_ui->m_logical_view->setModel(m_doc->ClassModel());
 	m_ui->m_logical_view->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	
 	// initialize project view
-	m_ui->m_project_view->setModel(m_model->ProjectModel());
+	m_ui->m_project_view->setModel(m_doc->ProjectModel());
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
 		QMessageBox::about(this,
 			tr("About Spaghetti"),
-			tr("Spaghetti: version 0.1\n"
+			tr("Spaghetti: version " VERSION " (" BUILD_DATE ")\n"
+			"Git commit: " GIT_COMMIT_HASH "\n"
 			"License: GNU General Public License Version 2\n"
 			"https://gitlab.com/nestal/spaghetti\n"
 			"(C) 2017 Wan Wai Ho (Nestal)")
@@ -51,32 +55,32 @@ MainWnd::MainWnd() :
 	});
 	connect(m_ui->m_action_open,       &QAction::triggered, [this]
 	{
-		assert(m_model);
+		assert(m_doc);
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
-			m_model->Open(file);
+			m_doc->Open(file);
 	});
 	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
 	{
-		assert(m_model);
+		assert(m_doc);
 		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"));
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
-			m_model->SaveAs(file);
+			m_doc->SaveAs(file);
 	});
 	connect(m_ui->m_action_about_Qt,   &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
 	{
-		assert(m_model);
+		assert(m_doc);
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Source Code"));
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
 		{
-			m_model->AddSource(file);
+			m_doc->AddSource(file);
 		}
 	});
 	
@@ -91,33 +95,40 @@ MainWnd::MainWnd() :
 		delete w;
 	});
 	
-	// spaghetti's first signal
-	connect(m_ui->m_class_gfx, &class_diagram::View::DropEntity, m_model.get(), &Document::AddEntity);
+	connect(m_ui->m_action_new_class_diagram, &QAction::triggered, this, &MainWnd::AddClassDiagram);
+
+	// double click the tab to rename it
+	connect(m_ui->m_tab->tabBar(), &QTabBar::tabBarDoubleClicked, this, &MainWnd::OnRenameTab);
+	
+	// default class diagram
+	AddClassDiagram();
 }
 
 MainWnd::~MainWnd() = default;
 
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 {
-	auto loc = m_model->LocateEntity(idx);
+	auto loc = m_doc->LocateEntity(idx);
 	if (loc != libclx::SourceLocation{})
 	{
-		SourceView *view{};
+		source_view::View *view{};
 		auto filename = loc.Filename();
 		
 		// search for existing tab showing the file
 		for (int i = 0; i < m_ui->m_tab->count(); ++i)
 		{
-			auto w = dynamic_cast<SourceView *>(m_ui->m_tab->widget(i));
+			auto w = dynamic_cast<source_view::View *>(m_ui->m_tab->widget(i));
 			if (w && w->Filename() == filename)
 				view = w;
 		}
 		
 		if (!view)
 		{
-			view = new SourceView{m_ui->m_tab};
+			auto model = m_doc->CreateSourceModel(QString::fromStdString(filename));
+			view = new source_view::View{model, m_ui->m_tab};
+			
 			view->Open(loc);
-			m_ui->m_tab->addTab(view, QString::fromStdString(filename));
+			m_ui->m_tab->addTab(view, model->Name());
 		}
 		else
 		{
@@ -131,5 +142,46 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		view->setFocus(Qt::OtherFocusReason);
 	}
 }
+
+void MainWnd::AddClassDiagram()
+{
+	// spaghetti's first signal
+	auto scene  = m_doc->CreateClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
+	auto view   = new class_diagram::View{scene, this};
+	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::Model::AddEntity);
 	
+	auto tab = m_ui->m_tab->addTab(view, scene->Name());
+	
+	// after adding the view to the tab widget, it will be resized to fill the whole tab
+	// we can use its size to resize the scene
+	scene->SetRect(rect());
+	
+	m_ui->m_tab->setCurrentIndex(tab);
+}
+
+void MainWnd::OnRenameTab(int idx)
+{
+	if (auto view = dynamic_cast<common::ViewBase*>(m_ui->m_tab->widget(idx)))
+	{
+		auto model = view->Model();
+		assert(model);
+		
+		if (model->CanRename())
+		{
+			bool ok;
+			QString text = QInputDialog::getText(
+				this, tr("Rename Tab"),
+				tr("New name:"), QLineEdit::Normal,
+				model->Name(), &ok
+			);
+			
+			if (ok && !text.isEmpty())
+			{
+				model->SetName(text);
+				m_ui->m_tab->tabBar()->setTabText(idx, text);
+			}
+		}
+	}
+}
+
 } // end of namespace

@@ -27,29 +27,9 @@ Project::Project(const std::string& dir) :
 {
 }
 
-void Project::Open(const std::string& dir, const std::regex& filter)
+void Project::SetCompileOptions(std::initializer_list<std::string> opts)
 {
-	m_dir     = dir;
-	m_compile_options = {
-		"-std=c++14",
-		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-		"-I", dir,
-		"-DSRC_DIR=" + dir
-	};
-	
-	recursive_directory_iterator it{m_dir};
-	
-	for (auto&& file : it)
-	{
-		auto p = file.path().string();
-		if (std::regex_match(p, filter))
-			AddSource(p);
-	}
-}
-
-void Project::AddCompileOptions(std::initializer_list<std::string> opts)
-{
-	m_compile_options.insert(m_compile_options.end(), opts.begin(), opts.end());
+	m_compile_options = std::move(opts);
 }
 
 codebase::CodeBase& Project::CodeBase()
@@ -74,7 +54,7 @@ void Project::Save(const std::string& filename) const
 	oa << *this;
 }
 
-void Project::Load(const std::string& filename)
+void Project::Open(const std::string& filename)
 {
 	std::ifstream str{filename};
 	boost::archive::text_iarchive ia{str};
