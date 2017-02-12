@@ -8,6 +8,10 @@ render it.
 ![snapshot-1](./doc/snapshot1.png)
 Screenshot of Spaghetti pre-v0.1 (8 Feb 2017)
 
+# Features
+
+* Class diagrams
+
 # Requirements
 
 Spaghetti depends on the following software to build:
