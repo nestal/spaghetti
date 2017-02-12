@@ -12,7 +12,7 @@
 
 #include "MainWnd.hh"
 #include "Document.hh"
-#include "SourceView.hh"
+#include "gui/source_view/View.hh"
 
 #include "ui_MainWnd.h"
 
@@ -109,20 +109,20 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 	auto loc = m_model->LocateEntity(idx);
 	if (loc != libclx::SourceLocation{})
 	{
-		SourceView *view{};
+		source_view::View *view{};
 		auto filename = loc.Filename();
 		
 		// search for existing tab showing the file
 		for (int i = 0; i < m_ui->m_tab->count(); ++i)
 		{
-			auto w = dynamic_cast<SourceView *>(m_ui->m_tab->widget(i));
+			auto w = dynamic_cast<source_view::View *>(m_ui->m_tab->widget(i));
 			if (w && w->Filename() == filename)
 				view = w;
 		}
 		
 		if (!view)
 		{
-			view = new SourceView{m_ui->m_tab};
+			view = new source_view::View{m_ui->m_tab};
 			view->Open(loc);
 			m_ui->m_tab->addTab(view, QString::fromStdString(filename));
 		}
@@ -142,8 +142,8 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 void MainWnd::AddClassDiagram()
 {
 	// spaghetti's first signal
-	auto scene  = m_model->NewClassDiagram();
-	auto view   = new class_diagram::View{scene, this};
+	auto scene  = m_model->CreateClassDiagram();
+	auto view   = new class_diagram::View{scene->Scene(), this};
 	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::Model::AddEntity);
 	
 	auto tab = m_ui->m_tab->addTab(view,

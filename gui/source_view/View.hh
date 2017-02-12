@@ -22,18 +22,19 @@ class TranslationUnit;
 }
 
 namespace gui {
+namespace source_view {
 
-class SourceView : public QTextEdit
+class View: public QTextEdit
 {
 public:
 	using QTextEdit::QTextEdit;
-	~SourceView();
+	~View();
 	
 	void Open(const libclx::SourceLocation& location);
 	void GoTo(unsigned line, unsigned column);
-
-	const std::string& Filename() const;
 	
+	const std::string& Filename() const;
+
 private:
 	class HighlightEvent;
 	
@@ -44,4 +45,4 @@ private:
 	std::string m_filename;
 };
 	
-} // end of namespace
+}} // end of namespace

@@ -20,12 +20,11 @@ class QRectF;
 class QString;
 
 namespace gui {
-namespace class_diagram {
+namespace common {
 
 class ModelBase
 {
 public:
-	virtual QGraphicsScene* Scene() = 0;
 	virtual void AddEntity(const std::string& id, const QPointF& pos) = 0;
 	virtual void SetRect(const QRectF& rect) = 0;
 	virtual QString Name() const = 0;

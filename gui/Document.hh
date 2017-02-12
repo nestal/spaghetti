@@ -48,7 +48,7 @@ public:
 	void SaveAs(const QString& file);
 	
 	void AddSource(const QString& file);
-	class_diagram::Model* NewClassDiagram();
+	class_diagram::Model* CreateClassDiagram();
 	class_diagram::Model* ClassDiagramAt(std::size_t idx);
 	
 	QAbstractItemModel* ClassModel();

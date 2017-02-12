@@ -10,9 +10,9 @@
 // Created by nestal on 2/5/17.
 //
 
-#include "SourceView.hh"
+#include "View.hh"
 
-#include "SendFunctorEvent.hh"
+#include "gui/common/SendFunctorEvent.hh"
 
 #include "libclx/Index.hh"
 #include "libclx/SourceRange.hh"
@@ -21,14 +21,15 @@
 #include <QtCore/QFile>
 
 namespace gui {
+namespace source_view {
 
-SourceView::~SourceView()
+View::~View()
 {
 	if (m_worker.joinable())
 		m_worker.join();
 }
 
-void SourceView::Open(const libclx::SourceLocation& file)
+void View::Open(const libclx::SourceLocation& file)
 {
 	unsigned line, column, offset;
 	file.Get(m_filename, line, column, offset);
@@ -47,8 +48,10 @@ void SourceView::Open(const libclx::SourceLocation& file)
 	m_worker = std::thread([this, line, column]{Parse(line, column);});
 }
 
-void SourceView::Parse(unsigned line, unsigned column)
+void View::Parse(unsigned line, unsigned column)
 {
+	using namespace common;
+	
 	QFile qfile{QString::fromStdString(m_filename)};
 	if (qfile.open(QIODevice::ReadOnly))
 	{
@@ -103,7 +106,7 @@ void SourceView::Parse(unsigned line, unsigned column)
 	});
 }
 
-void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
+void View::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
 {
 	QTextCursor cursor{document()};
 	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
@@ -116,12 +119,12 @@ void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, c
 	cursor.mergeCharFormat(format);
 }
 
-const std::string& SourceView::Filename() const
+const std::string& View::Filename() const
 {
 	return m_filename;
 }
 
-void SourceView::GoTo(unsigned line, unsigned column)
+void View::GoTo(unsigned line, unsigned column)
 {
 	QTextCursor cursor{document()};
 	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
@@ -130,4 +133,4 @@ void SourceView::GoTo(unsigned line, unsigned column)
 	setTextCursor(cursor);
 }
 	
-} // end of namespace
+}} // end of namespace

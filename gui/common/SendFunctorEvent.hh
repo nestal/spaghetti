@@ -12,9 +12,10 @@
 
 #pragma once
 
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 
 namespace gui {
+namespace common {
 
 template <typename F>
 void SendFunctorEvent(QObject *receiver, F&& func)
@@ -36,4 +37,4 @@ void SendFunctorEvent(QObject *receiver, F&& func)
 	QCoreApplication::postEvent(receiver, new Event{std::forward<F>(func)});
 }
 
-} // end of namespace
+}} // end of namespace

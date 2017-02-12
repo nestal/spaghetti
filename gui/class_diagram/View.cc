@@ -11,7 +11,7 @@
 //
 
 #include "View.hh"
-#include "ModelBase.hh"
+#include "gui/common/ModelBase.hh"
 #include "gui/logical_view/Model.hh"
 
 #include <QDragEnterEvent>
@@ -23,8 +23,8 @@
 namespace gui {
 namespace class_diagram {
 
-View::View(ModelBase *model, QWidget *parent) :
-	QGraphicsView{model->Scene(), parent}
+View::View(QGraphicsScene *scene, QWidget *parent) :
+	QGraphicsView{scene, parent}
 {
 	setAcceptDrops(true);
 }

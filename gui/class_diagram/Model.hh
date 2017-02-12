@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "ModelBase.hh"
+#include "gui/common/ModelBase.hh"
 #include <QObject>
 
 #include <memory>
@@ -29,7 +29,7 @@ class EntityMap;
 namespace gui {
 namespace class_diagram {
 
-class Model : public ModelBase, public QObject
+class Model : public common::ModelBase, public QObject
 {
 public:
 	Model(const codebase::EntityMap *codebase, QObject *parent);
@@ -40,7 +40,8 @@ public:
 	Model& operator=(const Model&) = delete;
 	Model& operator=(Model&&) = default;
 	
-	QGraphicsScene* Scene() override;
+	QGraphicsScene* Scene();
+	
 	void SetRect(const QRectF& rect) override;
 	QString Name() const override;
 	void SetName(const QString& name) override;
