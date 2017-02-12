@@ -16,6 +16,7 @@
 
 #include "ui_MainWnd.h"
 
+#include "class_diagram/SceneModel.hh"
 #include "libclx/Index.hh"
 
 #include <QFileDialog>
@@ -30,7 +31,7 @@ MainWnd::MainWnd() :
 	m_model{std::make_unique<Document>(this)}
 {
 	m_ui->setupUi(this);
-	m_model->AttachView(m_ui->m_class_gfx);
+	auto scene = m_model->NewClassDiagram(m_ui->m_class_gfx);
 	
 	// initialize logical view
 	m_ui->m_logical_view->setModel(m_model->ClassModel());
@@ -92,7 +93,7 @@ MainWnd::MainWnd() :
 	});
 	
 	// spaghetti's first signal
-	connect(m_ui->m_class_gfx, &class_diagram::View::DropEntity, m_model.get(), &Document::AddEntity);
+	connect(m_ui->m_class_gfx, &class_diagram::View::DropEntity, scene, &class_diagram::SceneModel::AddEntity);
 }
 
 MainWnd::~MainWnd() = default;

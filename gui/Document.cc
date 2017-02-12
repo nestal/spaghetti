@@ -48,7 +48,6 @@ private:
 
 Document::Document(QObject *parent) :
 	QObject{parent},
-	m_classes{std::make_unique<class_diagram::SceneModel>(this)},
 	m_project_model{std::make_unique<ProjectModel_>(m_project.CodeBase(), this)},
 	m_class_model{std::make_unique<logical_view::Model>(
 		m_project.CodeBase().Root(), &m_project.CodeBase(), this
@@ -61,7 +60,7 @@ Document::~Document() = default;
 void Document::AddSource(const QString& file)
 {
 	// delete all items
-	m_classes->Clear();
+//	m_classes->Clear();
 	
 	m_class_model->beginResetModel();
 	m_project_model->beginResetModel();
@@ -70,10 +69,16 @@ void Document::AddSource(const QString& file)
 	m_class_model->endResetModel();
 }
 
-void Document::AttachView(QGraphicsView *view)
+class_diagram::SceneModel* Document::NewClassDiagram(QGraphicsView *view)
 {
 	assert(view);
-	m_classes->AttachView(view);
+	m_classes.emplace_back(
+		std::make_unique<class_diagram::SceneModel>(&m_project.CodeBase(), this)
+	);
+	
+	assert(!m_classes.empty());
+	m_classes.back()->AttachView(view);
+	return m_classes.back().get();
 }
 
 QAbstractItemModel *Document::ClassModel()
@@ -87,16 +92,10 @@ libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 	return entity ? entity->Location() : libclx::SourceLocation{};
 }
 
-void Document::AddEntity(const std::string& id, const QPointF& pos)
-{
-	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_project.CodeBase().Find(id)))
-		m_classes->AddDataType(*data_type, pos);
-}
-
 void Document::Open(const QString& file)
 {
 	// delete all items
-	m_classes->Clear();
+	m_classes.front()->Clear();
 	
 	m_class_model->beginResetModel();
 	m_project_model->beginResetModel();

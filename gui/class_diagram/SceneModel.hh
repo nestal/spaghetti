@@ -15,6 +15,7 @@
 #include <QObject>
 
 #include <memory>
+#include <codebase/Entity.hh>
 
 class QGraphicsScene;
 class QGraphicsView;
@@ -22,6 +23,7 @@ class QPointF;
 
 namespace codebase {
 class DataType;
+class EntityMap;
 }
 
 namespace gui {
@@ -30,17 +32,22 @@ namespace class_diagram {
 class SceneModel : public QObject
 {
 public:
-	SceneModel(QObject *parent);
+	SceneModel(const codebase::EntityMap *codebase, QObject *parent);
+	SceneModel(const SceneModel&) = delete;
+	SceneModel(SceneModel&&) = default;
 	~SceneModel();
 	
-	void AttachView(QGraphicsView *view);
+	SceneModel& operator=(const SceneModel&) = delete;
+	SceneModel& operator=(SceneModel&&) = default;
 	
+	void AttachView(QGraphicsView *view);
 	void Clear();
 	
-	void AddDataType(const codebase::DataType& type, const QPointF& pos);
+	void AddEntity(const std::string& id, const QPointF& pos);
 	
 public:
 	std::unique_ptr<QGraphicsScene> m_scene;
+	const codebase::EntityMap       *m_codebase{};
 };
 
 }} // end of namespace

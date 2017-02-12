@@ -13,6 +13,7 @@
 #include "SceneModel.hh"
 
 #include "ClassItem.hh"
+#include "codebase/DataType.hh"
 
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsView>
@@ -22,10 +23,12 @@ namespace gui {
 namespace class_diagram {
 
 
-SceneModel::SceneModel(QObject *parent) :
+SceneModel::SceneModel(const codebase::EntityMap *codebase, QObject *parent) :
 	QObject{parent},
-	m_scene{std::make_unique<QGraphicsScene>(this)}
+	m_scene{std::make_unique<QGraphicsScene>(this)},
+	m_codebase{codebase}
 {
+	assert(m_codebase);
 }
 
 SceneModel::~SceneModel() = default;
@@ -47,12 +50,15 @@ void SceneModel::Clear()
 	}
 }
 
-void SceneModel::AddDataType(const codebase::DataType& type, const QPointF& pos)
+void SceneModel::AddEntity(const std::string& id, const QPointF& pos)
 {
-	auto item = new class_diagram::ClassItem{type};
-	item->moveBy(pos.x(), pos.y());
-	
-	m_scene->addItem(item);
+	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase->Find(id)))
+	{
+		auto item = new ClassItem{*data_type};
+		item->moveBy(pos.x(), pos.y());
+		
+		m_scene->addItem(item);
+	}
 }
 	
 }} // end of namespace

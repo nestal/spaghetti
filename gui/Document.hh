@@ -48,21 +48,22 @@ public:
 	void Open(const QString& file);
 	void SaveAs(const QString& file);
 	
-	void AttachView(QGraphicsView *view);
 	void AddSource(const QString& file);
+	class_diagram::SceneModel* NewClassDiagram(QGraphicsView *view);
 	
 	QAbstractItemModel* ClassModel();
 	QAbstractItemModel* ProjectModel();
 	
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
-	void AddEntity(const std::string& id, const QPointF& pos);
-	
+		
 private:
 	// order is important here, since m_scene depends on m_repo.
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed
 	// before the Repository is destroyed.
 	project::Project                m_project;
-	std::unique_ptr<class_diagram::SceneModel> m_classes;
+	std::vector<
+		std::unique_ptr<class_diagram::SceneModel>
+	>                               m_classes;
 
 	class ProjectModel_;
 	std::unique_ptr<ProjectModel_>  m_project_model;
