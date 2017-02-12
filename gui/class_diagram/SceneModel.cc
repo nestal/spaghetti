@@ -16,7 +16,6 @@
 #include "codebase/DataType.hh"
 
 #include <QtWidgets/QGraphicsScene>
-#include <QtWidgets/QGraphicsView>
 #include <cassert>
 
 namespace gui {
@@ -33,11 +32,11 @@ SceneModel::SceneModel(const codebase::EntityMap *codebase, QObject *parent) :
 
 SceneModel::~SceneModel() = default;
 
-void SceneModel::AttachView(QGraphicsView *view)
+void SceneModel::SetRect(const QRectF& rect)
 {
-	assert(m_scene);
-	view->setScene(m_scene.get());
-	m_scene->setSceneRect(view->rect());
+//	assert(m_scene);
+//	view->setScene(m_scene.get());
+	m_scene->setSceneRect(rect);
 }
 
 void SceneModel::Clear()
@@ -59,6 +58,11 @@ void SceneModel::AddEntity(const std::string& id, const QPointF& pos)
 		
 		m_scene->addItem(item);
 	}
+}
+
+QGraphicsScene *SceneModel::Scene()
+{
+	return m_scene.get();
 }
 	
 }} // end of namespace

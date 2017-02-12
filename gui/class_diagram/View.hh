@@ -17,12 +17,14 @@
 namespace gui {
 namespace class_diagram {
 
+class ModelBase;
+
 class View: public QGraphicsView
 {
 Q_OBJECT
 
 public:
-	View(QWidget *parent);
+	View(ModelBase *model, QWidget *parent);
 
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);

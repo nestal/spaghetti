@@ -35,6 +35,8 @@ public:
 	MainWnd();
 	~MainWnd();
 
+	void AddClassDiagram();
+	
 private:
 	void OnDoubleClickItem(const QModelIndex& idx);
 	

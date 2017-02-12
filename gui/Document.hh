@@ -21,7 +21,6 @@
 
 class QAbstractItemModel;
 class QGraphicsScene;
-class QGraphicsView;
 
 namespace gui {
 namespace class_diagram {
@@ -49,7 +48,7 @@ public:
 	void SaveAs(const QString& file);
 	
 	void AddSource(const QString& file);
-	class_diagram::SceneModel* NewClassDiagram(QGraphicsView *view);
+	class_diagram::SceneModel* NewClassDiagram();
 	
 	QAbstractItemModel* ClassModel();
 	QAbstractItemModel* ProjectModel();

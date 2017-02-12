@@ -12,13 +12,13 @@
 
 #pragma once
 
+#include "ModelBase.hh"
 #include <QObject>
 
 #include <memory>
 #include <codebase/Entity.hh>
 
 class QGraphicsScene;
-class QGraphicsView;
 class QPointF;
 
 namespace codebase {
@@ -29,7 +29,7 @@ class EntityMap;
 namespace gui {
 namespace class_diagram {
 
-class SceneModel : public QObject
+class SceneModel : public ModelBase, public QObject
 {
 public:
 	SceneModel(const codebase::EntityMap *codebase, QObject *parent);
@@ -40,10 +40,11 @@ public:
 	SceneModel& operator=(const SceneModel&) = delete;
 	SceneModel& operator=(SceneModel&&) = default;
 	
-	void AttachView(QGraphicsView *view);
+	QGraphicsScene* Scene() override;
+	void SetRect(const QRectF& rect) override;
 	void Clear();
 	
-	void AddEntity(const std::string& id, const QPointF& pos);
+	void AddEntity(const std::string& id, const QPointF& pos) override;
 	
 public:
 	std::unique_ptr<QGraphicsScene> m_scene;

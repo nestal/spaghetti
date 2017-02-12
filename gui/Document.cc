@@ -66,15 +66,11 @@ void Document::AddSource(const QString& file)
 	m_class_model->endResetModel();
 }
 
-class_diagram::SceneModel* Document::NewClassDiagram(QGraphicsView *view)
+class_diagram::SceneModel* Document::NewClassDiagram()
 {
-	assert(view);
 	m_classes.emplace_back(
 		std::make_unique<class_diagram::SceneModel>(&m_project.CodeBase(), this)
 	);
-	
-	assert(!m_classes.empty());
-	m_classes.back()->AttachView(view);
 	return m_classes.back().get();
 }
 
