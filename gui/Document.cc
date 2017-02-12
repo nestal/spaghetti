@@ -67,9 +67,9 @@ void Document::AddSource(const QString& file)
 	m_logical_model->endResetModel();
 }
 
-class_diagram::Model* Document::CreateClassDiagram()
+class_diagram::Model* Document::CreateClassDiagram(const QString& name)
 {
-	m_models.emplace_back(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), this));
+	m_models.emplace_back(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this));
 	return static_cast<class_diagram::Model*>(m_models.back().get());
 }
 

@@ -22,8 +22,9 @@ namespace gui {
 namespace class_diagram {
 
 
-Model::Model(const codebase::EntityMap *codebase, QObject *parent) :
+Model::Model(const codebase::EntityMap *codebase, const QString& name, QObject *parent) :
 	QObject{parent},
+	m_name{name},
 	m_scene{std::make_unique<QGraphicsScene>(this)},
 	m_codebase{codebase}
 {
@@ -34,8 +35,6 @@ Model::~Model() = default;
 
 void Model::SetRect(const QRectF& rect)
 {
-//	assert(m_scene);
-//	view->setScene(m_scene.get());
 	m_scene->setSceneRect(rect);
 }
 

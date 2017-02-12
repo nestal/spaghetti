@@ -56,7 +56,7 @@ public:
 	void SaveAs(const QString& file);
 	
 	void AddSource(const QString& file);
-	class_diagram::Model* CreateClassDiagram();
+	class_diagram::Model* CreateClassDiagram(const QString& name);
 	source_view::Model* CreateSourceModel(const QString& name);
 	
 	common::ModelBase* At(std::size_t idx);

@@ -32,7 +32,7 @@ namespace class_diagram {
 class Model : public common::ModelBase, public QObject
 {
 public:
-	Model(const codebase::EntityMap *codebase, QObject *parent);
+	Model(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
 	Model(const Model&) = delete;
 	Model(Model&&) = default;
 	~Model();

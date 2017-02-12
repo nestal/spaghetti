@@ -18,6 +18,7 @@
 
 #include "class_diagram/View.hh"
 #include "gui/class_diagram/Model.hh"
+#include "gui/source_view/Model.hh"
 #include "libclx/Index.hh"
 
 #include <QFileDialog>
@@ -123,10 +124,10 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		if (!view)
 		{
 			view = new source_view::View{m_ui->m_tab};
-			m_model->CreateSourceModel(QString::fromStdString(filename));
+			auto model = m_model->CreateSourceModel(QString::fromStdString(filename));
 			
 			view->Open(loc);
-			m_ui->m_tab->addTab(view, QString::fromStdString(filename));
+			m_ui->m_tab->addTab(view, model->Name());
 		}
 		else
 		{
@@ -144,13 +145,11 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 void MainWnd::AddClassDiagram()
 {
 	// spaghetti's first signal
-	auto scene  = m_model->CreateClassDiagram();
+	auto scene  = m_model->CreateClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
 	auto view   = new class_diagram::View{scene->Scene(), this};
 	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::Model::AddEntity);
 	
-	auto tab = m_ui->m_tab->addTab(view,
-		tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1)
-	);
+	auto tab = m_ui->m_tab->addTab(view, scene->Name());
 	
 	// after adding the view to the tab widget, it will be resized to fill the whole tab
 	// we can use its size to resize the scene
@@ -168,8 +167,8 @@ void MainWnd::OnRenameTab(int idx)
 	{
 		bool ok;
 		QString text = QInputDialog::getText(
-			this, tr("Rename Diagram"),
-			tr("Name:"), QLineEdit::Normal,
+			this, tr("Rename Tab"),
+			tr("New name:"), QLineEdit::Normal,
 			model->Name(), &ok
 		);
 		
