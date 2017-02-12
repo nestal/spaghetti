@@ -19,12 +19,13 @@
 #include "libclx/Token.hh"
 
 #include <QtCore/QFile>
+#include <iostream>
 
 namespace gui {
 namespace source_view {
 
 View::View(source_view::Model *model, QWidget *parent) :
-	QTextEdit{parent},
+	QPlainTextEdit{parent},
 	m_model{model}
 {
 }
@@ -39,6 +40,8 @@ void View::Open(const libclx::SourceLocation& file)
 {
 	unsigned line, column, offset;
 	file.Get(m_filename, line, column, offset);
+	
+	setUndoRedoEnabled(false);
 	
 	// set the default format before inserting text
 	QTextCharFormat format;
@@ -62,7 +65,7 @@ void View::Parse(unsigned line, unsigned column)
 	if (qfile.open(QIODevice::ReadOnly))
 	{
 		auto all = qfile.readAll();
-		SendFunctorEvent(this, [this, all]{setPlainText(all);});
+		SendFunctorEvent(this, [this, all]{setPlainText(all);}, Qt::LowEventPriority);
 	}
 		
 	static const std::map<CXTokenKind, QColor> text_colour = {
@@ -81,7 +84,7 @@ void View::Parse(unsigned line, unsigned column)
 			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
 			"-I", ".",
 		},
-		CXTranslationUnit_None
+		CXTranslationUnit_Incomplete
 	);
 	
 	for (auto&& token: tu.Tokenize())
@@ -102,24 +105,25 @@ void View::Parse(unsigned line, unsigned column)
 				SendFunctorEvent(this, [this, tline, tcolumn, stride, colour]
 				{
 					Highlight(tline, tcolumn, stride, colour);
-				});
+				}, Qt::LowEventPriority);
 		}
 	}
 	
 	SendFunctorEvent(this, [this, line, column]
 	{
 		GoTo(line, column);
-	});
+	}, Qt::LowEventPriority);
 }
 
 void View::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
 {
 	QTextCursor cursor{document()};
+	
 	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
 	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
 	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
 	cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
-	
+
 	QTextCharFormat format;
 	format.setForeground(QBrush{colour});
 	cursor.mergeCharFormat(format);

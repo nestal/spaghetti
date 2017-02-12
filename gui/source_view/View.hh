@@ -13,7 +13,7 @@
 #pragma once
 
 #include "gui/common/ViewBase.hh"
-#include <QTextEdit>
+#include <QtWidgets/QPlainTextEdit>
 
 #include "Model.hh"
 #include <thread>
@@ -26,7 +26,7 @@ class TranslationUnit;
 namespace gui {
 namespace source_view {
 
-class View : public QTextEdit, public common::ViewBase
+class View : public QPlainTextEdit, public common::ViewBase
 {
 public:
 	View(source_view::Model *model, QWidget *parent);
@@ -48,5 +48,5 @@ private:
 	
 	source_view::Model *m_model{};
 };
-	
+
 }} // end of namespace
