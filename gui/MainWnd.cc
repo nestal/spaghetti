@@ -17,7 +17,7 @@
 #include "ui_MainWnd.h"
 
 #include "class_diagram/View.hh"
-#include "class_diagram/SceneModel.hh"
+#include "gui/class_diagram/Model.hh"
 #include "libclx/Index.hh"
 
 #include <QFileDialog>
@@ -138,7 +138,7 @@ void MainWnd::AddClassDiagram()
 	// spaghetti's first signal
 	auto scene  = m_model->NewClassDiagram();
 	auto view   = new class_diagram::View{scene, this};
-	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::SceneModel::AddEntity);
+	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::Model::AddEntity);
 	
 	m_ui->m_tab->addTab(view, "Class Diagram");
 	

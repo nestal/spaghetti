@@ -10,7 +10,7 @@
 // Created by nestal on 2/12/17.
 //
 
-#include "SceneModel.hh"
+#include "Model.hh"
 
 #include "ClassItem.hh"
 #include "codebase/DataType.hh"
@@ -22,7 +22,7 @@ namespace gui {
 namespace class_diagram {
 
 
-SceneModel::SceneModel(const codebase::EntityMap *codebase, QObject *parent) :
+Model::Model(const codebase::EntityMap *codebase, QObject *parent) :
 	QObject{parent},
 	m_scene{std::make_unique<QGraphicsScene>(this)},
 	m_codebase{codebase}
@@ -30,16 +30,16 @@ SceneModel::SceneModel(const codebase::EntityMap *codebase, QObject *parent) :
 	assert(m_codebase);
 }
 
-SceneModel::~SceneModel() = default;
+Model::~Model() = default;
 
-void SceneModel::SetRect(const QRectF& rect)
+void Model::SetRect(const QRectF& rect)
 {
 //	assert(m_scene);
 //	view->setScene(m_scene.get());
 	m_scene->setSceneRect(rect);
 }
 
-void SceneModel::Clear()
+void Model::Clear()
 {
 	// delete all items
 	for (auto&& item : m_scene->items())
@@ -49,7 +49,7 @@ void SceneModel::Clear()
 	}
 }
 
-void SceneModel::AddEntity(const std::string& id, const QPointF& pos)
+void Model::AddEntity(const std::string& id, const QPointF& pos)
 {
 	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase->Find(id)))
 	{
@@ -60,7 +60,7 @@ void SceneModel::AddEntity(const std::string& id, const QPointF& pos)
 	}
 }
 
-QGraphicsScene *SceneModel::Scene()
+QGraphicsScene *Model::Scene()
 {
 	return m_scene.get();
 }

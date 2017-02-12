@@ -29,16 +29,16 @@ class EntityMap;
 namespace gui {
 namespace class_diagram {
 
-class SceneModel : public ModelBase, public QObject
+class Model : public ModelBase, public QObject
 {
 public:
-	SceneModel(const codebase::EntityMap *codebase, QObject *parent);
-	SceneModel(const SceneModel&) = delete;
-	SceneModel(SceneModel&&) = default;
-	~SceneModel();
+	Model(const codebase::EntityMap *codebase, QObject *parent);
+	Model(const Model&) = delete;
+	Model(Model&&) = default;
+	~Model();
 	
-	SceneModel& operator=(const SceneModel&) = delete;
-	SceneModel& operator=(SceneModel&&) = default;
+	Model& operator=(const Model&) = delete;
+	Model& operator=(Model&&) = default;
 	
 	QGraphicsScene* Scene() override;
 	void SetRect(const QRectF& rect) override;

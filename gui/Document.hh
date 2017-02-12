@@ -25,7 +25,7 @@ class QGraphicsScene;
 namespace gui {
 namespace class_diagram {
 class ClassItem;
-class SceneModel;
+class Model;
 }
 
 namespace logical_view {
@@ -48,7 +48,7 @@ public:
 	void SaveAs(const QString& file);
 	
 	void AddSource(const QString& file);
-	class_diagram::SceneModel* NewClassDiagram();
+	class_diagram::Model* NewClassDiagram();
 	
 	QAbstractItemModel* ClassModel();
 	QAbstractItemModel* ProjectModel();
@@ -56,18 +56,17 @@ public:
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
 		
 private:
+	class ProjectModel_;
+		
 	// order is important here, since m_scene depends on m_repo.
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed
 	// before the Repository is destroyed.
-	project::Project                m_project;
+	project::Project                     m_project;
 	std::vector<
-		std::unique_ptr<class_diagram::SceneModel>
-	>                               m_classes;
-
-	class ProjectModel_;
-	std::unique_ptr<ProjectModel_>  m_project_model;
-	
-	std::unique_ptr<logical_view::Model> m_class_model;
+		std::unique_ptr<class_diagram::Model>
+	>                                    m_class_diagrams;
+	std::unique_ptr<ProjectModel_>       m_project_model;
+	std::unique_ptr<logical_view::Model> m_logical_model;
 };
 	
 } // end of namespace

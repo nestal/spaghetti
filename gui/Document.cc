@@ -11,7 +11,7 @@
 //
 
 #include "Document.hh"
-#include "class_diagram/SceneModel.hh"
+#include "gui/class_diagram/Model.hh"
 #include "logical_view/Model.hh"
 
 #include <QtCore/QAbstractListModel>
@@ -49,7 +49,7 @@ private:
 Document::Document(QObject *parent) :
 	QObject{parent},
 	m_project_model{std::make_unique<ProjectModel_>(m_project.CodeBase(), this)},
-	m_class_model{std::make_unique<logical_view::Model>(
+	m_logical_model{std::make_unique<logical_view::Model>(
 		m_project.CodeBase().Root(), &m_project.CodeBase(), this
 	)}
 {
@@ -59,42 +59,42 @@ Document::~Document() = default;
 
 void Document::AddSource(const QString& file)
 {
-	m_class_model->beginResetModel();
+	m_logical_model->beginResetModel();
 	m_project_model->beginResetModel();
 	m_project.AddSource(file.toStdString());
 	m_project_model->endResetModel();
-	m_class_model->endResetModel();
+	m_logical_model->endResetModel();
 }
 
-class_diagram::SceneModel* Document::NewClassDiagram()
+class_diagram::Model* Document::NewClassDiagram()
 {
-	m_classes.emplace_back(
-		std::make_unique<class_diagram::SceneModel>(&m_project.CodeBase(), this)
+	m_class_diagrams.emplace_back(
+		std::make_unique<class_diagram::Model>(&m_project.CodeBase(), this)
 	);
-	return m_classes.back().get();
+	return m_class_diagrams.back().get();
 }
 
 QAbstractItemModel *Document::ClassModel()
 {
-	return m_class_model.get();
+	return m_logical_model.get();
 }
 
 libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 {
-	auto entity = m_class_model->At(idx);
+	auto entity = m_logical_model->At(idx);
 	return entity ? entity->Location() : libclx::SourceLocation{};
 }
 
 void Document::Open(const QString& file)
 {
 	// delete all items
-	m_classes.front()->Clear();
+	m_class_diagrams.front()->Clear();
 	
-	m_class_model->beginResetModel();
+	m_logical_model->beginResetModel();
 	m_project_model->beginResetModel();
 	m_project.Open(file.toStdString());
 	m_project_model->endResetModel();
-	m_class_model->endResetModel();
+	m_logical_model->endResetModel();
 }
 
 void Document::SaveAs(const QString& file)
