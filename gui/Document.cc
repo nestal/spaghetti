@@ -59,9 +59,6 @@ Document::~Document() = default;
 
 void Document::AddSource(const QString& file)
 {
-	// delete all items
-//	m_classes->Clear();
-	
 	m_class_model->beginResetModel();
 	m_project_model->beginResetModel();
 	m_project.AddSource(file.toStdString());

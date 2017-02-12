@@ -16,6 +16,7 @@
 
 #include "ui_MainWnd.h"
 
+#include "class_diagram/View.hh"
 #include "class_diagram/SceneModel.hh"
 #include "libclx/Index.hh"
 
@@ -31,8 +32,7 @@ MainWnd::MainWnd() :
 	m_model{std::make_unique<Document>(this)}
 {
 	m_ui->setupUi(this);
-	auto scene = m_model->NewClassDiagram(m_ui->m_class_gfx);
-	
+
 	// initialize logical view
 	m_ui->m_logical_view->setModel(m_model->ClassModel());
 	m_ui->m_logical_view->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -93,7 +93,10 @@ MainWnd::MainWnd() :
 	});
 	
 	// spaghetti's first signal
-	connect(m_ui->m_class_gfx, &class_diagram::View::DropEntity, scene, &class_diagram::SceneModel::AddEntity);
+	auto class_diagram_view   = new class_diagram::View{this};
+	m_ui->m_tab->addTab(class_diagram_view, "Class Diagram");
+	auto class_diagram_scene = m_model->NewClassDiagram(class_diagram_view);
+	connect(class_diagram_view, &class_diagram::View::DropEntity, class_diagram_scene, &class_diagram::SceneModel::AddEntity);
 }
 
 MainWnd::~MainWnd() = default;
