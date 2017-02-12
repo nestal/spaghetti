@@ -17,6 +17,7 @@
 
 #include "Model.hh"
 #include <thread>
+#include <atomic>
 
 namespace libclx {
 class SourceLocation;
@@ -47,6 +48,8 @@ private:
 	std::string m_filename;
 	
 	source_view::Model *m_model{};
+	
+	QTextCursor m_highlight;
 };
 
 }} // end of namespace

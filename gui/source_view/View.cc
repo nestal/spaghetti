@@ -20,13 +20,15 @@
 
 #include <QtCore/QFile>
 #include <iostream>
+#include <chrono>
 
 namespace gui {
 namespace source_view {
 
 View::View(source_view::Model *model, QWidget *parent) :
 	QPlainTextEdit{parent},
-	m_model{model}
+	m_model{model},
+	m_highlight{document()}
 {
 }
 
@@ -65,7 +67,11 @@ void View::Parse(unsigned line, unsigned column)
 	if (qfile.open(QIODevice::ReadOnly))
 	{
 		auto all = qfile.readAll();
-		SendFunctorEvent(this, [this, all]{setPlainText(all);}, Qt::LowEventPriority);
+		SendFunctorEvent(this, [this, all]
+		{
+			setPlainText(all);
+			m_highlight.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+		}, Qt::LowEventPriority);
 	}
 		
 	static const std::map<CXTokenKind, QColor> text_colour = {
@@ -102,10 +108,14 @@ void View::Parse(unsigned line, unsigned column)
 			auto stride = tstr.size();
 			auto colour = cit->second;
 			if (cit != text_colour.end())
-				SendFunctorEvent(this, [this, tline, tcolumn, stride, colour]
-				{
-					Highlight(tline, tcolumn, stride, colour);
-				}, Qt::LowEventPriority);
+			{
+				SendFunctorEvent(
+					this, [this, tline, tcolumn, stride, colour]
+					{
+						Highlight(tline, tcolumn, stride, colour);
+					}, Qt::LowEventPriority
+				);
+			}
 		}
 	}
 	
@@ -117,16 +127,16 @@ void View::Parse(unsigned line, unsigned column)
 
 void View::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
 {
-	QTextCursor cursor{document()};
+	int block = m_highlight.blockNumber();
+	int col   = m_highlight.columnNumber();
 	
-	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-	cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
-	cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, column-1);
-	cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
-
+	m_highlight.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1   - block);
+	m_highlight.movePosition(QTextCursor::Right,     QTextCursor::MoveAnchor, column-1 - col);
+	m_highlight.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, static_cast<unsigned>(stride));
+	
 	QTextCharFormat format;
 	format.setForeground(QBrush{colour});
-	cursor.mergeCharFormat(format);
+	m_highlight.mergeCharFormat(format);
 }
 
 const std::string& View::Filename() const
