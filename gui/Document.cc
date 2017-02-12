@@ -12,6 +12,7 @@
 
 #include "Document.hh"
 #include "gui/class_diagram/Model.hh"
+#include "gui/source_view/Model.hh"
 #include "logical_view/Model.hh"
 
 #include <QtCore/QAbstractListModel>
@@ -68,10 +69,14 @@ void Document::AddSource(const QString& file)
 
 class_diagram::Model* Document::CreateClassDiagram()
 {
-	m_class_diagrams.emplace_back(
-		std::make_unique<class_diagram::Model>(&m_project.CodeBase(), this)
-	);
-	return m_class_diagrams.back().get();
+	m_models.emplace_back(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), this));
+	return static_cast<class_diagram::Model*>(m_models.back().get());
+}
+
+source_view::Model *Document::CreateSourceModel(const QString& name)
+{
+	m_models.emplace_back(std::make_unique<source_view::Model>(name, this));
+	return static_cast<source_view::Model*>(m_models.back().get());
 }
 
 QAbstractItemModel *Document::ClassModel()
@@ -88,7 +93,7 @@ libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 void Document::Open(const QString& file)
 {
 	// delete all items
-	m_class_diagrams.front()->Clear();
+//	m_class_diagrams.front()->Clear();
 	
 	m_logical_model->beginResetModel();
 	m_project_model->beginResetModel();
@@ -107,9 +112,9 @@ QAbstractItemModel *Document::ProjectModel()
 	return m_project_model.get();
 }
 
-class_diagram::Model *Document::ClassDiagramAt(std::size_t idx)
+common::ModelBase *Document::At(std::size_t idx)
 {
-	return m_class_diagrams.at(idx).get();
+	return m_models.at(idx).get();
 }
-	
+
 } // end of namespace

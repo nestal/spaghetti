@@ -12,25 +12,14 @@
 
 #pragma once
 
-#include <string>
-
-class QGraphicsScene;
-class QPointF;
-class QRectF;
-class QString;
 
 namespace gui {
 namespace common {
 
-class ModelBase
+class ViewBase
 {
 public:
-	virtual ~ModelBase() = default;
 	
-	virtual void AddEntity(const std::string& id, const QPointF& pos) = 0;
-	virtual void SetRect(const QRectF& rect) = 0;
-	virtual QString Name() const = 0;
-	virtual void SetName(const QString& name) = 0;
 };
-
+	
 }} // end of namespace

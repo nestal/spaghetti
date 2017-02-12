@@ -23,8 +23,16 @@ class QAbstractItemModel;
 class QGraphicsScene;
 
 namespace gui {
+namespace common {
+class ModelBase;
+}
+
 namespace class_diagram {
 class ClassItem;
+class Model;
+}
+
+namespace source_view {
 class Model;
 }
 
@@ -49,7 +57,9 @@ public:
 	
 	void AddSource(const QString& file);
 	class_diagram::Model* CreateClassDiagram();
-	class_diagram::Model* ClassDiagramAt(std::size_t idx);
+	source_view::Model* CreateSourceModel(const QString& name);
+	
+	common::ModelBase* At(std::size_t idx);
 	
 	QAbstractItemModel* ClassModel();
 	QAbstractItemModel* ProjectModel();
@@ -58,16 +68,18 @@ public:
 		
 private:
 	class ProjectModel_;
-		
+	
+	using Model = std::unique_ptr<common::ModelBase>;
+	
 	// order is important here, since m_scene depends on m_repo.
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed
 	// before the Repository is destroyed.
-	project::Project                     m_project;
-	std::vector<
-		std::unique_ptr<class_diagram::Model>
-	>                                    m_class_diagrams;
-	std::unique_ptr<ProjectModel_>       m_project_model;
-	std::unique_ptr<logical_view::Model> m_logical_model;
-};
+	project::Project                        m_project;
+	std::vector<Model>                      m_models;
 	
+	// for the docking windows
+	std::unique_ptr<ProjectModel_>          m_project_model;
+	std::unique_ptr<logical_view::Model>    m_logical_model;
+};
+
 } // end of namespace

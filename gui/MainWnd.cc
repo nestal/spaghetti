@@ -123,6 +123,8 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		if (!view)
 		{
 			view = new source_view::View{m_ui->m_tab};
+			m_model->CreateSourceModel(QString::fromStdString(filename));
+			
 			view->Open(loc);
 			m_ui->m_tab->addTab(view, QString::fromStdString(filename));
 		}
@@ -162,10 +164,10 @@ void MainWnd::OnRenameTab(int idx)
 	bool ok;
 	QString text = QInputDialog::getText(this, tr("Rename Diagram"),
 		tr("Name:"), QLineEdit::Normal,
-		m_model->ClassDiagramAt(idx)->Name(), &ok);
+		m_model->At(idx)->Name(), &ok);
 	
 	if (ok && !text.isEmpty())
-		m_ui->m_tab->tabBar()->setTabText(idx, text);
+		m_model->At(idx)->SetName(text);
 }
 
 } // end of namespace
