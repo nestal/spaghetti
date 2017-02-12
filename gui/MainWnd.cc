@@ -21,6 +21,7 @@
 #include "libclx/Index.hh"
 
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 
 #include <cassert>
@@ -94,6 +95,9 @@ MainWnd::MainWnd() :
 	
 	connect(m_ui->m_action_new_class_diagram, &QAction::triggered, this, &MainWnd::AddClassDiagram);
 
+	// double click the tab to rename it
+	connect(m_ui->m_tab->tabBar(), &QTabBar::tabBarDoubleClicked, this, &MainWnd::OnRenameTab);
+	
 	// default class diagram
 	AddClassDiagram();
 }
@@ -142,7 +146,9 @@ void MainWnd::AddClassDiagram()
 	auto view   = new class_diagram::View{scene, this};
 	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::Model::AddEntity);
 	
-	auto tab = m_ui->m_tab->addTab(view, tr("Class Diagram"));
+	auto tab = m_ui->m_tab->addTab(view,
+		tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1)
+	);
 	
 	// after adding the view to the tab widget, it will be resized to fill the whole tab
 	// we can use its size to resize the scene
@@ -150,5 +156,16 @@ void MainWnd::AddClassDiagram()
 	
 	m_ui->m_tab->setCurrentIndex(tab);
 }
+
+void MainWnd::OnRenameTab(int idx)
+{
+	bool ok;
+	QString text = QInputDialog::getText(this, tr("Rename Diagram"),
+		tr("Name:"), QLineEdit::Normal,
+		m_model->ClassDiagramAt(idx)->Name(), &ok);
 	
+	if (ok && !text.isEmpty())
+		m_ui->m_tab->tabBar()->setTabText(idx, text);
+}
+
 } // end of namespace

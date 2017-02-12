@@ -42,11 +42,15 @@ public:
 	
 	QGraphicsScene* Scene() override;
 	void SetRect(const QRectF& rect) override;
+	QString Name() const override;
+	void SetName(const QString& name) override;
 	void Clear();
 	
 	void AddEntity(const std::string& id, const QPointF& pos) override;
 	
 public:
+	QString                         m_name;
+	
 	std::unique_ptr<QGraphicsScene> m_scene;
 	const codebase::EntityMap       *m_codebase{};
 };

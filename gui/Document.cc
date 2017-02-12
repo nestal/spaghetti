@@ -106,5 +106,10 @@ QAbstractItemModel *Document::ProjectModel()
 {
 	return m_project_model.get();
 }
+
+class_diagram::Model *Document::ClassDiagramAt(std::size_t idx)
+{
+	return m_class_diagrams.at(idx).get();
+}
 	
 } // end of namespace

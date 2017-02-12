@@ -64,5 +64,15 @@ QGraphicsScene *Model::Scene()
 {
 	return m_scene.get();
 }
+
+QString Model::Name() const
+{
+	return m_name;
+}
+
+void Model::SetName(const QString& name)
+{
+	m_name = name;
+}
 	
 }} // end of namespace

@@ -39,6 +39,7 @@ public:
 	
 private:
 	void OnDoubleClickItem(const QModelIndex& idx);
+	void OnRenameTab(int idx);
 	
 private:
 	std::unique_ptr<Ui::MainWnd>    m_ui;
