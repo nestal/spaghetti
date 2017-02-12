@@ -116,7 +116,7 @@ void Document::Open(const QString& file)
 	
 	m_class_model->beginResetModel();
 	m_project_model->beginResetModel();
-	m_project.Load(file.toStdString());
+	m_project.Open(file.toStdString());
 	m_project_model->endResetModel();
 	m_class_model->endResetModel();
 }
