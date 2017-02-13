@@ -29,6 +29,11 @@ class EntityMap;
 namespace gui {
 namespace class_diagram {
 
+class ClassItem;
+
+/**
+ * \brief Serializable data for class diagrams.
+ */
 class Model : public common::ModelBase, public QObject
 {
 public:
@@ -42,6 +47,7 @@ public:
 	
 	QGraphicsScene* Scene();
 	
+	// ModelBase overrides
 	void AddEntity(const std::string& id, const QPointF& pos) override;
 	void SetRect(const QRectF& rect) override;
 	bool CanRename() const override;
@@ -49,7 +55,10 @@ public:
 	void SetName(const QString& name) override;
 	void Clear();
 
-public:
+private:
+	void DetectEdges(ClassItem *item);
+	
+private:
 	QString                         m_name;
 	
 	std::unique_ptr<QGraphicsScene> m_scene;

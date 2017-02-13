@@ -62,6 +62,8 @@ public:
 	boost::iterator_range<field_iterator> Fields() const;
 	boost::iterator_range<idvec_iterator> BaseClasses() const;
 
+	bool IsBaseOf(const DataType& other) const;
+	
 	std::size_t ChildCount() const override;
 	const Entity* Child(std::size_t idx) const override;
 	Entity* Child(std::size_t idx) override;

@@ -55,14 +55,14 @@ void DataType::Visit(libclx::Cursor self)
 			break;
 			
 		case CXCursor_CXXBaseSpecifier:
-			if (!child.Location().IsFromSystemHeader())
-				std::cout << m_usr << " base class = \"" <<  child.Spelling() << "\" ID = \"" << child.GetDefinition().USR() << "\"" << std::endl;
+//			if (!child.Location().IsFromSystemHeader())
+//				std::cout << m_usr << " base class = \"" <<  child.Spelling() << "\" ID = \"" << child.GetDefinition().USR() << "\"" << std::endl;
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
 			
 		default:
-			if (!child.Location().IsFromSystemHeader())
-				std::cout << m_name << " " <<  child.Spelling() << ' ' << child.Kind() << std::endl;
+//			if (!child.Location().IsFromSystemHeader())
+//				std::cout << m_name << " " <<  child.Spelling() << ' ' << child.Kind() << std::endl;
 			break;
 		}
 	});
@@ -115,6 +115,12 @@ libclx::SourceLocation DataType::Location() const
 boost::iterator_range<DataType::idvec_iterator> DataType::BaseClasses() const
 {
 	return {m_base_classes.begin(), m_base_classes.end()};
+}
+
+bool DataType::IsBaseOf(const DataType& other) const
+{
+	return std::find(other.m_base_classes.begin(), other.m_base_classes.end(), m_usr) !=
+		other.m_base_classes.end();
 }
 
 std::ostream& operator<<(std::ostream& os, const DataType& c)

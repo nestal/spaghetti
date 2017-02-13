@@ -33,6 +33,7 @@ public:
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 	
 	const std::string& ID() const;
+	const codebase::DataType& Type() const;
 
 private:
 	const codebase::DataType& m_class;
