@@ -85,24 +85,56 @@ bool Model::CanRename() const
 
 void Model::DetectEdges(ClassItem *item)
 {
-	auto bounding = item->boundingRect();
-	
 	for (auto child : m_scene->items())
 	{
 		if (auto citem = dynamic_cast<ClassItem*>(child))
 		{
-			std::cout << item->Type().Name() << " " << citem->Type().Name() << std::endl;
-			
 			if (item->Type().IsBaseOf(citem->Type()))
-			{
-				std::cout << "let's draw an edge between them " << bounding.center().x() << std::endl;
-			}
+				AddLine(QRectF{
+					citem->mapToScene(citem->boundingRect().topLeft()),
+					citem->mapToScene(citem->boundingRect().bottomRight())
+				}, QRectF{
+					item->mapToScene(item->boundingRect().topLeft()),
+					item->mapToScene(item->boundingRect().bottomRight())
+				});
+			
 			else if (citem->Type().IsBaseOf(item->Type()))
-			{
-//				std::cout << "let's draw an edge between them " << bounding.center().x() << std::endl;
-			}
+				AddLine(QRectF{
+					item->mapToScene(item->boundingRect().topLeft()),
+					item->mapToScene(item->boundingRect().bottomRight())
+				}, QRectF{
+					citem->mapToScene(citem->boundingRect().topLeft()),
+					citem->mapToScene(citem->boundingRect().bottomRight())
+				});
 		}
 	}
+}
+
+void Model::AddLine(const QRectF& from, const QRectF& to)
+{
+	QLineF dia{from.center(), to.center()};
+
+	QPointF from_pt, to_pt;
+	
+	// check intersection with "from" rectangle
+	if (dia.intersect(QLineF{from.topLeft(),    from.topRight()},    &from_pt) == QLineF::BoundedIntersection) goto next;
+	if (dia.intersect(QLineF{from.bottomLeft(), from.bottomRight()}, &from_pt) == QLineF::BoundedIntersection) goto next;
+	if (dia.intersect(QLineF{from.topLeft(),    from.bottomLeft()},  &from_pt) == QLineF::BoundedIntersection) goto next;
+	if (dia.intersect(QLineF{from.topRight(),   from.bottomRight()}, &from_pt) == QLineF::BoundedIntersection) goto next;
+	
+	// check intersection with the "to" rectangle
+	next:
+	if (dia.intersect(QLineF{to.topLeft(),    to.topRight()},    &to_pt) == QLineF::BoundedIntersection) goto done;
+	if (dia.intersect(QLineF{to.bottomLeft(), to.bottomRight()}, &to_pt) == QLineF::BoundedIntersection) goto done;
+	if (dia.intersect(QLineF{to.topLeft(),    to.bottomLeft()},  &to_pt) == QLineF::BoundedIntersection) goto done;
+	if (dia.intersect(QLineF{to.topRight(),   to.bottomRight()}, &to_pt) == QLineF::BoundedIntersection) goto done;
+	
+	done:
+	m_scene->addLine(QLineF{from_pt, to_pt}, QPen{
+		QBrush{Qt::black},
+		0,
+		Qt::SolidLine
+	});
 }
 	
 }} // end of namespace
