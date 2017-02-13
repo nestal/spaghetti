@@ -179,7 +179,9 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="spaghetti.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>m_action_exit</sender>
