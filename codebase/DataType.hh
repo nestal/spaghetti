@@ -41,6 +41,7 @@ class DataType : public Entity
 {
 public:
 	using field_iterator = EntityVec<Variable>::const_iterator;
+	using idvec_iterator = std::vector<std::string>::const_iterator;
 	
 public:
 	DataType(libclx::Cursor cursor, const std::string& parent);
@@ -59,6 +60,7 @@ public:
 	void Visit(libclx::Cursor self);
 	
 	boost::iterator_range<field_iterator> Fields() const;
+	boost::iterator_range<idvec_iterator> BaseClasses() const;
 
 	std::size_t ChildCount() const override;
 	const Entity* Child(std::size_t idx) const override;
@@ -74,6 +76,8 @@ private:
 	
 	libclx::SourceLocation m_definition;
 	EntityVec<Variable>    m_fields{"Fields", m_usr};
+	
+	std::vector<std::string> m_base_classes;
 };
 	
 } // end of namespace

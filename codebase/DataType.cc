@@ -53,9 +53,16 @@ void DataType::Visit(libclx::Cursor self)
 		case CXCursor_FieldDecl:
 			m_fields.Add(child, m_fields.ID());
 			break;
-	
+			
+		case CXCursor_CXXBaseSpecifier:
+			if (!child.Location().IsFromSystemHeader())
+				std::cout << m_usr << " base class = \"" <<  child.Spelling() << "\" ID = \"" << child.GetDefinition().USR() << "\"" << std::endl;
+			m_base_classes.push_back(child.GetDefinition().USR());
+			break;
+			
 		default:
-//		std::cout << child.Spelling() << ' ' << child.Kind() << std::endl;
+			if (!child.Location().IsFromSystemHeader())
+				std::cout << m_name << " " <<  child.Spelling() << ' ' << child.Kind() << std::endl;
 			break;
 		}
 	});
@@ -99,6 +106,15 @@ std::string DataType::Type() const
 libclx::SourceLocation DataType::Location() const
 {
 	return m_definition;
+}
+
+/**
+ * \brief Get ID (USR) of all base classes
+ * \return A range of iterator to base classes ID as string.
+ */
+boost::iterator_range<DataType::idvec_iterator> DataType::BaseClasses() const
+{
+	return {m_base_classes.begin(), m_base_classes.end()};
 }
 
 std::ostream& operator<<(std::ostream& os, const DataType& c)
