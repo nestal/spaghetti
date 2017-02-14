@@ -107,14 +107,22 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 {
 	if (change == QGraphicsItem::ItemPositionChange)
 	{
+		auto affected = QRectF{pos(), value.toPointF()}.normalized();
+		affected.adjust(
+			0, 0, boundingRect().width(), boundingRect().height()
+		);
+		
 		for (auto&& edge : m_edges)
-			edge->update();
+		{
+//			edge->update();
+			affected |= edge->boundingRect();
+		}
 		
 		// redraw the whole scene
 		if (!m_edges.empty())
-			scene()->update();
+			scene()->update(affected);
 	}
-		
+
 	return value;
 }
 
