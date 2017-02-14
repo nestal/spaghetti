@@ -91,7 +91,7 @@ QVariant Model::headerData(int section, Qt::Orientation orientation, int role) c
 		switch (section)
 		{
 		case 0: return tr("Name");
-		case 1: return tr("Type");
+		case 1: return tr("DataType");
 		}
 	}
 		

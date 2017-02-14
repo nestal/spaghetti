@@ -7,44 +7,35 @@
 */
 
 //
-// Created by nestal on 1/31/17.
+// Created by nestal on 2/13/17.
 //
 
 #pragma once
 
 #include <QGraphicsItem>
 
-class QGraphicsSimpleTextItem;
-
-namespace codebase {
-class DataType;
-}
-
 namespace gui {
 namespace class_diagram {
 
-class ClassItem : public QGraphicsItem
+class ClassItem;
+
+class Edge : public QGraphicsItem
 {
 public:
-	ClassItem(const codebase::DataType& class_, QGraphicsItem *parent = {});
-	~ClassItem();
+	Edge(const ClassItem *from, const ClassItem *to);
 	
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 	
-	const std::string& ID() const;
-	const codebase::DataType& DataType() const;
+	void UpdatePosition();
 
-	static const int Type = UserType + 1;
-	int type() const override;
-	
 private:
-	const codebase::DataType& m_class;
-	QRectF m_bounding;
-	
-	QGraphicsSimpleTextItem *m_name;
-	
-	static const qreal m_margin, m_max_width;
+	QLineF Calculate() const;
+	static QLineF LineFrom(const QRectF& from, const QRectF& to);
+
+private:
+	const ClassItem *m_from;
+	const ClassItem *m_to;
 };
 	
 }} // end of namespace

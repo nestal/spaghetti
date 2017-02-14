@@ -87,9 +87,9 @@ void Model::DetectEdges(ClassItem *item)
 {
 	for (auto child : m_scene->items())
 	{
-		if (auto citem = dynamic_cast<ClassItem*>(child))
+		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
 		{
-			if (item->Type().IsBaseOf(citem->Type()))
+			if (item->DataType().IsBaseOf(citem->DataType()))
 				AddLine(QRectF{
 					citem->mapToScene(citem->boundingRect().topLeft()),
 					citem->mapToScene(citem->boundingRect().bottomRight())
@@ -98,7 +98,7 @@ void Model::DetectEdges(ClassItem *item)
 					item->mapToScene(item->boundingRect().bottomRight())
 				});
 			
-			else if (citem->Type().IsBaseOf(item->Type()))
+			else if (citem->DataType().IsBaseOf(item->DataType()))
 				AddLine(QRectF{
 					item->mapToScene(item->boundingRect().topLeft()),
 					item->mapToScene(item->boundingRect().bottomRight())

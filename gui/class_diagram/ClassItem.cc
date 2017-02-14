@@ -90,9 +90,14 @@ const std::string& ClassItem::ID() const
 	return m_class.ID();
 }
 
-const codebase::DataType& ClassItem::Type() const
+const codebase::DataType& ClassItem::DataType() const
 {
 	return m_class;
+}
+
+int ClassItem::type() const
+{
+	return Type;
 }
 	
 }} // end of namespace
