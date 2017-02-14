@@ -16,6 +16,7 @@
 
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
+#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -60,6 +61,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	// flags
 	setFlag(QGraphicsItem::ItemIsMovable);
 	setFlag(QGraphicsItem::ItemIsSelectable);
+	setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
 
 ClassItem::~ClassItem() = default;
@@ -98,6 +100,23 @@ const codebase::DataType& ClassItem::DataType() const
 int ClassItem::type() const
 {
 	return Type;
+}
+
+QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
+{
+	if (change == QGraphicsItem::ItemPositionChange)
+	{
+		std::cout << "changing!" << std::endl;
+		for (auto&& edge : m_edges)
+			edge->update();
+	}
+		
+	return value;
+}
+
+void ClassItem::AddEdge(QGraphicsItem *edge)
+{
+	m_edges.push_back(edge);
 }
 	
 }} // end of namespace

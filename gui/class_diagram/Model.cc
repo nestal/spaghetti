@@ -99,9 +99,11 @@ void Model::DetectEdges(ClassItem *item)
 	}
 }
 
-void Model::AddLine(const ClassItem *from, const ClassItem *to)
+void Model::AddLine(ClassItem *from, ClassItem *to)
 {
 	auto edge = std::make_unique<Edge>(from, to);
+	from->AddEdge(edge.get());
+	to->AddEdge(edge.get());
 	m_scene->addItem(edge.release());
 /*	QLineF dia{from.center(), to.center()};
 

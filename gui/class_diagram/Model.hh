@@ -57,7 +57,7 @@ public:
 
 private:
 	void DetectEdges(ClassItem *item);
-	void AddLine(const ClassItem *from, const ClassItem *to);
+	void AddLine(ClassItem *from, ClassItem *to);
 	
 private:
 	QString                         m_name;
