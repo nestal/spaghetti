@@ -27,10 +27,7 @@ public:
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 	
-	void UpdatePosition();
-
 private:
-	QLineF Calculate() const;
 	static QLineF LineFrom(const QRectF& from, const QRectF& to);
 
 private:

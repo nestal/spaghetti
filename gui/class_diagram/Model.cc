@@ -13,6 +13,7 @@
 #include "Model.hh"
 
 #include "ClassItem.hh"
+#include "Edge.hh"
 #include "codebase/DataType.hh"
 
 #include <QtWidgets/QGraphicsScene>
@@ -90,29 +91,19 @@ void Model::DetectEdges(ClassItem *item)
 		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
 		{
 			if (item->DataType().IsBaseOf(citem->DataType()))
-				AddLine(QRectF{
-					citem->mapToScene(citem->boundingRect().topLeft()),
-					citem->mapToScene(citem->boundingRect().bottomRight())
-				}, QRectF{
-					item->mapToScene(item->boundingRect().topLeft()),
-					item->mapToScene(item->boundingRect().bottomRight())
-				});
-			
+				AddLine(item, citem);
+				
 			else if (citem->DataType().IsBaseOf(item->DataType()))
-				AddLine(QRectF{
-					item->mapToScene(item->boundingRect().topLeft()),
-					item->mapToScene(item->boundingRect().bottomRight())
-				}, QRectF{
-					citem->mapToScene(citem->boundingRect().topLeft()),
-					citem->mapToScene(citem->boundingRect().bottomRight())
-				});
+				AddLine(citem, item);
 		}
 	}
 }
 
-void Model::AddLine(const QRectF& from, const QRectF& to)
+void Model::AddLine(const ClassItem *from, const ClassItem *to)
 {
-	QLineF dia{from.center(), to.center()};
+	auto edge = std::make_unique<Edge>(from, to);
+	m_scene->addItem(edge.release());
+/*	QLineF dia{from.center(), to.center()};
 
 	QPointF from_pt, to_pt;
 	
@@ -134,7 +125,7 @@ void Model::AddLine(const QRectF& from, const QRectF& to)
 		QBrush{Qt::black},
 		0,
 		Qt::SolidLine
-	});
+	});*/
 }
 	
 }} // end of namespace

@@ -15,7 +15,10 @@
 #include "ClassItem.hh"
 #include "codebase/DataType.hh"
 
+#include <QtGui/QPainter>
+
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -27,56 +30,43 @@ Edge::Edge(const ClassItem *from, const ClassItem *to) :
 	assert(m_to);
 }
 
-void Edge::UpdatePosition()
+void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+	if (m_from->collidesWithItem(m_to))
+		return;
 	
-}
-
-QLineF Edge::Calculate() const
-{
-	return LineFrom(QRectF{
-			m_from->mapToScene(m_from->boundingRect().topLeft()),
-			m_from->mapToScene(m_from->boundingRect().bottomRight())
-		}, QRectF{
-			m_to->mapToScene(m_to->boundingRect().topLeft()),
-			m_to->mapToScene(m_to->boundingRect().bottomRight())
-		});
-}
-
-QLineF Edge::LineFrom(const QRectF& from, const QRectF& to)
-{
-	QLineF dia{from.center(), to.center()};
+	QLineF dia{
+		mapFromItem(m_from, m_from->boundingRect().center()),
+		mapFromItem(m_to,   m_to->boundingRect().center())
+	};
 	
 	QPointF from_pt, to_pt;
+		
+	auto from_p = mapFromItem(m_from, m_from->boundingRect());
+	auto to_p   = mapFromItem(m_to,   m_to->boundingRect());
 	
-	// check intersection with "from" rectangle
-	if (dia.intersect(QLineF{from.topLeft(),    from.topRight()},    &from_pt) == QLineF::BoundedIntersection) goto next;
-	if (dia.intersect(QLineF{from.bottomLeft(), from.bottomRight()}, &from_pt) == QLineF::BoundedIntersection) goto next;
-	if (dia.intersect(QLineF{from.topLeft(),    from.bottomLeft()},  &from_pt) == QLineF::BoundedIntersection) goto next;
-	if (dia.intersect(QLineF{from.topRight(),   from.bottomRight()}, &from_pt) == QLineF::BoundedIntersection) goto next;
+	for (int i = 0 ; i < from_p.size() ; ++i)
+	{
+		QLineF line{from_p.at(i), from_p.at((i+1) % from_p.size())};
+		if (dia.intersect(line, &from_pt) == QLineF::BoundedIntersection)
+			break;
+	}
+	for (int i = 0 ; i < to_p.size() ; ++i)
+	{
+		QLineF line{to_p.at(i), to_p.at((i+1) % to_p.size())};
+		if (dia.intersect(line, &to_pt) == QLineF::BoundedIntersection)
+			break;
+	}
 	
-	// check intersection with the "to" rectangle
-	next:
-	if (dia.intersect(QLineF{to.topLeft(),    to.topRight()},    &to_pt) == QLineF::BoundedIntersection) goto done;
-	if (dia.intersect(QLineF{to.bottomLeft(), to.bottomRight()}, &to_pt) == QLineF::BoundedIntersection) goto done;
-	if (dia.intersect(QLineF{to.topLeft(),    to.bottomLeft()},  &to_pt) == QLineF::BoundedIntersection) goto done;
-	if (dia.intersect(QLineF{to.topRight(),   to.bottomRight()}, &to_pt) == QLineF::BoundedIntersection) goto done;
-	
-	done:
-	return {from_pt, to_pt};
+	painter->drawLine(from_pt, to_pt);
 }
 
 QRectF Edge::boundingRect() const
 {
-	auto line = Calculate();
-	auto rect = QRectF{line.p1(), line.p2()}.normalized();
-	rect.translate(-rect.center().x(), -rect.center().y());
-	return rect;
-}
-
-void Edge::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
-{
-	
+	return QRectF{
+		mapFromItem(m_from, m_from->boundingRect().center()),
+		mapFromItem(m_to, m_to->boundingRect().center()),
+	}.normalized();
 }
 	
 }} // end of namespace
