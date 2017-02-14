@@ -23,7 +23,7 @@ class DataType;
 namespace gui {
 namespace class_diagram {
 
-class ClassItem: public QGraphicsItem
+class ClassItem : public QGraphicsItem
 {
 public:
 	ClassItem(const codebase::DataType& class_, QGraphicsItem *parent = {});
@@ -33,12 +33,20 @@ public:
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 	
 	const std::string& ID() const;
+	const codebase::DataType& DataType() const;
 
+	static const int Type = UserType + 1;
+	int type() const override;
+	
+	QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
+	
+	void AddEdge(QGraphicsItem *edge);
+	
 private:
 	const codebase::DataType& m_class;
 	QRectF m_bounding;
-	
 	QGraphicsSimpleTextItem *m_name;
+	std::vector<QGraphicsItem*> m_edges;
 	
 	static const qreal m_margin, m_max_width;
 };

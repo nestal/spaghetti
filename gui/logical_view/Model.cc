@@ -13,13 +13,17 @@
 #include "Model.hh"
 
 #include "codebase/Entity.hh"
+#include "codebase/DataType.hh"
+#include "codebase/Namespace.hh"
 
-#include <QMimeData>
+#include <QtCore/QMimeData>
 #include <QtCore/QIODevice>
 #include <QtCore/QDataStream>
+#include <QtGui/QIcon>
 
 #include <cassert>
 #include <sstream>
+#include <typeindex>
 
 namespace gui {
 namespace logical_view {
@@ -50,9 +54,23 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	auto entity = At(index);
 	assert(entity);
 	
+	static const std::map<std::type_index, QIcon> icons = {
+		{typeid(const codebase::DataType&),  QIcon{":/images/class.png"}},
+		{typeid(const codebase::Namespace&), QIcon{":/images/namespace.png"}},
+	};
+	
 	switch (role)
 	{
-	case Qt::DisplayRole: return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->Type());
+	case Qt::DisplayRole:    return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->Type());
+	case Qt::DecorationRole:
+	{
+		if (index.column() == 0)
+		{
+			auto iit = icons.find(typeid(*entity));
+			if (iit != icons.end())
+				return iit->second;
+		}
+	}
 	default: break;
 	}
 	return {};
@@ -73,10 +91,10 @@ QVariant Model::headerData(int section, Qt::Orientation orientation, int role) c
 		switch (section)
 		{
 		case 0: return tr("Name");
-		case 1: return tr("Type");
+		case 1: return tr("DataType");
 		}
 	}
-	
+		
 	return {};
 }
 

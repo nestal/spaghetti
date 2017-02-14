@@ -16,6 +16,8 @@
 
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
+#include <QtWidgets/QGraphicsScene>
+#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -60,6 +62,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	// flags
 	setFlag(QGraphicsItem::ItemIsMovable);
 	setFlag(QGraphicsItem::ItemIsSelectable);
+	setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
 
 ClassItem::~ClassItem() = default;
@@ -88,6 +91,44 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 const std::string& ClassItem::ID() const
 {
 	return m_class.ID();
+}
+
+const codebase::DataType& ClassItem::DataType() const
+{
+	return m_class;
+}
+
+int ClassItem::type() const
+{
+	return Type;
+}
+
+QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
+{
+	if (change == QGraphicsItem::ItemPositionChange)
+	{
+		auto affected = QRectF{pos(), value.toPointF()}.normalized();
+		affected.adjust(
+			0, 0, boundingRect().width(), boundingRect().height()
+		);
+		
+		for (auto&& edge : m_edges)
+		{
+//			edge->update();
+			affected |= edge->boundingRect();
+		}
+		
+		// redraw the whole scene
+		if (!m_edges.empty())
+			scene()->update(affected);
+	}
+
+	return value;
+}
+
+void ClassItem::AddEdge(QGraphicsItem *edge)
+{
+	m_edges.push_back(edge);
 }
 	
 }} // end of namespace

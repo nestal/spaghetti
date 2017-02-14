@@ -1,0 +1,7 @@
+<RCC>
+  <qresource>
+    <file>images/class.png</file>
+    <file>images/function.png</file>
+    <file>images/namespace.png</file>
+  </qresource>
+</RCC>
