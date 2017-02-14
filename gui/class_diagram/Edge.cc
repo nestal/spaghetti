@@ -68,5 +68,10 @@ QRectF Edge::boundingRect() const
 		mapFromItem(m_to, m_to->boundingRect().center()),
 	}.normalized();
 }
+
+const ClassItem *Edge::Other(const ClassItem *one) const
+{
+	return one == m_from ? m_to : (one == m_to ? m_from : nullptr);
+}
 	
 }} // end of namespace

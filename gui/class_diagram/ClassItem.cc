@@ -16,6 +16,7 @@
 
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
+#include <QtWidgets/QGraphicsScene>
 #include <iostream>
 
 namespace gui {
@@ -106,9 +107,12 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 {
 	if (change == QGraphicsItem::ItemPositionChange)
 	{
-		std::cout << "changing!" << std::endl;
 		for (auto&& edge : m_edges)
 			edge->update();
+		
+		// redraw the whole scene
+		if (!m_edges.empty())
+			scene()->update();
 	}
 		
 	return value;
