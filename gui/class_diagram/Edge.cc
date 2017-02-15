@@ -34,8 +34,8 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 		return;
 	
 	QLineF dia{
-		mapFromItem(m_from, m_from->boundingRect().center()),
-		mapFromItem(m_to,   m_to->boundingRect().center())
+		mapFromItem(m_from, 0, 0),
+		mapFromItem(m_to,   0, 0)
 	};
 	
 	QPointF from_pt, to_pt;
@@ -68,8 +68,8 @@ void Edge::UpdatePosition()
 {
 	prepareGeometryChange();
 	m_bounding = QRectF{
-		mapFromItem(m_from, m_from->boundingRect().center()),
-		mapFromItem(m_to, m_to->boundingRect().center()),
+		mapFromItem(m_from, 0, 0),
+		mapFromItem(m_to, 0, 0),
 	}.normalized();
 }
 	

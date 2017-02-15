@@ -37,9 +37,10 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	auto font = m_name->font();
 	font.setBold(true);
 	m_name->setFont(font);
-	m_name->moveBy(m_margin, m_margin);
+	m_name->moveBy(0, 0);
 	
-	double ypos = m_name->boundingRect().height();
+	auto maxx = m_name->boundingRect().width();
+	auto ypos = m_name->boundingRect().height();
 	for (auto& field : m_class.Fields())
 	{
 		auto field_item = new QGraphicsSimpleTextItem{
@@ -51,9 +52,14 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 			),
 			this
 		};
-		field_item->moveBy(m_margin, ypos + m_margin);
+		field_item->moveBy(0, ypos);
 		ypos += field_item->boundingRect().height();
+		maxx = std::max(maxx, field_item->boundingRect().width());
 	}
+	
+	// make all children center at origin
+	for (auto child : childItems())
+		child->moveBy(-maxx/2, -ypos/2);
 	
 	// initialize geometry
 	prepareGeometryChange();
@@ -83,9 +89,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->drawRect(m_bounding);
 	
 	// line between class name and fields
+	auto ypos = m_name->y() + m_name->boundingRect().height();
 	painter->drawLine(
-		QPointF{0, m_name->boundingRect().height() + m_margin},
-		QPointF{m_bounding.width(), m_name->boundingRect().height() + m_margin}
+		QPointF{m_bounding.left(), ypos},
+		QPointF{m_bounding.right(), ypos}
 	);
 }
 
