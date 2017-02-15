@@ -37,10 +37,9 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	auto font = m_name->font();
 	font.setBold(true);
 	m_name->setFont(font);
-	m_name->moveBy(0, 0);
 	
-	auto maxx = m_name->boundingRect().width();
-	auto ypos = m_name->boundingRect().height();
+	auto dx = m_name->boundingRect().width();
+	auto dy = m_name->boundingRect().height();
 	for (auto& field : m_class.Fields())
 	{
 		auto field_item = new QGraphicsSimpleTextItem{
@@ -52,19 +51,20 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 			),
 			this
 		};
-		field_item->moveBy(0, ypos);
-		ypos += field_item->boundingRect().height();
-		maxx = std::max(maxx, field_item->boundingRect().width());
+		field_item->moveBy(0, dy);
+		
+		auto rect = field_item->boundingRect();
+		dy += rect.height();
+		dx = std::max(dx, rect.width());
 	}
 	
 	// make all children center at origin
 	for (auto child : childItems())
-		child->moveBy(-maxx/2, -ypos/2);
+		child->moveBy(-dx/2, -dy/2);
 	
 	// initialize geometry
 	prepareGeometryChange();
-	m_bounding = childrenBoundingRect();
-	m_bounding.adjust(-m_margin, -m_margin, m_margin, m_margin);
+	m_bounding.setCoords(-dx/2-m_margin, -dy/2-m_margin, dx/2+m_margin, dy/2+m_margin);
 	
 	// flags
 	setFlag(QGraphicsItem::ItemIsMovable);
