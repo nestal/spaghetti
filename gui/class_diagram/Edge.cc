@@ -18,7 +18,6 @@
 #include <QtGui/QPainter>
 
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -28,6 +27,8 @@ Edge::Edge(const ClassItem *from, const ClassItem *to) :
 {
 	assert(m_from);
 	assert(m_to);
+	
+	UpdatePosition();
 }
 
 void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -63,15 +64,16 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 
 QRectF Edge::boundingRect() const
 {
-	return QRectF{
+	return m_bounding;
+}
+
+void Edge::UpdatePosition()
+{
+	prepareGeometryChange();
+	m_bounding = QRectF{
 		mapFromItem(m_from, m_from->boundingRect().center()),
 		mapFromItem(m_to, m_to->boundingRect().center()),
 	}.normalized();
-}
-
-const ClassItem *Edge::Other(const ClassItem *one) const
-{
-	return one == m_from ? m_to : (one == m_to ? m_from : nullptr);
 }
 	
 }} // end of namespace

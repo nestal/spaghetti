@@ -11,6 +11,7 @@
 //
 
 #include "ClassItem.hh"
+#include "Edge.hh"
 
 #include "codebase/DataType.hh"
 
@@ -107,24 +108,14 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 {
 	if (change == QGraphicsItem::ItemPositionChange)
 	{
-		auto affected = QRectF{pos(), value.toPointF()}.
-			normalized().
-			adjusted(
-				0, 0, boundingRect().width(), boundingRect().height()
-			);
-		
 		for (auto&& edge : m_edges)
-			affected |= edge->boundingRect();
-		
-		// redraw the affected areas
-		if (!m_edges.empty())
-			scene()->update(affected);
+			edge->UpdatePosition();
 	}
 
 	return value;
 }
 
-void ClassItem::AddEdge(QGraphicsItem *edge)
+void ClassItem::AddEdge(Edge *edge)
 {
 	m_edges.push_back(edge);
 }

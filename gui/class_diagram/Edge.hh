@@ -27,14 +27,13 @@ public:
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 	
-	const ClassItem* Other(const ClassItem *one) const;
+	void UpdatePosition();
 	
-private:
-	static QLineF LineFrom(const QRectF& from, const QRectF& to);
-
 private:
 	const ClassItem *m_from;
 	const ClassItem *m_to;
+	
+	QRectF m_bounding;
 };
 	
 }} // end of namespace
