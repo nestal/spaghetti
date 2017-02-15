@@ -12,9 +12,6 @@
 
 #include "Edge.hh"
 
-#include "ClassItem.hh"
-#include "codebase/DataType.hh"
-
 #include <QtGui/QPainter>
 
 #include <cassert>
@@ -22,7 +19,7 @@
 namespace gui {
 namespace class_diagram {
 
-Edge::Edge(const ClassItem *from, const ClassItem *to) :
+Edge::Edge(const QGraphicsItem *from, const QGraphicsItem *to) :
 	m_from{from}, m_to{to}
 {
 	assert(m_from);

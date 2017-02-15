@@ -17,12 +17,10 @@
 namespace gui {
 namespace class_diagram {
 
-class ClassItem;
-
 class Edge : public QGraphicsItem
 {
 public:
-	Edge(const ClassItem *from, const ClassItem *to);
+	Edge(const QGraphicsItem *from, const QGraphicsItem *to);
 	
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -30,8 +28,8 @@ public:
 	void UpdatePosition();
 	
 private:
-	const ClassItem *m_from;
-	const ClassItem *m_to;
+	const QGraphicsItem *m_from;
+	const QGraphicsItem *m_to;
 	
 	QRectF m_bounding;
 };
