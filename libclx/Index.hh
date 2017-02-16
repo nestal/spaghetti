@@ -52,6 +52,21 @@ private:
 	> m_index;
 };
 
+class Diagnostic
+{
+public:
+	Diagnostic(CXDiagnostic diag) : m_diag{ diag } {}
+
+	std::string Str() const;
+
+private:
+	util::DeleteWith<
+		std::remove_pointer_t<CXDiagnostic >,
+		void,
+		&::clang_disposeDiagnostic
+	> m_diag;
+};
+
 class TranslationUnit
 {
 public:
@@ -104,21 +119,6 @@ private:
 		void,
 		&::clang_disposeTranslationUnit
 	> m_unit;
-};
-
-class Diagnostic
-{
-public:
-	Diagnostic(CXDiagnostic diag) : m_diag{diag} {}
-	
-	std::string Str() const;
-	
-private:
-	util::DeleteWith<
-		std::remove_pointer_t<CXDiagnostic >,
-		void,
-		&::clang_disposeDiagnostic
-	> m_diag;
 };
 
 class Cursor

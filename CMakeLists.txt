@@ -22,7 +22,12 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+if (CMAKE_COMPILER_IS_GNUCC)
+	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+else()
+	include_directories("C:\\Program Files\\LLVM\\include")
+	link_directories("C:\\Program Files\\LLVM\\lib")
+endif()
 include_directories(${Boost_INCLUDE_DIRS})
 
 # get build date
@@ -42,7 +47,12 @@ file(GLOB LIBCLANGXX_FILES libclx/*.hh libclx/*.cc)
 file(GLOB CODEBASE_FILES   codebase/*.hh codebase/*.cc)
 file(GLOB PROJECT_FILES    project/*.hh project/*.cc)
 add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES})
-target_link_libraries(spag clang ${Boost_LIBRARIES})
+
+if (CMAKE_COMPILER_IS_GNUCC)
+	target_link_libraries(spag clang ${Boost_LIBRARIES})
+else()
+	target_link_libraries(spag libclang ${Boost_LIBRARIES})
+endif()
 
 file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/spaghetti.qrc)
 add_executable(spaghetti-gui ${GUI_FILES})
