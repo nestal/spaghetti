@@ -82,8 +82,8 @@ QRectF ClassItem::boundingRect() const
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
 	// TODO: make it configurable
-	painter->setPen(QPen{QColor{"purple"}});
-	painter->setBrush(QBrush{QColor{"yellow"}});
+	painter->setPen(QPen{QColor{Qt::GlobalColor::magenta}});
+	painter->setBrush(QBrush{QColor{Qt::GlobalColor::yellow}});
 	
 	// bounding rectangle
 	painter->drawRect(m_bounding);
