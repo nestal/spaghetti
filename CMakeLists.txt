@@ -21,16 +21,17 @@ find_package(Threads)
 find_library(LIBCLANG_LIBRARY NAMES clang libclang HINTS ${LIBCLANG_PREFIX})
 find_path(LIBCLANG_HEADER clang-c/Index.h HINTS ${LIBCLANG_PREFIX})
 
-message("clang header ${LIBCLANG_LIBRARY}")
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# gcc specific flags
+# compiler specific flags
 if (CMAKE_COMPILER_IS_GNUCC)
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+elseif (MSVC)
+	# C4530 and C4577 are from STL headers
+	set(CMAKE_CXX_FLAGS "/W2 /WX /wd4530 /wd4577 /EHsc")
 endif()
 include_directories(${Boost_INCLUDE_DIRS} ${LIBCLANG_HEADER})
 
