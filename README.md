@@ -35,6 +35,12 @@ See the [COPYING](./COPYING) file for details.
 Any code contributed to the project must be licensed under GPLv2 to be
 accepted. There is no need to assign copyright to any party. 
 
+# Additional Note for Building with MSVC 2015 in Windows
+
+CMake needs the -DCMAKE_GENERATOR_PLATFORM=x64 option to properly generate
+project files for x64 platform. If Boost is compiled as static libraries, make
+sure to pass -DBoost_USE_STATIC_LIBS=true to use them.
+
 # Authors and Contributors
 
 [Nestal W.H. Wan](https://gitlab.com/nestal)
