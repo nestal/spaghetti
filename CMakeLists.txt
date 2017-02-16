@@ -36,6 +36,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
 elseif (MSVC)
 	# C4530 and C4577 are from STL headers
 	set(CMAKE_CXX_FLAGS "/W2 /WX /wd4530 /wd4577 /EHsc")
+	add_definitions(-D_USE_MATH_DEFINES)
 endif()
 include_directories(${Boost_INCLUDE_DIRS} ${LIBCLANG_HEADER})
 
