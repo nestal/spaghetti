@@ -18,22 +18,25 @@ find_package(Doxygen)
 find_package(Threads)
 
 # find libclang
-find_library(LIBCLANG_LIBRARY clang HINTS ${LIBCLANG_PREFIX})
+find_library(LIBCLANG_LIBRARY NAMES clang libclang HINTS ${LIBCLANG_PREFIX})
 find_path(LIBCLANG_HEADER clang-c/Index.h HINTS ${LIBCLANG_PREFIX})
+
+message("clang header ${LIBCLANG_LIBRARY}")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# gcc specific flags
 if (CMAKE_COMPILER_IS_GNUCC)
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
-else()
-	# TODO: use find_library() for LLVM libraries
-	include_directories("C:\\Program Files\\LLVM\\include")
-	link_directories("C:\\Program Files\\LLVM\\lib")
 endif()
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS} ${LIBCLANG_HEADER})
+
+if (WIN32)
+	set(GUI_TYPE WIN32)
+endif()
 
 # get build date
 string(TIMESTAMP BUILD_DATE "%Y-%m-%d")
@@ -53,14 +56,10 @@ file(GLOB CODEBASE_FILES   codebase/*.hh codebase/*.cc)
 file(GLOB PROJECT_FILES    project/*.hh project/*.cc)
 add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES})
 
-if (CMAKE_COMPILER_IS_GNUCC)
-	target_link_libraries(spag clang ${Boost_LIBRARIES})
-else()
-	target_link_libraries(spag libclang ${Boost_LIBRARIES})
-endif()
+target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES})
 
 file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/spaghetti.qrc)
-add_executable(spaghetti-gui ${GUI_FILES})
+add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES})
 target_link_libraries(spaghetti-gui spag Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
 
 if (GTEST_FOUND)
