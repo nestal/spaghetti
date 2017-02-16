@@ -25,6 +25,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 if (CMAKE_COMPILER_IS_GNUCC)
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
 else()
+	# TODO: use find_library() for LLVM libraries
 	include_directories("C:\\Program Files\\LLVM\\include")
 	link_directories("C:\\Program Files\\LLVM\\lib")
 endif()
