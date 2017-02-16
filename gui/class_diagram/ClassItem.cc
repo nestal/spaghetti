@@ -11,6 +11,7 @@
 //
 
 #include "ClassItem.hh"
+#include "Edge.hh"
 
 #include "codebase/DataType.hh"
 
@@ -36,9 +37,9 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	auto font = m_name->font();
 	font.setBold(true);
 	m_name->setFont(font);
-	m_name->moveBy(m_margin, m_margin);
 	
-	double ypos = m_name->boundingRect().height();
+	auto dx = m_name->boundingRect().width();
+	auto dy = m_name->boundingRect().height();
 	for (auto& field : m_class.Fields())
 	{
 		auto field_item = new QGraphicsSimpleTextItem{
@@ -50,14 +51,20 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 			),
 			this
 		};
-		field_item->moveBy(m_margin, ypos + m_margin);
-		ypos += field_item->boundingRect().height();
+		field_item->moveBy(0, dy);
+		
+		auto rect = field_item->boundingRect();
+		dy += rect.height();
+		dx = std::max(dx, rect.width());
 	}
+	
+	// make all children center at origin
+	for (auto child : childItems())
+		child->moveBy(-dx/2, -dy/2);
 	
 	// initialize geometry
 	prepareGeometryChange();
-	m_bounding = childrenBoundingRect();
-	m_bounding.adjust(-m_margin, -m_margin, m_margin, m_margin);
+	m_bounding.setCoords(-dx/2-m_margin, -dy/2-m_margin, dx/2+m_margin, dy/2+m_margin);
 	
 	// flags
 	setFlag(QGraphicsItem::ItemIsMovable);
@@ -75,16 +82,17 @@ QRectF ClassItem::boundingRect() const
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
 	// TODO: make it configurable
-	painter->setPen(QPen{QColor{"purple"}});
-	painter->setBrush(QBrush{QColor{"yellow"}});
+	painter->setPen(QPen{QColor{Qt::GlobalColor::magenta}});
+	painter->setBrush(QBrush{QColor{Qt::GlobalColor::yellow}});
 	
 	// bounding rectangle
 	painter->drawRect(m_bounding);
 	
 	// line between class name and fields
+	auto ypos = m_name->y() + m_name->boundingRect().height();
 	painter->drawLine(
-		QPointF{0, m_name->boundingRect().height() + m_margin},
-		QPointF{m_bounding.width(), m_name->boundingRect().height() + m_margin}
+		QPointF{m_bounding.left(), ypos},
+		QPointF{m_bounding.right(), ypos}
 	);
 }
 
@@ -107,26 +115,14 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 {
 	if (change == QGraphicsItem::ItemPositionChange)
 	{
-		auto affected = QRectF{pos(), value.toPointF()}.normalized();
-		affected.adjust(
-			0, 0, boundingRect().width(), boundingRect().height()
-		);
-		
 		for (auto&& edge : m_edges)
-		{
-//			edge->update();
-			affected |= edge->boundingRect();
-		}
-		
-		// redraw the whole scene
-		if (!m_edges.empty())
-			scene()->update(affected);
+			edge->UpdatePosition();
 	}
 
 	return value;
 }
 
-void ClassItem::AddEdge(QGraphicsItem *edge)
+void ClassItem::AddEdge(Edge *edge)
 {
 	m_edges.push_back(edge);
 }

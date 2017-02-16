@@ -12,22 +12,20 @@
 
 #include "Edge.hh"
 
-#include "ClassItem.hh"
-#include "codebase/DataType.hh"
-
 #include <QtGui/QPainter>
 
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 namespace class_diagram {
 
-Edge::Edge(const ClassItem *from, const ClassItem *to) :
+Edge::Edge(const QGraphicsItem *from, const QGraphicsItem *to) :
 	m_from{from}, m_to{to}
 {
 	assert(m_from);
 	assert(m_to);
+	
+	UpdatePosition();
 }
 
 void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -36,8 +34,8 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 		return;
 	
 	QLineF dia{
-		mapFromItem(m_from, m_from->boundingRect().center()),
-		mapFromItem(m_to,   m_to->boundingRect().center())
+		mapFromItem(m_from, 0, 0),
+		mapFromItem(m_to,   0, 0)
 	};
 	
 	QPointF from_pt, to_pt;
@@ -63,15 +61,16 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 
 QRectF Edge::boundingRect() const
 {
-	return QRectF{
-		mapFromItem(m_from, m_from->boundingRect().center()),
-		mapFromItem(m_to, m_to->boundingRect().center()),
-	}.normalized();
+	return m_bounding;
 }
 
-const ClassItem *Edge::Other(const ClassItem *one) const
+void Edge::UpdatePosition()
 {
-	return one == m_from ? m_to : (one == m_to ? m_from : nullptr);
+	prepareGeometryChange();
+	m_bounding = QRectF{
+		mapFromItem(m_from, 0, 0),
+		mapFromItem(m_to, 0, 0),
+	}.normalized();
 }
 	
 }} // end of namespace

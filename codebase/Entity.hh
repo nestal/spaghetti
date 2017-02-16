@@ -60,7 +60,7 @@ public:
 
 	virtual libclx::SourceLocation Location() const;
 	
-	static const std::size_t npos = std::string::npos;
+	static const std::size_t npos;
 	
 	using iterator       = EntityIterator<Entity, Entity>;
 	using const_iterator = EntityIterator<const Entity, const Entity>;

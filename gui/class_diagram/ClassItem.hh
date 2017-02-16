@@ -23,6 +23,8 @@ class DataType;
 namespace gui {
 namespace class_diagram {
 
+class Edge;
+
 class ClassItem : public QGraphicsItem
 {
 public:
@@ -40,13 +42,13 @@ public:
 	
 	QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
 	
-	void AddEdge(QGraphicsItem *edge);
+	void AddEdge(Edge *edge);
 	
 private:
 	const codebase::DataType& m_class;
 	QRectF m_bounding;
 	QGraphicsSimpleTextItem *m_name;
-	std::vector<QGraphicsItem*> m_edges;
+	std::vector<Edge*> m_edges;
 	
 	static const qreal m_margin, m_max_width;
 };

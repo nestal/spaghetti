@@ -17,6 +17,8 @@
 
 namespace codebase {
 
+const std::size_t Entity::npos = std::string::npos;
+
 Entity::iterator Entity::begin()
 {
 	return iterator(0, this);
