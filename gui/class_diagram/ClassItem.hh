@@ -44,6 +44,9 @@ public:
 	
 	void AddEdge(Edge *edge);
 	
+	ItemRelation RelationOf(const BaseItem *other) const override;
+	class_diagram::ItemType ItemType() const override;
+	
 private:
 	const codebase::DataType& m_class;
 	QRectF m_bounding;

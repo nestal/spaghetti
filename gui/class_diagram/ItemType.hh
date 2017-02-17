@@ -25,4 +25,12 @@ enum class ItemType : int
 	edge,
 };
 
+enum class ItemRelation
+{
+	no_relation,
+	
+	base_class_of,
+	derived_class_of,
+};
+
 }} // end of namespace

@@ -126,5 +126,32 @@ void ClassItem::AddEdge(Edge *edge)
 {
 	m_edges.push_back(edge);
 }
+
+ItemRelation ClassItem::RelationOf(const BaseItem *other) const
+{
+	assert(other);
+	switch (other->ItemType())
+	{
+	case ItemType::class_item:
+	{
+		auto class_ = qgraphicsitem_cast<const ClassItem*>(other);
+		assert(class_);
+		
+		if (class_->m_class.IsBaseOf(m_class))
+			return ItemRelation::derived_class_of;
+		
+		else if (m_class.IsBaseOf(class_->m_class))
+			return ItemRelation::base_class_of;
+		
+		// fall through
+	}
+	default:    return ItemRelation::no_relation;
+	}
+}
+
+class_diagram::ItemType ClassItem::ItemType() const
+{
+	return ItemType::class_item;
+}
 	
 }} // end of namespace

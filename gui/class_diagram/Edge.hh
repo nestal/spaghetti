@@ -35,6 +35,9 @@ public:
 	
 	void UpdatePosition();
 	
+	ItemRelation RelationOf(const BaseItem *other) const override;
+	class_diagram::ItemType ItemType() const override;
+	
 private:
 	const BaseItem *m_from;
 	const BaseItem *m_to;

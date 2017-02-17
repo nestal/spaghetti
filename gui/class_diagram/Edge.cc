@@ -28,7 +28,7 @@ Edge::Edge(const BaseItem *from, const BaseItem *to) :
 	UpdatePosition();
 }
 
-void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
 	if (m_from->collidesWithItem(m_to))
 		return;
@@ -57,6 +57,12 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 	}
 	
 	painter->drawLine(from_pt, to_pt);
+	
+	auto relation = m_from->RelationOf(m_to);
+	if (relation == ItemRelation::base_class_of)
+		painter->drawText(from_pt, "Arrow");
+	else if (relation == ItemRelation::derived_class_of)
+		painter->drawText(to_pt, "Arrow");
 }
 
 QRectF Edge::boundingRect() const
@@ -71,6 +77,16 @@ void Edge::UpdatePosition()
 		mapFromItem(m_from, QPointF{}),
 		mapFromItem(m_to,   QPointF{}),
 	}.normalized();
+}
+
+ItemRelation Edge::RelationOf(const BaseItem *) const
+{
+	return ItemRelation::no_relation;
+}
+
+class_diagram::ItemType Edge::ItemType() const
+{
+	return ItemType::edge;
 }
 	
 }} // end of namespace

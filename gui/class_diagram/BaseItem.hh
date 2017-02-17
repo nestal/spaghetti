@@ -22,6 +22,9 @@ class BaseItem : public QGraphicsItem
 {
 public:
 	using QGraphicsItem::QGraphicsItem;
+	
+	virtual class_diagram::ItemType ItemType() const = 0;
+	virtual ItemRelation RelationOf(const BaseItem *other) const = 0;
 };
 
 }} // end of namespace
