@@ -30,8 +30,8 @@ namespace fs = boost::filesystem;
 class Document::ProjectModel_ : public QAbstractListModel
 {
 public:
-	ProjectModel_(const fs::path& base, const codebase::CodeBase& codebase, QObject *parent) :
-		QAbstractListModel{parent}, m_base{fs::absolute(base)}, m_codebase{codebase}
+	ProjectModel_(const codebase::CodeBase& codebase, QObject *parent) :
+		QAbstractListModel{parent}, m_base{fs::absolute(".")}, m_codebase{codebase}
 	{
 	}
 	
@@ -59,7 +59,7 @@ private:
 Document::Document(QObject *parent) :
 	QObject{parent},
 	m_project_model{std::make_unique<ProjectModel_>(
-		m_project.Dir(), m_project.CodeBase(), this
+		m_project.CodeBase(), this
 	)},
 	m_logical_model{std::make_unique<logical_view::Model>(
 		m_project.CodeBase().Root(), &m_project.CodeBase(), this

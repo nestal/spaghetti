@@ -12,24 +12,17 @@
 
 #include "Project.hh"
 
-#include <boost/filesystem.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
 
 #include <QtCore/QFile>
 
-using namespace boost::filesystem;
+#include <boost/filesystem.hpp>
 
 namespace project {
 
-Project::Project(const std::string& dir) :
-	m_dir{dir}
-{
-}
+using namespace boost::filesystem;
 
 void Project::SetCompileOptions(std::initializer_list<std::string> opts)
 {
@@ -44,11 +37,6 @@ codebase::CodeBase& Project::CodeBase()
 void Project::AddSource(const std::string& source_file)
 {
 	m_code_base.Parse(source_file, m_compile_options);
-}
-
-const std::string& Project::Dir() const
-{
-	return m_dir;
 }
 
 void Project::Save(const std::string& filename) const
@@ -90,12 +78,6 @@ void Project::Open(const std::string& filename)
 		for (auto&& tu : json.object()["translation_units"].toArray())
 			m_code_base.Parse(tu.toString().toStdString(), m_compile_options);
 	}
-}
-
-std::string Project::RelativePath(const std::string& path) const
-{
-	boost::filesystem::path p{path}, self{m_dir};
-	return p.lexically_relative(self).string();
 }
 
 } // end of namespace

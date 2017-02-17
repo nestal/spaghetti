@@ -14,11 +14,6 @@
 
 #include "codebase/CodeBase.hh"
 
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/vector.hpp>
-
-#include <regex>
-
 /**
  * \brief Namespace for project layer.
  *
@@ -33,7 +28,7 @@ namespace project {
 class Project
 {
 public:
-	Project(const std::string& dir = ".");
+	Project() = default;
 	
 	void AddSource(const std::string& source_file);
 		
@@ -44,47 +39,12 @@ public:
 	
 	codebase::CodeBase& CodeBase();
 	
-	const std::string& Dir() const;
-	
-private:
-	friend class boost::serialization::access;
-	
-	template <class Archive>
-	void save(Archive& ar, unsigned) const
-	{
-		ar & m_compile_options & m_dir;
-		
-		std::vector<std::string> tus;
-		for (auto&& tu : m_code_base.TranslationUnits())
-			tus.push_back(tu.Spelling());
-		
-		ar & tus;
-	}
-	
-	template <class Archive>
-	void load(Archive& ar, unsigned)
-	{
-		ar & m_compile_options & m_dir;
-		
-		std::vector<std::string> tus;
-		ar & tus;
-		
-		for (auto&& tu : tus)
-			m_code_base.Parse(tu, m_compile_options);
-	}
-	
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
-	
-private:
-	std::string RelativePath(const std::string& path) const;
-	
 private:
 	std::vector<std::string>    m_compile_options{
 		"-std=c++14",
 		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
 		"-I", "."
 	};
-	std::string             m_dir;
 	codebase::CodeBase      m_code_base;
 };
 	
