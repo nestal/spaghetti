@@ -17,18 +17,31 @@ find_package(GTest)
 find_package(Doxygen)
 find_package(Threads)
 
+# find libclang
+find_library(LIBCLANG_LIBRARY NAMES clang libclang HINTS ${LIBCLANG_PREFIX})
+find_path(LIBCLANG_HEADER clang-c/Index.h HINTS ${LIBCLANG_PREFIX})
+
+if (NOT LIBCLANG_LIBRARY OR NOT LIBCLANG_HEADER)
+	message(FATAL_ERROR "Cannot find libclang!")
+endif()
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# compiler specific flags
 if (CMAKE_COMPILER_IS_GNUCC)
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
-else()
-	include_directories("C:\\Program Files\\LLVM\\include")
-	link_directories("C:\\Program Files\\LLVM\\lib")
+elseif (MSVC)
+	# C4530 and C4577 are from STL headers
+	set(CMAKE_CXX_FLAGS "/W2 /WX /wd4530 /wd4577 /EHsc")
 endif()
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS} ${LIBCLANG_HEADER})
+
+if (WIN32)
+	set(GUI_TYPE WIN32)
+endif()
 
 # get build date
 string(TIMESTAMP BUILD_DATE "%Y-%m-%d")
@@ -48,14 +61,10 @@ file(GLOB CODEBASE_FILES   codebase/*.hh codebase/*.cc)
 file(GLOB PROJECT_FILES    project/*.hh project/*.cc)
 add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES})
 
-if (CMAKE_COMPILER_IS_GNUCC)
-	target_link_libraries(spag clang ${Boost_LIBRARIES})
-else()
-	target_link_libraries(spag libclang ${Boost_LIBRARIES})
-endif()
+target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES})
 
 file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/spaghetti.qrc)
-add_executable(spaghetti-gui ${GUI_FILES})
+add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES})
 target_link_libraries(spaghetti-gui spag Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
 
 if (GTEST_FOUND)

@@ -218,7 +218,7 @@ bool TranslationUnit::diag_iterator::equal(const TranslationUnit::diag_iterator&
 
 Diagnostic TranslationUnit::diag_iterator::dereference() const
 {
-	return Diagnostic{::clang_getDiagnostic(m_parent, m_idx)};
+	return Diagnostic{::clang_getDiagnostic(m_parent, static_cast<unsigned>(m_idx))};
 }
 
 std::string Diagnostic::Str() const
