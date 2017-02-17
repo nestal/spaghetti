@@ -97,7 +97,17 @@ void Document::Open(const QString& file)
 	
 	m_logical_model->beginResetModel();
 	m_project_model->beginResetModel();
-	m_project.Open(file.toStdString());
+	
+	try
+	{
+		m_project.Open(file.toStdString());
+	}
+	catch (std::exception&)
+	{
+		m_project_model->endResetModel();
+		m_logical_model->endResetModel();
+		throw;
+	}
 	m_project_model->endResetModel();
 	m_logical_model->endResetModel();
 }

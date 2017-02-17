@@ -60,7 +60,19 @@ MainWnd::MainWnd() :
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
-			m_doc->Open(file);
+		{
+			try
+			{
+				m_doc->Open(file);
+			}
+			catch (std::exception& e)
+			{
+				QMessageBox::critical(this, tr("Cannot open project"),
+					tr("%1 is not a valid speghetti project file: %2").arg(file, e.what())
+				);
+			}
+			
+		}
 	});
 	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
 	{
@@ -75,7 +87,7 @@ MainWnd::MainWnd() :
 	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
 	{
 		assert(m_doc);
-		auto file = QFileDialog::getOpenFileName(this, tr("Open Source Code"));
+		auto file = QFileDialog::getOpenFileName(this, tr("Add Source to Project"));
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
