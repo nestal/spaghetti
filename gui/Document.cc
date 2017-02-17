@@ -128,7 +128,7 @@ void Document::SaveAs(const QString& file)
 	m_project.Save(file.toStdString());
 }
 
-QAbstractItemModel *Document::ProjectModel()
+QAbstractItemModel* Document::ProjectModel()
 {
 	return m_project_model.get();
 }

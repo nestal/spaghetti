@@ -26,6 +26,10 @@ class DataType;
 class EntityMap;
 }
 
+namespace project {
+class ClassDiagram;
+}
+
 namespace gui {
 namespace class_diagram {
 
@@ -38,6 +42,7 @@ class Model : public common::ModelBase, public QObject
 {
 public:
 	Model(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
+	Model(const codebase::EntityMap *codebase, const project::ClassDiagram& data, QObject *parent);
 	Model(const Model&) = delete;
 	Model(Model&&) = default;
 	~Model();
@@ -55,6 +60,8 @@ public:
 	void SetName(const QString& name) override;
 	void Clear();
 
+	project::ClassDiagram Data() const;
+	
 private:
 	void DetectEdges(ClassItem *item);
 	void AddLine(ClassItem *from, ClassItem *to);

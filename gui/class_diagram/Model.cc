@@ -15,8 +15,10 @@
 #include "ClassItem.hh"
 #include "Edge.hh"
 #include "codebase/DataType.hh"
+#include "project/ClassDiagram.hh"
 
 #include <QtWidgets/QGraphicsScene>
+
 #include <cassert>
 #include <iostream>
 
@@ -113,5 +115,16 @@ void Model::AddLine(ClassItem *from, ClassItem *to)
 	to->AddEdge(edge.get());
 	m_scene->addItem(edge.release());
 }
-	
+
+project::ClassDiagram Model::Data() const
+{
+	project::ClassDiagram data{m_name.toStdString()};
+	for (auto child : m_scene->items())
+	{
+		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
+			data.AddClass(citem->DataType().ID(), citem->pos());
+	}
+	return data;
+}
+
 }} // end of namespace
