@@ -16,7 +16,12 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
+#include <QtCore/QJsonDocument>
+
 #include <iostream>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonObject>
+#include <QtCore/QFile>
 
 using namespace boost::filesystem;
 
@@ -49,9 +54,27 @@ const std::string& Project::Dir() const
 
 void Project::Save(const std::string& filename) const
 {
-	std::ofstream str{filename};
-	boost::archive::text_oarchive oa{str};
-	oa << *this;
+	QJsonArray cflags;
+	for (auto&& cflag : m_compile_options)
+		cflags.append(QString::fromStdString(cflag));
+	
+	QJsonObject root;
+	root["cflags"] = cflags;
+	
+	auto dest = path{filename}.parent_path();
+	QJsonArray tus;
+
+	for (auto&& tu : m_code_base.TranslationUnits())
+		tus.append(QString::fromStdString(
+			relative(tu.Spelling(), dest).string()
+		));
+	root["translation_units"] = tus;
+	
+	QJsonDocument json{root};
+	
+	QFile out{QString::fromStdString(filename)};
+	if (out.open(QIODevice::WriteOnly))
+		out.write(json.toJson());
 }
 
 void Project::Open(const std::string& filename)

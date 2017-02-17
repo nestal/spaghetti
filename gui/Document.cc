@@ -43,13 +43,9 @@ public:
 	QVariant data(const QModelIndex& index, int role) const override
 	{
 		auto row = static_cast<std::size_t>(index.row());
-		if (role == Qt::DisplayRole && row < m_codebase.Size())
-		{
-
-			return QString::fromStdString(fs::path{m_codebase.At(row).Spelling()}.lexically_relative(m_base).string());
-		}
-		else
-			return {};
+		return role == Qt::DisplayRole && row < m_codebase.Size() ?
+			QString::fromStdString(fs::path{m_codebase.At(row).Spelling()}.lexically_relative(m_base).string()) :
+			QVariant{};
 	}
 	
 	using QAbstractItemModel::beginResetModel;

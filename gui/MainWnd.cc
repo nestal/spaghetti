@@ -77,7 +77,7 @@ MainWnd::MainWnd() :
 	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
 	{
 		assert(m_doc);
-		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"));
+		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"), {}, tr("JSON files (*.json)"));
 		
 		// string will be null if user press cancel
 		if (!file.isNull())

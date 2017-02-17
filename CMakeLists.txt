@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 find_package(Boost COMPONENTS filesystem serialization REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Core REQUIRED)
 find_package(GTest)
 find_package(Doxygen)
 find_package(Threads)
@@ -62,7 +63,7 @@ file(GLOB CODEBASE_FILES   codebase/*.hh codebase/*.cc)
 file(GLOB PROJECT_FILES    project/*.hh project/*.cc)
 add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES})
 
-target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES})
+target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES} Qt5::Core)
 
 file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/spaghetti.qrc)
 add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES})
