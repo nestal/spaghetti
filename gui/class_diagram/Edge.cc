@@ -15,6 +15,7 @@
 #include <QtGui/QPainter>
 
 #include <cassert>
+#include <cmath>
 
 namespace gui {
 namespace class_diagram {
@@ -58,11 +59,18 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 	
 	painter->drawLine(from_pt, to_pt);
 	
+	// build transform matrix for drawing at the point
+	QTransform transform;
+	
 	auto relation = m_from->RelationOf(m_to);
 	if (relation == ItemRelation::base_class_of)
-		painter->drawText(from_pt, "Arrow");
+		transform.translate(from_pt.x(), from_pt.y());
 	else if (relation == ItemRelation::derived_class_of)
-		painter->drawText(to_pt, "Arrow");
+		transform.translate(to_pt.x(), to_pt.y());
+	transform.rotateRadians(std::atan(dia.dy()/dia.dx()));
+	painter->setTransform(transform);
+//	painter->drawText(0,0, "Arrow");
+	painter->drawPolygon(QPolygonF{} << QPointF{} << QPointF{10,10} << QPointF{-10, 10}, Qt::FillRule::WindingFill);
 }
 
 QRectF Edge::boundingRect() const
