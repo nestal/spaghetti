@@ -117,6 +117,8 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 	{
 		for (auto&& edge : m_edges)
 			edge->UpdatePosition();
+		
+//		scene()->update();
 	}
 
 	return value;

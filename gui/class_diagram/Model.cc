@@ -84,6 +84,13 @@ bool Model::CanRename() const
 	return true;
 }
 
+/**
+ * \brief Detects the relationship between a newly added item and the rest
+ * \param item  the newly added item
+ *
+ * This function will add the edges between the new \a item and other
+ * related ones.
+ */
 void Model::DetectEdges(ClassItem *item)
 {
 	for (auto child : m_scene->items())

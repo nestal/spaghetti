@@ -20,7 +20,7 @@
 namespace gui {
 namespace class_diagram {
 
-const auto arrow_width = 20.0;
+const auto arrow_width = 15.0;
 
 Edge::Edge(const BaseItem *from, const BaseItem *to) :
 	m_from{from}, m_to{to}
@@ -71,6 +71,8 @@ QRectF Edge::boundingRect() const
 
 void Edge::UpdatePosition()
 {
+	setPos(QRectF{m_from->pos(), m_to->pos()}.normalized().center());
+	
 	prepareGeometryChange();
 	m_bounding = QRectF{
 		mapFromItem(m_from, QPointF{}),
@@ -108,7 +110,7 @@ void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
 	transform.rotateRadians(angle);
 	
 	painter->setBrush(QBrush{Qt::GlobalColor::white});
-	painter->setTransform(transform);
+	painter->setTransform(transform, true);
 	painter->drawPolygon(
 		QPolygonF{} << QPointF{} << QPointF{arrow_width,arrow_width} << QPointF{-arrow_width, arrow_width},
 		Qt::FillRule::WindingFill
