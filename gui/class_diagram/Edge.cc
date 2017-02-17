@@ -67,9 +67,14 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 		transform.translate(from_pt.x(), from_pt.y());
 	else if (relation == ItemRelation::derived_class_of)
 		transform.translate(to_pt.x(), to_pt.y());
-	transform.rotateRadians(std::atan(dia.dy()/dia.dx()));
+	
+	auto angle = -std::atan(dia.dx()/dia.dy());
+	if (dia.dy() > 0)
+		angle -= M_PI;
+	angle += M_PI;
+	transform.rotateRadians(angle);
+	
 	painter->setTransform(transform);
-//	painter->drawText(0,0, "Arrow");
 	painter->drawPolygon(QPolygonF{} << QPointF{} << QPointF{10,10} << QPointF{-10, 10}, Qt::FillRule::WindingFill);
 }
 
