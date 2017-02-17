@@ -11,6 +11,7 @@
 //
 
 #include "Document.hh"
+
 #include "gui/class_diagram/Model.hh"
 #include "gui/source_view/Model.hh"
 #include "logical_view/Model.hh"
@@ -18,15 +19,21 @@
 #include <QtCore/QAbstractListModel>
 #include <QtWidgets/QFileDialog>
 
+#include <boost/filesystem.hpp>
+
 #include <cassert>
 
 namespace gui {
 
+namespace fs = boost::filesystem;
+
 class Document::ProjectModel_ : public QAbstractListModel
 {
 public:
-	ProjectModel_(const codebase::CodeBase& codebase, QObject *parent) :
-		QAbstractListModel{parent}, m_codebase{codebase} {}
+	ProjectModel_(const fs::path& base, const codebase::CodeBase& codebase, QObject *parent) :
+		QAbstractListModel{parent}, m_base{fs::absolute(base)}, m_codebase{codebase}
+	{
+	}
 	
 	int rowCount(const QModelIndex&) const override
 	{
@@ -36,20 +43,28 @@ public:
 	QVariant data(const QModelIndex& index, int role) const override
 	{
 		auto row = static_cast<std::size_t>(index.row());
-		return role == Qt::DisplayRole && row < m_codebase.Size() ?
-			QString::fromStdString(m_codebase.At(row).Spelling()) : QVariant{};
+		if (role == Qt::DisplayRole && row < m_codebase.Size())
+		{
+
+			return QString::fromStdString(fs::path{m_codebase.At(row).Spelling()}.lexically_relative(m_base).string());
+		}
+		else
+			return {};
 	}
 	
 	using QAbstractItemModel::beginResetModel;
 	using QAbstractItemModel::endResetModel;
 
 private:
+	boost::filesystem::path     m_base;
 	const codebase::CodeBase&   m_codebase;
 };
 
 Document::Document(QObject *parent) :
 	QObject{parent},
-	m_project_model{std::make_unique<ProjectModel_>(m_project.CodeBase(), this)},
+	m_project_model{std::make_unique<ProjectModel_>(
+		m_project.Dir(), m_project.CodeBase(), this
+	)},
 	m_logical_model{std::make_unique<logical_view::Model>(
 		m_project.CodeBase().Root(), &m_project.CodeBase(), this
 	)}

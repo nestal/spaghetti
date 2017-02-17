@@ -76,6 +76,9 @@ private:
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	
 private:
+	std::string RelativePath(const std::string& path) const;
+	
+private:
 	std::vector<std::string>    m_compile_options{
 		"-std=c++14",
 		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",

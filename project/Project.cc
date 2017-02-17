@@ -60,5 +60,11 @@ void Project::Open(const std::string& filename)
 	boost::archive::text_iarchive ia{str};
 	ia >> *this;
 }
-	
+
+std::string Project::RelativePath(const std::string& path) const
+{
+	boost::filesystem::path p{path}, self{m_dir};
+	return p.lexically_relative(self).string();
+}
+
 } // end of namespace
