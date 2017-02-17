@@ -20,6 +20,8 @@
 namespace gui {
 namespace class_diagram {
 
+const auto arrow_width = 20.0;
+
 Edge::Edge(const BaseItem *from, const BaseItem *to) :
 	m_from{from}, m_to{to}
 {
@@ -73,7 +75,7 @@ void Edge::UpdatePosition()
 	m_bounding = QRectF{
 		mapFromItem(m_from, QPointF{}),
 		mapFromItem(m_to,   QPointF{}),
-	}.normalized().adjusted(-10, -10, 10, 10);
+	}.normalized().adjusted(-arrow_width, -arrow_width, arrow_width, arrow_width);
 }
 
 ItemRelation Edge::RelationOf(const BaseItem *) const
@@ -88,8 +90,8 @@ class_diagram::ItemType Edge::ItemType() const
 
 void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
 {
-	auto from_pt{dia.p1()};
-	auto to_pt{dia.p2()};
+	auto from_pt = dia.p1();
+	auto to_pt   = dia.p2();
 	
 	// build transform matrix for drawing at the point
 	QTransform transform;
@@ -105,8 +107,12 @@ void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
 		angle += M_PI;
 	transform.rotateRadians(angle);
 	
+	painter->setBrush(QBrush{Qt::GlobalColor::white});
 	painter->setTransform(transform);
-	painter->drawPolygon(QPolygonF{} << QPointF{} << QPointF{10,10} << QPointF{-10, 10}, Qt::FillRule::WindingFill);
+	painter->drawPolygon(
+		QPolygonF{} << QPointF{} << QPointF{arrow_width,arrow_width} << QPointF{-arrow_width, arrow_width},
+		Qt::FillRule::WindingFill
+	);
 }
 	
 }} // end of namespace
