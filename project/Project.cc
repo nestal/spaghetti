@@ -17,10 +17,9 @@
 #include <boost/archive/text_iarchive.hpp>
 
 #include <QtCore/QJsonDocument>
-
-#include <iostream>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
+
 #include <QtCore/QFile>
 
 using namespace boost::filesystem;
@@ -79,9 +78,18 @@ void Project::Save(const std::string& filename) const
 
 void Project::Open(const std::string& filename)
 {
-	std::ifstream str{filename};
-	boost::archive::text_iarchive ia{str};
-	ia >> *this;
+	QFile in{QString::fromStdString(filename)};
+	if (in.open(QIODevice::ReadOnly))
+	{
+		auto json = QJsonDocument::fromJson(in.readAll());
+		
+		m_compile_options.clear();
+		for (auto&& cflag : json.object()["cflags"].toArray())
+			m_compile_options.push_back(cflag.toString().toStdString());
+		
+		for (auto&& tu : json.object()["translation_units"].toArray())
+			m_code_base.Parse(tu.toString().toStdString(), m_compile_options);
+	}
 }
 
 std::string Project::RelativePath(const std::string& path) const
