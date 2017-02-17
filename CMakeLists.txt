@@ -22,7 +22,7 @@ find_library(LIBCLANG_LIBRARY NAMES clang libclang HINTS ${LIBCLANG_PREFIX})
 find_path(LIBCLANG_HEADER clang-c/Index.h HINTS ${LIBCLANG_PREFIX})
 
 if (NOT LIBCLANG_LIBRARY OR NOT LIBCLANG_HEADER)
-	fatal("Cannot find libclang!")
+	message(FATAL_ERROR "Cannot find libclang!")
 endif()
 
 set(CMAKE_AUTOMOC ON)
