@@ -28,7 +28,7 @@ const qreal ClassItem::m_margin{10.0};
 const qreal ClassItem::m_max_width{200.0};
 
 ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
-	QGraphicsItem{parent},
+	BaseItem{parent},
 	m_class{class_},
 	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}
 {

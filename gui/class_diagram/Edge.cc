@@ -19,7 +19,7 @@
 namespace gui {
 namespace class_diagram {
 
-Edge::Edge(const QGraphicsItem *from, const QGraphicsItem *to) :
+Edge::Edge(const BaseItem *from, const BaseItem *to) :
 	m_from{from}, m_to{to}
 {
 	assert(m_from);
@@ -34,8 +34,8 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 		return;
 	
 	QLineF dia{
-		mapFromItem(m_from, 0, 0),
-		mapFromItem(m_to,   0, 0)
+		mapFromItem(m_from, QPointF{}),
+		mapFromItem(m_to,   QPointF{})
 	};
 	
 	QPointF from_pt, to_pt;
@@ -68,8 +68,8 @@ void Edge::UpdatePosition()
 {
 	prepareGeometryChange();
 	m_bounding = QRectF{
-		mapFromItem(m_from, 0, 0),
-		mapFromItem(m_to, 0, 0),
+		mapFromItem(m_from, QPointF{}),
+		mapFromItem(m_to,   QPointF{}),
 	}.normalized();
 }
 	

@@ -12,15 +12,23 @@
 
 #pragma once
 
-#include <QGraphicsItem>
+#include "BaseItem.hh"
 
 namespace gui {
 namespace class_diagram {
 
-class Edge : public QGraphicsItem
+/**
+ * \brief A connector between two items in the class diagram.
+ *
+ * An Edge connects two items in the class diagram. The connection is directional, meaning
+ * that the two items being joined have different roles. The edge draws itself depending
+ * on the roles of the two items being joined. If one item inherits the other, the edge draws
+ * an UML inheritance arrow.
+ */
+class Edge : public BaseItem
 {
 public:
-	Edge(const QGraphicsItem *from, const QGraphicsItem *to);
+	Edge(const BaseItem *from, const BaseItem *to);
 	
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -28,9 +36,10 @@ public:
 	void UpdatePosition();
 	
 private:
-	const QGraphicsItem *m_from;
-	const QGraphicsItem *m_to;
+	const BaseItem *m_from;
+	const BaseItem *m_to;
 	
+	// cached for performance
 	QRectF m_bounding;
 };
 	

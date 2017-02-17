@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <QGraphicsItem>
+#include "BaseItem.hh"
 
 class QGraphicsSimpleTextItem;
 
@@ -25,7 +25,7 @@ namespace class_diagram {
 
 class Edge;
 
-class ClassItem : public QGraphicsItem
+class ClassItem : public BaseItem
 {
 public:
 	ClassItem(const codebase::DataType& class_, QGraphicsItem *parent = {});
@@ -37,7 +37,7 @@ public:
 	const std::string& ID() const;
 	const codebase::DataType& DataType() const;
 
-	static const int Type = UserType + 1;
+	static constexpr int Type = static_cast<int>(ItemType::class_item);
 	int type() const override;
 	
 	QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
