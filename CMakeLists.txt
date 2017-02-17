@@ -17,6 +17,10 @@ find_package(GTest)
 find_package(Doxygen)
 find_package(Threads)
 
+# find libclang
+find_library(LIBCLANG_LIBRARY clang HINTS ${LIBCLANG_PREFIX})
+find_path(LIBCLANG_HEADER clang-c/Index.h HINTS ${LIBCLANG_PREFIX})
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
