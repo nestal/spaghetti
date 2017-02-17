@@ -39,6 +39,9 @@ public:
 	class_diagram::ItemType ItemType() const override;
 	
 private:
+	void DrawArrow(QPainter *painter, const QLineF& dia) const;
+	
+private:
 	const BaseItem *m_from;
 	const BaseItem *m_to;
 	

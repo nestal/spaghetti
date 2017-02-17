@@ -57,25 +57,9 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 			break;
 	}
 	
-	painter->drawLine(from_pt, to_pt);
-	
-	// build transform matrix for drawing at the point
-	QTransform transform;
-	
-	auto relation = m_from->RelationOf(m_to);
-	if (relation == ItemRelation::base_class_of)
-		transform.translate(from_pt.x(), from_pt.y());
-	else if (relation == ItemRelation::derived_class_of)
-		transform.translate(to_pt.x(), to_pt.y());
-	
-	auto angle = -std::atan(dia.dx()/dia.dy());
-	if (dia.dy() > 0)
-		angle -= M_PI;
-	angle += M_PI;
-	transform.rotateRadians(angle);
-	
-	painter->setTransform(transform);
-	painter->drawPolygon(QPolygonF{} << QPointF{} << QPointF{10,10} << QPointF{-10, 10}, Qt::FillRule::WindingFill);
+	QLineF to_draw{from_pt, to_pt};
+	painter->drawLine(to_draw);
+	DrawArrow(painter, to_draw);
 }
 
 QRectF Edge::boundingRect() const
@@ -89,7 +73,7 @@ void Edge::UpdatePosition()
 	m_bounding = QRectF{
 		mapFromItem(m_from, QPointF{}),
 		mapFromItem(m_to,   QPointF{}),
-	}.normalized();
+	}.normalized().adjusted(-10, -10, 10, 10);
 }
 
 ItemRelation Edge::RelationOf(const BaseItem *) const
@@ -100,6 +84,29 @@ ItemRelation Edge::RelationOf(const BaseItem *) const
 class_diagram::ItemType Edge::ItemType() const
 {
 	return ItemType::edge;
+}
+
+void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
+{
+	auto from_pt{dia.p1()};
+	auto to_pt{dia.p2()};
+	
+	// build transform matrix for drawing at the point
+	QTransform transform;
+	
+	auto relation = m_from->RelationOf(m_to);
+	if (relation == ItemRelation::base_class_of)
+		transform.translate(from_pt.x(), from_pt.y());
+	else if (relation == ItemRelation::derived_class_of)
+		transform.translate(to_pt.x(), to_pt.y());
+	
+	auto angle = -std::atan(dia.dx()/dia.dy());
+	if (dia.dy() < 0)
+		angle += M_PI;
+	transform.rotateRadians(angle);
+	
+	painter->setTransform(transform);
+	painter->drawPolygon(QPolygonF{} << QPointF{} << QPointF{10,10} << QPointF{-10, 10}, Qt::FillRule::WindingFill);
 }
 	
 }} // end of namespace
