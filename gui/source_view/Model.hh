@@ -33,7 +33,7 @@ public:
 	void SetName(const QString& name) override;
 	
 	void Load(const QJsonObject& obj) override;
-	void Save(QJsonObject& obj) const override;
+	QJsonObject Save() const override;
 	
 	ModelType Type() const override {return ModelType::source_view;}
 

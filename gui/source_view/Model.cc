@@ -11,6 +11,7 @@
 //
 
 #include "Model.hh"
+#include <QtCore/QJsonObject>
 
 namespace gui {
 namespace source_view {
@@ -49,9 +50,9 @@ void Model::Load(const QJsonObject& )
 	
 }
 
-void Model::Save(QJsonObject& ) const
+QJsonObject Model::Save() const
 {
-	
+	return {};
 }
 	
 }} // end of namespace

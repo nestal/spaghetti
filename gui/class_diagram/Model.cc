@@ -134,8 +134,9 @@ void Model::Load(const QJsonObject& )
 	
 }
 
-void Model::Save(QJsonObject& obj) const
+QJsonObject Model::Save() const
 {
+	QJsonObject obj;
 	obj.insert("type", "class_diagram");
 	obj.insert("name", m_name);
 	
@@ -150,6 +151,7 @@ void Model::Save(QJsonObject& obj) const
 			});
 	}
 	obj.insert("classes", items);
+	return obj;
 }
 	
 }} // end of namespace

@@ -49,7 +49,7 @@ class Model;
  * wish to save to disk. Note that it does not include the code base, which is loaded
  * from disk separately.
  */
-class Document : public QObject
+class Document : public QObject, public project::ModelFactory
 {
 public:
 	Document(QObject *parent);
@@ -63,6 +63,7 @@ public:
 	// main pane
 	class_diagram::Model* CreateClassDiagram(const QString& name);
 	source_view::Model* CreateSourceModel(const QString& name);
+	project::Model Create(project::ModelType type, const std::string& name) override;
 	
 	// docking windows
 	QAbstractItemModel* ClassModel();

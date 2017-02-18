@@ -61,7 +61,7 @@ public:
 	void Clear();
 
 	void Load(const QJsonObject& obj) override;
-	void Save(QJsonObject& obj) const override;
+	QJsonObject Save() const override;
 
 	project::ClassDiagram Data() const;
 	ModelType Type() const override {return ModelType::class_diagram;}

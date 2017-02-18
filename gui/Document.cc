@@ -134,4 +134,18 @@ QAbstractItemModel* Document::ProjectModel()
 	return m_project_model.get();
 }
 
+project::Model Document::Create(project::ModelType type, const std::string& name)
+{
+	switch (type)
+	{
+	case project::ModelType::class_diagram:
+		return std::make_unique<class_diagram::Model>(&m_project.CodeBase(), QString::fromStdString(name), this);
+	case project::ModelType::source_view:
+		return std::make_unique<source_view::Model>(QString::fromStdString(name), this);
+	default:
+		assert(false);
+		return {};
+	}
+}
+	
 } // end of namespace

@@ -33,9 +33,6 @@ class ModelBase;
 class Project
 {
 public:
-	using Model = std::unique_ptr<ModelBase>;
-
-public:
 	Project() = default;
 	
 	void AddSource(const std::string& source_file);

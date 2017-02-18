@@ -58,6 +58,12 @@ void Project::Save(const std::string& filename) const
 		));
 	root.insert("translation_units", tus);
 	
+	// serialize all models
+	QJsonArray models;
+	for (auto&& model : m_models)
+		models.append(model->Save());
+	root.insert("models", models);
+	
 	QJsonDocument json{root};
 	
 	QFile out{QString::fromStdString(filename)};
@@ -78,6 +84,9 @@ void Project::Open(const std::string& filename)
 		
 		for (auto&& tu : json.object()["translation_units"].toArray())
 			m_code_base.Parse(tu.toString().toStdString(), m_compile_options);
+		
+//		for (auto&& models : json.object()["models"].toArray())
+//			m_models.push_back();
 	}
 }
 
