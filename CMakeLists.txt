@@ -58,11 +58,13 @@ execute_process(
 
 add_definitions(-DVERSION="${PROJECT_VERSION}" -DBUILD_DATE="${BUILD_DATE}" -DGIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
 
+file(GLOB UTIL_FILES       util/*.hh util/*.cc)
 file(GLOB LIBCLANGXX_FILES libclx/*.hh libclx/*.cc)
 file(GLOB CODEBASE_FILES   codebase/*.hh codebase/*.cc)
 file(GLOB PROJECT_FILES    project/*.hh project/*.cc)
-add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES})
+add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES} ${UTIL_FILES})
 
+# the classes in "project" namespace needs QtCore to serialize models to/from JSON files
 target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES} Qt5::Core)
 
 file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/spaghetti.qrc)
