@@ -13,6 +13,7 @@
 #pragma once
 
 #include "project/ModelBase.hh"
+#include <libclx/SourceRange.hh>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -20,8 +21,10 @@
 namespace gui {
 namespace source_view {
 
-class Model : public project::ModelBase, public QObject
+class Model : public QObject, public project::ModelBase
 {
+	Q_OBJECT
+
 public:
 	Model(const QString& fname, QObject *parent);
 	
@@ -36,9 +39,18 @@ public:
 	QJsonObject Save() const override;
 	
 	ModelType Type() const override {return ModelType::source_view;}
+	
+	void SetLocation(const QString& fname, unsigned line, unsigned column);
+	unsigned Line() const;
+	unsigned Column() const;
 
+signals:
+	void OnLocationChanged();
+	
 private:
 	QString m_fname;
+	unsigned m_line{};
+	unsigned m_column{};
 };
 
 }} // end of namespace

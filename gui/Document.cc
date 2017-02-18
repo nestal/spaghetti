@@ -79,12 +79,18 @@ void Document::AddSource(const QString& file)
 
 void Document::NewClassDiagram(const QString& name)
 {
-	m_project.Add(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this));
+	auto m = std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this);
+	emit OnCreateClassDiagramView(m.get());
+	m_project.Add(std::move(m));
 }
 
-void Document::NewSourceView(const QString& name)
+void Document::NewSourceView(const QString& name, unsigned line, unsigned column)
 {
-	m_project.Add(std::make_unique<source_view::Model>(name, this));
+	auto m = std::make_unique<source_view::Model>(name, this);
+	emit OnCreateSourceView(m.get());
+	
+	m->SetLocation(name, line, column);
+	m_project.Add(std::move(m));
 }
 
 QAbstractItemModel *Document::ClassModel()

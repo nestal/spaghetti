@@ -67,7 +67,7 @@ public:
 	QAbstractItemModel* ProjectModel();
 	
 	void NewClassDiagram(const QString& name);
-	void NewSourceView(const QString& name);
+	void NewSourceView(const QString& name, unsigned line = 0, unsigned column = 0);
 	
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
 	

@@ -134,29 +134,26 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 	auto loc = m_doc->LocateEntity(idx);
 	if (loc != libclx::SourceLocation{})
 	{
-		source_view::View *view{};
-		auto filename = loc.Filename();
+		std::string filename;
+		unsigned line, column, offset;
+		loc.Get(filename, line, column, offset);
+		std::cout << "clicked? " << filename << std::endl;
 		
 		// search for existing tab showing the file
 		for (int i = 0; i < m_ui->m_tab->count(); ++i)
 		{
-			auto w = dynamic_cast<source_view::View *>(m_ui->m_tab->widget(i));
-			if (w && w->Filename() == filename)
-				view = w;
+			auto view = dynamic_cast<source_view::View *>(m_ui->m_tab->widget(i));
+			if (view && view->Filename() == filename)
+			{
+				view->GoTo(line, column);
+				m_ui->m_tab->setCurrentWidget(view);
+				view->setFocus(Qt::OtherFocusReason);
+				return;
+			}
 		}
 		
-		if (!view)
-			m_doc->NewSourceView(QString::fromStdString(filename));
-		else
-		{
-			unsigned line, column, offset;
-			loc.Get(filename, line, column, offset);
-			view->GoTo(line, column);
-		}
-		
-		assert(view);
-		m_ui->m_tab->setCurrentWidget(view);
-		view->setFocus(Qt::OtherFocusReason);
+		std::cout << "not found? " << filename << std::endl;
+		m_doc->NewSourceView(QString::fromStdString(filename), line, column);
 	}
 }
 
@@ -204,6 +201,7 @@ void MainWnd::CreateSourceViewForModel(source_view::Model *model)
 	auto view = new source_view::View{model, m_ui->m_tab};
 	m_ui->m_tab->addTab(view, QString::fromStdString(model->Name()));
 	m_ui->m_tab->setCurrentWidget(view);
+	
 	view->setFocus(Qt::OtherFocusReason);
 }
 	

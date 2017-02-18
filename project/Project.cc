@@ -90,11 +90,14 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 		for (auto&& tu : json.object()["translation_units"].toArray())
 			m_code_base.Parse(tu.toString().toStdString(), m_compile_options);
 		
-		for (auto&& model_json : json.object()["models"].toArray())
+		for (auto&& model_jval : json.object()["models"].toArray())
 		{
-			auto model_obj = model_json.toObject();
-			auto type = ModelTypeFromString(model_obj["type"].toString().toStdString());
-			Add(factory.Create(type, model_obj["name"].toString().toStdString()));
+			auto model_jobj = model_jval.toObject();
+			auto type = ModelTypeFromString(model_jobj["type"].toString().toStdString());
+			
+			auto model = factory.Create(type, model_jobj["name"].toString().toStdString());
+			model->Load(model_jobj);
+			Add(std::move(model));
 		}
 
 	}
