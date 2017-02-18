@@ -30,9 +30,9 @@ void Model::SetRect(const QRectF&)
 {
 }
 
-QString Model::Name() const
+std::string Model::Name() const
 {
-	return m_fname;
+	return m_fname.toStdString();
 }
 
 void Model::SetName(const QString&)

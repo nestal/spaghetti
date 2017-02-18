@@ -140,7 +140,7 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 			view = new source_view::View{model, m_ui->m_tab};
 			
 			view->Open(loc);
-			m_ui->m_tab->addTab(view, model->Name());
+			m_ui->m_tab->addTab(view, QString::fromStdString(model->Name()));
 		}
 		else
 		{
@@ -162,7 +162,7 @@ void MainWnd::AddClassDiagram()
 	auto view   = new class_diagram::View{scene, this};
 	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::Model::AddEntity);
 	
-	auto tab = m_ui->m_tab->addTab(view, scene->Name());
+	auto tab = m_ui->m_tab->addTab(view, QString::fromStdString(scene->Name()));
 	
 	// after adding the view to the tab widget, it will be resized to fill the whole tab
 	// we can use its size to resize the scene
@@ -184,7 +184,7 @@ void MainWnd::OnRenameTab(int idx)
 			QString text = QInputDialog::getText(
 				this, tr("Rename Tab"),
 				tr("New name:"), QLineEdit::Normal,
-				model->Name(), &ok
+				QString::fromStdString(model->Name()), &ok
 			);
 			
 			if (ok && !text.isEmpty())

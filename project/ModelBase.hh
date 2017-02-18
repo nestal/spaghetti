@@ -14,7 +14,6 @@
 
 #include <string>
 
-class QGraphicsScene;
 class QPointF;
 class QRectF;
 class QString;
@@ -31,7 +30,7 @@ public:
 	virtual void SetRect(const QRectF& rect) = 0;
 	
 	virtual bool CanRename() const = 0;
-	virtual QString Name() const = 0;
+	virtual std::string Name() const = 0;
 	virtual void SetName(const QString& name) = 0;
 };
 

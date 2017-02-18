@@ -71,9 +71,9 @@ QGraphicsScene *Model::Scene()
 	return m_scene.get();
 }
 
-QString Model::Name() const
+std::string Model::Name() const
 {
-	return m_name;
+	return m_name.toStdString();
 }
 
 void Model::SetName(const QString& name)

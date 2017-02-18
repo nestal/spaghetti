@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "gui/common/ModelBase.hh"
+#include "project/ModelBase.hh"
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -29,7 +29,7 @@ public:
 	void SetRect(const QRectF& rect) override;
 	
 	bool CanRename() const override;
-	QString Name() const override;
+	std::string Name() const override;
 	void SetName(const QString& name) override;
 	
 private:

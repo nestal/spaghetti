@@ -17,7 +17,6 @@
 #include "logical_view/Model.hh"
 
 #include <QtCore/QAbstractListModel>
-#include <QtWidgets/QFileDialog>
 
 #include <boost/filesystem.hpp>
 
