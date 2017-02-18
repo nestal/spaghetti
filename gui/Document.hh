@@ -73,6 +73,7 @@ public:
 	
 	project::ModelBase* ModelAt(std::size_t idx);
 	std::size_t ModelCount() const;
+	void RemoveModel(project::ModelBase *model);
 
 signals:
 	void OnCreateClassDiagramView(class_diagram::Model *model);

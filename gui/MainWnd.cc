@@ -65,7 +65,7 @@ MainWnd::MainWnd() :
 		{
 			try
 			{
-				m_ui->m_tab->clear();
+				CloseAllTabs();
 				m_doc->Open(file);
 			}
 			catch (std::exception& e)
@@ -102,13 +102,8 @@ MainWnd::MainWnd() :
 	// open source code when the user double click the item
 	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
 	
-	// close widget when user clicks it
-	connect(m_ui->m_tab, &QTabWidget::tabCloseRequested, [this](int tab)
-	{
-		auto w = m_ui->m_tab->widget(tab);
-		m_ui->m_tab->removeTab(tab);
-		delete w;
-	});
+	// close widget when user clicks the close button
+	connect(m_ui->m_tab, &QTabWidget::tabCloseRequested, this, &MainWnd::CloseTab);
 	
 	connect(m_ui->m_action_new_class_diagram, &QAction::triggered, [this]
 	{
@@ -203,6 +198,24 @@ void MainWnd::CreateSourceViewForModel(source_view::Model *model)
 	m_ui->m_tab->setCurrentWidget(view);
 	
 	view->setFocus(Qt::OtherFocusReason);
+}
+
+void MainWnd::CloseTab(int tab)
+{
+	auto w = m_ui->m_tab->widget(tab);
+	m_ui->m_tab->removeTab(tab);
+	
+	auto model = dynamic_cast<common::ViewBase&>(*w).Model();
+	delete w;
+	
+	m_doc->RemoveModel(model);
+}
+
+void MainWnd::CloseAllTabs()
+{
+	while (m_ui->m_tab->count() > 0)
+		CloseTab(0);
+		
 }
 	
 } // end of namespace

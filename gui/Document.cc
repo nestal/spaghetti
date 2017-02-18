@@ -172,5 +172,10 @@ std::size_t Document::ModelCount() const
 {
 	return m_project.Count();
 }
+
+void Document::RemoveModel(project::ModelBase *model)
+{
+	m_project.Erase(model);
+}
 	
 } // end of namespace

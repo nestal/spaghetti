@@ -123,5 +123,12 @@ std::size_t Project::Count() const
 {
 	return m_models.size();
 }
+
+void Project::Erase(ModelBase *model)
+{
+	auto it = std::find_if(m_models.begin(), m_models.end(), [model](auto& p){return p.get() == model;});
+	if (it != m_models.end())
+		m_models.erase(it);
+}
 	
 } // end of namespace

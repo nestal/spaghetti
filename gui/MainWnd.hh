@@ -45,6 +45,8 @@ public:
 	~MainWnd();
 
 private:
+	void CloseAllTabs();
+	void CloseTab(int tab);
 	void CreateClassDiagramForModel(class_diagram::Model *model);
 	void CreateSourceViewForModel(source_view::Model *model);
 	void OnDoubleClickItem(const QModelIndex& idx);

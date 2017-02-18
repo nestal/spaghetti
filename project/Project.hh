@@ -47,6 +47,7 @@ public:
 	ModelBase* At(std::size_t idx);
 	const ModelBase* At(std::size_t idx) const;
 	std::size_t Count() const;
+	void Erase(ModelBase *model);
 	
 private:
 	std::vector<std::string>    m_compile_options{
