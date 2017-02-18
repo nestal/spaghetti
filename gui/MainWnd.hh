@@ -25,6 +25,15 @@ class QGraphicsScene;
 
 namespace gui {
 
+namespace class_diagram {
+class ClassItem;
+class Model;
+}
+
+namespace source_view {
+class Model;
+}
+
 class Document;
 
 class MainWnd : public QMainWindow
@@ -35,9 +44,9 @@ public:
 	MainWnd();
 	~MainWnd();
 
-	void AddClassDiagram();
-	
 private:
+	void CreateClassDiagramForModel(class_diagram::Model *model);
+	void CreateSourceViewForModel(source_view::Model *model);
 	void OnDoubleClickItem(const QModelIndex& idx);
 	void OnRenameTab(int idx);
 	

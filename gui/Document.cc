@@ -77,18 +77,14 @@ void Document::AddSource(const QString& file)
 	m_logical_model->endResetModel();
 }
 
-class_diagram::Model* Document::CreateClassDiagram(const QString& name)
+void Document::NewClassDiagram(const QString& name)
 {
-	return static_cast<class_diagram::Model*>(
-		m_project.Add(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this))
-	);
+	m_project.Add(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this));
 }
 
-source_view::Model *Document::CreateSourceModel(const QString& name)
+void Document::NewSourceView(const QString& name)
 {
-	return static_cast<source_view::Model*>(
-		m_project.Add(std::make_unique<source_view::Model>(name, this))
-	);
+	m_project.Add(std::make_unique<source_view::Model>(name, this));
 }
 
 QAbstractItemModel *Document::ClassModel()
@@ -136,16 +132,39 @@ QAbstractItemModel* Document::ProjectModel()
 
 project::Model Document::Create(project::ModelType type, const std::string& name)
 {
+	project::Model result;
+	
 	switch (type)
 	{
 	case project::ModelType::class_diagram:
-		return std::make_unique<class_diagram::Model>(&m_project.CodeBase(), QString::fromStdString(name), this);
+	{
+		auto m = std::make_unique<class_diagram::Model>(&m_project.CodeBase(), QString::fromStdString(name), this);
+		emit OnCreateClassDiagramView(m.get());
+		result = std::move(m);
+		break;
+	}
 	case project::ModelType::source_view:
-		return std::make_unique<source_view::Model>(QString::fromStdString(name), this);
+	{
+		auto m = std::make_unique<source_view::Model>(QString::fromStdString(name), this);
+		emit OnCreateSourceView(m.get());
+		result = std::move(m);
+		break;
+	}
 	default:
 		assert(false);
-		return {};
 	}
+	
+	return result;
+}
+
+project::ModelBase *Document::ModelAt(std::size_t idx)
+{
+	return m_project.At(idx);
+}
+
+std::size_t Document::ModelCount() const
+{
+	return m_project.Count();
 }
 	
 } // end of namespace

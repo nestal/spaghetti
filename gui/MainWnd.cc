@@ -26,6 +26,8 @@
 #include <QMessageBox>
 
 #include <cassert>
+#include <util/Visitor.hh>
+#include <iostream>
 
 namespace gui {
 
@@ -63,6 +65,7 @@ MainWnd::MainWnd() :
 		{
 			try
 			{
+				m_ui->m_tab->clear();
 				m_doc->Open(file);
 			}
 			catch (std::exception& e)
@@ -107,13 +110,21 @@ MainWnd::MainWnd() :
 		delete w;
 	});
 	
-	connect(m_ui->m_action_new_class_diagram, &QAction::triggered, this, &MainWnd::AddClassDiagram);
+	connect(m_ui->m_action_new_class_diagram, &QAction::triggered, [this]
+	{
+		m_doc->NewClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
+	});
 
 	// double click the tab to rename it
 	connect(m_ui->m_tab->tabBar(), &QTabBar::tabBarDoubleClicked, this, &MainWnd::OnRenameTab);
 	
+	// create the corresponding view when a model is created, either by user actions or
+	// when loaded from file
+	connect(m_doc.get(), &Document::OnCreateClassDiagramView, this, &MainWnd::CreateClassDiagramForModel);
+	connect(m_doc.get(), &Document::OnCreateSourceView, this, &MainWnd::CreateSourceViewForModel);
+	
 	// default class diagram
-	AddClassDiagram();
+	m_doc->NewClassDiagram("Class Diagram");
 }
 
 MainWnd::~MainWnd() = default;
@@ -135,13 +146,7 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		}
 		
 		if (!view)
-		{
-			auto model = m_doc->CreateSourceModel(QString::fromStdString(filename));
-			view = new source_view::View{model, m_ui->m_tab};
-			
-			view->Open(loc);
-			m_ui->m_tab->addTab(view, QString::fromStdString(model->Name()));
-		}
+			m_doc->NewSourceView(QString::fromStdString(filename));
 		else
 		{
 			unsigned line, column, offset;
@@ -153,22 +158,6 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		m_ui->m_tab->setCurrentWidget(view);
 		view->setFocus(Qt::OtherFocusReason);
 	}
-}
-
-void MainWnd::AddClassDiagram()
-{
-	// spaghetti's first signal
-	auto scene  = m_doc->CreateClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
-	auto view   = new class_diagram::View{scene, this};
-	connect(view, &class_diagram::View::DropEntity, scene, &class_diagram::Model::AddEntity);
-	
-	auto tab = m_ui->m_tab->addTab(view, QString::fromStdString(scene->Name()));
-	
-	// after adding the view to the tab widget, it will be resized to fill the whole tab
-	// we can use its size to resize the scene
-	scene->SetRect(rect());
-	
-	m_ui->m_tab->setCurrentIndex(tab);
 }
 
 void MainWnd::OnRenameTab(int idx)
@@ -196,4 +185,26 @@ void MainWnd::OnRenameTab(int idx)
 	}
 }
 
+void MainWnd::CreateClassDiagramForModel(class_diagram::Model *model)
+{
+	auto view   = new class_diagram::View{model, this};
+	connect(view, &class_diagram::View::DropEntity, model, &class_diagram::Model::AddEntity);
+	
+	auto tab = m_ui->m_tab->addTab(view, QString::fromStdString(model->Name()));
+	
+	// after adding the view to the tab widget, it will be resized to fill the whole tab
+	// we can use its size to resize the scene
+	model->SetRect(rect());
+	
+	m_ui->m_tab->setCurrentIndex(tab);
+}
+
+void MainWnd::CreateSourceViewForModel(source_view::Model *model)
+{
+	auto view = new source_view::View{model, m_ui->m_tab};
+	m_ui->m_tab->addTab(view, QString::fromStdString(model->Name()));
+	m_ui->m_tab->setCurrentWidget(view);
+	view->setFocus(Qt::OtherFocusReason);
+}
+	
 } // end of namespace

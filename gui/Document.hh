@@ -49,8 +49,10 @@ class Model;
  * wish to save to disk. Note that it does not include the code base, which is loaded
  * from disk separately.
  */
-class Document : public QObject, public project::ModelFactory
+class Document : public QObject, private project::ModelFactory
 {
+	Q_OBJECT
+	
 public:
 	Document(QObject *parent);
 	~Document();
@@ -60,17 +62,25 @@ public:
 	
 	void AddSource(const QString& file);
 	
-	// main pane
-	class_diagram::Model* CreateClassDiagram(const QString& name);
-	source_view::Model* CreateSourceModel(const QString& name);
-	project::Model Create(project::ModelType type, const std::string& name) override;
-	
 	// docking windows
 	QAbstractItemModel* ClassModel();
 	QAbstractItemModel* ProjectModel();
 	
+	void NewClassDiagram(const QString& name);
+	void NewSourceView(const QString& name);
+	
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
-		
+	
+	project::ModelBase* ModelAt(std::size_t idx);
+	std::size_t ModelCount() const;
+
+signals:
+	void OnCreateClassDiagramView(class_diagram::Model *model);
+	void OnCreateSourceView(source_view::Model *model);
+
+private:
+	// main pane
+	project::Model Create(project::ModelType type, const std::string& name) override;
 private:
 	class ProjectModel_;
 	
