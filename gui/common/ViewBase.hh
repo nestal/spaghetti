@@ -12,14 +12,18 @@
 
 #pragma once
 
+namespace project {
+class ModelBase;
+}
+
 namespace gui {
 namespace common {
-
-class ModelBase;
 
 class ViewBase
 {
 public:
+	using ModelBase = project::ModelBase;
+	
 	virtual ModelBase* Model() = 0;
 };
 	

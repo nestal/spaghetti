@@ -46,16 +46,16 @@ void Project::Save(const std::string& filename) const
 		cflags.append(QString::fromStdString(cflag));
 	
 	QJsonObject root;
-	root["cflags"] = cflags;
+	root.insert("cflags", cflags);
 	
-	auto dest = path{filename}.parent_path();
+	auto base = path{filename}.parent_path();
 	QJsonArray tus;
 
 	for (auto&& tu : m_code_base.TranslationUnits())
 		tus.append(QString::fromStdString(
-			relative(tu.Spelling(), dest).string()
+			relative(tu.Spelling(), base).string()
 		));
-	root["translation_units"] = tus;
+	root.insert("translation_units", tus);
 	
 	QJsonDocument json{root};
 	

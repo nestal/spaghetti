@@ -43,5 +43,15 @@ bool Model::CanRename() const
 {
 	return false;
 }
+
+void Model::Load(const QJsonObject& )
+{
+	
+}
+
+void Model::Save(QJsonObject& ) const
+{
+	
+}
 	
 }} // end of namespace

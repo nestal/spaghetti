@@ -17,21 +17,40 @@
 class QPointF;
 class QRectF;
 class QString;
+class QJsonObject;
 
-namespace gui {
-namespace common {
+namespace project {
+
+enum class ModelType {
+	class_diagram,
+	source_view
+};
 
 class ModelBase
 {
 public:
+	using ModelType = project::ModelType;
+	
 	virtual ~ModelBase() = default;
 	
 	virtual void AddEntity(const std::string& id, const QPointF& pos) = 0;
 	virtual void SetRect(const QRectF& rect) = 0;
 	
+	virtual void Load(const QJsonObject& obj) = 0;
+	virtual void Save(QJsonObject& obj) const = 0;
+	
 	virtual bool CanRename() const = 0;
 	virtual std::string Name() const = 0;
 	virtual void SetName(const QString& name) = 0;
+	virtual ModelType Type() const = 0;
 };
 
-}} // end of namespace
+class ModelFactory
+{
+public:
+	virtual ~ModelFactory() = 0;
+	
+	virtual ModelBase* Create(ModelType type) = 0;
+};
+
+} // end of namespace

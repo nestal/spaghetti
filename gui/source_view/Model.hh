@@ -20,7 +20,7 @@
 namespace gui {
 namespace source_view {
 
-class Model : public common::ModelBase, public QObject
+class Model : public project::ModelBase, public QObject
 {
 public:
 	Model(const QString& fname, QObject *parent);
@@ -32,6 +32,11 @@ public:
 	std::string Name() const override;
 	void SetName(const QString& name) override;
 	
+	void Load(const QJsonObject& obj) override;
+	void Save(QJsonObject& obj) const override;
+	
+	ModelType Type() const override {return ModelType::source_view;}
+
 private:
 	QString m_fname;
 };

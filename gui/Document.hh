@@ -22,10 +22,11 @@
 class QAbstractItemModel;
 class QGraphicsScene;
 
-namespace gui {
-namespace common {
+namespace project {
 class ModelBase;
 }
+
+namespace gui {
 
 namespace class_diagram {
 class ClassItem;
@@ -72,7 +73,7 @@ public:
 private:
 	class ProjectModel_;
 	
-	using Model = std::unique_ptr<common::ModelBase>;
+	using Model = std::unique_ptr<project::ModelBase>;
 	
 	// order is important here, since m_scene depends on m_repo.
 	// m_scene contains CommitItem, which contains Commits. It must be destroyed

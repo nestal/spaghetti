@@ -38,7 +38,7 @@ class ClassItem;
 /**
  * \brief Serializable data for class diagrams.
  */
-class Model : public common::ModelBase, public QObject
+class Model : public project::ModelBase, public QObject
 {
 public:
 	Model(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
@@ -60,7 +60,11 @@ public:
 	void SetName(const QString& name) override;
 	void Clear();
 
+	void Load(const QJsonObject& obj) override;
+	void Save(QJsonObject& obj) const override;
+
 	project::ClassDiagram Data() const;
+	ModelType Type() const override {return ModelType::class_diagram;}
 	
 private:
 	void DetectEdges(ClassItem *item);

@@ -18,6 +18,8 @@
 #include "project/ClassDiagram.hh"
 
 #include <QtWidgets/QGraphicsScene>
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
 
 #include <cassert>
 #include <iostream>
@@ -127,4 +129,27 @@ project::ClassDiagram Model::Data() const
 	return data;
 }
 
+void Model::Load(const QJsonObject& )
+{
+	
+}
+
+void Model::Save(QJsonObject& obj) const
+{
+	obj.insert("type", "class_diagram");
+	obj.insert("name", m_name);
+	
+	QJsonArray items;
+	for (auto child : m_scene->items())
+	{
+		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
+			items.append(QJsonObject{
+				{"id", QString::fromStdString(citem->DataType().ID())},
+				{"x", citem->x()},
+				{"y", citem->y()}
+			});
+	}
+	obj.insert("classes", items);
+}
+	
 }} // end of namespace
