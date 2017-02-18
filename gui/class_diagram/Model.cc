@@ -129,16 +129,23 @@ project::ClassDiagram Model::Data() const
 	return data;
 }
 
-void Model::Load(const QJsonObject& )
+void Model::Load(const QJsonObject& obj)
 {
-	
+	for (auto&& item_jval : obj["classes"].toArray())
+	{
+		auto json = item_jval.toObject();
+		AddEntity(
+			json["id"].toString().toStdString(),
+			QPointF{
+				json["x"].toDouble(),
+				json["y"].toDouble()
+			}
+		);
+	}
 }
 
 QJsonObject Model::Save() const
 {
-	QJsonObject obj;
-	obj.insert("name", m_name);
-	
 	QJsonArray items;
 	for (auto child : m_scene->items())
 	{
@@ -149,8 +156,8 @@ QJsonObject Model::Save() const
 				{"y", citem->y()}
 			});
 	}
-	obj.insert("classes", items);
-	return obj;
+	
+	return QJsonObject{{"classes", items}};
 }
 	
 }} // end of namespace
