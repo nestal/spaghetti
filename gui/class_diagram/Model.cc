@@ -137,7 +137,6 @@ void Model::Load(const QJsonObject& )
 QJsonObject Model::Save() const
 {
 	QJsonObject obj;
-	obj.insert("type", "class_diagram");
 	obj.insert("name", m_name);
 	
 	QJsonArray items;

@@ -61,7 +61,12 @@ void Project::Save(const std::string& filename) const
 	// serialize all models
 	QJsonArray models;
 	for (auto&& model : m_models)
-		models.append(model->Save());
+	{
+		auto obj = model->Save();
+		obj.insert("type", QString::fromStdString(to_string(model->Type())));
+		obj.insert("name", QString::fromStdString(model->Name()));
+		models.append(obj);
+	}
 	root.insert("models", models);
 	
 	QJsonDocument json{root};
@@ -71,7 +76,7 @@ void Project::Save(const std::string& filename) const
 		out.write(json.toJson());
 }
 
-void Project::Open(const std::string& filename)
+void Project::Open(const std::string& filename, ModelFactory& factory)
 {
 	QFile in{QString::fromStdString(filename)};
 	if (in.open(QIODevice::ReadOnly))
@@ -85,8 +90,13 @@ void Project::Open(const std::string& filename)
 		for (auto&& tu : json.object()["translation_units"].toArray())
 			m_code_base.Parse(tu.toString().toStdString(), m_compile_options);
 		
-//		for (auto&& models : json.object()["models"].toArray())
-//			m_models.push_back();
+		for (auto&& model_json : json.object()["models"].toArray())
+		{
+			auto model_obj = model_json.toObject();
+			auto type = ModelTypeFromString(model_obj["type"].toString().toStdString());
+			Add(factory.Create(type, model_obj["name"].toString().toStdString()));
+		}
+
 	}
 }
 

@@ -28,7 +28,7 @@ enum class ModelType {
 	none
 };
 
-ModelType ModelTypeString(const std::string& str);
+ModelType ModelTypeFromString(const std::string& str);
 std::string to_string(ModelType type);
 
 class ModelBase

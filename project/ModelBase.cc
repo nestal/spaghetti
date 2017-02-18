@@ -21,7 +21,7 @@ static const std::pair<std::string, ModelType> map[] = {
 	{"source_view", ModelType::source_view}
 };
 
-ModelType ModelTypeString(const std::string& str)
+ModelType ModelTypeFromString(const std::string& str)
 {
 	auto it = std::find_if(std::begin(map), std::end(map), [&str](auto& e) {return e.first == str;});
 	return it != std::end(map) ? it->second : ModelType::none;

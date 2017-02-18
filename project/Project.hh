@@ -28,8 +28,6 @@
  */
 namespace project {
 
-class ModelBase;
-
 class Project
 {
 public:
@@ -38,7 +36,7 @@ public:
 	void AddSource(const std::string& source_file);
 		
 	void Save(const std::string& filename) const;
-	void Open(const std::string& filename);
+	void Open(const std::string& filename, ModelFactory& factory);
 	
 	void SetCompileOptions(std::initializer_list<std::string> opts);
 	

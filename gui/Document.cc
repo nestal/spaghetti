@@ -112,7 +112,7 @@ void Document::Open(const QString& file)
 	
 	try
 	{
-		m_project.Open(file.toStdString());
+		m_project.Open(file.toStdString(), *this);
 	}
 	catch (std::exception&)
 	{
