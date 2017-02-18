@@ -79,14 +79,16 @@ void Document::AddSource(const QString& file)
 
 class_diagram::Model* Document::CreateClassDiagram(const QString& name)
 {
-	m_models.emplace_back(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this));
-	return static_cast<class_diagram::Model*>(m_models.back().get());
+	return static_cast<class_diagram::Model*>(
+		m_project.Add(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this))
+	);
 }
 
 source_view::Model *Document::CreateSourceModel(const QString& name)
 {
-	m_models.emplace_back(std::make_unique<source_view::Model>(name, this));
-	return static_cast<source_view::Model*>(m_models.back().get());
+	return static_cast<source_view::Model*>(
+		m_project.Add(std::make_unique<source_view::Model>(name, this))
+	);
 }
 
 QAbstractItemModel *Document::ClassModel()

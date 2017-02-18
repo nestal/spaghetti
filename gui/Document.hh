@@ -73,13 +73,7 @@ public:
 private:
 	class ProjectModel_;
 	
-	using Model = std::unique_ptr<project::ModelBase>;
-	
-	// order is important here, since m_scene depends on m_repo.
-	// m_scene contains CommitItem, which contains Commits. It must be destroyed
-	// before the Repository is destroyed.
 	project::Project                        m_project;
-	std::vector<Model>                      m_models;
 	
 	// for the docking windows
 	std::unique_ptr<ProjectModel_>          m_project_model;

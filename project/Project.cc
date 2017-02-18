@@ -11,6 +11,7 @@
 //
 
 #include "Project.hh"
+#include "ModelBase.hh"
 
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonArray>
@@ -80,4 +81,25 @@ void Project::Open(const std::string& filename)
 	}
 }
 
+ModelBase* Project::Add(Model&& model)
+{
+	m_models.push_back(std::move(model));
+	return m_models.back().get();
+}
+
+ModelBase *Project::At(std::size_t idx)
+{
+	return m_models.at(idx).get();
+}
+
+const ModelBase *Project::At(std::size_t idx) const
+{
+	return m_models.at(idx).get();
+}
+
+std::size_t Project::Count() const
+{
+	return m_models.size();
+}
+	
 } // end of namespace

@@ -12,7 +12,10 @@
 
 #pragma once
 
+#include "ModelBase.hh"
 #include "codebase/CodeBase.hh"
+
+#include <vector>
 
 /**
  * \brief Namespace for project layer.
@@ -25,8 +28,13 @@
  */
 namespace project {
 
+class ModelBase;
+
 class Project
 {
+public:
+	using Model = std::unique_ptr<ModelBase>;
+
 public:
 	Project() = default;
 	
@@ -39,6 +47,12 @@ public:
 	
 	codebase::CodeBase& CodeBase();
 	
+	ModelBase* Add(Model&& model);
+	
+	ModelBase* At(std::size_t idx);
+	const ModelBase* At(std::size_t idx) const;
+	std::size_t Count() const;
+	
 private:
 	std::vector<std::string>    m_compile_options{
 		"-std=c++14",
@@ -46,6 +60,7 @@ private:
 		"-I", "."
 	};
 	codebase::CodeBase      m_code_base;
+	std::vector<Model>      m_models;
 };
 	
 } // end of namespace
