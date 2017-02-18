@@ -15,14 +15,12 @@
 #include "ClassItem.hh"
 #include "Edge.hh"
 #include "codebase/DataType.hh"
-#include "project/ClassDiagram.hh"
 
 #include <QtWidgets/QGraphicsScene>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
 
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -116,17 +114,6 @@ void Model::AddLine(ClassItem *from, ClassItem *to)
 	from->AddEdge(edge.get());
 	to->AddEdge(edge.get());
 	m_scene->addItem(edge.release());
-}
-
-project::ClassDiagram Model::Data() const
-{
-	project::ClassDiagram data{m_name.toStdString()};
-	for (auto child : m_scene->items())
-	{
-		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
-			data.AddClass(citem->DataType().ID(), citem->pos());
-	}
-	return data;
 }
 
 void Model::Load(const QJsonObject& obj)

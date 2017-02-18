@@ -42,7 +42,6 @@ class Model : public project::ModelBase, public QObject
 {
 public:
 	Model(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
-	Model(const codebase::EntityMap *codebase, const project::ClassDiagram& data, QObject *parent);
 	Model(const Model&) = delete;
 	Model(Model&&) = default;
 	~Model();
@@ -63,7 +62,6 @@ public:
 	void Load(const QJsonObject& obj) override;
 	QJsonObject Save() const override;
 
-	project::ClassDiagram Data() const;
 	ModelType Type() const override {return ModelType::class_diagram;}
 	
 private:

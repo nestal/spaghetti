@@ -26,8 +26,6 @@
 #include <QMessageBox>
 
 #include <cassert>
-#include <util/Visitor.hh>
-#include <iostream>
 
 namespace gui {
 
@@ -132,7 +130,6 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		std::string filename;
 		unsigned line, column, offset;
 		loc.Get(filename, line, column, offset);
-		std::cout << "clicked? " << filename << std::endl;
 		
 		// search for existing tab showing the file
 		for (int i = 0; i < m_ui->m_tab->count(); ++i)
@@ -147,7 +144,6 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 			}
 		}
 		
-		std::cout << "not found? " << filename << std::endl;
 		m_doc->NewSourceView(QString::fromStdString(filename), line, column);
 	}
 }
@@ -205,10 +201,13 @@ void MainWnd::CloseTab(int tab)
 	auto w = m_ui->m_tab->widget(tab);
 	m_ui->m_tab->removeTab(tab);
 	
-	auto model = dynamic_cast<common::ViewBase&>(*w).Model();
-	delete w;
-	
-	m_doc->RemoveModel(model);
+	if (auto view = dynamic_cast<common::ViewBase*>(w))
+	{
+		auto model = view->Model();
+		delete w;
+		
+		m_doc->RemoveModel(model);
+	}
 }
 
 void MainWnd::CloseAllTabs()
