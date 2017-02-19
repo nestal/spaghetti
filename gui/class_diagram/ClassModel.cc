@@ -66,7 +66,7 @@ void ClassModel::AddEntity(const std::string& id, const QPointF& pos)
 		m_scene->addItem(item);
 		
 		// the model is changed because it has one more entity
-		SetChanged();
+		SetChanged(true);
 	}
 }
 
@@ -152,7 +152,7 @@ QJsonObject ClassModel::Save() const
 		}
 	}
 	
-	m_changed = false;
+	SetChanged(false);
 	
 	return QJsonObject{{"classes", items}};
 }
@@ -161,7 +161,7 @@ void ClassModel::DeleteSelectedItem()
 {
 	for (auto&& item : m_scene->selectedItems())
 	{
-		SetChanged();
+		SetChanged(true);
 		
 		m_scene->removeItem(item);
 		delete dynamic_cast<BaseItem*>(item);
@@ -170,31 +170,20 @@ void ClassModel::DeleteSelectedItem()
 
 bool ClassModel::IsChanged() const
 {
-	if (!m_changed)
-	{
-		for (auto&& item : m_scene->items())
-		{
-			if (auto base = dynamic_cast<BaseItem*>(item))
-			{
-				if (base->IsChanged())
-					return true;
-			}
-		}
-	}
 	return m_changed;
 }
 
 void ClassModel::OnChildChanged(BaseItem *)
 {
-	SetChanged();
+	SetChanged(true);
 }
 
-void ClassModel::SetChanged()
+void ClassModel::SetChanged(bool changed) const
 {
-	if (!m_changed)
+	if (m_changed != changed)
 	{
-		emit OnChanged();
-		m_changed = true;
+		emit OnChanged(changed);
+		m_changed = changed;
 	}
 }
 	

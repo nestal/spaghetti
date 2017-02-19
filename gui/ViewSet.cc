@@ -104,11 +104,14 @@ void ViewSet::NewClassDiagramView(class_diagram::ClassModel *model)
 	// we can depend on the model because when the model is destroyed, this connection
 	// will be disconnect and the lambda callback won't run.
 	// if we capture "view" here, we may found that the view may be already destroyed
-	connect(model, &class_diagram::ClassModel::OnChanged, [this, model]
+	connect(model, &class_diagram::ClassModel::OnChanged, [this, model](bool changed)
 	{
 		auto it = std::find_if(begin(), end(), [model](auto v){return v->Model() == model;});
 		if (it != end())
-			setTabText(indexOf((*it)->Widget()), tr("*") + QString::fromStdString((*it)->Model()->Name()));
+			setTabText(
+				indexOf((*it)->Widget()),
+				(changed ? "*" : "") + QString::fromStdString((*it)->Model()->Name())
+			);
 	});
 	
 	auto tab = addTab(view, QString::fromStdString(model->Name()));

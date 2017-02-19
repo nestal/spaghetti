@@ -72,13 +72,13 @@ public:
 	bool IsChanged() const override;
 
 signals:
-	void OnChanged();
+	void OnChanged(bool changed) const;
 	
 private:
 	void DetectEdges(ClassItem *item);
 	void AddLine(ClassItem *from, ClassItem *to);
 	void OnChildChanged(BaseItem *child);
-	void SetChanged();
+	void SetChanged(bool changed) const;
 	
 private:
 	QString                         m_name;
