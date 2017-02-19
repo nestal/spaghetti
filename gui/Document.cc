@@ -68,12 +68,11 @@ private:
 class Document::ModelFactory : public project::ModelFactory
 {
 public:
-	ModelFactory(Document *parent, codebase::CodeBase& cb) : m_parent{parent}, m_codebase{cb} {}
-	project::Model Create(project::ModelType type, const std::string& name) override;
+	ModelFactory(Document *parent) : m_parent{parent} {}
+	project::Model Create(project::ModelType type, const std::string& name, project::Project& owner) override;
 
 private:
 	Document *m_parent;
-	codebase::CodeBase& m_codebase;
 };
 
 Document::Document(QObject *parent) :
@@ -132,7 +131,7 @@ void Document::Open(const QString& file)
 	{
 		auto proj = std::make_unique<project::Project>();
 		
-		ModelFactory factory{this, proj->CodeBase()};
+		ModelFactory factory{this};
 		proj->Open(file.toStdString(), factory);
 		
 		Reset(std::move(proj));
@@ -153,7 +152,7 @@ QAbstractItemModel* Document::ProjectModel()
 	return m_project_model.get();
 }
 
-project::Model Document::ModelFactory::Create(project::ModelType type, const std::string& name)
+project::Model Document::ModelFactory::Create(project::ModelType type, const std::string& name, project::Project& owner)
 {
 	project::Model result;
 	
@@ -161,7 +160,7 @@ project::Model Document::ModelFactory::Create(project::ModelType type, const std
 	{
 	case project::ModelType::class_diagram:
 	{
-		auto m = std::make_unique<class_diagram::Model>(&m_codebase, QString::fromStdString(name), m_parent);
+		auto m = std::make_unique<class_diagram::Model>(&owner.CodeBase(), QString::fromStdString(name), m_parent);
 		emit m_parent->OnCreateClassDiagramView(m.get());
 		result = std::move(m);
 		break;
@@ -203,7 +202,7 @@ void Document::Reset(std::unique_ptr<project::Project>&& proj)
 	m_logical_model->Reset(m_project->CodeBase().Root(), &m_project->CodeBase());
 	
 	// destroy old project by unique_ptr destructor
-	for (std::size_t i = 0 ; i < p->Count() ; i++)
+	for (std::size_t i = 0 ; p && i < p->Count() ; i++)
 		emit OnDestroyModel(p->At(i));
 }
 	

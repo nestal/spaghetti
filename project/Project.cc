@@ -104,7 +104,7 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 			auto type = ModelTypeFromString(model_jobj["type"].toString().toStdString());
 			
 			// create the model and initialize it with the json values
-			auto model = factory.Create(type, model_jobj["name"].toString().toStdString());
+			auto model = factory.Create(type, model_jobj["name"].toString().toStdString(), *this);
 			model->Load(model_jobj);
 			
 			// add to project

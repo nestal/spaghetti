@@ -52,12 +52,14 @@ public:
 
 using Model = std::unique_ptr<ModelBase>;
 
+class Project;
+
 class ModelFactory
 {
 public:
 	virtual ~ModelFactory() = default;
 	
-	virtual Model Create(ModelType type, const std::string& name) = 0;
+	virtual Model Create(ModelType type, const std::string& name, Project& owner) = 0;
 };
 
 } // end of namespace

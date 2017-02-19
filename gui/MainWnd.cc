@@ -102,9 +102,6 @@ MainWnd::MainWnd() :
 	{
 		m_doc->NewClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
 	});
-
-	// default class diagram
-	m_doc->NewClassDiagram("Class Diagram");
 }
 
 MainWnd::~MainWnd() = default;
