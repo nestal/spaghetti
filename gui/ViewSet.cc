@@ -14,7 +14,7 @@
 
 #include "Document.hh"
 #include "source_view/View.hh"
-#include "class_diagram/View.hh"
+#include "gui/class_diagram/ClassView.hh"
 
 #include <QInputDialog>
 #include <QTabBar>
@@ -95,10 +95,21 @@ void ViewSet::Setup(Document& doc)
 	connect(tabBar(), &QTabBar::tabBarDoubleClicked, this, &ViewSet::OnRenameTab);
 }
 
-void ViewSet::NewClassDiagramView(class_diagram::Model *model)
+void ViewSet::NewClassDiagramView(class_diagram::ClassModel *model)
 {
-	auto view   = new class_diagram::View{model, this};
-	connect(view, &class_diagram::View::DropEntity, model, &class_diagram::Model::AddEntity);
+	auto view   = new class_diagram::ClassView{model, this};
+	connect(view, &class_diagram::ClassView::DropEntity, model, &class_diagram::ClassModel::AddEntity);
+	
+	// don't capture "view". instead, capture model and find for its view instead
+	// we can depend on the model because when the model is destroyed, this connection
+	// will be disconnect and the lambda callback won't run.
+	// if we capture "view" here, we may found that the view may be already destroyed
+	connect(model, &class_diagram::ClassModel::OnChanged, [this, model]
+	{
+		auto it = std::find_if(begin(), end(), [model](auto v){return v->Model() == model;});
+		if (it != end())
+			setTabText(indexOf((*it)->Widget()), tr("*") + QString::fromStdString((*it)->Model()->Name()));
+	});
 	
 	auto tab = addTab(view, QString::fromStdString(model->Name()));
 	
@@ -188,7 +199,7 @@ void ViewSet::ViewCode(const std::string& filename, unsigned line, unsigned colu
 
 void ViewSet::OnDelete()
 {
-	if (auto view = dynamic_cast<class_diagram::View*>(currentWidget()))
+	if (auto view = dynamic_cast<class_diagram::ClassView*>(currentWidget()))
 		view->DeleteSelectedItem();
 }
 	

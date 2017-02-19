@@ -68,7 +68,7 @@ public:
 	void ViewCode(const std::string& filename, unsigned line, unsigned column);
 
 private:
-	void NewClassDiagramView(class_diagram::Model *model);
+	void NewClassDiagramView(class_diagram::ClassModel *model);
 	void NewSourceView(source_view::Model *model);
 	void OnRenameTab(int idx);
 	

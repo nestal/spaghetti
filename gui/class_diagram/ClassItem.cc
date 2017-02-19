@@ -26,8 +26,8 @@ const qreal ClassItem::m_margin{10.0};
 
 const qreal ClassItem::m_max_width{200.0};
 
-ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
-	BaseItem{parent},
+ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
+	QObject{model},
 	m_class{class_},
 	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}
 {
@@ -63,6 +63,9 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	// initialize geometry
 	prepareGeometryChange();
 	m_bounding.setCoords(-dx/2-m_margin, -dy/2-m_margin, dx/2+m_margin, dy/2+m_margin);
+	
+	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
+	setPos(pos);
 	
 	// flags
 	setFlag(QGraphicsItem::ItemIsMovable);
@@ -113,6 +116,9 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 {
 	if (change == QGraphicsItem::ItemPositionChange)
 	{
+		if (!m_changed)
+			emit OnJustChanged(this);
+		
 		m_changed = true;
 		
 		for (auto&& edge : m_edges)

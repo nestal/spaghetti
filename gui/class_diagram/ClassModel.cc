@@ -10,7 +10,7 @@
 // Created by nestal on 2/12/17.
 //
 
-#include "Model.hh"
+#include "ClassModel.hh"
 
 #include "ClassItem.hh"
 #include "Edge.hh"
@@ -27,7 +27,7 @@ namespace gui {
 namespace class_diagram {
 
 
-Model::Model(const codebase::EntityMap *codebase, const QString& name, QObject *parent) :
+ClassModel::ClassModel(const codebase::EntityMap *codebase, const QString& name, QObject *parent) :
 	QObject{parent},
 	m_name{name},
 	m_scene{std::make_unique<QGraphicsScene>(this)},
@@ -36,14 +36,14 @@ Model::Model(const codebase::EntityMap *codebase, const QString& name, QObject *
 	assert(m_codebase);
 }
 
-Model::~Model() = default;
+ClassModel::~ClassModel() = default;
 
-void Model::SetRect(const QRectF& rect)
+void ClassModel::SetRect(const QRectF& rect)
 {
 	m_scene->setSceneRect(rect);
 }
 
-void Model::Clear()
+void ClassModel::Clear()
 {
 	// delete all items
 	for (auto&& item : m_scene->items())
@@ -53,44 +53,39 @@ void Model::Clear()
 	}
 }
 
-void Model::AddEntity(const std::string& id, const QPointF& pos)
+void ClassModel::AddEntity(const std::string& id, const QPointF& pos)
 {
 	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase->Find(id)))
 	{
-		auto item = new ClassItem{*data_type};
-		item->moveBy(pos.x(), pos.y());
+		auto item = new ClassItem{*data_type, pos, this};
+		connect(item, &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);
 		
 		// draw arrows
-		
 		DetectEdges(item);
 		
 		m_scene->addItem(item);
 		
-		// the item is marked changed by the moveBy() line above
-		// mark it unchanged because a new item should be unchanged
-		item->MarkUnchanged();
-		
 		// the model is changed because it has one more entity
-		m_changed = true;
+		SetChanged();
 	}
 }
 
-QGraphicsScene *Model::Scene()
+QGraphicsScene *ClassModel::Scene()
 {
 	return m_scene.get();
 }
 
-std::string Model::Name() const
+std::string ClassModel::Name() const
 {
 	return m_name.toStdString();
 }
 
-void Model::SetName(const QString& name)
+void ClassModel::SetName(const QString& name)
 {
 	m_name = name;
 }
 
-bool Model::CanRename() const
+bool ClassModel::CanRename() const
 {
 	return true;
 }
@@ -102,7 +97,7 @@ bool Model::CanRename() const
  * This function will add the edges between the new \a item and other
  * related ones.
  */
-void Model::DetectEdges(ClassItem *item)
+void ClassModel::DetectEdges(ClassItem *item)
 {
 	for (auto child : m_scene->items())
 	{
@@ -117,7 +112,7 @@ void Model::DetectEdges(ClassItem *item)
 	}
 }
 
-void Model::AddLine(ClassItem *from, ClassItem *to)
+void ClassModel::AddLine(ClassItem *from, ClassItem *to)
 {
 	auto edge = std::make_unique<Edge>(from, to);
 	from->AddEdge(edge.get());
@@ -125,7 +120,7 @@ void Model::AddLine(ClassItem *from, ClassItem *to)
 	m_scene->addItem(edge.release());
 }
 
-void Model::Load(const QJsonObject& obj)
+void ClassModel::Load(const QJsonObject& obj)
 {
 	for (auto&& item_jval : obj["classes"].toArray())
 	{
@@ -141,7 +136,7 @@ void Model::Load(const QJsonObject& obj)
 	m_changed = false;
 }
 
-QJsonObject Model::Save() const
+QJsonObject ClassModel::Save() const
 {
 	QJsonArray items;
 	for (auto child : m_scene->items())
@@ -162,18 +157,18 @@ QJsonObject Model::Save() const
 	return QJsonObject{{"classes", items}};
 }
 
-void Model::DeleteSelectedItem()
+void ClassModel::DeleteSelectedItem()
 {
 	for (auto&& item : m_scene->selectedItems())
 	{
-		m_changed = true;
+		SetChanged();
 		
 		m_scene->removeItem(item);
 		delete dynamic_cast<BaseItem*>(item);
 	}
 }
 
-bool Model::IsChanged() const
+bool ClassModel::IsChanged() const
 {
 	if (!m_changed)
 	{
@@ -187,6 +182,20 @@ bool Model::IsChanged() const
 		}
 	}
 	return m_changed;
+}
+
+void ClassModel::OnChildChanged(BaseItem *)
+{
+	SetChanged();
+}
+
+void ClassModel::SetChanged()
+{
+	if (!m_changed)
+	{
+		emit OnChanged();
+		m_changed = true;
+	}
 }
 	
 }} // end of namespace

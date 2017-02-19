@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <QtCore/QObject>
 #include "BaseItem.hh"
 
 class QGraphicsSimpleTextItem;
@@ -25,10 +26,12 @@ namespace class_diagram {
 
 class Edge;
 
-class ClassItem : public BaseItem
+class ClassItem : public QObject, public BaseItem
 {
+	Q_OBJECT
+
 public:
-	ClassItem(const codebase::DataType& class_, QGraphicsItem *parent = {});
+	ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model);
 	~ClassItem();
 	
 	QRectF boundingRect() const override;
@@ -49,6 +52,9 @@ public:
 	
 	bool IsChanged() const override;
 	void MarkUnchanged();
+
+signals:
+	void OnJustChanged(ClassItem *self);
 	
 private:
 	const codebase::DataType& m_class;

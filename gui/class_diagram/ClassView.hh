@@ -15,19 +15,19 @@
 #include <QGraphicsView>
 #include "gui/common/ViewBase.hh"
 
-#include "Model.hh"
+#include "ClassModel.hh"
 
 namespace gui {
 namespace class_diagram {
 
-class View: public QGraphicsView, public common::ViewBase
+class ClassView: public QGraphicsView, public common::ViewBase
 {
 Q_OBJECT
 
 public:
-	View(class_diagram::Model *model, QWidget *parent);
+	ClassView(class_diagram::ClassModel *model, QWidget *parent);
 
-	class_diagram::Model* Model() override;
+	class_diagram::ClassModel* Model() override;
 	QWidget* Widget() override;
 	
 	void DeleteSelectedItem();
@@ -41,7 +41,7 @@ protected:
 	void dropEvent(QDropEvent *event) override;
 	
 private:
-	class_diagram::Model   *m_model{};
+	class_diagram::ClassModel   *m_model{};
 };
 	
 }} // end of namespace

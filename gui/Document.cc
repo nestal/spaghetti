@@ -13,7 +13,7 @@
 #include "Document.hh"
 
 // gui namespace headers
-#include "class_diagram/Model.hh"
+#include "gui/class_diagram/ClassModel.hh"
 #include "source_view/Model.hh"
 #include "logical_view/Model.hh"
 
@@ -103,7 +103,7 @@ void Document::AddSource(const QString& file)
 
 void Document::NewClassDiagram(const QString& name)
 {
-	auto m = std::make_unique<class_diagram::Model>(&m_project->CodeBase(), name, this);
+	auto m = std::make_unique<class_diagram::ClassModel>(&m_project->CodeBase(), name, this);
 	emit OnCreateClassDiagramView(m.get());
 	m_project->Add(std::move(m));
 }
@@ -163,7 +163,7 @@ project::Model Document::ModelFactory::Create(project::ModelType type, const std
 	{
 	case project::ModelType::class_diagram:
 	{
-		auto m = std::make_unique<class_diagram::Model>(&owner.CodeBase(), QString::fromStdString(name), m_parent);
+		auto m = std::make_unique<class_diagram::ClassModel>(&owner.CodeBase(), QString::fromStdString(name), m_parent);
 		emit m_parent->OnCreateClassDiagramView(m.get());
 		result = std::move(m);
 		break;

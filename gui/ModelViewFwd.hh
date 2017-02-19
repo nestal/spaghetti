@@ -16,8 +16,8 @@ namespace gui {
 
 namespace class_diagram {
 class ClassItem;
-class Model;
-class View;
+class ClassModel;
+class ClassView;
 }
 
 namespace source_view {

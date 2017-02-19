@@ -73,7 +73,7 @@ public:
 	bool IsChanged() const;
 
 signals:
-	void OnCreateClassDiagramView(class_diagram::Model *model);
+	void OnCreateClassDiagramView(class_diagram::ClassModel *model);
 	void OnCreateSourceView(source_view::Model *model);
 	void OnDestroyModel(project::ModelBase *model);
 	

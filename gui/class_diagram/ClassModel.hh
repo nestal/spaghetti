@@ -34,20 +34,23 @@ namespace gui {
 namespace class_diagram {
 
 class ClassItem;
+class BaseItem;
 
 /**
  * \brief Serializable data for class diagrams.
  */
-class Model : public project::ModelBase, public QObject
+class ClassModel : public QObject, public project::ModelBase
 {
-public:
-	Model(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
-	Model(const Model&) = delete;
-	Model(Model&&) = default;
-	~Model();
+	Q_OBJECT
 	
-	Model& operator=(const Model&) = delete;
-	Model& operator=(Model&&) = default;
+public:
+	ClassModel(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
+	ClassModel(const ClassModel&) = delete;
+	ClassModel(ClassModel&&) = default;
+	~ClassModel();
+	
+	ClassModel& operator=(const ClassModel&) = delete;
+	ClassModel& operator=(ClassModel&&) = default;
 	
 	QGraphicsScene* Scene();
 	
@@ -67,10 +70,15 @@ public:
 	ModelType Type() const override {return ModelType::class_diagram;}
 	
 	bool IsChanged() const override;
+
+signals:
+	void OnChanged();
 	
 private:
 	void DetectEdges(ClassItem *item);
 	void AddLine(ClassItem *from, ClassItem *to);
+	void OnChildChanged(BaseItem *child);
+	void SetChanged();
 	
 private:
 	QString                         m_name;
