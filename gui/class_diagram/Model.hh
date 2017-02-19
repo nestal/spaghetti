@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "gui/common/ModelBase.hh"
+#include "project/ModelBase.hh"
 #include <QObject>
 
 #include <memory>
@@ -26,6 +26,10 @@ class DataType;
 class EntityMap;
 }
 
+namespace project {
+class ClassDiagram;
+}
+
 namespace gui {
 namespace class_diagram {
 
@@ -34,7 +38,7 @@ class ClassItem;
 /**
  * \brief Serializable data for class diagrams.
  */
-class Model : public common::ModelBase, public QObject
+class Model : public project::ModelBase, public QObject
 {
 public:
 	Model(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
@@ -51,10 +55,15 @@ public:
 	void AddEntity(const std::string& id, const QPointF& pos) override;
 	void SetRect(const QRectF& rect) override;
 	bool CanRename() const override;
-	QString Name() const override;
+	std::string Name() const override;
 	void SetName(const QString& name) override;
 	void Clear();
 
+	void Load(const QJsonObject& obj) override;
+	QJsonObject Save() const override;
+
+	ModelType Type() const override {return ModelType::class_diagram;}
+	
 private:
 	void DetectEdges(ClassItem *item);
 	void AddLine(ClassItem *from, ClassItem *to);

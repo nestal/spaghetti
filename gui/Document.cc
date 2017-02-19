@@ -11,22 +11,28 @@
 //
 
 #include "Document.hh"
+
 #include "gui/class_diagram/Model.hh"
 #include "gui/source_view/Model.hh"
 #include "logical_view/Model.hh"
 
 #include <QtCore/QAbstractListModel>
-#include <QtWidgets/QFileDialog>
+
+#include <boost/filesystem.hpp>
 
 #include <cassert>
 
 namespace gui {
 
+namespace fs = boost::filesystem;
+
 class Document::ProjectModel_ : public QAbstractListModel
 {
 public:
 	ProjectModel_(const codebase::CodeBase& codebase, QObject *parent) :
-		QAbstractListModel{parent}, m_codebase{codebase} {}
+		QAbstractListModel{parent}, m_base{fs::absolute(".")}, m_codebase{codebase}
+	{
+	}
 	
 	int rowCount(const QModelIndex&) const override
 	{
@@ -37,19 +43,23 @@ public:
 	{
 		auto row = static_cast<std::size_t>(index.row());
 		return role == Qt::DisplayRole && row < m_codebase.Size() ?
-			QString::fromStdString(m_codebase.At(row).Spelling()) : QVariant{};
+			QString::fromStdString(fs::path{m_codebase.At(row).Spelling()}.lexically_relative(m_base).string()) :
+			QVariant{};
 	}
 	
 	using QAbstractItemModel::beginResetModel;
 	using QAbstractItemModel::endResetModel;
 
 private:
+	boost::filesystem::path     m_base;
 	const codebase::CodeBase&   m_codebase;
 };
 
 Document::Document(QObject *parent) :
 	QObject{parent},
-	m_project_model{std::make_unique<ProjectModel_>(m_project.CodeBase(), this)},
+	m_project_model{std::make_unique<ProjectModel_>(
+		m_project.CodeBase(), this
+	)},
 	m_logical_model{std::make_unique<logical_view::Model>(
 		m_project.CodeBase().Root(), &m_project.CodeBase(), this
 	)}
@@ -67,16 +77,20 @@ void Document::AddSource(const QString& file)
 	m_logical_model->endResetModel();
 }
 
-class_diagram::Model* Document::CreateClassDiagram(const QString& name)
+void Document::NewClassDiagram(const QString& name)
 {
-	m_models.emplace_back(std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this));
-	return static_cast<class_diagram::Model*>(m_models.back().get());
+	auto m = std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this);
+	emit OnCreateClassDiagramView(m.get());
+	m_project.Add(std::move(m));
 }
 
-source_view::Model *Document::CreateSourceModel(const QString& name)
+void Document::NewSourceView(const QString& name, unsigned line, unsigned column)
 {
-	m_models.emplace_back(std::make_unique<source_view::Model>(name, this));
-	return static_cast<source_view::Model*>(m_models.back().get());
+	auto m = std::make_unique<source_view::Model>(name, this);
+	emit OnCreateSourceView(m.get());
+	
+	m->SetLocation(name, line, column);
+	m_project.Add(std::move(m));
 }
 
 QAbstractItemModel *Document::ClassModel()
@@ -97,7 +111,17 @@ void Document::Open(const QString& file)
 	
 	m_logical_model->beginResetModel();
 	m_project_model->beginResetModel();
-	m_project.Open(file.toStdString());
+	
+	try
+	{
+		m_project.Open(file.toStdString(), *this);
+	}
+	catch (std::exception&)
+	{
+		m_project_model->endResetModel();
+		m_logical_model->endResetModel();
+		throw;
+	}
 	m_project_model->endResetModel();
 	m_logical_model->endResetModel();
 }
@@ -107,9 +131,51 @@ void Document::SaveAs(const QString& file)
 	m_project.Save(file.toStdString());
 }
 
-QAbstractItemModel *Document::ProjectModel()
+QAbstractItemModel* Document::ProjectModel()
 {
 	return m_project_model.get();
 }
 
+project::Model Document::Create(project::ModelType type, const std::string& name)
+{
+	project::Model result;
+	
+	switch (type)
+	{
+	case project::ModelType::class_diagram:
+	{
+		auto m = std::make_unique<class_diagram::Model>(&m_project.CodeBase(), QString::fromStdString(name), this);
+		emit OnCreateClassDiagramView(m.get());
+		result = std::move(m);
+		break;
+	}
+	case project::ModelType::source_view:
+	{
+		auto m = std::make_unique<source_view::Model>(QString::fromStdString(name), this);
+		emit OnCreateSourceView(m.get());
+		result = std::move(m);
+		break;
+	}
+	default:
+		assert(false);
+	}
+	
+	return result;
+}
+
+project::ModelBase *Document::ModelAt(std::size_t idx)
+{
+	return m_project.At(idx);
+}
+
+std::size_t Document::ModelCount() const
+{
+	return m_project.Count();
+}
+
+void Document::RemoveModel(project::ModelBase *model)
+{
+	m_project.Erase(model);
+}
+	
 } // end of namespace

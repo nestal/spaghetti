@@ -28,6 +28,9 @@ View::View(source_view::Model *model, QWidget *parent) :
 	m_model{model},
 	m_highlight{document()}
 {
+	connect(m_model, &source_view::Model::OnLocationChanged, [this]{
+		Open(m_model->Name(), m_model->Line(), m_model->Column());
+	});
 }
 
 View::~View()
@@ -36,25 +39,29 @@ View::~View()
 		m_worker.join();
 }
 
-void View::Open(const libclx::SourceLocation& file)
+void View::Open(const std::string& fname, unsigned line, unsigned column)
 {
-	unsigned line, column, offset;
-	file.Get(m_filename, line, column, offset);
-	
-	setUndoRedoEnabled(false);
-	
-	// set the default format before inserting text
-	QTextCharFormat format;
-	format.setForeground(QBrush{QColor{"black"}});
-	format.setFontFamily("monospace");
-	setCurrentCharFormat(format);
-	
-	// only start 1 thread at a time
-	if (m_worker.joinable())
-		m_worker.join();
-	
-	// to improve latency, use a separate thread to parse the file
-	m_worker = std::thread([this, line, column]{Parse(line, column);});
+	if (fname != m_filename)
+	{
+		m_filename = fname;
+		
+		setUndoRedoEnabled(false);
+		
+		// set the default format before inserting text
+		QTextCharFormat format;
+		format.setForeground(QBrush{QColor{"black"}});
+		format.setFontFamily("monospace");
+		setCurrentCharFormat(format);
+		
+		// only start 1 thread at a time
+		if (m_worker.joinable())
+			m_worker.join();
+		
+		// to improve latency, use a separate thread to parse the file
+		m_worker = std::thread([this, line, column]{Parse(line, column);});
+	}
+	else
+		GoTo(line, column);
 }
 
 void View::Parse(unsigned line, unsigned column)

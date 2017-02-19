@@ -13,26 +13,51 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
-class QGraphicsScene;
 class QPointF;
 class QRectF;
 class QString;
+class QJsonObject;
 
-namespace gui {
-namespace common {
+namespace project {
+
+enum class ModelType {
+	class_diagram,
+	source_view,
+	none
+};
+
+ModelType ModelTypeFromString(const std::string& str);
+std::string to_string(ModelType type);
 
 class ModelBase
 {
 public:
+	using ModelType = project::ModelType;
+	
 	virtual ~ModelBase() = default;
 	
 	virtual void AddEntity(const std::string& id, const QPointF& pos) = 0;
 	virtual void SetRect(const QRectF& rect) = 0;
 	
+	virtual void Load(const QJsonObject& obj) = 0;
+	virtual QJsonObject Save() const = 0;
+	
 	virtual bool CanRename() const = 0;
-	virtual QString Name() const = 0;
+	virtual std::string Name() const = 0;
 	virtual void SetName(const QString& name) = 0;
+	virtual ModelType Type() const = 0;
 };
 
-}} // end of namespace
+using Model = std::unique_ptr<ModelBase>;
+
+class ModelFactory
+{
+public:
+	virtual ~ModelFactory() = default;
+	
+	virtual Model Create(ModelType type, const std::string& name) = 0;
+};
+
+} // end of namespace

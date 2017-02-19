@@ -7,24 +7,7 @@
 */
 
 //
-// Created by nestal on 2/12/17.
+// Created by nestal on 2/17/17.
 //
 
-#pragma once
-
-namespace project {
-class ModelBase;
-}
-
-namespace gui {
-namespace common {
-
-class ViewBase
-{
-public:
-	using ModelBase = project::ModelBase;
-	
-	virtual ModelBase* Model() = 0;
-};
-	
-}} // end of namespace
+#include "BaseItem.hh"

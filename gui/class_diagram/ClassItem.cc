@@ -28,7 +28,7 @@ const qreal ClassItem::m_margin{10.0};
 const qreal ClassItem::m_max_width{200.0};
 
 ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
-	QGraphicsItem{parent},
+	BaseItem{parent},
 	m_class{class_},
 	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}
 {
@@ -117,6 +117,8 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 	{
 		for (auto&& edge : m_edges)
 			edge->UpdatePosition();
+		
+//		scene()->update();
 	}
 
 	return value;
@@ -125,6 +127,33 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 void ClassItem::AddEdge(Edge *edge)
 {
 	m_edges.push_back(edge);
+}
+
+ItemRelation ClassItem::RelationOf(const BaseItem *other) const
+{
+	assert(other);
+	switch (other->ItemType())
+	{
+	case ItemType::class_item:
+	{
+		auto class_ = qgraphicsitem_cast<const ClassItem*>(other);
+		assert(class_);
+		
+		if (class_->m_class.IsBaseOf(m_class))
+			return ItemRelation::derived_class_of;
+		
+		else if (m_class.IsBaseOf(class_->m_class))
+			return ItemRelation::base_class_of;
+		
+		// fall through
+	}
+	default:    return ItemRelation::no_relation;
+	}
+}
+
+class_diagram::ItemType ClassItem::ItemType() const
+{
+	return ItemType::class_item;
 }
 	
 }} // end of namespace

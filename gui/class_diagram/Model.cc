@@ -17,8 +17,10 @@
 #include "codebase/DataType.hh"
 
 #include <QtWidgets/QGraphicsScene>
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
+
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -69,9 +71,9 @@ QGraphicsScene *Model::Scene()
 	return m_scene.get();
 }
 
-QString Model::Name() const
+std::string Model::Name() const
 {
-	return m_name;
+	return m_name.toStdString();
 }
 
 void Model::SetName(const QString& name)
@@ -84,6 +86,13 @@ bool Model::CanRename() const
 	return true;
 }
 
+/**
+ * \brief Detects the relationship between a newly added item and the rest
+ * \param item  the newly added item
+ *
+ * This function will add the edges between the new \a item and other
+ * related ones.
+ */
 void Model::DetectEdges(ClassItem *item)
 {
 	for (auto child : m_scene->items())
@@ -105,6 +114,37 @@ void Model::AddLine(ClassItem *from, ClassItem *to)
 	from->AddEdge(edge.get());
 	to->AddEdge(edge.get());
 	m_scene->addItem(edge.release());
+}
+
+void Model::Load(const QJsonObject& obj)
+{
+	for (auto&& item_jval : obj["classes"].toArray())
+	{
+		auto json = item_jval.toObject();
+		AddEntity(
+			json["id"].toString().toStdString(),
+			QPointF{
+				json["x"].toDouble(),
+				json["y"].toDouble()
+			}
+		);
+	}
+}
+
+QJsonObject Model::Save() const
+{
+	QJsonArray items;
+	for (auto child : m_scene->items())
+	{
+		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
+			items.append(QJsonObject{
+				{"id", QString::fromStdString(citem->DataType().ID())},
+				{"x", citem->x()},
+				{"y", citem->y()}
+			});
+	}
+	
+	return QJsonObject{{"classes", items}};
 }
 	
 }} // end of namespace

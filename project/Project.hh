@@ -12,12 +12,10 @@
 
 #pragma once
 
+#include "ModelBase.hh"
 #include "codebase/CodeBase.hh"
 
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/vector.hpp>
-
-#include <regex>
+#include <vector>
 
 /**
  * \brief Namespace for project layer.
@@ -33,47 +31,23 @@ namespace project {
 class Project
 {
 public:
-	Project(const std::string& dir = ".");
+	Project() = default;
 	
 	void AddSource(const std::string& source_file);
 		
 	void Save(const std::string& filename) const;
-	void Open(const std::string& filename);
+	void Open(const std::string& filename, ModelFactory& factory);
 	
 	void SetCompileOptions(std::initializer_list<std::string> opts);
 	
 	codebase::CodeBase& CodeBase();
 	
-	const std::string& Dir() const;
+	ModelBase* Add(Model&& model);
 	
-private:
-	friend class boost::serialization::access;
-	
-	template <class Archive>
-	void save(Archive& ar, unsigned) const
-	{
-		ar & m_compile_options & m_dir;
-		
-		std::vector<std::string> tus;
-		for (auto&& tu : m_code_base.TranslationUnits())
-			tus.push_back(tu.Spelling());
-		
-		ar & tus;
-	}
-	
-	template <class Archive>
-	void load(Archive& ar, unsigned)
-	{
-		ar & m_compile_options & m_dir;
-		
-		std::vector<std::string> tus;
-		ar & tus;
-		
-		for (auto&& tu : tus)
-			m_code_base.Parse(tu, m_compile_options);
-	}
-	
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
+	ModelBase* At(std::size_t idx);
+	const ModelBase* At(std::size_t idx) const;
+	std::size_t Count() const;
+	void Erase(ModelBase *model);
 	
 private:
 	std::vector<std::string>    m_compile_options{
@@ -81,8 +55,8 @@ private:
 		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
 		"-I", "."
 	};
-	std::string             m_dir;
 	codebase::CodeBase      m_code_base;
+	std::vector<Model>      m_models;
 };
 	
 } // end of namespace

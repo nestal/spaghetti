@@ -15,11 +15,14 @@
 #include <QtGui/QPainter>
 
 #include <cassert>
+#include <cmath>
 
 namespace gui {
 namespace class_diagram {
 
-Edge::Edge(const QGraphicsItem *from, const QGraphicsItem *to) :
+const auto arrow_width = 15.0;
+
+Edge::Edge(const BaseItem *from, const BaseItem *to) :
 	m_from{from}, m_to{to}
 {
 	assert(m_from);
@@ -28,14 +31,14 @@ Edge::Edge(const QGraphicsItem *from, const QGraphicsItem *to) :
 	UpdatePosition();
 }
 
-void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
 	if (m_from->collidesWithItem(m_to))
 		return;
 	
 	QLineF dia{
-		mapFromItem(m_from, 0, 0),
-		mapFromItem(m_to,   0, 0)
+		mapFromItem(m_from, QPointF{}),
+		mapFromItem(m_to,   QPointF{})
 	};
 	
 	QPointF from_pt, to_pt;
@@ -56,7 +59,9 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 			break;
 	}
 	
-	painter->drawLine(from_pt, to_pt);
+	QLineF to_draw{from_pt, to_pt};
+	painter->drawLine(to_draw);
+	DrawArrow(painter, to_draw);
 }
 
 QRectF Edge::boundingRect() const
@@ -66,11 +71,50 @@ QRectF Edge::boundingRect() const
 
 void Edge::UpdatePosition()
 {
+	setPos(QRectF{m_from->pos(), m_to->pos()}.normalized().center());
+	
 	prepareGeometryChange();
 	m_bounding = QRectF{
-		mapFromItem(m_from, 0, 0),
-		mapFromItem(m_to, 0, 0),
-	}.normalized();
+		mapFromItem(m_from, QPointF{}),
+		mapFromItem(m_to,   QPointF{}),
+	}.normalized().adjusted(-arrow_width, -arrow_width, arrow_width, arrow_width);
+}
+
+ItemRelation Edge::RelationOf(const BaseItem *) const
+{
+	return ItemRelation::no_relation;
+}
+
+class_diagram::ItemType Edge::ItemType() const
+{
+	return ItemType::edge;
+}
+
+void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
+{
+	auto from_pt = dia.p1();
+	auto to_pt   = dia.p2();
+	
+	// build transform matrix for drawing at the point
+	QTransform transform;
+	
+	auto relation = m_from->RelationOf(m_to);
+	if (relation == ItemRelation::base_class_of)
+		transform.translate(from_pt.x(), from_pt.y());
+	else if (relation == ItemRelation::derived_class_of)
+		transform.translate(to_pt.x(), to_pt.y());
+	
+	auto angle = -std::atan(dia.dx()/dia.dy());
+	if (dia.dy() < 0)
+		angle += M_PI;
+	transform.rotateRadians(angle);
+	
+	painter->setBrush(QBrush{Qt::GlobalColor::white});
+	painter->setTransform(transform, true);
+	painter->drawPolygon(
+		QPolygonF{} << QPointF{} << QPointF{arrow_width,arrow_width} << QPointF{-arrow_width, arrow_width},
+		Qt::FillRule::WindingFill
+	);
 }
 	
 }} // end of namespace

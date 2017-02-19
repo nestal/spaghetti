@@ -19,11 +19,6 @@
 #include <thread>
 #include <atomic>
 
-namespace libclx {
-class SourceLocation;
-class TranslationUnit;
-}
-
 namespace gui {
 namespace source_view {
 
@@ -33,7 +28,7 @@ public:
 	View(source_view::Model *model, QWidget *parent);
 	~View();
 	
-	void Open(const libclx::SourceLocation& location);
+	void Open(const std::string& fname, unsigned line, unsigned column);
 	void GoTo(unsigned line, unsigned column);
 	
 	const std::string& Filename() const;

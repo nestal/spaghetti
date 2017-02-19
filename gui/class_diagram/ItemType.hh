@@ -7,24 +7,30 @@
 */
 
 //
-// Created by nestal on 2/12/17.
+// Created by nestal on 2/17/17.
 //
 
 #pragma once
 
-namespace project {
-class ModelBase;
-}
+#include <QGraphicsItem>
 
 namespace gui {
-namespace common {
+namespace class_diagram {
 
-class ViewBase
+enum class ItemType : int
 {
-public:
-	using ModelBase = project::ModelBase;
+	base = QGraphicsItem::UserType,
 	
-	virtual ModelBase* Model() = 0;
+	class_item,
+	edge,
 };
+
+enum class ItemRelation
+{
+	no_relation,
 	
+	base_class_of,
+	derived_class_of,
+};
+
 }} // end of namespace

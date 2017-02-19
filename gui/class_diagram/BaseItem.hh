@@ -7,24 +7,24 @@
 */
 
 //
-// Created by nestal on 2/12/17.
+// Created by nestal on 2/17/17.
 //
 
 #pragma once
 
-namespace project {
-class ModelBase;
-}
+#include "ItemType.hh"
+#include <QGraphicsItem>
 
 namespace gui {
-namespace common {
+namespace class_diagram {
 
-class ViewBase
+class BaseItem : public QGraphicsItem
 {
 public:
-	using ModelBase = project::ModelBase;
+	using QGraphicsItem::QGraphicsItem;
 	
-	virtual ModelBase* Model() = 0;
+	virtual class_diagram::ItemType ItemType() const = 0;
+	virtual ItemRelation RelationOf(const BaseItem *other) const = 0;
 };
-	
+
 }} // end of namespace

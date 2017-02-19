@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include "gui/common/ModelBase.hh"
+#include "project/ModelBase.hh"
+#include <libclx/SourceRange.hh>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -20,8 +21,10 @@
 namespace gui {
 namespace source_view {
 
-class Model : public common::ModelBase, public QObject
+class Model : public QObject, public project::ModelBase
 {
+	Q_OBJECT
+
 public:
 	Model(const QString& fname, QObject *parent);
 	
@@ -29,11 +32,25 @@ public:
 	void SetRect(const QRectF& rect) override;
 	
 	bool CanRename() const override;
-	QString Name() const override;
+	std::string Name() const override;
 	void SetName(const QString& name) override;
+	
+	void Load(const QJsonObject& obj) override;
+	QJsonObject Save() const override;
+	
+	ModelType Type() const override {return ModelType::source_view;}
+	
+	void SetLocation(const QString& fname, unsigned line, unsigned column);
+	unsigned Line() const;
+	unsigned Column() const;
+
+signals:
+	void OnLocationChanged();
 	
 private:
 	QString m_fname;
+	unsigned m_line{};
+	unsigned m_column{};
 };
 
 }} // end of namespace

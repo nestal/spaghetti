@@ -22,10 +22,11 @@
 class QAbstractItemModel;
 class QGraphicsScene;
 
-namespace gui {
-namespace common {
+namespace project {
 class ModelBase;
 }
+
+namespace gui {
 
 namespace class_diagram {
 class ClassItem;
@@ -48,8 +49,10 @@ class Model;
  * wish to save to disk. Note that it does not include the code base, which is loaded
  * from disk separately.
  */
-class Document : public QObject
+class Document : public QObject, private project::ModelFactory
 {
+	Q_OBJECT
+	
 public:
 	Document(QObject *parent);
 	~Document();
@@ -59,26 +62,30 @@ public:
 	
 	void AddSource(const QString& file);
 	
-	// main pane
-	class_diagram::Model* CreateClassDiagram(const QString& name);
-	source_view::Model* CreateSourceModel(const QString& name);
-	
 	// docking windows
 	QAbstractItemModel* ClassModel();
 	QAbstractItemModel* ProjectModel();
 	
+	void NewClassDiagram(const QString& name);
+	void NewSourceView(const QString& name, unsigned line = 0, unsigned column = 0);
+	
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
-		
+	
+	project::ModelBase* ModelAt(std::size_t idx);
+	std::size_t ModelCount() const;
+	void RemoveModel(project::ModelBase *model);
+
+signals:
+	void OnCreateClassDiagramView(class_diagram::Model *model);
+	void OnCreateSourceView(source_view::Model *model);
+
+private:
+	// main pane
+	project::Model Create(project::ModelType type, const std::string& name) override;
 private:
 	class ProjectModel_;
 	
-	using Model = std::unique_ptr<common::ModelBase>;
-	
-	// order is important here, since m_scene depends on m_repo.
-	// m_scene contains CommitItem, which contains Commits. It must be destroyed
-	// before the Repository is destroyed.
 	project::Project                        m_project;
-	std::vector<Model>                      m_models;
 	
 	// for the docking windows
 	std::unique_ptr<ProjectModel_>          m_project_model;
