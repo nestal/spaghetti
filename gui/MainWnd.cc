@@ -82,6 +82,7 @@ MainWnd::MainWnd() :
 		if (!file.isNull())
 			m_doc->SaveAs(file);
 	});
+	connect(m_ui->m_action_delete,     &QAction::triggered, m_ui->m_tab, &ViewSet::OnDelete );
 	connect(m_ui->m_action_about_Qt,   &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
 	{

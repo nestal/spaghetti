@@ -64,5 +64,10 @@ QWidget *View::Widget()
 {
 	return this;
 }
+
+void View::DeleteSelectedItem()
+{
+	m_model->DeleteSelectedItem();
+}
 	
 }} // end of namespace

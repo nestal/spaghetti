@@ -61,6 +61,7 @@ public:
 	iterator begin();
 	iterator end();
 
+	void OnDelete();
 	void CloseAllTabs();
 	void CloseTab(int tab);
 	

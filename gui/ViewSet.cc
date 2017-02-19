@@ -192,5 +192,11 @@ void ViewSet::ViewCode(const std::string& filename, unsigned line, unsigned colu
 	
 	m_doc->NewSourceView(QString::fromStdString(filename), line, column);
 }
+
+void ViewSet::OnDelete()
+{
+	if (auto view = dynamic_cast<class_diagram::View*>(currentWidget()))
+		view->DeleteSelectedItem();
+}
 	
 } // end of namespace

@@ -147,5 +147,15 @@ QJsonObject Model::Save() const
 	
 	return QJsonObject{{"classes", items}};
 }
+
+void Model::DeleteSelectedItem()
+{
+	for (auto&& item : m_scene->selectedItems())
+	{
+		m_scene->removeItem(item);
+		delete dynamic_cast<BaseItem*>(item);
+	}
+
+}
 	
 }} // end of namespace

@@ -75,7 +75,15 @@
     <addaction name="m_action_add_source"/>
     <addaction name="m_action_new_class_diagram"/>
    </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="m_action_delete"/>
+    <addaction name="m_action_copy"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
    <addaction name="menu_Project"/>
    <addaction name="menu_Help"/>
   </widget>
@@ -189,6 +197,19 @@
   <action name="m_action_new">
    <property name="text">
     <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="m_action_delete">
+   <property name="text">
+    <string>&amp;Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="m_action_copy">
+   <property name="text">
+    <string>Copy</string>
    </property>
   </action>
  </widget>

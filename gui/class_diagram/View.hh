@@ -30,6 +30,8 @@ public:
 	class_diagram::Model* Model() override;
 	QWidget* Widget() override;
 	
+	void DeleteSelectedItem();
+	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);
 
