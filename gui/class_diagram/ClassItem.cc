@@ -18,7 +18,6 @@
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QGraphicsScene>
-#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -32,7 +31,6 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	m_class{class_},
 	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}
 {
-	
 	// use a bold font for class names
 	auto font = m_name->font();
 	font.setBold(true);
@@ -115,6 +113,8 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 {
 	if (change == QGraphicsItem::ItemPositionChange)
 	{
+		m_changed = true;
+		
 		for (auto&& edge : m_edges)
 			edge->UpdatePosition();
 	}
@@ -152,6 +152,16 @@ ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 class_diagram::ItemType ClassItem::ItemType() const
 {
 	return ItemType::class_item;
+}
+
+bool ClassItem::IsChanged() const
+{
+	return m_changed;
+}
+
+void ClassItem::MarkUnchanged()
+{
+	m_changed = false;
 }
 	
 }} // end of namespace

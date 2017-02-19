@@ -34,8 +34,6 @@ Model::Model(const codebase::EntityMap *codebase, const QString& name, QObject *
 	m_codebase{codebase}
 {
 	assert(m_codebase);
-	
-	connect(m_scene.get(), &QGraphicsScene::changed, [this]{std::cout << "changed!" << std::endl;m_changed = true;});
 }
 
 Model::~Model() = default;
@@ -63,9 +61,12 @@ void Model::AddEntity(const std::string& id, const QPointF& pos)
 		item->moveBy(pos.x(), pos.y());
 		
 		// draw arrows
+		
 		DetectEdges(item);
 		
 		m_scene->addItem(item);
+		item->MarkUnchanged();
+		m_changed = true;
 	}
 }
 
@@ -132,6 +133,8 @@ void Model::Load(const QJsonObject& obj)
 			}
 		);
 	}
+	
+	std::cout << "finished loading" << std::endl;
 	m_changed = false;
 }
 
@@ -157,14 +160,26 @@ void Model::DeleteSelectedItem()
 {
 	for (auto&& item : m_scene->selectedItems())
 	{
+		m_changed = true;
+		
 		m_scene->removeItem(item);
 		delete dynamic_cast<BaseItem*>(item);
 	}
-
 }
 
 bool Model::IsChanged() const
 {
+	if (!m_changed)
+	{
+		for (auto&& item : m_scene->items())
+		{
+			if (auto base = dynamic_cast<BaseItem*>(item))
+			{
+				if (base->IsChanged())
+					return true;
+			}
+		}
+	}
 	return m_changed;
 }
 	

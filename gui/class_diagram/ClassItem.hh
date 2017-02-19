@@ -47,12 +47,17 @@ public:
 	ItemRelation RelationOf(const BaseItem *other) const override;
 	class_diagram::ItemType ItemType() const override;
 	
+	bool IsChanged() const override;
+	void MarkUnchanged();
+	
 private:
 	const codebase::DataType& m_class;
 	QRectF m_bounding;
 	QGraphicsSimpleTextItem *m_name;
 	std::vector<Edge*> m_edges;
 	
+	mutable bool       m_changed{false};
+		
 	static const qreal m_margin, m_max_width;
 };
 	
