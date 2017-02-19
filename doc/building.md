@@ -1,6 +1,6 @@
 # Building Spaghetti
 
-# Requirements
+## Requirements
 
 Spaghetti depends on the following software to build:
 
@@ -14,7 +14,7 @@ work, but not tested)
 Spaghetti is mostly build by a Fedora 25 box, so the above versions 
 are shipped with Fedora.
 
-# Building in Linux
+## Building in Linux
 
 1. Install the prerequisites above (i.e. compiler, libclang, Qt, Boost and cmake):
 `dnf install clang-devel qt5* boost-devel cmake` in Fedora Linux
@@ -23,7 +23,7 @@ are shipped with Fedora.
 1. Generate makefiles: `cmake -G 'Unix Makefiles /path/to/source_dir`
 1. Build: `make` (use `-j8` to speed up the build)
 
-# Building in Win32
+## Building in Win32
 
 Building in Win32 is much more complicated than in Linux, mainly because
 the required libraries are not available out-of-the-box. You need to
@@ -48,7 +48,7 @@ booststrap
 ````
 After b2 finishes, the boost headers and libraries will be installed to
 ``c:\Boost``, unless you chose a different location.
- 4. CMake: Just download from [CMake official site](https://cmake.org/download/)
+4. CMake: Just download from [CMake official site](https://cmake.org/download/)
 
 ## Setup CMAKE_PREFIX_PATH
 
