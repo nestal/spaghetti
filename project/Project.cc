@@ -42,11 +42,13 @@ void Project::AddSource(const std::string& source_file)
 
 void Project::Save(const std::string& filename) const
 {
+	QJsonObject root;
+	root.insert("version", VERSION);
+	
 	QJsonArray cflags;
 	for (auto&& cflag : m_compile_options)
 		cflags.append(QString::fromStdString(cflag));
 	
-	QJsonObject root;
 	root.insert("cflags", cflags);
 	
 	auto base = path{filename}.parent_path();
@@ -81,17 +83,21 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 	QFile in{QString::fromStdString(filename)};
 	if (in.open(QIODevice::ReadOnly))
 	{
-		auto json = QJsonDocument::fromJson(in.readAll());
+		auto json = QJsonDocument::fromJson(in.readAll()).object();
+		
+		// TODO: provide backward compatibility in later versions
+		if (json["version"].toString() != VERSION)
+			throw std::runtime_error("version mismatch!");
 		
 		m_compile_options.clear();
-		for (auto&& cflag : json.object()["cflags"].toArray())
+		for (auto&& cflag : json["cflags"].toArray())
 			m_compile_options.push_back(cflag.toString().toStdString());
 		
-		for (auto&& tu : json.object()["translation_units"].toArray())
+		for (auto&& tu : json["translation_units"].toArray())
 			m_code_base.Parse(tu.toString().toStdString(), m_compile_options);
 		
 		m_models.clear();
-		for (auto&& model_jval : json.object()["models"].toArray())
+		for (auto&& model_jval : json["models"].toArray())
 		{
 			// find the type of the model
 			auto model_jobj = model_jval.toObject();
