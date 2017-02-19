@@ -29,6 +29,7 @@ View::View(class_diagram::Model *model, QWidget *parent) :
 	m_model{model}
 {
 	setAcceptDrops(true);
+	setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 void View::dragEnterEvent(QDragEnterEvent *event)
