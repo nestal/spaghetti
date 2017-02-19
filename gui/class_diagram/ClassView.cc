@@ -10,7 +10,7 @@
 // Created by nestal on 2/7/17.
 //
 
-#include "View.hh"
+#include "ClassView.hh"
 #include "gui/logical_view/Model.hh"
 
 #include <QDragEnterEvent>
@@ -24,20 +24,21 @@
 namespace gui {
 namespace class_diagram {
 
-View::View(class_diagram::Model *model, QWidget *parent) :
+ClassView::ClassView(class_diagram::ClassModel *model, QWidget *parent) :
 	QGraphicsView{model->Scene(), parent},
 	m_model{model}
 {
 	setAcceptDrops(true);
+	setDragMode(QGraphicsView::RubberBandDrag);
 }
 
-void View::dragEnterEvent(QDragEnterEvent *event)
+void ClassView::dragEnterEvent(QDragEnterEvent *event)
 {
 	if (event->mimeData()->hasFormat(logical_view::Model::m_mime_type))
 		event->acceptProposedAction();
 }
 
-void View::dropEvent(QDropEvent *event)
+void ClassView::dropEvent(QDropEvent *event)
 {
 	auto scene_pos = mapToScene(event->pos());
 	std::istringstream usrs{event->mimeData()->data(logical_view::Model::m_mime_type).toStdString()};
@@ -49,15 +50,25 @@ void View::dropEvent(QDropEvent *event)
 	event->acceptProposedAction();
 }
 
-void View::dragMoveEvent(QDragMoveEvent *event)
+void ClassView::dragMoveEvent(QDragMoveEvent *event)
 {
 	if (event->mimeData()->hasFormat(logical_view::Model::m_mime_type))
 		event->acceptProposedAction();
 }
 
-class_diagram::Model *View::Model()
+class_diagram::ClassModel *ClassView::Model()
 {
 	return m_model;
+}
+
+QWidget *ClassView::Widget()
+{
+	return this;
+}
+
+void ClassView::DeleteSelectedItem()
+{
+	m_model->DeleteSelectedItem();
 }
 	
 }} // end of namespace

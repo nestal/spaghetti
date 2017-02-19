@@ -80,5 +80,10 @@ void Model::SetLocation(const QString& fname, unsigned line, unsigned column)
 	m_column = column;
 	emit OnLocationChanged();
 }
+
+bool Model::IsChanged() const
+{
+	return false;
+}
 	
 }} // end of namespace

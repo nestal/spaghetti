@@ -12,18 +12,15 @@
 
 #include "MainWnd.hh"
 #include "Document.hh"
-#include "gui/source_view/View.hh"
 
 #include "ui_MainWnd.h"
 
-#include "class_diagram/View.hh"
-#include "gui/class_diagram/Model.hh"
-#include "gui/source_view/Model.hh"
+#include "source_view/Model.hh"
 #include "libclx/Index.hh"
 
-#include <QFileDialog>
-#include <QInputDialog>
-#include <QMessageBox>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QInputDialog>
 
 #include <cassert>
 
@@ -34,6 +31,7 @@ MainWnd::MainWnd() :
 	m_doc{std::make_unique<Document>(this)}
 {
 	m_ui->setupUi(this);
+	m_ui->m_tab->Setup(*m_doc);
 
 	// initialize logical view
 	m_ui->m_logical_view->setModel(m_doc->ClassModel());
@@ -53,9 +51,16 @@ MainWnd::MainWnd() :
 			"(C) 2017 Wan Wai Ho (Nestal)")
 		);
 	});
-	connect(m_ui->m_action_open,       &QAction::triggered, [this]
+	connect(m_ui->m_action_new, &QAction::triggered, m_doc.get(), [this]{
+		if (ConfirmDiscard())
+			m_doc->New();
+	});
+	connect(m_ui->m_action_open, &QAction::triggered, [this]
 	{
 		assert(m_doc);
+		if (!ConfirmDiscard())
+			return;
+		
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));
 		
 		// string will be null if user press cancel
@@ -63,7 +68,6 @@ MainWnd::MainWnd() :
 		{
 			try
 			{
-				CloseAllTabs();
 				m_doc->Open(file);
 			}
 			catch (std::exception& e)
@@ -84,6 +88,7 @@ MainWnd::MainWnd() :
 		if (!file.isNull())
 			m_doc->SaveAs(file);
 	});
+	connect(m_ui->m_action_delete,     &QAction::triggered, m_ui->m_tab, &ViewSet::OnDelete );
 	connect(m_ui->m_action_about_Qt,   &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
 	{
@@ -100,23 +105,11 @@ MainWnd::MainWnd() :
 	// open source code when the user double click the item
 	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
 	
-	// close widget when user clicks the close button
-	connect(m_ui->m_tab, &QTabWidget::tabCloseRequested, this, &MainWnd::CloseTab);
-	
 	connect(m_ui->m_action_new_class_diagram, &QAction::triggered, [this]
 	{
 		m_doc->NewClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
 	});
-
-	// double click the tab to rename it
-	connect(m_ui->m_tab->tabBar(), &QTabBar::tabBarDoubleClicked, this, &MainWnd::OnRenameTab);
 	
-	// create the corresponding view when a model is created, either by user actions or
-	// when loaded from file
-	connect(m_doc.get(), &Document::OnCreateClassDiagramView, this, &MainWnd::CreateClassDiagramForModel);
-	connect(m_doc.get(), &Document::OnCreateSourceView, this, &MainWnd::CreateSourceViewForModel);
-	
-	// default class diagram
 	m_doc->NewClassDiagram("Class Diagram");
 }
 
@@ -131,90 +124,24 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		unsigned line, column, offset;
 		loc.Get(filename, line, column, offset);
 		
-		// search for existing tab showing the file
-		for (int i = 0; i < m_ui->m_tab->count(); ++i)
-		{
-			auto view = dynamic_cast<source_view::View *>(m_ui->m_tab->widget(i));
-			if (view && view->Filename() == filename)
-			{
-				view->GoTo(line, column);
-				m_ui->m_tab->setCurrentWidget(view);
-				view->setFocus(Qt::OtherFocusReason);
-				return;
-			}
-		}
-		
-		m_doc->NewSourceView(QString::fromStdString(filename), line, column);
+		m_ui->m_tab->ViewCode(filename, line, column);
 	}
 }
 
-void MainWnd::OnRenameTab(int idx)
+bool MainWnd::ConfirmDiscard()
 {
-	if (auto view = dynamic_cast<common::ViewBase*>(m_ui->m_tab->widget(idx)))
+	if (m_doc->IsChanged())
 	{
-		auto model = view->Model();
-		assert(model);
+		QMessageBox msgBox;
+		msgBox.setText("The document has been modified.");
+		msgBox.setInformativeText("Do you want to discard your changes?");
+		msgBox.setStandardButtons(QMessageBox::Discard | QMessageBox::Cancel);
+		msgBox.setDefaultButton(QMessageBox::Cancel);
 		
-		if (model->CanRename())
-		{
-			bool ok;
-			QString text = QInputDialog::getText(
-				this, tr("Rename Tab"),
-				tr("New name:"), QLineEdit::Normal,
-				QString::fromStdString(model->Name()), &ok
-			);
-			
-			if (ok && !text.isEmpty())
-			{
-				model->SetName(text);
-				m_ui->m_tab->tabBar()->setTabText(idx, text);
-			}
-		}
+		return msgBox.exec() == QMessageBox::Discard;
 	}
-}
-
-void MainWnd::CreateClassDiagramForModel(class_diagram::Model *model)
-{
-	auto view   = new class_diagram::View{model, this};
-	connect(view, &class_diagram::View::DropEntity, model, &class_diagram::Model::AddEntity);
-	
-	auto tab = m_ui->m_tab->addTab(view, QString::fromStdString(model->Name()));
-	
-	// after adding the view to the tab widget, it will be resized to fill the whole tab
-	// we can use its size to resize the scene
-	model->SetRect(rect());
-	
-	m_ui->m_tab->setCurrentIndex(tab);
-}
-
-void MainWnd::CreateSourceViewForModel(source_view::Model *model)
-{
-	auto view = new source_view::View{model, m_ui->m_tab};
-	m_ui->m_tab->addTab(view, QString::fromStdString(model->Name()));
-	m_ui->m_tab->setCurrentWidget(view);
-	
-	view->setFocus(Qt::OtherFocusReason);
-}
-
-void MainWnd::CloseTab(int tab)
-{
-	auto w = m_ui->m_tab->widget(tab);
-	m_ui->m_tab->removeTab(tab);
-	
-	if (auto view = dynamic_cast<common::ViewBase*>(w))
-	{
-		auto model = view->Model();
-		delete w;
-		
-		m_doc->RemoveModel(model);
-	}
-}
-
-void MainWnd::CloseAllTabs()
-{
-	while (m_ui->m_tab->count() > 0)
-		CloseTab(0);
-		
+	else
+		return true;
 }
 	
 } // end of namespace

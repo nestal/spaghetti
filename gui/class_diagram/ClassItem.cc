@@ -18,7 +18,6 @@
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QGraphicsScene>
-#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -27,12 +26,11 @@ const qreal ClassItem::m_margin{10.0};
 
 const qreal ClassItem::m_max_width{200.0};
 
-ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
-	BaseItem{parent},
+ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
+	QObject{model},
 	m_class{class_},
 	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}
 {
-	
 	// use a bold font for class names
 	auto font = m_name->font();
 	font.setBold(true);
@@ -66,6 +64,9 @@ ClassItem::ClassItem(const codebase::DataType& class_, QGraphicsItem *parent) :
 	prepareGeometryChange();
 	m_bounding.setCoords(-dx/2-m_margin, -dy/2-m_margin, dx/2+m_margin, dy/2+m_margin);
 	
+	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
+	setPos(pos);
+	
 	// flags
 	setFlag(QGraphicsItem::ItemIsMovable);
 	setFlag(QGraphicsItem::ItemIsSelectable);
@@ -83,7 +84,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 {
 	// TODO: make it configurable
 	painter->setPen(QPen{QColor{Qt::GlobalColor::magenta}});
-	painter->setBrush(QBrush{QColor{Qt::GlobalColor::yellow}});
+	painter->setBrush(QBrush{QColor{isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow}});
 	
 	// bounding rectangle
 	painter->drawRect(m_bounding);
@@ -115,10 +116,13 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 {
 	if (change == QGraphicsItem::ItemPositionChange)
 	{
+		if (!m_changed)
+			emit OnJustChanged(this);
+		
+		m_changed = true;
+		
 		for (auto&& edge : m_edges)
 			edge->UpdatePosition();
-		
-//		scene()->update();
 	}
 
 	return value;
@@ -154,6 +158,16 @@ ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 class_diagram::ItemType ClassItem::ItemType() const
 {
 	return ItemType::class_item;
+}
+
+bool ClassItem::IsChanged() const
+{
+	return m_changed;
+}
+
+void ClassItem::MarkUnchanged()
+{
+	m_changed = false;
 }
 	
 }} // end of namespace

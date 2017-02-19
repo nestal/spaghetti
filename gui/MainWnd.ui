@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <widget class="QTabWidget" name="m_tab">
+     <widget class="gui::ViewSet" name="m_tab">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>1</horstretch>
@@ -55,6 +55,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="m_action_new"/>
     <addaction name="m_action_open"/>
     <addaction name="m_action_save_as"/>
     <addaction name="separator"/>
@@ -74,7 +75,15 @@
     <addaction name="m_action_add_source"/>
     <addaction name="m_action_new_class_diagram"/>
    </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="m_action_delete"/>
+    <addaction name="m_action_copy"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
    <addaction name="menu_Project"/>
    <addaction name="menu_Help"/>
   </widget>
@@ -185,7 +194,33 @@
     <string>New &amp;Class Diagram</string>
    </property>
   </action>
+  <action name="m_action_new">
+   <property name="text">
+    <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="m_action_delete">
+   <property name="text">
+    <string>&amp;Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="m_action_copy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>gui::ViewSet</class>
+   <extends>QTabWidget</extends>
+   <header>gui/ViewSet.hh</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="spaghetti.qrc"/>
  </resources>

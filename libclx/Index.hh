@@ -87,7 +87,7 @@ public:
 	class diag_iterator : public boost::iterator_facade<
 		diag_iterator,
 		Diagnostic,
-		boost::single_pass_traversal_tag,
+		boost::forward_traversal_tag,
 		Diagnostic
 	>
 	{

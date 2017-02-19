@@ -40,6 +40,8 @@ public:
 	
 	ModelType Type() const override {return ModelType::source_view;}
 	
+	bool IsChanged() const override;
+	
 	void SetLocation(const QString& fname, unsigned line, unsigned column);
 	unsigned Line() const;
 	unsigned Column() const;

@@ -116,5 +116,10 @@ void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
 		Qt::FillRule::WindingFill
 	);
 }
-	
+
+bool Edge::IsChanged() const
+{
+	return false;//m_from->IsChanged() || m_to->IsChanged();
+}
+
 }} // end of namespace

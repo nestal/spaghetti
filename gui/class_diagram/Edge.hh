@@ -38,6 +38,8 @@ public:
 	ItemRelation RelationOf(const BaseItem *other) const override;
 	class_diagram::ItemType ItemType() const override;
 	
+	bool IsChanged() const override;
+	
 private:
 	void DrawArrow(QPainter *painter, const QLineF& dia) const;
 	

@@ -48,16 +48,20 @@ public:
 	virtual std::string Name() const = 0;
 	virtual void SetName(const QString& name) = 0;
 	virtual ModelType Type() const = 0;
+	
+	virtual bool IsChanged() const = 0;
 };
 
 using Model = std::unique_ptr<ModelBase>;
+
+class Project;
 
 class ModelFactory
 {
 public:
 	virtual ~ModelFactory() = default;
 	
-	virtual Model Create(ModelType type, const std::string& name) = 0;
+	virtual Model Create(ModelType type, const std::string& name, Project& owner) = 0;
 };
 
 } // end of namespace

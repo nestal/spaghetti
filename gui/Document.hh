@@ -15,7 +15,7 @@
 // base class includes first
 #include <QtCore/QObject>
 
-#include "project/Project.hh"
+#include "ModelViewFwd.hh"
 
 #include <memory>
 
@@ -23,19 +23,15 @@ class QAbstractItemModel;
 class QGraphicsScene;
 
 namespace project {
+class Project;
 class ModelBase;
 }
 
+namespace libclx {
+class SourceLocation;
+}
+
 namespace gui {
-
-namespace class_diagram {
-class ClassItem;
-class Model;
-}
-
-namespace source_view {
-class Model;
-}
 
 namespace logical_view {
 class Model;
@@ -49,7 +45,7 @@ class Model;
  * wish to save to disk. Note that it does not include the code base, which is loaded
  * from disk separately.
  */
-class Document : public QObject, private project::ModelFactory
+class Document : public QObject
 {
 	Q_OBJECT
 	
@@ -57,6 +53,7 @@ public:
 	Document(QObject *parent);
 	~Document();
 
+	void New();
 	void Open(const QString& file);
 	void SaveAs(const QString& file);
 	
@@ -71,21 +68,23 @@ public:
 	
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
 	
-	project::ModelBase* ModelAt(std::size_t idx);
-	std::size_t ModelCount() const;
 	void RemoveModel(project::ModelBase *model);
+	
+	bool IsChanged() const;
 
 signals:
-	void OnCreateClassDiagramView(class_diagram::Model *model);
+	void OnCreateClassDiagramView(class_diagram::ClassModel *model);
 	void OnCreateSourceView(source_view::Model *model);
-
+	void OnDestroyModel(project::ModelBase *model);
+	
 private:
-	// main pane
-	project::Model Create(project::ModelType type, const std::string& name) override;
+	void Reset(std::unique_ptr<project::Project>&& proj);
+	
 private:
+	class ModelFactory;
 	class ProjectModel_;
 	
-	project::Project                        m_project;
+	std::unique_ptr<project::Project>       m_project;
 	
 	// for the docking windows
 	std::unique_ptr<ProjectModel_>          m_project_model;

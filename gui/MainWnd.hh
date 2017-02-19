@@ -14,8 +14,8 @@
 
 #include <QMainWindow>
 
+#include "ModelViewFwd.hh"
 #include <memory>
-#include <libclx/Index.hh>
 
 namespace Ui {
 class MainWnd;
@@ -24,15 +24,6 @@ class MainWnd;
 class QGraphicsScene;
 
 namespace gui {
-
-namespace class_diagram {
-class ClassItem;
-class Model;
-}
-
-namespace source_view {
-class Model;
-}
 
 class Document;
 
@@ -45,12 +36,8 @@ public:
 	~MainWnd();
 
 private:
-	void CloseAllTabs();
-	void CloseTab(int tab);
-	void CreateClassDiagramForModel(class_diagram::Model *model);
-	void CreateSourceViewForModel(source_view::Model *model);
 	void OnDoubleClickItem(const QModelIndex& idx);
-	void OnRenameTab(int idx);
+	bool ConfirmDiscard();
 	
 private:
 	std::unique_ptr<Ui::MainWnd>    m_ui;
