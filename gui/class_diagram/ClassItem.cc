@@ -83,7 +83,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 {
 	// TODO: make it configurable
 	painter->setPen(QPen{QColor{Qt::GlobalColor::magenta}});
-	painter->setBrush(QBrush{QColor{Qt::GlobalColor::yellow}});
+	painter->setBrush(QBrush{QColor{isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow}});
 	
 	// bounding rectangle
 	painter->drawRect(m_bounding);
@@ -117,8 +117,6 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 	{
 		for (auto&& edge : m_edges)
 			edge->UpdatePosition();
-		
-//		scene()->update();
 	}
 
 	return value;
