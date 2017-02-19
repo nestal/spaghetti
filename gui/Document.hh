@@ -65,6 +65,8 @@ public:
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
 	
 	void RemoveModel(project::ModelBase *model);
+	
+	bool IsChanged() const;
 
 signals:
 	void OnCreateClassDiagramView(class_diagram::Model *model);

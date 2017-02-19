@@ -23,6 +23,7 @@
 #include <QMessageBox>
 
 #include <cassert>
+#include <QtWidgets/QInputDialog>
 
 namespace gui {
 
@@ -55,6 +56,9 @@ MainWnd::MainWnd() :
 	connect(m_ui->m_action_open, &QAction::triggered, [this]
 	{
 		assert(m_doc);
+		if (m_doc->IsChanged() && !ConfirmDiscard())
+			return;
+		
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));
 		
 		// string will be null if user press cancel
@@ -120,6 +124,17 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		
 		m_ui->m_tab->ViewCode(filename, line, column);
 	}
+}
+
+bool MainWnd::ConfirmDiscard()
+{
+	QMessageBox msgBox;
+	msgBox.setText("The document has been modified.");
+	msgBox.setInformativeText("Do you want to discard your changes?");
+	msgBox.setStandardButtons(QMessageBox::Discard | QMessageBox::Cancel);
+	msgBox.setDefaultButton(QMessageBox::Cancel);
+	
+	return msgBox.exec() == QMessageBox::Discard;
 }
 	
 } // end of namespace

@@ -66,12 +66,15 @@ public:
 
 	ModelType Type() const override {return ModelType::class_diagram;}
 	
+	bool IsChanged() const override;
+	
 private:
 	void DetectEdges(ClassItem *item);
 	void AddLine(ClassItem *from, ClassItem *to);
 	
 private:
 	QString                         m_name;
+	mutable bool                    m_changed{false};
 	
 	std::unique_ptr<QGraphicsScene> m_scene;
 	const codebase::EntityMap       *m_codebase{};

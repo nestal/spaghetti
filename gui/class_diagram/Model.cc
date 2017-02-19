@@ -34,6 +34,8 @@ Model::Model(const codebase::EntityMap *codebase, const QString& name, QObject *
 	m_codebase{codebase}
 {
 	assert(m_codebase);
+	
+	connect(m_scene.get(), &QGraphicsScene::changed, [this]{std::cout << "changed!" << std::endl;m_changed = true;});
 }
 
 Model::~Model() = default;
@@ -145,6 +147,8 @@ QJsonObject Model::Save() const
 			});
 	}
 	
+	m_changed = false;
+	
 	return QJsonObject{{"classes", items}};
 }
 
@@ -156,6 +160,11 @@ void Model::DeleteSelectedItem()
 		delete dynamic_cast<BaseItem*>(item);
 	}
 
+}
+
+bool Model::IsChanged() const
+{
+	return m_changed;
 }
 	
 }} // end of namespace

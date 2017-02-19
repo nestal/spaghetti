@@ -20,7 +20,6 @@
 #include <QTabBar>
 
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 
@@ -76,8 +75,6 @@ void ViewSet::Setup(Document& doc)
 	connect(m_doc, &Document::OnCreateSourceView,       this, &ViewSet::NewSourceView);
 	connect(m_doc, &Document::OnDestroyModel, [this](project::ModelBase *model)
 	{
-		std::cout << "destroying model " << model << std::endl;
-		
 		std::vector<common::ViewBase*> to_delete;
 		std::copy_if(begin(), end(),
 			std::back_inserter(to_delete),
@@ -88,8 +85,6 @@ void ViewSet::Setup(Document& doc)
 		{
 			assert(view->Model() == model);
 			removeTab(indexOf(view->Widget()));
-			
-			std::cout << "destroying view " << view << std::endl;
 			
 			delete view;
 			view = nullptr;
@@ -102,8 +97,6 @@ void ViewSet::Setup(Document& doc)
 
 void ViewSet::NewClassDiagramView(class_diagram::Model *model)
 {
-	std::cout << "creating model " << model << std::endl;
-	
 	auto view   = new class_diagram::View{model, this};
 	connect(view, &class_diagram::View::DropEntity, model, &class_diagram::Model::AddEntity);
 	

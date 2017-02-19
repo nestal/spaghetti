@@ -37,6 +37,7 @@ public:
 
 private:
 	void OnDoubleClickItem(const QModelIndex& idx);
+	bool ConfirmDiscard();
 	
 private:
 	std::unique_ptr<Ui::MainWnd>    m_ui;

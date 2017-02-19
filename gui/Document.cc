@@ -205,5 +205,15 @@ void Document::Reset(std::unique_ptr<project::Project>&& proj)
 	for (std::size_t i = 0 ; p && i < p->Count() ; i++)
 		emit OnDestroyModel(p->At(i));
 }
+
+bool Document::IsChanged() const
+{
+	assert(m_project);
+	for (std::size_t i = 0 ; i < m_project->Count() ; i++)
+		if (m_project->At(i)->IsChanged())
+			return true;
+	
+	return false;
+}
 	
 } // end of namespace
