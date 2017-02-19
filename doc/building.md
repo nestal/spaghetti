@@ -42,28 +42,28 @@ you choose which compiler you use and download the corresponding binary.
 3. Boost: it's better to build from source instead of relying on pre-built
 binaries. Download the source from [Boost official site](http://www.boost.org/users/download/).
 To build boost, I used the following commands:
-````
-booststrap
-.\b2 address_model=64 install
-````
+```
+    booststrap
+    .\b2 address_model=64 install
+```
 After b2 finishes, the boost headers and libraries will be installed to
-``c:\Boost``, unless you chose a different location.
+`c:\Boost`, unless you chose a different location.
 4. CMake: Just download from [CMake official site](https://cmake.org/download/)
 
 ## Setup CMAKE_PREFIX_PATH
 
 You need to tell cmake where to find the libraries you just built/downloaded.
 By default, cmake searches the directories specified by the variable
-``CMAKE_PREFIX_PATH``. You can set use environment variables or specify
-``-DCMAKE_PREFIX_PATH=path`` in the cmake command line. I prefer to use
+`CMAKE_PREFIX_PATH`. You can set use environment variables or specify
+`-DCMAKE_PREFIX_PATH=path` in the cmake command line. I prefer to use
 environment variable to save some typing.
 
 Assuming you use default locations for all the libraries above, your
- ``CMAKE_PREFIX_PATH`` should be like: ``C:\Program Files\LLVM;C:\Qt5.7\msvc2015_64;C:\Boost``
+`CMAKE_PREFIX_PATH` should be like: `C:\Program Files\LLVM;C:\Qt5.7\msvc2015_64;C:\Boost`
 .
 
 ## Additional Note for Building with MSVC 2015 in Windows
 
-CMake needs the -DCMAKE_GENERATOR_PLATFORM=x64 option to properly generate
+CMake needs the `-DCMAKE_GENERATOR_PLATFORM=x64` option to properly generate
 project files for x64 platform. If Boost is compiled as static libraries, make
-sure to pass -DBoost_USE_STATIC_LIBS=true to use them.
+sure to pass `-DBoost_USE_STATIC_LIBS=true` to use them.
