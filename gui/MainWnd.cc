@@ -52,11 +52,14 @@ MainWnd::MainWnd() :
 			"(C) 2017 Wan Wai Ho (Nestal)")
 		);
 	});
-	connect(m_ui->m_action_new, &QAction::triggered, m_doc.get(), &Document::New);
+	connect(m_ui->m_action_new, &QAction::triggered, m_doc.get(), [this]{
+		if (ConfirmDiscard())
+			m_doc->New();
+	});
 	connect(m_ui->m_action_open, &QAction::triggered, [this]
 	{
 		assert(m_doc);
-		if (m_doc->IsChanged() && !ConfirmDiscard())
+		if (!ConfirmDiscard())
 			return;
 		
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));
@@ -128,13 +131,18 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 
 bool MainWnd::ConfirmDiscard()
 {
-	QMessageBox msgBox;
-	msgBox.setText("The document has been modified.");
-	msgBox.setInformativeText("Do you want to discard your changes?");
-	msgBox.setStandardButtons(QMessageBox::Discard | QMessageBox::Cancel);
-	msgBox.setDefaultButton(QMessageBox::Cancel);
-	
-	return msgBox.exec() == QMessageBox::Discard;
+	if (m_doc->IsChanged())
+	{
+		QMessageBox msgBox;
+		msgBox.setText("The document has been modified.");
+		msgBox.setInformativeText("Do you want to discard your changes?");
+		msgBox.setStandardButtons(QMessageBox::Discard | QMessageBox::Cancel);
+		msgBox.setDefaultButton(QMessageBox::Cancel);
+		
+		return msgBox.exec() == QMessageBox::Discard;
+	}
+	else
+		return true;
 }
 	
 } // end of namespace

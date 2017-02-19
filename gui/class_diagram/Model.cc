@@ -132,6 +132,7 @@ void Model::Load(const QJsonObject& obj)
 			}
 		);
 	}
+	m_changed = false;
 }
 
 QJsonObject Model::Save() const

@@ -29,8 +29,6 @@ Edge::Edge(const BaseItem *from, const BaseItem *to) :
 	assert(m_to);
 	
 	UpdatePosition();
-	
-	setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
 void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
