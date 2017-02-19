@@ -55,6 +55,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="m_action_new"/>
     <addaction name="m_action_open"/>
     <addaction name="m_action_save_as"/>
     <addaction name="separator"/>
@@ -183,6 +184,11 @@
   <action name="m_action_new_class_diagram">
    <property name="text">
     <string>New &amp;Class Diagram</string>
+   </property>
+  </action>
+  <action name="m_action_new">
+   <property name="text">
+    <string>&amp;New</string>
    </property>
   </action>
  </widget>

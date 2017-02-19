@@ -41,7 +41,7 @@ class Model;
  * wish to save to disk. Note that it does not include the code base, which is loaded
  * from disk separately.
  */
-class Document : public QObject, private project::ModelFactory
+class Document : public QObject
 {
 	Q_OBJECT
 	
@@ -75,10 +75,7 @@ private:
 	void Reset(std::unique_ptr<project::Project>&& proj);
 	
 private:
-	// main pane
-	project::Model Create(project::ModelType type, const std::string& name) override;
-	
-private:
+	class ModelFactory;
 	class ProjectModel_;
 	
 	std::unique_ptr<project::Project>       m_project;

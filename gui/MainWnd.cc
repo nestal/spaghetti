@@ -51,7 +51,8 @@ MainWnd::MainWnd() :
 			"(C) 2017 Wan Wai Ho (Nestal)")
 		);
 	});
-	connect(m_ui->m_action_open,       &QAction::triggered, [this]
+	connect(m_ui->m_action_new, &QAction::triggered, m_doc.get(), &Document::New);
+	connect(m_ui->m_action_open, &QAction::triggered, [this]
 	{
 		assert(m_doc);
 		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));

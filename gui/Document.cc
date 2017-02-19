@@ -65,6 +65,17 @@ private:
 	const codebase::CodeBase   *m_codebase;
 };
 
+class Document::ModelFactory : public project::ModelFactory
+{
+public:
+	ModelFactory(Document *parent, codebase::CodeBase& cb) : m_parent{parent}, m_codebase{cb} {}
+	project::Model Create(project::ModelType type, const std::string& name) override;
+
+private:
+	Document *m_parent;
+	codebase::CodeBase& m_codebase;
+};
+
 Document::Document(QObject *parent) :
 	QObject{parent},
 	m_project{std::make_unique<project::Project>()},
@@ -120,10 +131,10 @@ void Document::Open(const QString& file)
 	try
 	{
 		auto proj = std::make_unique<project::Project>();
-		swap(m_project, proj);
-		m_project->Open(file.toStdString(), *this);
 		
-		swap(m_project, proj);
+		ModelFactory factory{this, proj->CodeBase()};
+		proj->Open(file.toStdString(), factory);
+		
 		Reset(std::move(proj));
 	}
 	catch (std::exception&)
@@ -142,7 +153,7 @@ QAbstractItemModel* Document::ProjectModel()
 	return m_project_model.get();
 }
 
-project::Model Document::Create(project::ModelType type, const std::string& name)
+project::Model Document::ModelFactory::Create(project::ModelType type, const std::string& name)
 {
 	project::Model result;
 	
@@ -150,15 +161,15 @@ project::Model Document::Create(project::ModelType type, const std::string& name
 	{
 	case project::ModelType::class_diagram:
 	{
-		auto m = std::make_unique<class_diagram::Model>(&m_project->CodeBase(), QString::fromStdString(name), this);
-		emit OnCreateClassDiagramView(m.get());
+		auto m = std::make_unique<class_diagram::Model>(&m_codebase, QString::fromStdString(name), m_parent);
+		emit m_parent->OnCreateClassDiagramView(m.get());
 		result = std::move(m);
 		break;
 	}
 	case project::ModelType::source_view:
 	{
-		auto m = std::make_unique<source_view::Model>(QString::fromStdString(name), this);
-		emit OnCreateSourceView(m.get());
+		auto m = std::make_unique<source_view::Model>(QString::fromStdString(name), m_parent);
+		emit m_parent->OnCreateSourceView(m.get());
 		result = std::move(m);
 		break;
 	}
@@ -179,6 +190,8 @@ void Document::New()
 {
 	// don't destroy the origin project yet, because some models may still be referring to it
 	Reset(std::make_unique<project::Project>());
+	
+	NewClassDiagram("Class Diagram");
 }
 
 void Document::Reset(std::unique_ptr<project::Project>&& proj)
