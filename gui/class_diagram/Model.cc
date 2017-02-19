@@ -65,7 +65,12 @@ void Model::AddEntity(const std::string& id, const QPointF& pos)
 		DetectEdges(item);
 		
 		m_scene->addItem(item);
+		
+		// the item is marked changed by the moveBy() line above
+		// mark it unchanged because a new item should be unchanged
 		item->MarkUnchanged();
+		
+		// the model is changed because it has one more entity
 		m_changed = true;
 	}
 }
@@ -133,8 +138,6 @@ void Model::Load(const QJsonObject& obj)
 			}
 		);
 	}
-	
-	std::cout << "finished loading" << std::endl;
 	m_changed = false;
 }
 
@@ -144,11 +147,14 @@ QJsonObject Model::Save() const
 	for (auto child : m_scene->items())
 	{
 		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
+		{
 			items.append(QJsonObject{
 				{"id", QString::fromStdString(citem->DataType().ID())},
 				{"x", citem->x()},
 				{"y", citem->y()}
 			});
+			citem->MarkUnchanged();
+		}
 	}
 	
 	m_changed = false;

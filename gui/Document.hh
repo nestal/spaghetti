@@ -16,7 +16,6 @@
 #include <QtCore/QObject>
 
 #include "ModelViewFwd.hh"
-#include "project/Project.hh"
 
 #include <memory>
 
@@ -24,7 +23,12 @@ class QAbstractItemModel;
 class QGraphicsScene;
 
 namespace project {
+class Project;
 class ModelBase;
+}
+
+namespace libclx {
+class SourceLocation;
 }
 
 namespace gui {

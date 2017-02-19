@@ -15,15 +15,14 @@
 
 #include "ui_MainWnd.h"
 
-#include "class_diagram/Model.hh"
 #include "source_view/Model.hh"
 #include "libclx/Index.hh"
 
-#include <QFileDialog>
-#include <QMessageBox>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QInputDialog>
 
 #include <cassert>
-#include <QtWidgets/QInputDialog>
 
 namespace gui {
 

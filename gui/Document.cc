@@ -12,9 +12,12 @@
 
 #include "Document.hh"
 
-#include "gui/class_diagram/Model.hh"
-#include "gui/source_view/Model.hh"
+// gui namespace headers
+#include "class_diagram/Model.hh"
+#include "source_view/Model.hh"
 #include "logical_view/Model.hh"
+
+#include "project/Project.hh"
 
 #include <QtCore/QAbstractListModel>
 
