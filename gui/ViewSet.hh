@@ -34,13 +34,16 @@ public:
 	
 	class iterator : public boost::iterator_facade<
 		iterator,
-		common::ViewBase,
-		boost::single_pass_traversal_tag
+		common::ViewBase*,
+		boost::forward_traversal_tag,
+		common::ViewBase*
 	>
 	{
 	public:
 		iterator() = default;
 		iterator(ViewSet *parent, int idx) : m_idx{idx}, m_parent{parent} {}
+		
+		QWidget* Widget() const;
 		
 	private:
 		friend class boost::iterator_core_access;
@@ -48,7 +51,7 @@ public:
 		void increment();
 		bool equal(const iterator& other) const;
 		
-		common::ViewBase& dereference() const;
+		common::ViewBase* dereference() const;
 		
 	private:
 		int     m_idx{};

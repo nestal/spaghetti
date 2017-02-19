@@ -20,6 +20,7 @@
 #include <QTabBar>
 
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 
@@ -39,11 +40,16 @@ bool ViewSet::iterator::equal(const ViewSet::iterator& other) const
 	return m_idx == other.m_idx && m_parent == other.m_parent;
 }
 
-common::ViewBase& ViewSet::iterator::dereference() const
+common::ViewBase* ViewSet::iterator::dereference() const
 {
 	assert(m_parent);
 	assert(m_idx >= 0);
-	return dynamic_cast<common::ViewBase&>(*m_parent->widget(m_idx));
+	return &dynamic_cast<common::ViewBase&>(*m_parent->widget(m_idx));
+}
+
+QWidget *ViewSet::iterator::Widget() const
+{
+	return m_parent->widget(m_idx);
 }
 
 ViewSet::iterator ViewSet::begin()
@@ -68,6 +74,27 @@ void ViewSet::Setup(Document& doc)
 	// when loaded from file
 	connect(m_doc, &Document::OnCreateClassDiagramView, this, &ViewSet::NewClassDiagramView);
 	connect(m_doc, &Document::OnCreateSourceView,       this, &ViewSet::NewSourceView);
+	connect(m_doc, &Document::OnDestroyModel, [this](project::ModelBase *model)
+	{
+		std::cout << "destroying model " << model << std::endl;
+		
+		std::vector<common::ViewBase*> to_delete;
+		std::copy_if(begin(), end(),
+			std::back_inserter(to_delete),
+			[model](auto v){return v->Model() == model;}
+		);
+		
+		for (auto&& view : to_delete)
+		{
+			assert(view->Model() == model);
+			removeTab(indexOf(view->Widget()));
+			
+			std::cout << "destroying view " << view << std::endl;
+			
+			delete view;
+			view = nullptr;
+		}
+	});
 	
 	// double click the tab to rename it
 	connect(tabBar(), &QTabBar::tabBarDoubleClicked, this, &ViewSet::OnRenameTab);
@@ -75,6 +102,8 @@ void ViewSet::Setup(Document& doc)
 
 void ViewSet::NewClassDiagramView(class_diagram::Model *model)
 {
+	std::cout << "creating model " << model << std::endl;
+	
 	auto view   = new class_diagram::View{model, this};
 	connect(view, &class_diagram::View::DropEntity, model, &class_diagram::Model::AddEntity);
 	
@@ -103,10 +132,15 @@ void ViewSet::CloseTab(int tab)
 	
 	if (auto view = dynamic_cast<common::ViewBase*>(w))
 	{
+		// destroy the view
 		auto model = view->Model();
 		delete w;
-		
-		m_doc->RemoveModel(model);
+
+		// see if any more views are viewing this model
+		// if no, destroy the model as no one is using it
+		auto it = std::find_if(begin(), end(), [model](auto v){return v->Model() == model;});
+		if (it == end())
+			m_doc->RemoveModel(model);
 	}
 }
 
@@ -114,7 +148,6 @@ void ViewSet::CloseAllTabs()
 {
 	while (count() > 0)
 		CloseTab(0);
-	
 }
 
 void ViewSet::OnRenameTab(int idx)
@@ -145,9 +178,9 @@ void ViewSet::OnRenameTab(int idx)
 void ViewSet::ViewCode(const std::string& filename, unsigned line, unsigned column)
 {
 	// search for existing tab showing the file
-	for (auto&& w : *this)
+	for (int i = 0 ; i < count() ; ++i)
 	{
-		auto view = dynamic_cast<source_view::View*>(&w);
+		auto view = dynamic_cast<source_view::View*>(widget(i));
 		if (view && view->Filename() == filename)
 		{
 			view->GoTo(line, column);

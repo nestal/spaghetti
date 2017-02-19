@@ -160,5 +160,10 @@ source_view::Model* View::Model()
 {
 	return m_model;
 }
+
+QWidget *View::Widget()
+{
+	return this;
+}
 	
 }} // end of namespace

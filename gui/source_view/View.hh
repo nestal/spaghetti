@@ -34,6 +34,7 @@ public:
 	const std::string& Filename() const;
 	
 	source_view::Model* Model() override;
+	QWidget* Widget() override;
 
 private:
 	void Parse(unsigned line, unsigned column);

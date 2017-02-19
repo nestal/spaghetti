@@ -16,6 +16,8 @@ namespace project {
 class ModelBase;
 }
 
+class QWidget;
+
 namespace gui {
 namespace common {
 
@@ -24,7 +26,10 @@ class ViewBase
 public:
 	using ModelBase = project::ModelBase;
 	
+	virtual ~ViewBase() = default;
+	
 	virtual ModelBase* Model() = 0;
+	virtual QWidget* Widget() = 0;
 };
 	
 }} // end of namespace

@@ -61,7 +61,6 @@ MainWnd::MainWnd() :
 		{
 			try
 			{
-				m_ui->m_tab->CloseAllTabs();
 				m_doc->Open(file);
 			}
 			catch (std::exception& e)

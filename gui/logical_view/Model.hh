@@ -35,6 +35,8 @@ public:
 
 public:
 	Model(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent);
+
+	void Reset(const codebase::Entity *root, const codebase::EntityMap *index);
 	
 	using QAbstractItemModel::beginResetModel;
 	using QAbstractItemModel::endResetModel;

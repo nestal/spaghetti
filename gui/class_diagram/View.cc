@@ -59,5 +59,10 @@ class_diagram::Model *View::Model()
 {
 	return m_model;
 }
+
+QWidget *View::Widget()
+{
+	return this;
+}
 	
 }} // end of namespace

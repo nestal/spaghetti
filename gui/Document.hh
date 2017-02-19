@@ -15,6 +15,7 @@
 // base class includes first
 #include <QtCore/QObject>
 
+#include "ModelViewFwd.hh"
 #include "project/Project.hh"
 
 #include <memory>
@@ -27,15 +28,6 @@ class ModelBase;
 }
 
 namespace gui {
-
-namespace class_diagram {
-class ClassItem;
-class Model;
-}
-
-namespace source_view {
-class Model;
-}
 
 namespace logical_view {
 class Model;
@@ -57,6 +49,7 @@ public:
 	Document(QObject *parent);
 	~Document();
 
+	void New();
 	void Open(const QString& file);
 	void SaveAs(const QString& file);
 	
@@ -76,14 +69,19 @@ public:
 signals:
 	void OnCreateClassDiagramView(class_diagram::Model *model);
 	void OnCreateSourceView(source_view::Model *model);
-
+	void OnDestroyModel(project::ModelBase *model);
+	
+private:
+	void Reset(std::unique_ptr<project::Project>&& proj);
+	
 private:
 	// main pane
 	project::Model Create(project::ModelType type, const std::string& name) override;
+	
 private:
 	class ProjectModel_;
 	
-	project::Project                        m_project;
+	std::unique_ptr<project::Project>       m_project;
 	
 	// for the docking windows
 	std::unique_ptr<ProjectModel_>          m_project_model;

@@ -157,5 +157,16 @@ QMimeData *Model::mimeData(const QModelIndexList& ids) const
 	mime->setData(m_mime_type, usrs.str().c_str());
 	return mime;
 }
+
+void Model::Reset(const codebase::Entity *root, const codebase::EntityMap *index)
+{
+	assert(root);
+	assert(index);
+	
+	beginResetModel();
+	m_root = root;
+	m_index = index;
+	endResetModel();
+}
 	
 }} // end of namespace

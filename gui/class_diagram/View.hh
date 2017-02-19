@@ -28,6 +28,7 @@ public:
 	View(class_diagram::Model *model, QWidget *parent);
 
 	class_diagram::Model* Model() override;
+	QWidget* Widget() override;
 	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);

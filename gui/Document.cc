@@ -29,21 +29,31 @@ namespace fs = boost::filesystem;
 class Document::ProjectModel_ : public QAbstractListModel
 {
 public:
-	ProjectModel_(const codebase::CodeBase& codebase, QObject *parent) :
+	ProjectModel_(const codebase::CodeBase* codebase, QObject *parent) :
 		QAbstractListModel{parent}, m_base{fs::absolute(".")}, m_codebase{codebase}
 	{
+		assert(m_codebase);
+	}
+	
+	void Reset(const codebase::CodeBase* codebase)
+	{
+		assert(m_codebase);
+		
+		beginResetModel();
+		m_codebase = codebase;
+		endResetModel();
 	}
 	
 	int rowCount(const QModelIndex&) const override
 	{
-		return static_cast<int>(m_codebase.Size());
+		return static_cast<int>(m_codebase->Size());
 	}
 	
 	QVariant data(const QModelIndex& index, int role) const override
 	{
 		auto row = static_cast<std::size_t>(index.row());
-		return role == Qt::DisplayRole && row < m_codebase.Size() ?
-			QString::fromStdString(fs::path{m_codebase.At(row).Spelling()}.lexically_relative(m_base).string()) :
+		return role == Qt::DisplayRole && row < m_codebase->Size() ?
+			QString::fromStdString(fs::path{m_codebase->At(row).Spelling()}.lexically_relative(m_base).string()) :
 			QVariant{};
 	}
 	
@@ -52,16 +62,17 @@ public:
 
 private:
 	boost::filesystem::path     m_base;
-	const codebase::CodeBase&   m_codebase;
+	const codebase::CodeBase   *m_codebase;
 };
 
 Document::Document(QObject *parent) :
 	QObject{parent},
+	m_project{std::make_unique<project::Project>()},
 	m_project_model{std::make_unique<ProjectModel_>(
-		m_project.CodeBase(), this
+		&m_project->CodeBase(), this
 	)},
 	m_logical_model{std::make_unique<logical_view::Model>(
-		m_project.CodeBase().Root(), &m_project.CodeBase(), this
+		m_project->CodeBase().Root(), &m_project->CodeBase(), this
 	)}
 {
 }
@@ -72,16 +83,16 @@ void Document::AddSource(const QString& file)
 {
 	m_logical_model->beginResetModel();
 	m_project_model->beginResetModel();
-	m_project.AddSource(file.toStdString());
+	m_project->AddSource(file.toStdString());
 	m_project_model->endResetModel();
 	m_logical_model->endResetModel();
 }
 
 void Document::NewClassDiagram(const QString& name)
 {
-	auto m = std::make_unique<class_diagram::Model>(&m_project.CodeBase(), name, this);
+	auto m = std::make_unique<class_diagram::Model>(&m_project->CodeBase(), name, this);
 	emit OnCreateClassDiagramView(m.get());
-	m_project.Add(std::move(m));
+	m_project->Add(std::move(m));
 }
 
 void Document::NewSourceView(const QString& name, unsigned line, unsigned column)
@@ -90,7 +101,7 @@ void Document::NewSourceView(const QString& name, unsigned line, unsigned column
 	emit OnCreateSourceView(m.get());
 	
 	m->SetLocation(name, line, column);
-	m_project.Add(std::move(m));
+	m_project->Add(std::move(m));
 }
 
 QAbstractItemModel *Document::ClassModel()
@@ -106,27 +117,24 @@ libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 
 void Document::Open(const QString& file)
 {
-	// delete all items
-	m_logical_model->beginResetModel();
-	m_project_model->beginResetModel();
-	
 	try
 	{
-		m_project.Open(file.toStdString(), *this);
+		auto proj = std::make_unique<project::Project>();
+		swap(m_project, proj);
+		m_project->Open(file.toStdString(), *this);
+		
+		swap(m_project, proj);
+		Reset(std::move(proj));
 	}
 	catch (std::exception&)
 	{
-		m_project_model->endResetModel();
-		m_logical_model->endResetModel();
 		throw;
 	}
-	m_project_model->endResetModel();
-	m_logical_model->endResetModel();
 }
 
 void Document::SaveAs(const QString& file)
 {
-	m_project.Save(file.toStdString());
+	m_project->Save(file.toStdString());
 }
 
 QAbstractItemModel* Document::ProjectModel()
@@ -142,7 +150,7 @@ project::Model Document::Create(project::ModelType type, const std::string& name
 	{
 	case project::ModelType::class_diagram:
 	{
-		auto m = std::make_unique<class_diagram::Model>(&m_project.CodeBase(), QString::fromStdString(name), this);
+		auto m = std::make_unique<class_diagram::Model>(&m_project->CodeBase(), QString::fromStdString(name), this);
 		emit OnCreateClassDiagramView(m.get());
 		result = std::move(m);
 		break;
@@ -163,7 +171,27 @@ project::Model Document::Create(project::ModelType type, const std::string& name
 
 void Document::RemoveModel(project::ModelBase *model)
 {
-	m_project.Erase(model);
+	emit OnDestroyModel(model);
+	m_project->Erase(model);
 }
 
+void Document::New()
+{
+	// don't destroy the origin project yet, because some models may still be referring to it
+	Reset(std::make_unique<project::Project>());
+}
+
+void Document::Reset(std::unique_ptr<project::Project>&& proj)
+{
+	auto p = std::move(proj);
+	swap(m_project, p);
+	
+	m_project_model->Reset(&m_project->CodeBase());
+	m_logical_model->Reset(m_project->CodeBase().Root(), &m_project->CodeBase());
+	
+	// destroy old project by unique_ptr destructor
+	for (std::size_t i = 0 ; i < p->Count() ; i++)
+		emit OnDestroyModel(p->At(i));
+}
+	
 } // end of namespace

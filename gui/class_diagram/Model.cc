@@ -21,6 +21,7 @@
 #include <QtCore/QJsonArray>
 
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 namespace class_diagram {
