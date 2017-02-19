@@ -107,8 +107,6 @@ libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 void Document::Open(const QString& file)
 {
 	// delete all items
-//	m_class_diagrams.front()->Clear();
-	
 	m_logical_model->beginResetModel();
 	m_project_model->beginResetModel();
 	
@@ -163,19 +161,9 @@ project::Model Document::Create(project::ModelType type, const std::string& name
 	return result;
 }
 
-project::ModelBase *Document::ModelAt(std::size_t idx)
-{
-	return m_project.At(idx);
-}
-
-std::size_t Document::ModelCount() const
-{
-	return m_project.Count();
-}
-
 void Document::RemoveModel(project::ModelBase *model)
 {
 	m_project.Erase(model);
 }
-	
+
 } // end of namespace

@@ -132,9 +132,9 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		loc.Get(filename, line, column, offset);
 		
 		// search for existing tab showing the file
-		for (int i = 0; i < m_ui->m_tab->count(); ++i)
+		for (auto&& w : *m_ui->m_tab)
 		{
-			auto view = dynamic_cast<source_view::View *>(m_ui->m_tab->widget(i));
+			auto view = dynamic_cast<source_view::View*>(&w);
 			if (view && view->Filename() == filename)
 			{
 				view->GoTo(line, column);

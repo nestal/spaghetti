@@ -71,8 +71,6 @@ public:
 	
 	libclx::SourceLocation LocateEntity(const QModelIndex& idx) const;
 	
-	project::ModelBase* ModelAt(std::size_t idx);
-	std::size_t ModelCount() const;
 	void RemoveModel(project::ModelBase *model);
 
 signals:
