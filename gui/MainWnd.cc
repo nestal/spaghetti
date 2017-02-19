@@ -12,17 +12,14 @@
 
 #include "MainWnd.hh"
 #include "Document.hh"
-#include "gui/source_view/View.hh"
 
 #include "ui_MainWnd.h"
 
-#include "class_diagram/View.hh"
-#include "gui/class_diagram/Model.hh"
-#include "gui/source_view/Model.hh"
+#include "class_diagram/Model.hh"
+#include "source_view/Model.hh"
 #include "libclx/Index.hh"
 
 #include <QFileDialog>
-#include <QInputDialog>
 #include <QMessageBox>
 
 #include <cassert>
@@ -34,6 +31,7 @@ MainWnd::MainWnd() :
 	m_doc{std::make_unique<Document>(this)}
 {
 	m_ui->setupUi(this);
+	m_ui->m_tab->Setup(*m_doc);
 
 	// initialize logical view
 	m_ui->m_logical_view->setModel(m_doc->ClassModel());
@@ -63,7 +61,7 @@ MainWnd::MainWnd() :
 		{
 			try
 			{
-				CloseAllTabs();
+				m_ui->m_tab->CloseAllTabs();
 				m_doc->Open(file);
 			}
 			catch (std::exception& e)
@@ -100,22 +98,11 @@ MainWnd::MainWnd() :
 	// open source code when the user double click the item
 	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
 	
-	// close widget when user clicks the close button
-	connect(m_ui->m_tab, &QTabWidget::tabCloseRequested, this, &MainWnd::CloseTab);
-	
 	connect(m_ui->m_action_new_class_diagram, &QAction::triggered, [this]
 	{
 		m_doc->NewClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
 	});
 
-	// double click the tab to rename it
-	connect(m_ui->m_tab->tabBar(), &QTabBar::tabBarDoubleClicked, this, &MainWnd::OnRenameTab);
-	
-	// create the corresponding view when a model is created, either by user actions or
-	// when loaded from file
-	connect(m_doc.get(), &Document::OnCreateClassDiagramView, this, &MainWnd::CreateClassDiagramForModel);
-	connect(m_doc.get(), &Document::OnCreateSourceView, this, &MainWnd::CreateSourceViewForModel);
-	
 	// default class diagram
 	m_doc->NewClassDiagram("Class Diagram");
 }
@@ -131,90 +118,8 @@ void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 		unsigned line, column, offset;
 		loc.Get(filename, line, column, offset);
 		
-		// search for existing tab showing the file
-		for (auto&& w : *m_ui->m_tab)
-		{
-			auto view = dynamic_cast<source_view::View*>(&w);
-			if (view && view->Filename() == filename)
-			{
-				view->GoTo(line, column);
-				m_ui->m_tab->setCurrentWidget(view);
-				view->setFocus(Qt::OtherFocusReason);
-				return;
-			}
-		}
-		
-		m_doc->NewSourceView(QString::fromStdString(filename), line, column);
+		m_ui->m_tab->ViewCode(filename, line, column);
 	}
-}
-
-void MainWnd::OnRenameTab(int idx)
-{
-	if (auto view = dynamic_cast<common::ViewBase*>(m_ui->m_tab->widget(idx)))
-	{
-		auto model = view->Model();
-		assert(model);
-		
-		if (model->CanRename())
-		{
-			bool ok;
-			QString text = QInputDialog::getText(
-				this, tr("Rename Tab"),
-				tr("New name:"), QLineEdit::Normal,
-				QString::fromStdString(model->Name()), &ok
-			);
-			
-			if (ok && !text.isEmpty())
-			{
-				model->SetName(text);
-				m_ui->m_tab->tabBar()->setTabText(idx, text);
-			}
-		}
-	}
-}
-
-void MainWnd::CreateClassDiagramForModel(class_diagram::Model *model)
-{
-	auto view   = new class_diagram::View{model, this};
-	connect(view, &class_diagram::View::DropEntity, model, &class_diagram::Model::AddEntity);
-	
-	auto tab = m_ui->m_tab->addTab(view, QString::fromStdString(model->Name()));
-	
-	// after adding the view to the tab widget, it will be resized to fill the whole tab
-	// we can use its size to resize the scene
-	model->SetRect(rect());
-	
-	m_ui->m_tab->setCurrentIndex(tab);
-}
-
-void MainWnd::CreateSourceViewForModel(source_view::Model *model)
-{
-	auto view = new source_view::View{model, m_ui->m_tab};
-	m_ui->m_tab->addTab(view, QString::fromStdString(model->Name()));
-	m_ui->m_tab->setCurrentWidget(view);
-	
-	view->setFocus(Qt::OtherFocusReason);
-}
-
-void MainWnd::CloseTab(int tab)
-{
-	auto w = m_ui->m_tab->widget(tab);
-	m_ui->m_tab->removeTab(tab);
-	
-	if (auto view = dynamic_cast<common::ViewBase*>(w))
-	{
-		auto model = view->Model();
-		delete w;
-		
-		m_doc->RemoveModel(model);
-	}
-}
-
-void MainWnd::CloseAllTabs()
-{
-	while (m_ui->m_tab->count() > 0)
-		CloseTab(0);
-		
 }
 	
 } // end of namespace

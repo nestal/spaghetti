@@ -12,6 +12,13 @@
 
 #include "ViewSet.hh"
 
+#include "Document.hh"
+#include "source_view/View.hh"
+#include "class_diagram/View.hh"
+
+#include <QInputDialog>
+#include <QTabBar>
+
 #include <cassert>
 
 namespace gui {
@@ -49,4 +56,108 @@ ViewSet::iterator ViewSet::end()
 	return {this, count()};
 }
 
+void ViewSet::Setup(Document& doc)
+{
+	assert(!m_doc);
+	m_doc = &doc;
+	
+	// close widget when user clicks the close button
+	connect(this, &QTabWidget::tabCloseRequested, this, &ViewSet::CloseTab);
+	
+	// create the corresponding view when a model is created, either by user actions or
+	// when loaded from file
+	connect(m_doc, &Document::OnCreateClassDiagramView, this, &ViewSet::NewClassDiagramView);
+	connect(m_doc, &Document::OnCreateSourceView,       this, &ViewSet::NewSourceView);
+	
+	// double click the tab to rename it
+	connect(tabBar(), &QTabBar::tabBarDoubleClicked, this, &ViewSet::OnRenameTab);
+}
+
+void ViewSet::NewClassDiagramView(class_diagram::Model *model)
+{
+	auto view   = new class_diagram::View{model, this};
+	connect(view, &class_diagram::View::DropEntity, model, &class_diagram::Model::AddEntity);
+	
+	auto tab = addTab(view, QString::fromStdString(model->Name()));
+	
+	// after adding the view to the tab widget, it will be resized to fill the whole tab
+	// we can use its size to resize the scene
+	model->SetRect(rect());
+	
+	setCurrentIndex(tab);
+}
+
+void ViewSet::NewSourceView(source_view::Model *model)
+{
+	auto view = new source_view::View{model, this};
+	addTab(view, QString::fromStdString(model->Name()));
+	setCurrentWidget(view);
+	
+	view->setFocus(Qt::OtherFocusReason);
+}
+
+void ViewSet::CloseTab(int tab)
+{
+	auto w = widget(tab);
+	removeTab(tab);
+	
+	if (auto view = dynamic_cast<common::ViewBase*>(w))
+	{
+		auto model = view->Model();
+		delete w;
+		
+		m_doc->RemoveModel(model);
+	}
+}
+
+void ViewSet::CloseAllTabs()
+{
+	while (count() > 0)
+		CloseTab(0);
+	
+}
+
+void ViewSet::OnRenameTab(int idx)
+{
+	if (auto view = dynamic_cast<common::ViewBase*>(widget(idx)))
+	{
+		auto model = view->Model();
+		assert(model);
+		
+		if (model->CanRename())
+		{
+			bool ok;
+			QString text = QInputDialog::getText(
+				this, tr("Rename Tab"),
+				tr("New name:"), QLineEdit::Normal,
+				QString::fromStdString(model->Name()), &ok
+			);
+			
+			if (ok && !text.isEmpty())
+			{
+				model->SetName(text);
+				tabBar()->setTabText(idx, text);
+			}
+		}
+	}
+}
+
+void ViewSet::ViewCode(const std::string& filename, unsigned line, unsigned column)
+{
+	// search for existing tab showing the file
+	for (auto&& w : *this)
+	{
+		auto view = dynamic_cast<source_view::View*>(&w);
+		if (view && view->Filename() == filename)
+		{
+			view->GoTo(line, column);
+			setCurrentWidget(view);
+			view->setFocus(Qt::OtherFocusReason);
+			return;
+		}
+	}
+	
+	m_doc->NewSourceView(QString::fromStdString(filename), line, column);
+}
+	
 } // end of namespace
