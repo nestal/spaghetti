@@ -56,7 +56,7 @@ public:
 	{
 		auto row = static_cast<std::size_t>(index.row());
 		return role == Qt::DisplayRole && row < m_codebase->Size() ?
-			QString::fromStdString(fs::path{m_codebase->At(row).Spelling()}.lexically_relative(m_base).string()) :
+			QString::fromStdString(fs::path{m_codebase->At(row).Spelling()}.filename().string()) :
 			QVariant{};
 	}
 	
