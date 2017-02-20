@@ -38,7 +38,13 @@ public:
 	void Save(const std::string& filename) const;
 	void Open(const std::string& filename, ModelFactory& factory);
 	
+	template <typename InputIt>
+	void SetCompileOptions(InputIt first, InputIt last)
+	{
+		m_compile_options.assign(first, last);
+	}
 	void SetCompileOptions(std::initializer_list<std::string> opts);
+	const std::vector<std::string>& CompileOptions() const;
 	
 	codebase::CodeBase& CodeBase();
 	

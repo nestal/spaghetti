@@ -120,6 +120,17 @@ MainWnd::MainWnd() :
 			m_doc->AddSource(file);
 		}
 	});
+	connect(m_ui->m_action_cflags, &QAction::triggered, [this]{
+		bool ok{};
+		auto flags = QInputDialog::getMultiLineText(this,
+			tr("Please input compile options:"),
+			tr("Project Settings"),
+			m_doc->CompileOptions(),
+			&ok
+		);
+		if (ok && !flags.isEmpty())
+			m_doc->SetCompileOptions(flags);
+	});
 	
 	// open source code when the user double click the item
 	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);

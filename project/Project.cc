@@ -140,5 +140,10 @@ void Project::Erase(ModelBase *model)
 	if (it != m_models.end())
 		m_models.erase(it);
 }
+
+const std::vector<std::string>& Project::CompileOptions() const
+{
+	return m_compile_options;
+}
 	
 } // end of namespace

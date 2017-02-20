@@ -218,5 +218,23 @@ bool Document::IsChanged() const
 	
 	return false;
 }
+
+QString Document::CompileOptions() const
+{
+	assert(m_project);
+	
+	auto cflags = QString{};
+	for (auto&& flag : m_project->CompileOptions())
+		cflags += QString::fromStdString(flag) + " ";
+	return cflags;
+}
+
+void Document::SetCompileOptions(const QString& opts)
+{
+	std::vector<std::string> cflags;
+	for (auto&& flags : opts.split(" ", QString::SkipEmptyParts))
+		cflags.push_back(flags.toStdString());
+	m_project->SetCompileOptions(cflags.begin(), cflags.end());
+}
 	
 } // end of namespace
