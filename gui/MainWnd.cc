@@ -12,6 +12,7 @@
 
 #include "MainWnd.hh"
 #include "Document.hh"
+#include "ProjectSetting.hh"
 
 #include "ui_MainWnd.h"
 #include "ui_AboutBox.h"
@@ -121,6 +122,10 @@ MainWnd::MainWnd() :
 		}
 	});
 	connect(m_ui->m_action_cflags, &QAction::triggered, [this]{
+		
+		ProjectSetting dlg{*m_doc, this};
+		dlg.exec();
+/*
 		bool ok{};
 		auto flags = QInputDialog::getMultiLineText(this,
 			tr("Please input compile options:"),
@@ -129,7 +134,7 @@ MainWnd::MainWnd() :
 			&ok
 		);
 		if (ok && !flags.isEmpty())
-			m_doc->SetCompileOptions(flags);
+			m_doc->SetCompileOptions(flags);*/
 	});
 	
 	// open source code when the user double click the item
