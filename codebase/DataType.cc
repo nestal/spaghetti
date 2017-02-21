@@ -55,8 +55,6 @@ void DataType::Visit(libclx::Cursor self)
 			break;
 			
 		case CXCursor_CXXBaseSpecifier:
-//			if (!child.Location().IsFromSystemHeader())
-//				std::cout << m_usr << " base class = \"" <<  child.Spelling() << "\" ID = \"" << child.GetDefinition().USR() << "\"" << std::endl;
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
 			

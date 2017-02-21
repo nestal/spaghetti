@@ -12,8 +12,10 @@
 
 #include "MainWnd.hh"
 #include "Document.hh"
+#include "ProjectSetting.hh"
 
 #include "ui_MainWnd.h"
+#include "ui_AboutBox.h"
 
 #include "source_view/Model.hh"
 #include "libclx/Index.hh"
@@ -25,6 +27,30 @@
 #include <cassert>
 
 namespace gui {
+
+class AboutDialog : public QDialog
+{
+public:
+	AboutDialog(QWidget *parent) : QDialog{parent}, m_ui{std::make_unique<Ui::AboutDialog>()}
+	{
+		m_ui->setupUi(this);
+		
+		m_ui->m_about->setText(m_ui->m_about->text().arg(
+			VERSION,
+			BUILD_DATE
+		));
+		
+		m_ui->m_version->setText(m_ui->m_version->text().arg(
+			GIT_COMMIT_HASH,
+			QT_VERSION_STR,
+			CINDEX_VERSION_STRING,
+			BOOST_LIB_VERSION
+		));
+	}
+
+private:
+	std::unique_ptr<Ui::AboutDialog> m_ui;
+};
 
 MainWnd::MainWnd() :
 	m_ui{std::make_unique<Ui::MainWnd>()},
@@ -42,14 +68,8 @@ MainWnd::MainWnd() :
 	
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
-		QMessageBox::about(this,
-			tr("About Spaghetti"),
-			tr("Spaghetti: version " VERSION " (" BUILD_DATE ")\n"
-			"Git commit: " GIT_COMMIT_HASH "\n"
-			"License: GNU General Public License Version 2\n"
-			"https://gitlab.com/nestal/spaghetti\n"
-			"(C) 2017 Wan Wai Ho (Nestal)")
-		);
+		AboutDialog dlg{this};
+		dlg.exec();
 	});
 	connect(m_ui->m_action_new, &QAction::triggered, m_doc.get(), [this]{
 		if (ConfirmDiscard())
@@ -101,6 +121,21 @@ MainWnd::MainWnd() :
 			m_doc->AddSource(file);
 		}
 	});
+	connect(m_ui->m_action_cflags, &QAction::triggered, [this]{
+		
+		ProjectSetting dlg{*m_doc, this};
+		dlg.exec();
+/*
+		bool ok{};
+		auto flags = QInputDialog::getMultiLineText(this,
+			tr("Please input compile options:"),
+			tr("Project Settings"),
+			m_doc->CompileOptions(),
+			&ok
+		);
+		if (ok && !flags.isEmpty())
+			m_doc->SetCompileOptions(flags);*/
+	});
 	
 	// open source code when the user double click the item
 	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
@@ -143,5 +178,5 @@ bool MainWnd::ConfirmDiscard()
 	else
 		return true;
 }
-	
+
 } // end of namespace

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 #include "ModelViewFwd.hh"
 #include <memory>

@@ -74,6 +74,7 @@
     </property>
     <addaction name="m_action_add_source"/>
     <addaction name="m_action_new_class_diagram"/>
+    <addaction name="m_action_cflags"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
@@ -209,7 +210,12 @@
   </action>
   <action name="m_action_copy">
    <property name="text">
-    <string>Copy</string>
+    <string>&amp;Copy</string>
+   </property>
+  </action>
+  <action name="m_action_cflags">
+   <property name="text">
+    <string>Compiler Options...</string>
    </property>
   </action>
  </widget>

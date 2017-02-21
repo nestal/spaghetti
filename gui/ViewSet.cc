@@ -176,7 +176,7 @@ void ViewSet::OnRenameTab(int idx)
 			if (ok && !text.isEmpty())
 			{
 				model->SetName(text);
-				tabBar()->setTabText(idx, text);
+				tabBar()->setTabText(idx, (model->IsChanged() ? "*" : "") + text);
 			}
 		}
 	}

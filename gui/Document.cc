@@ -20,6 +20,7 @@
 #include "project/Project.hh"
 
 #include <QtCore/QAbstractListModel>
+#include <QtWidgets/QApplication>
 
 #include <boost/filesystem.hpp>
 
@@ -56,7 +57,7 @@ public:
 	{
 		auto row = static_cast<std::size_t>(index.row());
 		return role == Qt::DisplayRole && row < m_codebase->Size() ?
-			QString::fromStdString(fs::path{m_codebase->At(row).Spelling()}.lexically_relative(m_base).string()) :
+			QString::fromStdString(fs::path{m_codebase->At(row).Spelling()}.filename().string()) :
 			QVariant{};
 	}
 	
@@ -134,8 +135,10 @@ void Document::Open(const QString& file)
 	{
 		auto proj = std::make_unique<project::Project>();
 		
+		QApplication::setOverrideCursor(Qt::WaitCursor);
 		ModelFactory factory{this};
 		proj->Open(file.toStdString(), factory);
+		QApplication::restoreOverrideCursor();
 		
 		Reset(std::move(proj));
 	}
@@ -217,6 +220,24 @@ bool Document::IsChanged() const
 			return true;
 	
 	return false;
+}
+
+QString Document::CompileOptions() const
+{
+	assert(m_project);
+	
+	auto cflags = QString{};
+	for (auto&& flag : m_project->CompileOptions())
+		cflags += QString::fromStdString(flag) + " ";
+	return cflags;
+}
+
+void Document::SetCompileOptions(const QString& opts)
+{
+	std::vector<std::string> cflags;
+	for (auto&& flags : opts.split(" ", QString::SkipEmptyParts))
+		cflags.push_back(flags.toStdString());
+	m_project->SetCompileOptions(cflags.begin(), cflags.end());
 }
 	
 } // end of namespace

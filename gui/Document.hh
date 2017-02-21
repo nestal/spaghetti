@@ -58,6 +58,8 @@ public:
 	void SaveAs(const QString& file);
 	
 	void AddSource(const QString& file);
+	QString CompileOptions() const;
+	void SetCompileOptions(const QString& opts);
 	
 	// docking windows
 	QAbstractItemModel* ClassModel();
