@@ -90,12 +90,11 @@ std::size_t Namespace::IndexOf(const Entity *child) const
 
 void Namespace::Visit(libclx::Cursor self)
 {
-//	assert(self.Kind() == CXCursor_Namespace);
-//	assert(m_name == self.Spelling());
-//	assert(!m_usr.empty() && m_usr == self.USR());
-	
 	self.Visit([this](libclx::Cursor cursor, libclx::Cursor)
 	{
+		if (cursor.Location().IsFromSystemHeader())
+			return;
+		
 		const std::string& id = cursor.USR();
 		switch (cursor.Kind())
 		{

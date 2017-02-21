@@ -92,11 +92,14 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 		m_compile_options.clear();
 		for (auto&& cflag : json["cflags"].toArray())
 			m_compile_options.push_back(cflag.toString().toStdString());
+
+		// the models may refer to the entities in the codebase
+		// clear it before reloading the codebase
+		m_models.clear();
 		
 		for (auto&& tu : json["translation_units"].toArray())
 			m_code_base.Parse(tu.toString().toStdString(), m_compile_options);
 		
-		m_models.clear();
 		for (auto&& model_jval : json["models"].toArray())
 		{
 			// find the type of the model

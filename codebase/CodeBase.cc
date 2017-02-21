@@ -23,7 +23,7 @@ CodeBase::CodeBase()
 
 std::string CodeBase::Parse(const std::string& source, const std::vector<std::string>& ops)
 {
-	auto tu = m_index.Parse(source, ops, CXTranslationUnit_None);
+	auto tu = m_index.Parse(source, ops, CXTranslationUnit_SkipFunctionBodies);
 	
 	m_search_index.clear();
 	m_root.Visit(tu.Root());
