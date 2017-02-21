@@ -20,6 +20,7 @@
 #include "project/Project.hh"
 
 #include <QtCore/QAbstractListModel>
+#include <QtWidgets/QApplication>
 
 #include <boost/filesystem.hpp>
 
@@ -134,8 +135,10 @@ void Document::Open(const QString& file)
 	{
 		auto proj = std::make_unique<project::Project>();
 		
+		QApplication::setOverrideCursor(Qt::WaitCursor);
 		ModelFactory factory{this};
 		proj->Open(file.toStdString(), factory);
+		QApplication::restoreOverrideCursor();
 		
 		Reset(std::move(proj));
 	}
