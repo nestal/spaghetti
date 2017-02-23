@@ -15,17 +15,10 @@
 namespace codebase {
 namespace ut {
 
-MockEntity::MockEntity(size_t idx, const std::string& parent) :
-	m_index{idx},
-	m_name{"mock" + std::to_string(idx)},
-	m_parent{parent},
-	m_id{"mock" + std::to_string(idx) + "ID"}
+MockEntity::MockEntity(size_t idx, const Entity* parent) :
+	LeafEntity{"mock" + std::to_string(idx), "mock" + std::to_string(idx) + "ID", parent},
+	m_index{idx}
 {
-}
-
-const std::string& MockEntity::Name() const
-{
-	return m_name;
 }
 
 std::size_t MockEntity::Index() const
@@ -33,19 +26,18 @@ std::size_t MockEntity::Index() const
 	return m_index;
 }
 
-const std::string& MockEntity::Parent() const
-{
-	return m_parent;
-}
-
-const std::string& MockEntity::ID() const
-{
-	return m_id;
-}
-
 std::string MockEntity::Type() const
 {
 	return "Mock";
+}
+
+bool MockEntity::IsUsed() const
+{
+	return true;
+}
+
+void MockEntity::RemoveUnused()
+{
 }
 	
 }} // end of namespace

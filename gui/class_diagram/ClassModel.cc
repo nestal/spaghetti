@@ -38,9 +38,9 @@ ClassModel::ClassModel(const codebase::EntityMap *codebase, const QString& name,
 
 ClassModel::~ClassModel() = default;
 
-void ClassModel::SetRect(const QRectF& rect)
+void ClassModel::SetRect(const QRectF& )
 {
-	m_scene->setSceneRect(rect);
+//	m_scene->setSceneRect(rect);
 }
 
 void ClassModel::Clear()

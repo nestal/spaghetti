@@ -7,33 +7,44 @@
 */
 
 //
-// Created by nestal on 2/4/17.
+// Created by nestal on 2/23/17.
 //
 
 #pragma once
 
-#include "Entity.hh"
+#include "EntityVec.hh"
 
 #include "libclx/Type.hh"
 #include "libclx/SourceRange.hh"
 
+namespace libclx {
+class Cursor;
+}
+
 namespace codebase {
 
-class Variable : public LeafEntity
+class Variable;
+
+class Function : public EntityVec
 {
 public:
-	Variable(libclx::Cursor field, const Entity *parent);
+	Function(libclx::Cursor first_seen, const Entity *parent);
+	
+	void Visit(libclx::Cursor self);
 	
 	std::string Type() const override;
 	libclx::SourceLocation Location() const override;
+	libclx::Type ReturnType() const;
+	
+	void RemoveUnused() override;
 	
 	std::string UML() const override;
 	
-	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
-
 private:
-	libclx::SourceLocation m_location;
-	libclx::Type   m_type;
+	libclx::SourceLocation  m_definition;
+	libclx::Type            m_return_type;
+	
+	std::vector<Variable*>  m_args;
 };
 	
 } // end of namespace

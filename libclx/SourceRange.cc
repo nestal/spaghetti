@@ -81,6 +81,15 @@ std::string SourceLocation::Filename() const
 	return filename;
 }
 
+std::ostream& operator<<(std::ostream& os, const SourceLocation& loc)
+{
+	std::string file;
+	unsigned line, column, offset;
+	loc.Get(file, line, column, offset);
+	
+	return os << file << ":" << line ;
+}
+
 SourceRange::SourceRange(CXSourceRange range) :
 	m_range{range}
 {

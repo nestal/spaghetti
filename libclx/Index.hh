@@ -30,9 +30,7 @@ namespace libclx {
 class Cursor;
 class Index;
 class SourceLocation;
-class SourceRange;
 class TranslationUnit;
-class Type;
 class Diagnostic;
 class TokenSet;
 
@@ -119,81 +117,6 @@ private:
 		void,
 		&::clang_disposeTranslationUnit
 	> m_unit;
-};
-
-class Cursor
-{
-public:
-	Cursor();
-	Cursor(CXCursor cursor);
-	Cursor(const Cursor&) = default;
-	Cursor(Cursor&&) = default;
-	Cursor& operator=(const Cursor&) = default;
-	Cursor& operator=(Cursor&&) = default;
-	
-	bool operator==(const Cursor& rhs) const;
-	bool operator!=(const Cursor& rhs) const;
-	
-	CXCursorKind Kind() const;
-	
-	explicit operator bool() const;
-	
-	bool IsReference() const;
-	bool IsDefinition() const;
-	bool IsDeclaration() const;
-	
-	Cursor GetDefinition() const;
-	
-	std::string Spelling() const ;
-	std::string DisplayName() const;
-	std::string USR() const;
-	std::string Comment() const;
-	
-	SourceLocation Location() const;
-	SourceRange Extent() const;
-	libclx::Type Type() const;
-	
-	struct Hash
-	{
-		unsigned operator()(Cursor c) const;
-	};
-	
-	template <typename Visitor>
-	void Visit(Visitor visitor)
-	{
-		auto functor = [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult
-		{
-			Visitor *pv = reinterpret_cast<Visitor*>(client_data);
-			
-			assert(pv);
-			(*pv)(Cursor{cursor}, Cursor{parent});
-
-			return CXChildVisit_Continue;
-		};
-		
-		::clang_visitChildren(m_cursor, functor, &visitor);
-	}
-
-private:
-	CXCursor m_cursor;
-};
-
-std::ostream& operator<<(std::ostream& os, const SourceLocation& loc);
-
-class Type
-{
-public:
-	Type(CXType type);
-	
-	std::string Spelling() const;
-	Cursor Declaration() const;
-	
-	std::string Kind() const;
-	
-	friend std::ostream& operator<<(std::ostream& os, const Type& t);
-	
-private:
-	CXType m_type;
 };
 
 } // end of namespace libclx

@@ -49,6 +49,8 @@ private:
 	CXSourceLocation m_loc;
 };
 
+std::ostream& operator<<(std::ostream& os, const SourceLocation& loc);
+
 class SourceRange
 {
 public:

@@ -22,32 +22,30 @@ class Cursor;
 
 namespace codebase {
 
-class Namespace : public Entity
+class Namespace : public EntityVec
 {
 public:
 	Namespace();
-	Namespace(libclx::Cursor cursor, const std::string& parent);
+	Namespace(libclx::Cursor cursor, const Entity* parent);
+	Namespace(Namespace&&) = default;
+	Namespace(const Namespace&) = delete;
 	
-	const std::string& Name() const override;
-	const std::string& ID() const override;
+	Namespace& operator=(Namespace&) = default;
+	Namespace& operator=(const Namespace&) = delete;
+	
 	std::string Type() const override;
-	const std::string& Parent() const override;
 	
 	void Visit(libclx::Cursor cursor);
 	
-	std::size_t ChildCount() const override;
-	const Entity* Child(std::size_t idx) const override;
-	Entity* Child(std::size_t idx) override;
-	std::size_t IndexOf(const Entity* child) const override;
+	void RemoveUnused() override;
 	
 private:
-	std::string m_name;
-	std::string m_usr;
-	std::string m_parent;
+	void VisitMemberFunction(libclx::Cursor cursor);
 	
-	EntityVec<Namespace> m_ns;
-	EntityVec<DataType>  m_types;
-	EntityVec<Variable>  m_vars;
+private:
+	std::vector<DataType*>  m_types;
+	std::vector<Namespace*> m_ns;
+	std::vector<Variable*>  m_vars;
 };
 	
 } // end of namespace

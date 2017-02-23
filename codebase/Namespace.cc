@@ -12,80 +12,24 @@
 
 #include "Namespace.hh"
 
+#include "libclx/Cursor.hh"
+#include <iostream>
+
 namespace codebase {
 
 Namespace::Namespace() :
-	m_name{"Root"},
-	m_usr{},
-	m_parent{NullID()},
-	m_ns{"Namespaces", m_usr},
-	m_types{"Types", m_usr},
-	m_vars{"Variables", m_usr}
+	EntityVec{"Root", "", nullptr}
 {
 }
 
-Namespace::Namespace(libclx::Cursor cursor, const std::string& parent) :
-	m_name{cursor.Spelling()},
-	m_usr{cursor.USR()},
-	m_parent{parent},
-	m_ns{"Namespaces", m_usr},
-	m_types{"Types", m_usr},
-	m_vars{"Variables", m_usr}
+Namespace::Namespace(libclx::Cursor cursor, const Entity* parent) :
+	EntityVec{cursor.Spelling(), cursor.USR(), parent}
 {
-}
-
-const std::string& Namespace::Name() const
-{
-	return m_name;
-}
-
-const std::string& Namespace::ID() const
-{
-	return m_usr;
-}
-
-const std::string& Namespace::Parent() const
-{
-	return m_parent;
 }
 
 std::string Namespace::Type() const
 {
 	return "Namespace";
-}
-
-std::size_t Namespace::ChildCount() const
-{
-	return 3;
-}
-
-const Entity *Namespace::Child(std::size_t idx) const
-{
-	switch (idx)
-	{
-	case 0: return &m_types;
-	case 1: return &m_vars;
-	case 2: return &m_ns;
-	default: return nullptr;
-	}
-}
-
-Entity *Namespace::Child(std::size_t idx)
-{
-	switch (idx)
-	{
-	case 0: return &m_types;
-	case 1: return &m_vars;
-	case 2: return &m_ns;
-	default: return nullptr;
-	}
-}
-
-std::size_t Namespace::IndexOf(const Entity *child) const
-{
-	return child == &m_types ? 0 :
-		(child == &m_vars ? 1 :
-		(child == &m_ns ? 2 : npos));
 }
 
 void Namespace::Visit(libclx::Cursor self)
@@ -101,41 +45,59 @@ void Namespace::Visit(libclx::Cursor self)
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
 		{
-			auto it = std::find_if(
-				m_types.begin(), m_types.end(), [id](auto& t)
-				{
-					return t.ID() == id;
-				}
-			);
+			auto it = FindByID(m_types, id);
 			if (it == m_types.end())
-				it = m_types.Add(cursor, m_types.ID());
-			it->Visit(cursor);
+			{
+				m_types.push_back(Add<DataType>(cursor, this));
+				it = --m_types.end();
+			}
+			(*it)->Visit(cursor);
 			break;
 		}
 		
 		case CXCursor_Namespace:
 		{
-			auto it = std::find_if(
-				m_ns.begin(), m_ns.end(), [id](auto& t)
-				{
-					return t.ID() == id;
-				}
-			);
+			auto it = FindByID(m_ns, id);
 			if (it == m_ns.end())
-				it = m_ns.Add(cursor, m_ns.ID());
-			it->Visit(cursor);
+			{
+				m_ns.push_back(Add<Namespace>(cursor, this));
+				it = --m_ns.end();
+			}
+			(*it)->Visit(cursor);
 			break;
 		}
 		
 		case CXCursor_FieldDecl:
 		{
-			m_vars.Add(cursor, m_vars.ID());
+			m_vars.push_back(Add<Variable>(cursor, this));
 			break;
 		}
+			
+			// class method definition in namespace
+			// the class definition should already be parsed
+		case CXCursor_CXXMethod:
+			VisitMemberFunction(cursor);
+			break;
 		
-		default: break;
+		default:
+//			if (!cursor.Location().IsFromSystemHeader())
+//				std::cout << Name() << " " <<  cursor.Spelling() << ' ' << cursor.Kind() << std::endl;
+			break;
 		}
 	});
+}
+
+void Namespace::RemoveUnused()
+{
+	
+}
+
+void Namespace::VisitMemberFunction(libclx::Cursor cursor)
+{
+	auto parent = FindByID(m_types, cursor.SemanticParent().USR());
+	
+	if (parent != m_types.end())
+		(*parent)->VisitFunction(cursor);
 }
 	
 } // end of namespace

@@ -12,33 +12,19 @@
 
 #include "Variable.hh"
 
+#include "libclx/Cursor.hh"
+
 #include <ostream>
 
 namespace codebase {
 
-Variable::Variable(libclx::Cursor field, const std::string& parent) :
-	m_name{field.Spelling()},
-	m_usr{field.USR()},
-	m_parent{parent},
+Variable::Variable(libclx::Cursor field, const Entity *parent) :
+	LeafEntity{field.Spelling(), field.USR(), parent},
 	m_location{field.Location()},
 	m_type{field.Type()}
 {
 }
 
-const std::string& Variable::Name() const
-{
-	return m_name;
-}
-
-const std::string& Variable::Parent() const
-{
-	return m_parent;
-}
-
-const std::string& Variable::ID() const
-{
-	return m_usr;
-}
 
 std::string Variable::Type() const
 {
@@ -47,12 +33,17 @@ std::string Variable::Type() const
 
 std::ostream& operator<<(std::ostream& os, const Variable& c)
 {
-	return os << c.m_name << ": " << c.m_type;
+	return os << c.m_type << " " << c.Name();
 }
 
 libclx::SourceLocation Variable::Location() const
 {
 	return m_location;
+}
+
+std::string Variable::UML() const
+{
+	return Name() + " : " + Type();
 }
 	
 } // end of namespace

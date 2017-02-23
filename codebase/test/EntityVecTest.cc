@@ -18,15 +18,23 @@
 using namespace codebase;
 using namespace codebase::ut;
 
+class TestEntityVec : public EntityVec
+{
+public:
+	using EntityVec::EntityVec;
+	void RemoveUnused() override {}
+	std::string Type() const override {return {};}
+};
+
 TEST(EntityVecTest, Constructor_Wont_Throw)
 {
-	EntityVec<MockEntity> subject{"", ""};
+	TestEntityVec subject{"", "", nullptr};
 }
 
 TEST(EntityVecTest, Add_Return_Iterator_To_Added_Item)
 {
-	EntityVec<MockEntity> subject{"", "vec-ID"};
-	auto it = subject.Add(MockEntity{subject.ChildCount(), subject.ID()});
+	TestEntityVec subject{"", "vec-ID", nullptr};
+	auto it = subject.Add<MockEntity>(subject.ChildCount(), &subject);
 	
-	ASSERT_EQ(subject.ID(), it->Parent());
+	ASSERT_EQ(&subject, it->Parent());
 }
