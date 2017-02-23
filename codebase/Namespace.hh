@@ -26,7 +26,7 @@ class Namespace : public EntityVec
 {
 public:
 	Namespace();
-	Namespace(libclx::Cursor cursor, const std::string& parent);
+	Namespace(libclx::Cursor cursor, const Entity* parent);
 	Namespace(Namespace&&) = default;
 	Namespace(const Namespace&) = delete;
 	

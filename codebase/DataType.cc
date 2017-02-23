@@ -16,7 +16,7 @@
 
 namespace codebase {
 
-DataType::DataType(libclx::Cursor cursor, const std::string& parent) :
+DataType::DataType(libclx::Cursor cursor, const Entity* parent) :
 	EntityVec{cursor.Spelling(), cursor.USR(), parent}
 {
 	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl);
@@ -39,7 +39,7 @@ void DataType::Visit(libclx::Cursor self)
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			m_fields.push_back(Add<Variable>(child, ID()));
+			m_fields.push_back(Add<Variable>(child, this));
 			break;
 			
 		case CXCursor_CXXBaseSpecifier:

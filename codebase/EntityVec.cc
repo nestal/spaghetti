@@ -14,10 +14,10 @@
 
 namespace codebase {
 
-EntityVec::EntityVec( const std::string& name, const std::string& usr, const std::string& parent) :
+EntityVec::EntityVec( const std::string& name, const std::string& usr, const Entity* parent) :
 	m_name{name},
-	m_parent{parent},
-	m_id{usr}
+	m_id{usr},
+	m_parent{parent}
 {
 }
 
@@ -31,7 +31,7 @@ const std::string& EntityVec::ID() const
 	return m_id;
 }
 
-const std::string& EntityVec::Parent() const
+const Entity* EntityVec::Parent() const
 {
 	return m_parent;
 }

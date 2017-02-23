@@ -15,11 +15,11 @@
 namespace codebase {
 
 Namespace::Namespace() :
-	EntityVec{"Root", "", NullID()}
+	EntityVec{"Root", "", nullptr}
 {
 }
 
-Namespace::Namespace(libclx::Cursor cursor, const std::string& parent) :
+Namespace::Namespace(libclx::Cursor cursor, const Entity* parent) :
 	EntityVec{cursor.Spelling(), cursor.USR(), parent}
 {
 }
@@ -45,7 +45,7 @@ void Namespace::Visit(libclx::Cursor self)
 			auto it = std::find_if(m_types.begin(), m_types.end(), [id](auto& t){return t->ID() == id;});
 			if (it == m_types.end())
 			{
-				m_types.push_back(Add<DataType>(cursor, ID()));
+				m_types.push_back(Add<DataType>(cursor, this));
 				it = --m_types.end();
 			}
 			(*it)->Visit(cursor);
@@ -57,7 +57,7 @@ void Namespace::Visit(libclx::Cursor self)
 			auto it = std::find_if(m_ns.begin(), m_ns.end(), [id](auto& t){return t->ID() == id;});
 			if (it == m_ns.end())
 			{
-				m_ns.push_back(Add<Namespace>(cursor, ID()));
+				m_ns.push_back(Add<Namespace>(cursor, this));
 				it = --m_ns.end();
 			}
 			(*it)->Visit(cursor);
@@ -66,7 +66,7 @@ void Namespace::Visit(libclx::Cursor self)
 		
 		case CXCursor_FieldDecl:
 		{
-			m_vars.push_back(Add<Variable>(cursor, ID()));
+			m_vars.push_back(Add<Variable>(cursor, this));
 			break;
 		}
 		

@@ -127,10 +127,8 @@ QModelIndex Model::parent(const QModelIndex& child) const
 	auto pchild = At(child);
 	assert(pchild);
 	
-	auto parent = m_index->Find(pchild->Parent());
-	assert(parent);
-	
-	return pchild == parent || parent == m_root ? QModelIndex{} : createIndex(
+	auto parent = pchild->Parent();
+	return parent == nullptr || parent == m_root ? QModelIndex{} : createIndex(
 		static_cast<int>(parent->IndexOf(pchild)), 0,
 		const_cast<codebase::Entity *>(parent)
 	);

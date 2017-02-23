@@ -26,7 +26,7 @@ public:
 	using EntityPtr = std::unique_ptr<Entity>;
 
 public:
-	EntityVec( const std::string& name, const std::string& usr, const std::string& parent);
+	EntityVec( const std::string& name, const std::string& usr, const Entity *parent);
 	
 	EntityVec(EntityVec&&) = default;
 	EntityVec(const EntityVec&) = delete;
@@ -35,7 +35,7 @@ public:
 
 	const std::string& Name() const override;
 	const std::string& ID() const override;
-	const std::string& Parent() const override;
+	const Entity* Parent() const override;
 	
 	std::size_t ChildCount() const override ;
 	const Entity* Child(std::size_t idx) const override;
@@ -53,8 +53,8 @@ public:
 	
 private:
 	std::string m_name;
-	std::string m_parent;
 	std::string m_id;
+	const Entity *m_parent;
 
 	std::vector<EntityPtr> m_children;
 };

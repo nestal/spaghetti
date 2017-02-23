@@ -45,7 +45,7 @@ public:
 	using idvec_iterator = std::vector<std::string>::const_iterator;
 	
 public:
-	DataType(libclx::Cursor cursor, const std::string& parent);
+	DataType(libclx::Cursor cursor, const Entity* parent);
 	DataType(DataType&&) = default;
 	DataType(const DataType&) = delete;
 	DataType& operator=(DataType&&) = default;

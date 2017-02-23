@@ -16,7 +16,7 @@
 
 namespace codebase {
 
-Variable::Variable(libclx::Cursor field, const std::string& parent) :
+Variable::Variable(libclx::Cursor field, const Entity *parent) :
 	m_name{field.Spelling()},
 	m_usr{field.USR()},
 	m_parent{parent},
@@ -30,7 +30,7 @@ const std::string& Variable::Name() const
 	return m_name;
 }
 
-const std::string& Variable::Parent() const
+const Entity* Variable::Parent() const
 {
 	return m_parent;
 }
