@@ -51,10 +51,14 @@ public:
 		return ptr;
 	}
 	
+	void MarkUsed() override;
+	bool IsUsed() const override;
+	
 private:
 	std::string m_name;
 	std::string m_id;
 	const Entity *m_parent;
+	bool m_used{false};
 
 	std::vector<EntityPtr> m_children;
 };

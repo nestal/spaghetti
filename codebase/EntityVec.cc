@@ -58,4 +58,17 @@ std::size_t EntityVec::IndexOf(const Entity* child) const
 	return it != m_children.end() ? static_cast<std::size_t>(it - m_children.begin()) : npos;
 }
 
+void EntityVec::MarkUsed()
+{
+	m_used = true;
+	for (auto& child : m_children)
+		child->MarkUsed();
+}
+
+bool EntityVec::IsUsed() const
+{
+	return m_used ||
+		std::find_if(m_children.begin(), m_children.end(), [](auto& child){return child->IsUsed();}) != m_children.end();
+}
+
 } // end of namespace

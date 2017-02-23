@@ -60,6 +60,10 @@ void DataType::Visit(libclx::Cursor self)
 			break;
 		}
 	});
+
+	// mark self and all children as used, after creating the children
+	if (IsUsed() || (self.IsDefinition() && self.Location().IsFromMainFile()))
+		MarkUsed();
 }
 
 std::string DataType::Type() const
@@ -132,18 +136,6 @@ void DataType::VisitFunction(libclx::Cursor func)
 	// the definition of a member function should come after its declaration
 	if (it != m_functions.end())
 		(*it)->Visit(func);
-}
-
-void DataType::MarkUsed()
-{
-	m_used = true;
-	for (auto& field : m_fields)
-		field->MarkUsed();
-}
-
-bool DataType::IsUsed() const
-{
-	return m_used || EntityVec::IsUsed();
 }
 
 } // end of namespace

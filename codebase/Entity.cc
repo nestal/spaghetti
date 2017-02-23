@@ -50,11 +50,6 @@ libclx::SourceLocation Entity::Location() const
 	return libclx::SourceLocation();
 }
 
-bool Entity::IsUsed() const
-{
-	return std::find_if(begin(), end(), [](auto& child){return child.IsUsed();}) != end();
-}
-
 std::string Entity::UML() const
 {
 	return Name();
@@ -103,9 +98,14 @@ const std::string& LeafEntity::ID() const
 	return m_usr;
 }
 
+void LeafEntity::MarkUsed()
+{
+	m_used = true;
+}
+
 bool LeafEntity::IsUsed() const
 {
-	return Location().IsFromMainFile();
+	return m_used || Location().IsFromMainFile();
 }
 
 void LeafEntity::CrossReference(EntityMap *)

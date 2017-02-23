@@ -67,8 +67,6 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 
-	void MarkUsed();
-	bool IsUsed() const override;
 	void CrossReference(EntityMap *map) override;
 	
 private:

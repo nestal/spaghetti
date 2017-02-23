@@ -56,14 +56,4 @@ void Variable::CrossReference(EntityMap *map)
 	}
 }
 
-bool Variable::IsUsed() const
-{
-	return m_used || LeafEntity::IsUsed();
-}
-
-void Variable::MarkUsed()
-{
-	m_used = true;
-}
-
 } // end of namespace
