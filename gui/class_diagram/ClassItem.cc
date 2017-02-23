@@ -27,7 +27,7 @@ namespace class_diagram {
 
 const qreal ClassItem::m_margin{10.0};
 
-const qreal ClassItem::m_max_width{200.0}, ClassItem::m_max_height{300.0};
+const qreal ClassItem::m_max_width{200.0}, ClassItem::m_max_height{150.0};
 
 ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
 	QObject{model},
@@ -50,7 +50,6 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	
 	auto function_count = std::min(m_class.Functions().size(), total_rows);
 	auto field_count    = std::min(m_class.Fields().size(), total_rows);
-	std::cout << "bfore func = " << function_count << " field = " << field_count << " total = " << total_rows << std::endl;
 	
 	if ( field_count <= total_rows/2 && function_count > total_rows/2)
 		function_count = std::min(total_rows - field_count, function_count);
@@ -58,8 +57,6 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 		field_count = std::min(total_rows - function_count, field_count);
 	else if (field_count > total_rows/2 && function_count > total_rows/2)
 		field_count = function_count = total_rows/2;
-	
-	std::cout << "after func = " << function_count << " field = " << field_count << " total = " << total_rows << std::endl;
 	
 	assert(function_count <= total_rows);
 	assert(field_count    <= total_rows);
