@@ -71,7 +71,7 @@ public:
 	virtual void RemoveUnused() = 0;
 	
 	virtual libclx::SourceLocation Location() const;
-	virtual std::string Render() const;
+	virtual std::string UML() const;
 	
 	static const std::size_t npos;
 	

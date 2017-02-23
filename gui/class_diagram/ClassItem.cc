@@ -211,7 +211,7 @@ void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
 	
 	auto field_item = new QGraphicsSimpleTextItem{
 		QFontMetrics{QFont{}}.elidedText(
-			QString::fromStdString(entity->Render()),
+			QString::fromStdString(entity->UML()),
 			Qt::ElideRight,
 			static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
 			0

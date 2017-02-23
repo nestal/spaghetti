@@ -65,13 +65,13 @@ void Function::RemoveUnused()
 	
 }
 
-std::string Function::Render() const
+std::string Function::UML() const
 {
 	std::ostringstream oss;
-	oss << m_return_type.Spelling() << " " << Name() << "(";
-	for (auto& arg : m_args)
-		oss << arg << ", ";
-	oss << ")";
+	oss << Name() << "(";
+//	for (auto& arg : m_args)
+//		oss << arg << ", ";
+	oss << ") : " << m_return_type.Spelling();
 	return oss.str();
 }
 

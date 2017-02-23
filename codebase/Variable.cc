@@ -40,5 +40,10 @@ libclx::SourceLocation Variable::Location() const
 {
 	return m_location;
 }
+
+std::string Variable::UML() const
+{
+	return Name() + " : " + Type();
+}
 	
 } // end of namespace

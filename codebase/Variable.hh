@@ -27,6 +27,8 @@ public:
 	std::string Type() const override;
 	libclx::SourceLocation Location() const override;
 	
+	std::string UML() const override;
+	
 	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 
 private:

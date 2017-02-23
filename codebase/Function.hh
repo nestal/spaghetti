@@ -38,7 +38,7 @@ public:
 	
 	void RemoveUnused() override;
 	
-	std::string Render() const override;
+	std::string UML() const override;
 	
 private:
 	libclx::SourceLocation  m_definition;

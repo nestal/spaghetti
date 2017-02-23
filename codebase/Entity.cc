@@ -55,7 +55,7 @@ bool Entity::IsUsed() const
 	return std::find_if(begin(), end(), [](auto& child){return child.IsUsed();}) != end();
 }
 
-std::string Entity::Render() const
+std::string Entity::UML() const
 {
 	return Name();
 }
