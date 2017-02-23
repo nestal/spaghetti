@@ -29,6 +29,7 @@ std::string CodeBase::Parse(const std::string& source, const std::vector<std::st
 	m_search_index.clear();
 	m_root.Visit(tu.Root());
 	AddToIndex(&m_root);
+	CrossReference(&m_root);
 	
 	for (auto&& diag : tu.Diagnostics())
 		std::cerr << diag.Str() << "\n";
@@ -56,6 +57,13 @@ void CodeBase::AddToIndex(Entity *entity)
 	
 	for (auto&& c : *entity)
 		AddToIndex(&c);
+}
+
+void CodeBase::CrossReference(Entity *entity)
+{
+	entity->CrossReference(this);
+	for (auto&& c : *entity)
+		CrossReference(&c);
 }
 
 const Entity *CodeBase::Root() const

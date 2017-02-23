@@ -15,7 +15,7 @@
 
 #include "libclx/Cursor.hh"
 
-#include <ostream>
+#include <iostream>
 
 namespace codebase {
 
@@ -49,8 +49,11 @@ std::string Variable::UML() const
 
 void Variable::CrossReference(EntityMap *map)
 {
-	if (auto type = dynamic_cast<DataType*>(map->Find(m_type.Declaration().USR())))
-		type->MarkUsed();
+	if (IsUsed())
+	{
+		if (auto type = dynamic_cast<DataType *>(map->Find(m_type.Declaration().USR())))
+			type->MarkUsed();
+	}
 }
 
 } // end of namespace

@@ -77,6 +77,7 @@ public:
 	
 private:
 	void AddToIndex(Entity *entity) ;
+	void CrossReference(Entity *entity) ;
 
 private:
 	libclx::Index  m_index;
