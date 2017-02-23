@@ -137,6 +137,8 @@ void DataType::VisitFunction(libclx::Cursor func)
 void DataType::MarkUsed()
 {
 	m_used = true;
+	for (auto& field : m_fields)
+		field->MarkUsed();
 }
 
 bool DataType::IsUsed() const

@@ -37,9 +37,14 @@ public:
 
 	void CrossReference(EntityMap *map) override;
 	
+	bool IsUsed() const override;
+	void MarkUsed();
+	
 private:
 	libclx::SourceLocation m_location;
 	libclx::Type           m_type;
+	
+	bool m_used{false};
 };
 	
 } // end of namespace
