@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>images/fork.svg</file>
     <file>images/spaghetti.svg</file>
     <file>images/variable.png</file>
     <file>images/variable2.png</file>
