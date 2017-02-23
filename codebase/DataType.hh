@@ -23,6 +23,10 @@
 #include <vector>
 #include <iosfwd>
 
+namespace libclx {
+class Cursor;
+}
+
 namespace codebase {
 
 class Function;
@@ -37,8 +41,9 @@ class Variable;
 class DataType : public EntityVec
 {
 public:
-	using field_iterator = boost::indirect_iterator<std::vector<Variable*>::const_iterator>;
-	using idvec_iterator = std::vector<std::string>::const_iterator;
+	using field_iterator    = boost::indirect_iterator<std::vector<Variable*>::const_iterator>;
+	using function_iterator = boost::indirect_iterator<std::vector<Function*>::const_iterator>;
+	using idvec_iterator    = std::vector<std::string>::const_iterator;
 	
 public:
 	DataType(libclx::Cursor cursor, const Entity* parent);
@@ -55,6 +60,7 @@ public:
 	void VisitFunction(libclx::Cursor func);
 	
 	boost::iterator_range<field_iterator> Fields() const;
+	boost::iterator_range<function_iterator> Functions() const;
 	boost::iterator_range<idvec_iterator> BaseClasses() const;
 
 	bool IsBaseOf(const DataType& other) const;

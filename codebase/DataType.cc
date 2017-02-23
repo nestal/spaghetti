@@ -92,6 +92,11 @@ boost::iterator_range<DataType::field_iterator> DataType::Fields() const
 	return {m_fields.begin(), m_fields.end()};
 }
 
+boost::iterator_range<DataType::function_iterator> DataType::Functions() const
+{
+	return {m_functions.begin(), m_functions.end()};
+}
+
 std::ostream& operator<<(std::ostream& os, const DataType& c)
 {
 	os << "class: " << c.Name() << " (" << c.ID() << ")\n";

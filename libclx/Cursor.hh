@@ -54,6 +54,7 @@ public:
 	SourceLocation Location() const;
 	SourceRange Extent() const;
 	libclx::Type Type() const;
+	libclx::Type ResultType() const;
 	
 	struct Hash
 	{

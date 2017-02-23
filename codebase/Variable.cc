@@ -33,7 +33,7 @@ std::string Variable::Type() const
 
 std::ostream& operator<<(std::ostream& os, const Variable& c)
 {
-	return os << c.Name() << ": " << c.m_type;
+	return os << c.m_type << " " << c.Name();
 }
 
 libclx::SourceLocation Variable::Location() const

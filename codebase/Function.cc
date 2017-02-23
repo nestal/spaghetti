@@ -17,12 +17,14 @@
 #include "libclx/Type.hh"
 
 #include <iostream>
+#include <sstream>
 
 namespace codebase {
 
 Function::Function(libclx::Cursor first_seen, const Entity *parent) :
 	EntityVec{first_seen.Spelling() + "()", first_seen.USR(), parent},
-	m_definition{first_seen.Location()}
+	m_definition{first_seen.Location()},
+	m_return_type{first_seen.ResultType()}
 {
 }
 
@@ -46,7 +48,7 @@ void Function::Visit(libclx::Cursor self)
 		switch (cursor.Kind())
 		{
 		case CXCursor_ParmDecl:
-			Add<Variable>(cursor, this);
+			m_args.push_back(Add<Variable>(cursor, this));
 			std::cout << Name() << "::" <<  cursor.Spelling() << "\"" << cursor.Type() << "\"" << std::endl;
 			break;
 			
@@ -63,4 +65,19 @@ void Function::RemoveUnused()
 	
 }
 
+std::string Function::Render() const
+{
+	std::ostringstream oss;
+	oss << m_return_type.Spelling() << " " << Name() << "(";
+	for (auto& arg : m_args)
+		oss << arg << ", ";
+	oss << ")";
+	return oss.str();
+}
+
+libclx::Type Function::ReturnType() const
+{
+	return m_return_type;
+}
+	
 } // end of namespace

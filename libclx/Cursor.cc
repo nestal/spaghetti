@@ -113,6 +113,11 @@ Cursor::operator bool() const
 	return ::clang_equalCursors(m_cursor, ::clang_getNullCursor()) == 0;
 }
 
+libclx::Type Cursor::ResultType() const
+{
+	return {::clang_getCursorResultType(m_cursor)};
+}
+
 unsigned Cursor::Hash::operator()(Cursor c) const
 {
 	return ::clang_hashCursor(c.m_cursor);

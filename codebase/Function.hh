@@ -14,6 +14,7 @@
 
 #include "EntityVec.hh"
 
+#include "libclx/Type.hh"
 #include "libclx/SourceRange.hh"
 
 namespace libclx {
@@ -21,6 +22,8 @@ class Cursor;
 }
 
 namespace codebase {
+
+class Variable;
 
 class Function : public EntityVec
 {
@@ -31,11 +34,17 @@ public:
 	
 	std::string Type() const override;
 	libclx::SourceLocation Location() const override;
+	libclx::Type ReturnType() const;
 	
 	void RemoveUnused() override;
 	
+	std::string Render() const;
+	
 private:
-	libclx::SourceLocation m_definition;
+	libclx::SourceLocation  m_definition;
+	libclx::Type            m_return_type;
+	
+	std::vector<Variable*>  m_args;
 };
 	
 } // end of namespace

@@ -15,6 +15,7 @@
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
+#include "codebase/Function.hh"
 
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
@@ -39,6 +40,24 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	
 	auto dx = m_name->boundingRect().width();
 	auto dy = m_name->boundingRect().height();
+	for (auto& func : m_class.Functions())
+	{
+		auto field_item = new QGraphicsSimpleTextItem{
+			QFontMetrics{QFont{}}.elidedText(
+				QString::fromStdString(func.Render()),
+				Qt::ElideRight,
+				static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
+				0
+			),
+			this
+		};
+		field_item->moveBy(0, dy);
+		
+		auto rect = field_item->boundingRect();
+		dy += rect.height();
+		dx = std::max(dx, rect.width());
+	}
+	
 	for (auto& field : m_class.Fields())
 	{
 		auto field_item = new QGraphicsSimpleTextItem{
