@@ -17,28 +17,12 @@
 namespace codebase {
 
 Variable::Variable(libclx::Cursor field, const Entity *parent) :
-	m_name{field.Spelling()},
-	m_usr{field.USR()},
-	m_parent{parent},
+	LeafEntity{field.Spelling(), field.USR(), parent},
 	m_location{field.Location()},
 	m_type{field.Type()}
 {
 }
 
-const std::string& Variable::Name() const
-{
-	return m_name;
-}
-
-const Entity* Variable::Parent() const
-{
-	return m_parent;
-}
-
-const std::string& Variable::ID() const
-{
-	return m_usr;
-}
 
 std::string Variable::Type() const
 {
@@ -47,21 +31,12 @@ std::string Variable::Type() const
 
 std::ostream& operator<<(std::ostream& os, const Variable& c)
 {
-	return os << c.m_name << ": " << c.m_type;
+	return os << c.Name() << ": " << c.m_type;
 }
 
 libclx::SourceLocation Variable::Location() const
 {
 	return m_location;
-}
-
-bool Variable::IsUsed() const
-{
-	return m_location.IsFromMainFile();
-}
-
-void Variable::RemoveUnused()
-{
 }
 	
 } // end of namespace

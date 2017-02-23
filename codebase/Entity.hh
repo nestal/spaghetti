@@ -50,6 +50,15 @@ public:
 	
 	virtual const std::string& Name() const = 0;
 	virtual const std::string& ID() const = 0;
+	
+	/**
+	 * \brief Returns the parent of this entity.
+	 * \return Parent entity.
+	 *
+	 * The parent entity is the one who contains this entity. For example, the parent entity
+	 * of a class is the namespace that contains it. The parent entity of a member function
+	 * is the class. For non-member functions, the parent entity will be a namespace.
+	 */
 	virtual const Entity* Parent() const = 0;
 	virtual std::string Type() const = 0;
 	
@@ -133,10 +142,24 @@ private:
 class LeafEntity : public Entity
 {
 public:
+	LeafEntity(const std::string& name, const std::string& usr, const Entity *parent);
+	
 	std::size_t ChildCount() const override;
 	Entity* Child(std::size_t idx) override;
 	const Entity* Child(std::size_t idx) const override;
 	std::size_t IndexOf(const Entity* child) const override;
+
+	const std::string& Name() const override;
+	const Entity* Parent() const override;
+	const std::string& ID() const override;
+	
+	bool IsUsed() const override;
+	void RemoveUnused() override;
+
+private:
+	std::string m_name;
+	std::string m_usr;
+	const Entity *m_parent;
 };
 
 } // end of namespace

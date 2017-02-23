@@ -24,22 +24,12 @@ class Variable : public LeafEntity
 public:
 	Variable(libclx::Cursor field, const Entity *parent);
 	
-	const std::string& Name() const override;
-	const Entity* Parent() const override;
-	const std::string& ID() const override;
 	std::string Type() const override;
 	libclx::SourceLocation Location() const override;
-	
-	bool IsUsed() const override;
-	void RemoveUnused() override;
 	
 	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 
 private:
-	std::string m_name;
-	std::string m_usr;
-	const Entity *m_parent;
-	
 	libclx::SourceLocation m_location;
 	libclx::Type   m_type;
 };

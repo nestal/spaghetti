@@ -55,6 +55,13 @@ bool Entity::IsUsed() const
 	return std::find_if(begin(), end(), [](auto& child){return child.IsUsed();}) != end();
 }
 
+LeafEntity::LeafEntity(const std::string& name, const std::string& usr, const Entity *parent) :
+	m_name{name},
+	m_usr{usr},
+	m_parent{parent}
+{
+}
+
 std::size_t LeafEntity::ChildCount() const
 {
 	return 0;
@@ -73,6 +80,30 @@ Entity *LeafEntity::Child(std::size_t)
 std::size_t LeafEntity::IndexOf(const Entity*) const
 {
 	return npos;
+}
+
+const std::string& LeafEntity::Name() const
+{
+	return m_name;
+}
+
+const Entity* LeafEntity::Parent() const
+{
+	return m_parent;
+}
+
+const std::string& LeafEntity::ID() const
+{
+	return m_usr;
+}
+
+bool LeafEntity::IsUsed() const
+{
+	return Location().IsFromMainFile();
+}
+
+void LeafEntity::RemoveUnused()
+{
 }
 
 } // end of namespace
