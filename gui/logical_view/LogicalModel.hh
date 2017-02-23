@@ -28,13 +28,13 @@ namespace logical_view {
  *
  * Used with Qt model-view architecture.
  */
-class Model: public QAbstractItemModel
+class LogicalModel: public QAbstractItemModel
 {
 public:
 	static const QString m_mime_type;
 
 public:
-	Model(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent);
+	LogicalModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent);
 
 	void Reset(const codebase::Entity *root, const codebase::EntityMap *index);
 	
@@ -43,7 +43,6 @@ public:
 	
 	const codebase::Entity *At(const QModelIndex& idx) const;
 
-private:
 	int rowCount(const QModelIndex& parent) const override;
 	int columnCount(const QModelIndex&) const override;
 	QVariant data(const QModelIndex& index, int role) const override;

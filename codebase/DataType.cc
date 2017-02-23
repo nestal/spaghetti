@@ -43,15 +43,16 @@ void DataType::Visit(libclx::Cursor self)
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			m_fields.push_back(Add<Variable>(child, this));
+			AddUnique(m_fields, child.USR(), child, this);
 			break;
 			
 		case CXCursor_CXXBaseSpecifier:
+			// TODO: remove duplicate
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
 	
 		case CXCursor_CXXMethod:
-			m_functions.push_back(Add<Function>(child, this));
+			AddUnique(m_functions, child.USR(), child, this);
 			break;
 			
 		default:
@@ -60,6 +61,10 @@ void DataType::Visit(libclx::Cursor self)
 			break;
 		}
 	});
+
+	// mark self and all children as used, after creating the children
+	if (IsUsed() || (self.IsDefinition() && self.Location().IsFromMainFile()))
+		MarkUsed();
 }
 
 std::string DataType::Type() const
@@ -105,9 +110,24 @@ std::ostream& operator<<(std::ostream& os, const DataType& c)
 	return os;
 }
 
-void DataType::RemoveUnused()
+void DataType::CrossReference(EntityMap *map)
 {
-	
+	assert(map);
+	MarkBaseClassUsed(map);
+}
+
+void DataType::MarkBaseClassUsed(EntityMap *map)
+{
+	// mark base class as used
+	if (IsUsed())
+	{
+		for (auto& base : m_base_classes)
+		{
+			auto base_entity = dynamic_cast<DataType*>(map->Find(base));
+			base_entity->MarkUsed();
+			base_entity->MarkBaseClassUsed(map);
+		}
+	}
 }
 
 void DataType::VisitFunction(libclx::Cursor func)
@@ -118,5 +138,5 @@ void DataType::VisitFunction(libclx::Cursor func)
 	if (it != m_functions.end())
 		(*it)->Visit(func);
 }
-	
+
 } // end of namespace

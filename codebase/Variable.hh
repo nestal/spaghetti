@@ -17,6 +17,10 @@
 #include "libclx/Type.hh"
 #include "libclx/SourceRange.hh"
 
+namespace libclx {
+class Cursor;
+}
+
 namespace codebase {
 
 class Variable : public LeafEntity
@@ -31,9 +35,11 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 
+	void CrossReference(EntityMap *map) override;
+	
 private:
 	libclx::SourceLocation m_location;
-	libclx::Type   m_type;
+	libclx::Type           m_type;
 };
 	
 } // end of namespace

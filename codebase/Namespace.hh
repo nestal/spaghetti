@@ -37,7 +37,7 @@ public:
 	
 	void Visit(libclx::Cursor cursor);
 	
-	void RemoveUnused() override;
+	void CrossReference(EntityMap *map) override;
 	
 private:
 	void VisitMemberFunction(libclx::Cursor cursor);

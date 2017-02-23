@@ -60,9 +60,15 @@ void Function::Visit(libclx::Cursor self)
 	});
 }
 
-void Function::RemoveUnused()
+void Function::CrossReference(EntityMap *)
 {
-	
+	if (IsUsed())
+	{
+		for (auto& arg : m_args)
+		{
+			arg->IsUsed();
+		}
+	}
 }
 
 std::string Function::UML() const

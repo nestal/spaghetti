@@ -51,10 +51,18 @@ public:
 		return ptr;
 	}
 	
+	template <typename EntityContainer, typename... Args>
+	auto AddUnique(EntityContainer&& cont, const std::string& id, Args... arg) ->
+		typename std::remove_reference_t<EntityContainer>::value_type;
+	
+	void MarkUsed() override;
+	bool IsUsed() const override;
+	
 private:
 	std::string m_name;
 	std::string m_id;
 	const Entity *m_parent;
+	bool m_used{false};
 
 	std::vector<EntityPtr> m_children;
 };
@@ -63,6 +71,21 @@ template <typename EntityContainer>
 auto FindByID(EntityContainer&& cont, const std::string& id) -> typename std::remove_reference_t<EntityContainer>::iterator
 {
 	return std::find_if(cont.begin(), cont.end(), [id](auto& e){return e->ID() == id;});
+}
+
+template <typename EntityContainer, typename... Args>
+auto EntityVec::AddUnique(EntityContainer&& cont, const std::string& id, Args... arg) ->
+	typename std::remove_reference_t<EntityContainer>::value_type
+{
+	using Type = std::remove_pointer_t<typename std::remove_reference_t<EntityContainer>::value_type>;
+
+	auto it = FindByID(cont, id);
+	if (it == cont.end())
+	{
+		cont.push_back(Add<Type>(std::forward<Args>(arg)...));
+		it = --cont.end();
+	}
+	return *it;
 }
 
 } // end of namespace

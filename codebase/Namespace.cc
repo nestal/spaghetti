@@ -44,37 +44,17 @@ void Namespace::Visit(libclx::Cursor self)
 		{
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
-		{
-			auto it = FindByID(m_types, id);
-			if (it == m_types.end())
-			{
-				m_types.push_back(Add<DataType>(cursor, this));
-				it = --m_types.end();
-			}
-			(*it)->Visit(cursor);
+			AddUnique(m_types, id, cursor, this)->Visit(cursor);
 			break;
-		}
 		
 		case CXCursor_Namespace:
-		{
-			auto it = FindByID(m_ns, id);
-			if (it == m_ns.end())
-			{
-				m_ns.push_back(Add<Namespace>(cursor, this));
-				it = --m_ns.end();
-			}
-			(*it)->Visit(cursor);
+			AddUnique(m_ns, id, cursor, this)->Visit(cursor);
 			break;
-		}
 		
 		case CXCursor_FieldDecl:
-		{
-			m_vars.push_back(Add<Variable>(cursor, this));
+			AddUnique(m_vars, id, cursor, this);
 			break;
-		}
 			
-			// class method definition in namespace
-			// the class definition should already be parsed
 		case CXCursor_CXXMethod:
 			VisitMemberFunction(cursor);
 			break;
@@ -87,13 +67,15 @@ void Namespace::Visit(libclx::Cursor self)
 	});
 }
 
-void Namespace::RemoveUnused()
+void Namespace::CrossReference(EntityMap *)
 {
 	
 }
 
 void Namespace::VisitMemberFunction(libclx::Cursor cursor)
 {
+	// class method definition in namespace
+	// the class definition should already be parsed
 	auto parent = FindByID(m_types, cursor.SemanticParent().USR());
 	
 	if (parent != m_types.end())

@@ -43,7 +43,7 @@ public:
 	struct ByID {};
 	
 	using EntityIndex = boost::multi_index_container<
-		const Entity*,
+		Entity*,
 		boost::multi_index::indexed_by<
 			
 			// hash by ID
@@ -67,6 +67,7 @@ public:
 	
 	const Entity* Root() const;
 	const Entity* Find(const std::string& id) const override;
+	Entity* Find(const std::string& id) override;
 
 	boost::optional<const libclx::TranslationUnit&> Locate(const libclx::SourceLocation& loc) const;
 	
@@ -75,7 +76,8 @@ public:
 	std::size_t Size() const;
 	
 private:
-	void AddToIndex(const Entity *entity) ;
+	void AddToIndex(Entity *entity) ;
+	void CrossReference(Entity *entity) ;
 
 private:
 	libclx::Index  m_index;

@@ -11,10 +11,11 @@
 //
 
 #include "Variable.hh"
+#include "DataType.hh"
 
 #include "libclx/Cursor.hh"
 
-#include <ostream>
+#include <iostream>
 
 namespace codebase {
 
@@ -45,5 +46,14 @@ std::string Variable::UML() const
 {
 	return Name() + " : " + Type();
 }
-	
+
+void Variable::CrossReference(EntityMap *map)
+{
+	if (IsUsed())
+	{
+		if (auto type = dynamic_cast<DataType *>(map->Find(m_type.Declaration().USR())))
+			type->MarkUsed();
+	}
+}
+
 } // end of namespace

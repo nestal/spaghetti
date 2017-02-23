@@ -36,7 +36,7 @@ public:
 	libclx::SourceLocation Location() const override;
 	libclx::Type ReturnType() const;
 	
-	void RemoveUnused() override;
+	void CrossReference(EntityMap *map) override;
 	
 	std::string UML() const override;
 	

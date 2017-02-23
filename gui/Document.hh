@@ -34,7 +34,7 @@ class SourceLocation;
 namespace gui {
 
 namespace logical_view {
-class Model;
+class LogicalModel;
 }
 
 /**
@@ -62,7 +62,7 @@ public:
 	void SetCompileOptions(const QString& opts);
 	
 	// docking windows
-	QAbstractItemModel* ClassModel();
+	logical_view::LogicalModel* ClassModel();
 	QAbstractItemModel* ProjectModel();
 	
 	void NewClassDiagram(const QString& name);
@@ -90,7 +90,7 @@ private:
 	
 	// for the docking windows
 	std::unique_ptr<ProjectModel_>          m_project_model;
-	std::unique_ptr<logical_view::Model>    m_logical_model;
+	std::unique_ptr<logical_view::LogicalModel>    m_logical_model;
 };
 
 } // end of namespace

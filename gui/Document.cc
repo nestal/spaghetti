@@ -15,7 +15,7 @@
 // gui namespace headers
 #include "gui/class_diagram/ClassModel.hh"
 #include "source_view/Model.hh"
-#include "logical_view/Model.hh"
+#include "gui/logical_view/LogicalModel.hh"
 
 #include "project/Project.hh"
 
@@ -85,7 +85,7 @@ Document::Document(QObject *parent) :
 	m_project_model{std::make_unique<ProjectModel_>(
 		&m_project->CodeBase(), this
 	)},
-	m_logical_model{std::make_unique<logical_view::Model>(
+	m_logical_model{std::make_unique<logical_view::LogicalModel>(
 		m_project->CodeBase().Root(), &m_project->CodeBase(), this
 	)}
 {
@@ -118,7 +118,7 @@ void Document::NewSourceView(const QString& name, unsigned line, unsigned column
 	m_project->Add(std::move(m));
 }
 
-QAbstractItemModel *Document::ClassModel()
+logical_view::LogicalModel *Document::ClassModel()
 {
 	return m_logical_model.get();
 }
