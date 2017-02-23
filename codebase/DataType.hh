@@ -17,6 +17,7 @@
 #include "Variable.hh"
 #include "EntityVec.hh"
 
+#include <boost/iterator/indirect_iterator.hpp>
 #include <boost/range/iterator_range_core.hpp>
 
 #include <string>
@@ -40,6 +41,7 @@ class EditAction;
 class DataType : public EntityVec
 {
 public:
+	using field_iterator = boost::indirect_iterator<std::vector<Variable*>::const_iterator>;
 	using idvec_iterator = std::vector<std::string>::const_iterator;
 	
 public:
@@ -55,6 +57,7 @@ public:
 	
 	void Visit(libclx::Cursor self);
 	
+	boost::iterator_range<field_iterator> Fields() const;
 	boost::iterator_range<idvec_iterator> BaseClasses() const;
 
 	bool IsBaseOf(const DataType& other) const;
@@ -62,8 +65,9 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 
 private:
-	libclx::SourceLocation m_definition;
+	libclx::SourceLocation   m_definition;
 	std::vector<std::string> m_base_classes;
+	std::vector<Variable*>   m_fields;
 };
 	
 } // end of namespace

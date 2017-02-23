@@ -79,11 +79,16 @@ bool DataType::IsBaseOf(const DataType& other) const
 		other.m_base_classes.end();
 }
 
+boost::iterator_range<DataType::field_iterator> DataType::Fields() const
+{
+	return {m_fields.begin(), m_fields.end()};
+}
+
 std::ostream& operator<<(std::ostream& os, const DataType& c)
 {
 	os << "class: " << c.Name() << " (" << c.ID() << ")\n";
-	for (auto&& field : c)
-		os << "\t" << dynamic_cast<const Variable&>(field) << '\n';
+	for (auto&& field : c.Fields())
+		os << "\t" << field << '\n';
 	return os;
 }
 
