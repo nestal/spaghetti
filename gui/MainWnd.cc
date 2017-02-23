@@ -58,6 +58,7 @@ MainWnd::MainWnd() :
 	m_doc{std::make_unique<Document>(this)},
 	m_proxy_model{std::make_unique<logical_view::ProxyModel>(m_doc->ClassModel())}
 {
+	setWindowIcon(QIcon{":/images/spaghetti.svg"});
 	m_ui->setupUi(this);
 	m_ui->m_tab->Setup(*m_doc);
 

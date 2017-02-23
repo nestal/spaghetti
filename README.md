@@ -29,7 +29,8 @@ accepted. There is no need to assign copyright to any party.
 
 # Authors and Contributors
 
-[Nestal W.H. Wan](https://gitlab.com/nestal)
+* [Nestal W.H. Wan](https://gitlab.com/nestal)
+* Siu Wan (for drawing the icons)
 
 # Help Wanted
 
