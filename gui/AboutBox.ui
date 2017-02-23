@@ -6,15 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
-    <height>313</height>
+    <width>708</width>
+    <height>335</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>About Spaghetti</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="spaghetti.qrc">:/images/fork.svg</pixmap>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>0</number>
@@ -27,7 +37,7 @@
        <item>
         <widget class="QLabel" name="m_about">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spaghetti: version%1 (%2)&lt;/p&gt;&lt;p&gt;A tool to quickly understand source code.&lt;/p&gt;&lt;p&gt;(C) 2017 Wan Wai Ho (Nestal)&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://gitlab.com/nestal/spaghetti&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;https://gitlab.com/nestal/spaghetti&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;License: &lt;a href=&quot;https://www.gnu.org/licenses/gpl-2.0.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;GNU General Public License Version 2&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spaghetti: version%1 (%2)&lt;/p&gt;&lt;p&gt;A tool to quickly understand source code.&lt;/p&gt;&lt;p&gt;(C) 2017 Wan Wai Ho (Nestal), Siu Wan&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://gitlab.com/nestal/spaghetti&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;https://gitlab.com/nestal/spaghetti&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;License: &lt;a href=&quot;https://www.gnu.org/licenses/gpl-2.0.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;GNU General Public License Version 2&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::RichText</enum>
@@ -55,7 +65,7 @@
      </widget>
     </widget>
    </item>
-   <item>
+   <item row="1" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <spacer name="horizontalSpacer">
@@ -80,13 +90,10 @@
     </layout>
    </item>
   </layout>
-  <zorder>m_close</zorder>
-  <zorder>horizontalSpacer</zorder>
-  <zorder>tabWidget</zorder>
-  <zorder>horizontalSpacer</zorder>
-  <zorder>horizontalSpacer</zorder>
  </widget>
- <resources/>
+ <resources>
+  <include location="spaghetti.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>m_close</sender>
