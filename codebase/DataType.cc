@@ -39,7 +39,7 @@ void DataType::Visit(libclx::Cursor self)
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			Add(std::make_unique<Variable>(child, ID()));
+			m_fields.push_back(Add<Variable>(child, ID()));
 			break;
 			
 		case CXCursor_CXXBaseSpecifier:

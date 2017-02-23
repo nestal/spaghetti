@@ -57,16 +57,4 @@ std::size_t EntityVec::IndexOf(const Entity* child) const
 	return it != m_children.end() ? static_cast<std::size_t>(it - m_children.begin()) : npos;
 }
 
-Entity* EntityVec::Add(EntityVec::EntityPtr&& child)
-{
-	m_children.push_back(std::move(child));
-	return m_children.back().get();
-}
-
-Entity* EntityVec::Find(const std::string& id)
-{
-	auto it = std::find_if(m_children.begin(), m_children.end(), [id](auto& c){return c->ID() == id;});
-	return it != m_children.end() ? it->get() : nullptr;
-}
-
 } // end of namespace

@@ -31,11 +31,7 @@ std::string Namespace::Type() const
 
 void Namespace::Visit(libclx::Cursor self)
 {
-	std::vector<DataType>  types;
-	std::vector<Namespace> ns;
-	std::vector<Variable>  vars;
-	
-	self.Visit([this, &types, &ns, &vars](libclx::Cursor cursor, libclx::Cursor)
+	self.Visit([this](libclx::Cursor cursor, libclx::Cursor)
 	{
 		if (cursor.Location().IsFromSystemHeader())
 			return;
@@ -46,45 +42,37 @@ void Namespace::Visit(libclx::Cursor self)
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
 		{
-			auto it = std::find_if(types.begin(), types.end(), [id, &types](auto& t){return t.ID() == id;});
-			if (it == types.end())
+			auto it = std::find_if(m_types.begin(), m_types.end(), [id](auto& t){return t->ID() == id;});
+			if (it == m_types.end())
 			{
-				types.emplace_back(cursor, ID());
-				it = --types.end();
+				m_types.push_back(Add<DataType>(cursor, ID()));
+				it = --m_types.end();
 			}
-			it->Visit(cursor);
+			(*it)->Visit(cursor);
 			break;
 		}
 		
 		case CXCursor_Namespace:
 		{
-			auto it = std::find_if(ns.begin(), ns.end(), [id, &ns](auto& t){return t.ID() == id;});
-			if (it == ns.end())
+			auto it = std::find_if(m_ns.begin(), m_ns.end(), [id](auto& t){return t->ID() == id;});
+			if (it == m_ns.end())
 			{
-				ns.emplace_back(cursor, ID());
-				it = --ns.end();
+				m_ns.push_back(Add<Namespace>(cursor, ID()));
+				it = --m_ns.end();
 			}
-			it->Visit(cursor);
+			(*it)->Visit(cursor);
 			break;
 		}
 		
 		case CXCursor_FieldDecl:
 		{
-			vars.emplace_back(cursor, ID());
+			m_vars.push_back(Add<Variable>(cursor, ID()));
 			break;
 		}
 		
 		default: break;
 		}
 	});
-	
-	// after the vectors are built, we can take the address of their contents
-	for (auto&& type : types)
-		Add(std::make_unique<DataType>(std::move(type)));
-	for (auto&& ns : ns)
-		Add(std::make_unique<Namespace>(std::move(ns)));
-	for (auto&& var : vars)
-		Add(std::make_unique<Variable>(std::move(var)));
 }
 	
 } // end of namespace

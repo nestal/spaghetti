@@ -42,8 +42,14 @@ public:
 	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
 	
-	Entity* Add(EntityPtr&& child);
-	Entity* Find(const std::string& id);
+	template <typename Type, typename... Args>
+	Type* Add(Args... arg)
+	{
+		auto child = std::make_unique<Type>(std::forward<Args>(arg)...);
+		auto ptr   = child.get();
+		m_children.push_back(std::move(child));
+		return ptr;
+	}
 	
 private:
 	std::string m_name;
