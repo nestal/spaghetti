@@ -28,13 +28,13 @@ namespace logical_view {
  *
  * Used with Qt model-view architecture.
  */
-class Model: public QAbstractItemModel
+class LogicalModel: public QAbstractItemModel
 {
 public:
 	static const QString m_mime_type;
 
 public:
-	Model(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent);
+	LogicalModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent);
 
 	void Reset(const codebase::Entity *root, const codebase::EntityMap *index);
 	

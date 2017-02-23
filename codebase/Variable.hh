@@ -17,6 +17,10 @@
 #include "libclx/Type.hh"
 #include "libclx/SourceRange.hh"
 
+namespace libclx {
+class Cursor;
+}
+
 namespace codebase {
 
 class Variable : public LeafEntity
@@ -35,7 +39,7 @@ public:
 	
 private:
 	libclx::SourceLocation m_location;
-	libclx::Type   m_type;
+	libclx::Type           m_type;
 };
 	
 } // end of namespace

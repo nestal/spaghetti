@@ -130,6 +130,9 @@
        <property name="uniformRowHeights">
         <bool>true</bool>
        </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
        <property name="expandsOnDoubleClick">
         <bool>false</bool>
        </property>
@@ -215,7 +218,7 @@
   </action>
   <action name="m_action_cflags">
    <property name="text">
-    <string>Compiler Options...</string>
+    <string>Compiler &amp;Options...</string>
    </property>
   </action>
  </widget>
