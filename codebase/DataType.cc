@@ -105,9 +105,24 @@ std::ostream& operator<<(std::ostream& os, const DataType& c)
 	return os;
 }
 
-void DataType::CrossReference(EntityMap *)
+void DataType::CrossReference(EntityMap *map)
 {
-	
+	assert(map);
+	MarkBaseClassUsed(map);
+}
+
+void DataType::MarkBaseClassUsed(EntityMap *map)
+{
+	// mark base class as used
+	if (IsUsed())
+	{
+		for (auto& base : m_base_classes)
+		{
+			auto base_entity = dynamic_cast<DataType*>(map->Find(base));
+			base_entity->MarkUsed();
+			base_entity->MarkBaseClassUsed(map);
+		}
+	}
 }
 
 void DataType::VisitFunction(libclx::Cursor func)

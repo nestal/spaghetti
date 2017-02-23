@@ -72,6 +72,9 @@ public:
 	void CrossReference(EntityMap *map) override;
 	
 private:
+	void MarkBaseClassUsed(EntityMap *map);
+	
+private:
 	libclx::SourceLocation   m_definition;
 	std::vector<std::string> m_base_classes;
 	std::vector<Variable*>   m_fields;
