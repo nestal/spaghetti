@@ -1,5 +1,7 @@
 <RCC>
   <qresource>
+    <file>images/variable.png</file>
+    <file>images/variable2.png</file>
     <file>images/class.png</file>
     <file>images/function.png</file>
     <file>images/namespace.png</file>

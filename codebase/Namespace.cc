@@ -68,13 +68,9 @@ void Namespace::Visit(libclx::Cursor self)
 		}
 		
 		case CXCursor_FieldDecl:
-		{
 			m_vars.push_back(Add<Variable>(cursor, this));
 			break;
-		}
 			
-			// class method definition in namespace
-			// the class definition should already be parsed
 		case CXCursor_CXXMethod:
 			VisitMemberFunction(cursor);
 			break;
@@ -94,6 +90,8 @@ void Namespace::CrossReference(EntityMap *)
 
 void Namespace::VisitMemberFunction(libclx::Cursor cursor)
 {
+	// class method definition in namespace
+	// the class definition should already be parsed
 	auto parent = FindByID(m_types, cursor.SemanticParent().USR());
 	
 	if (parent != m_types.end())

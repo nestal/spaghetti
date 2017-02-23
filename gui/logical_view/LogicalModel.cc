@@ -16,6 +16,7 @@
 #include "codebase/DataType.hh"
 #include "codebase/Namespace.hh"
 #include "codebase/Function.hh"
+#include "codebase/Variable.hh"
 
 #include <QtCore/QMimeData>
 #include <QtCore/QIODevice>
@@ -59,6 +60,7 @@ QVariant LogicalModel::data(const QModelIndex& index, int role) const
 		{typeid(const codebase::DataType&),  QIcon{":/images/class.png"}},
 		{typeid(const codebase::Namespace&), QIcon{":/images/namespace.png"}},
 		{typeid(const codebase::Function&),  QIcon{":/images/function.png"}},
+		{typeid(const codebase::Variable&),  QIcon{":/images/variable.png"}},
 	};
 	
 	switch (role)
