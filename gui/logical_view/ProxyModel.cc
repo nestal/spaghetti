@@ -14,6 +14,8 @@
 
 #include "LogicalModel.hh"
 
+#include "codebase/Entity.hh"
+
 namespace gui {
 namespace logical_view {
 
@@ -24,4 +26,12 @@ ProxyModel::ProxyModel(LogicalModel *model) :
 	setSourceModel(model);
 }
 
+bool ProxyModel::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const
+{
+	auto source = dynamic_cast<LogicalModel*>(sourceModel());
+	auto entity = source->At(source->index(source_row, 0, source_parent));
+	
+	return entity && entity->IsUsed();
+}
+	
 }} // end of namespace

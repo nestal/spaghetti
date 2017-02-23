@@ -43,7 +43,6 @@ public:
 	
 	const codebase::Entity *At(const QModelIndex& idx) const;
 
-private:
 	int rowCount(const QModelIndex& parent) const override;
 	int columnCount(const QModelIndex&) const override;
 	QVariant data(const QModelIndex& index, int role) const override;
