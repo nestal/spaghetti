@@ -37,6 +37,8 @@ public:
 	
 	void Visit(libclx::Cursor cursor);
 	
+	void RemoveUsed() override;
+	
 private:
 	std::vector<DataType*>  m_types;
 	std::vector<Namespace*> m_ns;

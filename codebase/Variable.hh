@@ -30,6 +30,9 @@ public:
 	std::string Type() const override;
 	libclx::SourceLocation Location() const override;
 	
+	bool IsUsed() const override;
+	void RemoveUsed() override;
+	
 	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 
 private:

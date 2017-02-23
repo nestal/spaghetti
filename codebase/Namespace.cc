@@ -74,5 +74,10 @@ void Namespace::Visit(libclx::Cursor self)
 		}
 	});
 }
+
+void Namespace::RemoveUsed()
+{
 	
+}
+
 } // end of namespace

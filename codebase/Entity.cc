@@ -50,6 +50,11 @@ libclx::SourceLocation Entity::Location() const
 	return libclx::SourceLocation();
 }
 
+bool Entity::IsUsed() const
+{
+	return std::find_if(begin(), end(), [](auto& child){return child.IsUsed();}) != end();
+}
+
 std::size_t LeafEntity::ChildCount() const
 {
 	return 0;

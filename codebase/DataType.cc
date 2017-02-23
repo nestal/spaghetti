@@ -45,7 +45,7 @@ void DataType::Visit(libclx::Cursor self)
 		case CXCursor_CXXBaseSpecifier:
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
-			
+	
 		default:
 //			if (!child.Location().IsFromSystemHeader())
 //				std::cout << m_name << " " <<  child.Spelling() << ' ' << child.Kind() << std::endl;
@@ -90,6 +90,11 @@ std::ostream& operator<<(std::ostream& os, const DataType& c)
 	for (auto&& field : c.Fields())
 		os << "\t" << field << '\n';
 	return os;
+}
+
+void DataType::RemoveUsed()
+{
+	
 }
 
 } // end of namespace

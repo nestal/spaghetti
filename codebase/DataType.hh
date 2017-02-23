@@ -64,6 +64,8 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 
+	void RemoveUsed() override;
+	
 private:
 	libclx::SourceLocation   m_definition;
 	std::vector<std::string> m_base_classes;

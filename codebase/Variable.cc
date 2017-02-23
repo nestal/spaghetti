@@ -54,5 +54,14 @@ libclx::SourceLocation Variable::Location() const
 {
 	return m_location;
 }
+
+bool Variable::IsUsed() const
+{
+	return m_location.IsFromMainFile();
+}
+
+void Variable::RemoveUsed()
+{
+}
 	
 } // end of namespace
