@@ -55,6 +55,11 @@ bool Entity::IsUsed() const
 	return std::find_if(begin(), end(), [](auto& child){return child.IsUsed();}) != end();
 }
 
+std::string Entity::Render() const
+{
+	return Name();
+}
+
 LeafEntity::LeafEntity(const std::string& name, const std::string& usr, const Entity *parent) :
 	m_name{name},
 	m_usr{usr},

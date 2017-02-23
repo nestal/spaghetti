@@ -22,7 +22,7 @@
 namespace codebase {
 
 Function::Function(libclx::Cursor first_seen, const Entity *parent) :
-	EntityVec{first_seen.Spelling() + "()", first_seen.USR(), parent},
+	EntityVec{first_seen.Spelling(), first_seen.USR(), parent},
 	m_definition{first_seen.Location()},
 	m_return_type{first_seen.ResultType()}
 {

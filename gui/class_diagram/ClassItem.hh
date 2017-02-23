@@ -16,9 +16,11 @@
 #include "BaseItem.hh"
 
 class QGraphicsSimpleTextItem;
+class QSizeF;
 
 namespace codebase {
 class DataType;
+class Entity;
 }
 
 namespace gui {
@@ -55,6 +57,9 @@ public:
 
 signals:
 	void OnJustChanged(ClassItem *self);
+	
+private:
+	void CreateTextItem(const codebase::Entity *entity, QSizeF& bounding);
 	
 private:
 	const codebase::DataType& m_class;

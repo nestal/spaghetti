@@ -38,51 +38,25 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	font.setBold(true);
 	m_name->setFont(font);
 	
-	auto dx = m_name->boundingRect().width();
-	auto dy = m_name->boundingRect().height();
+	auto bounding = m_name->boundingRect().size();
 	for (auto& func : m_class.Functions())
-	{
-		auto field_item = new QGraphicsSimpleTextItem{
-			QFontMetrics{QFont{}}.elidedText(
-				QString::fromStdString(func.Render()),
-				Qt::ElideRight,
-				static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
-				0
-			),
-			this
-		};
-		field_item->moveBy(0, dy);
-		
-		auto rect = field_item->boundingRect();
-		dy += rect.height();
-		dx = std::max(dx, rect.width());
-	}
+		CreateTextItem(&func, bounding);
 	
 	for (auto& field : m_class.Fields())
-	{
-		auto field_item = new QGraphicsSimpleTextItem{
-			QFontMetrics{QFont{}}.elidedText(
-				QString::fromStdString(field.Name() + ":" + field.Type()),
-				Qt::ElideRight,
-				static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
-				0
-			),
-			this
-		};
-		field_item->moveBy(0, dy);
-		
-		auto rect = field_item->boundingRect();
-		dy += rect.height();
-		dx = std::max(dx, rect.width());
-	}
+		CreateTextItem(&field, bounding);
 	
 	// make all children center at origin
 	for (auto child : childItems())
-		child->moveBy(-dx/2, -dy/2);
+		child->moveBy(-bounding.width()/2, -bounding.height()/2);
 	
 	// initialize geometry
 	prepareGeometryChange();
-	m_bounding.setCoords(-dx/2-m_margin, -dy/2-m_margin, dx/2+m_margin, dy/2+m_margin);
+	m_bounding.setCoords(
+		-bounding.width()/2-m_margin,
+		-bounding.height()/2-m_margin,
+		bounding.width()/2+m_margin,
+		bounding.height()/2+m_margin
+	);
 	
 	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
 	setPos(pos);
@@ -188,6 +162,26 @@ bool ClassItem::IsChanged() const
 void ClassItem::MarkUnchanged()
 {
 	m_changed = false;
+}
+
+void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
+{
+	assert(entity);
+	
+	auto field_item = new QGraphicsSimpleTextItem{
+		QFontMetrics{QFont{}}.elidedText(
+			QString::fromStdString(entity->Render()),
+			Qt::ElideRight,
+			static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
+			0
+		),
+		this
+	};
+	field_item->moveBy(0, bounding.height());
+	
+	auto rect = field_item->boundingRect();
+	bounding.rheight() += rect.height();
+	bounding.rwidth()   = std::max(bounding.width(), rect.width());
 }
 	
 }} // end of namespace
