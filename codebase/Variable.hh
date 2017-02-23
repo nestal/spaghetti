@@ -31,7 +31,7 @@ public:
 	libclx::SourceLocation Location() const override;
 	
 	bool IsUsed() const override;
-	void RemoveUsed() override;
+	void RemoveUnused() override;
 	
 	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 

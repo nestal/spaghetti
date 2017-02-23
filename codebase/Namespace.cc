@@ -75,7 +75,7 @@ void Namespace::Visit(libclx::Cursor self)
 	});
 }
 
-void Namespace::RemoveUsed()
+void Namespace::RemoveUnused()
 {
 	
 }

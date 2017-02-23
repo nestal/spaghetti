@@ -64,7 +64,7 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 
-	void RemoveUsed() override;
+	void RemoveUnused() override;
 	
 private:
 	libclx::SourceLocation   m_definition;

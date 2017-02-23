@@ -92,7 +92,7 @@ std::ostream& operator<<(std::ostream& os, const DataType& c)
 	return os;
 }
 
-void DataType::RemoveUsed()
+void DataType::RemoveUnused()
 {
 	
 }

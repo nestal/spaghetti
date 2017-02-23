@@ -59,7 +59,7 @@ public:
 	virtual std::size_t IndexOf(const Entity* child) const = 0;
 	
 	virtual bool IsUsed() const;
-	virtual void RemoveUsed() = 0;
+	virtual void RemoveUnused() = 0;
 	
 	virtual libclx::SourceLocation Location() const;
 	

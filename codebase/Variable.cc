@@ -60,7 +60,7 @@ bool Variable::IsUsed() const
 	return m_location.IsFromMainFile();
 }
 
-void Variable::RemoveUsed()
+void Variable::RemoveUnused()
 {
 }
 	
