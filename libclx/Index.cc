@@ -11,6 +11,8 @@
 //
 
 #include "Index.hh"
+
+#include "Cursor.hh"
 #include "SourceRange.hh"
 #include "Token.hh"
 #include "XStr.hh"
@@ -82,140 +84,6 @@ SourceLocation TranslationUnit::TokenLocation(const CXToken& token) const
 	return {::clang_getTokenLocation(m_unit.get(), token)};
 }
 
-Cursor::Cursor() :
-	Cursor{::clang_getNullCursor()}
-{
-}
-
-Cursor::Cursor(CXCursor cursor) :
-	m_cursor{cursor}
-{
-}
-
-CXCursorKind Cursor::Kind() const
-{
-	return ::clang_getCursorKind(m_cursor);
-}
-
-std::string Cursor::DisplayName() const
-{
-	return XStr{::clang_getCursorDisplayName(m_cursor)}.Str();
-}
-
-std::string Cursor::USR() const
-{
-	return XStr{::clang_getCursorUSR(m_cursor)}.Str();
-}
-
-std::string Cursor::Spelling() const
-{
-	return XStr{::clang_getCursorSpelling(m_cursor)}.Str();
-}
-
-SourceLocation Cursor::Location() const
-{
-	return SourceLocation{::clang_getCursorLocation(m_cursor)};
-}
-
-bool Cursor::operator==(const Cursor& rhs) const
-{
-	return ::clang_equalCursors(m_cursor, rhs.m_cursor) != 0;
-}
-
-bool Cursor::operator!=(const Cursor& rhs) const
-{
-	return !operator==(rhs);
-}
-
-libclx::Type Cursor::Type() const
-{
-	return {::clang_getCursorType(m_cursor)};
-}
-
-bool Cursor::IsReference() const
-{
-	return ::clang_isCursorDefinition(m_cursor) != 0;
-}
-
-bool Cursor::IsDefinition() const
-{
-	return ::clang_isCursorDefinition(m_cursor) != 0;
-}
-
-Cursor Cursor::GetDefinition() const
-{
-	return {::clang_getCursorDefinition(m_cursor)};
-}
-
-Cursor Cursor::SemanticParent() const
-{
-	return {::clang_getCursorSemanticParent(m_cursor)};
-}
-
-Cursor Cursor::LexicalParent() const
-{
-	return {::clang_getCursorLexicalParent(m_cursor)};
-}
-
-bool Cursor::IsDeclaration() const
-{
-	return ::clang_isDeclaration(Kind()) != 0 ;
-}
-
-std::string Cursor::Comment() const
-{
-	return XStr{::clang_Cursor_getRawCommentText(m_cursor)}.Str();
-}
-
-SourceRange Cursor::Extent() const
-{
-	return SourceRange{::clang_getCursorExtent(m_cursor)};
-}
-
-Cursor::operator bool() const
-{
-	return ::clang_equalCursors(m_cursor, ::clang_getNullCursor()) == 0;
-}
-
-std::ostream& operator<<(std::ostream& os, const SourceLocation& loc)
-{
-	std::string file;
-	unsigned line, column, offset;
-	loc.Get(file, line, column, offset);
-	
-	return os << file << ":" << line ;
-}
-
-unsigned Cursor::Hash::operator()(Cursor c) const
-{
-	return ::clang_hashCursor(c.m_cursor);
-}
-
-Type::Type(CXType type) :
-	m_type{type}
-{
-}
-
-std::string Type::Spelling() const
-{
-	return XStr{::clang_getTypeSpelling(m_type)}.Str();
-}
-
-std::ostream& operator<<(std::ostream& os, const Type& t)
-{
-	return os << t.Spelling() << ": " << " (" << t.Declaration().USR() << ")";
-}
-
-Cursor Type::Declaration() const
-{
-	return {::clang_getTypeDeclaration(m_type)};
-}
-
-std::string Type::Kind() const
-{
-	return XStr{::clang_getTypeKindSpelling(m_type.kind)}.Str();
-}
-
 void TranslationUnit::diag_iterator::increment()
 {
 	m_idx++;
@@ -234,11 +102,6 @@ Diagnostic TranslationUnit::diag_iterator::dereference() const
 std::string Diagnostic::Str() const
 {
 	return XStr{::clang_formatDiagnostic(m_diag.get(), ::clang_defaultDiagnosticDisplayOptions())}.Str();
-}
-
-Type Type::ClassType() const
-{
-	return {::clang_Type_getClassType(m_type)};
 }
 
 } // end of namespace

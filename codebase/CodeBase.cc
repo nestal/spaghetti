@@ -12,6 +12,7 @@
 
 #include "CodeBase.hh"
 
+#include "libclx/Cursor.hh"
 #include <iostream>
 
 namespace codebase {

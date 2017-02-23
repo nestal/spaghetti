@@ -15,6 +15,7 @@
 #include "Function.hh"
 #include "Variable.hh"
 
+#include "libclx/Cursor.hh"
 #include <iostream>
 
 namespace codebase {
@@ -106,15 +107,11 @@ void DataType::RemoveUnused()
 
 void DataType::VisitFunction(libclx::Cursor func)
 {
-	auto it = std::find_if(m_functions.begin(), m_functions.end(), [func](auto& f){
-		return f->ID() == func.USR();
-	});
+	auto it = FindByID(m_functions, func.USR());
 	
 	// the definition of a member function should come after its declaration
 	if (it != m_functions.end())
 		(*it)->Visit(func);
-	
-	std::cout << Name() << " is " << (IsUsed() ? "used" : "not used") << std::endl;
 }
 	
 } // end of namespace

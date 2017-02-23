@@ -14,7 +14,7 @@
 
 #include "Entity.hh"
 
-#include "libclx/Index.hh"
+#include "libclx/Type.hh"
 #include "libclx/SourceRange.hh"
 
 namespace codebase {

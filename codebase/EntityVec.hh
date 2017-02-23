@@ -59,4 +59,10 @@ private:
 	std::vector<EntityPtr> m_children;
 };
 
+template <typename EntityContainer>
+auto FindByID(EntityContainer&& cont, const std::string& id) -> typename std::remove_reference_t<EntityContainer>::iterator
+{
+	return std::find_if(cont.begin(), cont.end(), [id](auto& e){return e->ID() == id;});
+}
+
 } // end of namespace

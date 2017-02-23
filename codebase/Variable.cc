@@ -12,6 +12,8 @@
 
 #include "Variable.hh"
 
+#include "libclx/Cursor.hh"
+
 #include <ostream>
 
 namespace codebase {

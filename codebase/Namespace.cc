@@ -12,6 +12,7 @@
 
 #include "Namespace.hh"
 
+#include "libclx/Cursor.hh"
 #include <iostream>
 
 namespace codebase {
@@ -44,7 +45,7 @@ void Namespace::Visit(libclx::Cursor self)
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
 		{
-			auto it = std::find_if(m_types.begin(), m_types.end(), [id](auto& t) { return t->ID() == id; });
+			auto it = FindByID(m_types, id);
 			if (it == m_types.end())
 			{
 				m_types.push_back(Add<DataType>(cursor, this));
@@ -56,7 +57,7 @@ void Namespace::Visit(libclx::Cursor self)
 		
 		case CXCursor_Namespace:
 		{
-			auto it = std::find_if(m_ns.begin(), m_ns.end(), [id](auto& t) { return t->ID() == id; });
+			auto it = FindByID(m_ns, id);
 			if (it == m_ns.end())
 			{
 				m_ns.push_back(Add<Namespace>(cursor, this));
@@ -93,17 +94,10 @@ void Namespace::RemoveUnused()
 
 void Namespace::VisitMemberFunction(libclx::Cursor cursor)
 {
-	auto parent = std::find_if(m_types.begin(), m_types.end(), [cursor](auto& type)
-	{
-		return type->ID() == cursor.SemanticParent().USR();
-	});
+	auto parent = FindByID(m_types, cursor.SemanticParent().USR());
 	
 	if (parent != m_types.end())
-	{
-		std::cout << Name() << " " << cursor.Spelling() << ' ' << cursor.Kind()
-		          << " parent class: " << (*parent)->Name() << std::endl;
 		(*parent)->VisitFunction(cursor);
-	}
 }
 	
 } // end of namespace

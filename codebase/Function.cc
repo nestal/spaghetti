@@ -12,6 +12,9 @@
 
 #include "Function.hh"
 
+#include "libclx/Cursor.hh"
+#include "libclx/Type.hh"
+
 #include <iostream>
 
 namespace codebase {
@@ -36,6 +39,21 @@ void Function::Visit(libclx::Cursor self)
 {
 	assert(Parent());
 	m_definition = self.Location();
+	
+	self.Visit([this](libclx::Cursor cursor, libclx::Cursor)
+	{
+		switch (cursor.Kind())
+		{
+		case CXCursor_ParmDecl:
+			std::cout << Name() << " " <<  cursor.Spelling() << "\"" << cursor.Type() << "\"" << std::endl;
+			break;
+			
+		default:
+			if (!cursor.Location().IsFromSystemHeader())
+				std::cout << Name() << " " <<  cursor.Spelling() << ' ' << cursor.Kind() << std::endl;
+			break;
+		}
+	});
 }
 	
 } // end of namespace
