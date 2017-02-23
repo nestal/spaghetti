@@ -27,6 +27,11 @@ class Namespace : public Entity
 public:
 	Namespace();
 	Namespace(libclx::Cursor cursor, const std::string& parent);
+	Namespace(Namespace&&) = default;
+	Namespace(const Namespace&) = delete;
+	
+	Namespace& operator=(Namespace&) = default;
+	Namespace& operator=(const Namespace&) = delete;
 	
 	const std::string& Name() const override;
 	const std::string& ID() const override;
@@ -45,9 +50,8 @@ private:
 	std::string m_usr;
 	std::string m_parent;
 	
-	EntityVec<Namespace> m_ns;
-	EntityVec<DataType>  m_types;
-	EntityVec<Variable>  m_vars;
+	using EntityPtr = std::unique_ptr<Entity>;
+	std::vector<EntityPtr> m_children;
 };
 	
 } // end of namespace

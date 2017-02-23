@@ -17,20 +17,14 @@ namespace codebase {
 Namespace::Namespace() :
 	m_name{"Root"},
 	m_usr{},
-	m_parent{NullID()},
-	m_ns{"Namespaces", m_usr},
-	m_types{"Types", m_usr},
-	m_vars{"Variables", m_usr}
+	m_parent{NullID()}
 {
 }
 
 Namespace::Namespace(libclx::Cursor cursor, const std::string& parent) :
 	m_name{cursor.Spelling()},
 	m_usr{cursor.USR()},
-	m_parent{parent},
-	m_ns{"Namespaces", m_usr},
-	m_types{"Types", m_usr},
-	m_vars{"Variables", m_usr}
+	m_parent{parent}
 {
 }
 
@@ -56,41 +50,32 @@ std::string Namespace::Type() const
 
 std::size_t Namespace::ChildCount() const
 {
-	return 3;
+	return m_children.size();
 }
 
 const Entity *Namespace::Child(std::size_t idx) const
 {
-	switch (idx)
-	{
-	case 0: return &m_types;
-	case 1: return &m_vars;
-	case 2: return &m_ns;
-	default: return nullptr;
-	}
+	return m_children.at(idx).get();
 }
 
 Entity *Namespace::Child(std::size_t idx)
 {
-	switch (idx)
-	{
-	case 0: return &m_types;
-	case 1: return &m_vars;
-	case 2: return &m_ns;
-	default: return nullptr;
-	}
+	return m_children.at(idx).get();
 }
 
 std::size_t Namespace::IndexOf(const Entity *child) const
 {
-	return child == &m_types ? 0 :
-		(child == &m_vars ? 1 :
-		(child == &m_ns ? 2 : npos));
+	auto it = std::find_if(m_children.begin(), m_children.end(), [child](auto& c){return c.get() == child;});
+	return it != m_children.end() ? static_cast<std::size_t>(it - m_children.begin()) : npos;
 }
 
 void Namespace::Visit(libclx::Cursor self)
 {
-	self.Visit([this](libclx::Cursor cursor, libclx::Cursor)
+	EntityVec<DataType>  types{"", ID()};
+	EntityVec<Namespace> ns{"", ID()};
+	EntityVec<Variable>  vars{"", ID()};
+	
+	self.Visit([this, &types, &ns, &vars](libclx::Cursor cursor, libclx::Cursor)
 	{
 		if (cursor.Location().IsFromSystemHeader())
 			return;
@@ -101,41 +86,39 @@ void Namespace::Visit(libclx::Cursor self)
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
 		{
-			auto it = std::find_if(
-				m_types.begin(), m_types.end(), [id](auto& t)
-				{
-					return t.ID() == id;
-				}
-			);
-			if (it == m_types.end())
-				it = m_types.Add(cursor, m_types.ID());
+			auto it = std::find_if(types.begin(), types.end(), [id, &types](auto& t){return t.ID() == id;});
+			if (it == types.end())
+				it = types.Add(cursor, ID());
 			it->Visit(cursor);
 			break;
 		}
 		
 		case CXCursor_Namespace:
 		{
-			auto it = std::find_if(
-				m_ns.begin(), m_ns.end(), [id](auto& t)
-				{
-					return t.ID() == id;
-				}
-			);
-			if (it == m_ns.end())
-				it = m_ns.Add(cursor, m_ns.ID());
+			auto it = std::find_if(ns.begin(), ns.end(), [id, &ns](auto& t){return t.ID() == id;});
+			if (it == ns.end())
+				it = ns.Add(cursor, ID());
 			it->Visit(cursor);
 			break;
 		}
 		
 		case CXCursor_FieldDecl:
 		{
-			m_vars.Add(cursor, m_vars.ID());
+			vars.Add(cursor, ID());
 			break;
 		}
 		
 		default: break;
 		}
 	});
+	
+	// after the vectors are built, we can take the address of their contents
+	for (auto&& type : types)
+		m_children.push_back(std::make_unique<DataType>(std::move(type)));
+	for (auto&& ns : ns)
+		m_children.push_back(std::make_unique<Namespace>(std::move(ns)));
+	for (auto&& var : vars)
+		m_children.push_back(std::make_unique<Variable>(std::move(var)));
 }
 	
 } // end of namespace
