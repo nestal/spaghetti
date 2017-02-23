@@ -15,6 +15,7 @@
 #include "codebase/Entity.hh"
 #include "codebase/DataType.hh"
 #include "codebase/Namespace.hh"
+#include "codebase/Function.hh"
 
 #include <QtCore/QMimeData>
 #include <QtCore/QIODevice>
@@ -57,6 +58,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	static const std::map<std::type_index, QIcon> icons = {
 		{typeid(const codebase::DataType&),  QIcon{":/images/class.png"}},
 		{typeid(const codebase::Namespace&), QIcon{":/images/namespace.png"}},
+		{typeid(const codebase::Function&),  QIcon{":/images/function.png"}},
 	};
 	
 	switch (role)
@@ -91,7 +93,7 @@ QVariant Model::headerData(int section, Qt::Orientation orientation, int role) c
 		switch (section)
 		{
 		case 0: return tr("Name");
-		case 1: return tr("DataType");
+		case 1: return tr("Type");
 		}
 	}
 		

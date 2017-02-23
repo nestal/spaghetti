@@ -11,6 +11,7 @@
 //
 
 #include "Function.hh"
+#include "Variable.hh"
 
 #include "libclx/Cursor.hh"
 #include "libclx/Type.hh"
@@ -20,7 +21,7 @@
 namespace codebase {
 
 Function::Function(libclx::Cursor first_seen, const Entity *parent) :
-	LeafEntity{first_seen.Spelling(), first_seen.USR(), parent},
+	EntityVec{first_seen.Spelling() + "()", first_seen.USR(), parent},
 	m_definition{first_seen.Location()}
 {
 }
@@ -45,7 +46,8 @@ void Function::Visit(libclx::Cursor self)
 		switch (cursor.Kind())
 		{
 		case CXCursor_ParmDecl:
-			std::cout << Name() << " " <<  cursor.Spelling() << "\"" << cursor.Type() << "\"" << std::endl;
+			Add<Variable>(cursor, this);
+			std::cout << Name() << "::" <<  cursor.Spelling() << "\"" << cursor.Type() << "\"" << std::endl;
 			break;
 			
 		default:
@@ -55,5 +57,10 @@ void Function::Visit(libclx::Cursor self)
 		}
 	});
 }
+
+void Function::RemoveUnused()
+{
 	
+}
+
 } // end of namespace

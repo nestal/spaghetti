@@ -12,13 +12,17 @@
 
 #pragma once
 
-#include "Entity.hh"
+#include "EntityVec.hh"
 
 #include "libclx/SourceRange.hh"
 
+namespace libclx {
+class Cursor;
+}
+
 namespace codebase {
 
-class Function : public LeafEntity
+class Function : public EntityVec
 {
 public:
 	Function(libclx::Cursor first_seen, const Entity *parent);
@@ -27,6 +31,8 @@ public:
 	
 	std::string Type() const override;
 	libclx::SourceLocation Location() const override;
+	
+	void RemoveUnused() override;
 	
 private:
 	libclx::SourceLocation m_definition;
