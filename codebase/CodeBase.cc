@@ -44,7 +44,13 @@ const Entity *CodeBase::Find(const std::string& id) const
 	return it != m_search_index.get<ByID>().end() ? *it : nullptr;
 }
 
-void CodeBase::AddToIndex(const Entity *entity)
+Entity *CodeBase::Find(const std::string& id)
+{
+	auto it = m_search_index.get<ByID>().find(id);
+	return it != m_search_index.get<ByID>().end() ? *it : nullptr;
+}
+
+void CodeBase::AddToIndex(Entity *entity)
 {
 	m_search_index.insert(entity);
 	

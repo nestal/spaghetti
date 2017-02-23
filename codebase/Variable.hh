@@ -31,6 +31,8 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 
+	void CrossReference(EntityMap *map) override;
+	
 private:
 	libclx::SourceLocation m_location;
 	libclx::Type   m_type;

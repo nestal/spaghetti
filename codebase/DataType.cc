@@ -105,7 +105,7 @@ std::ostream& operator<<(std::ostream& os, const DataType& c)
 	return os;
 }
 
-void DataType::RemoveUnused()
+void DataType::CrossReference(EntityMap *)
 {
 	
 }
@@ -118,5 +118,15 @@ void DataType::VisitFunction(libclx::Cursor func)
 	if (it != m_functions.end())
 		(*it)->Visit(func);
 }
-	
+
+void DataType::MarkUsed()
+{
+	m_used = true;
+}
+
+bool DataType::IsUsed() const
+{
+	return m_used || EntityVec::IsUsed();
+}
+
 } // end of namespace

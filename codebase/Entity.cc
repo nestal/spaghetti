@@ -108,7 +108,7 @@ bool LeafEntity::IsUsed() const
 	return Location().IsFromMainFile();
 }
 
-void LeafEntity::RemoveUnused()
+void LeafEntity::CrossReference(EntityMap *)
 {
 }
 

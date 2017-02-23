@@ -67,13 +67,17 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 
-	void RemoveUnused() override;
+	void MarkUsed();
+	bool IsUsed() const override;
+	void CrossReference(EntityMap *map) override;
 	
 private:
 	libclx::SourceLocation   m_definition;
 	std::vector<std::string> m_base_classes;
 	std::vector<Variable*>   m_fields;
 	std::vector<Function*>   m_functions;
+	
+	bool m_used{false};
 };
 	
 } // end of namespace

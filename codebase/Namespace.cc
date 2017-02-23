@@ -87,7 +87,7 @@ void Namespace::Visit(libclx::Cursor self)
 	});
 }
 
-void Namespace::RemoveUnused()
+void Namespace::CrossReference(EntityMap *)
 {
 	
 }
