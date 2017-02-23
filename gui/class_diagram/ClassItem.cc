@@ -20,13 +20,14 @@
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QGraphicsScene>
+#include <iostream>
 
 namespace gui {
 namespace class_diagram {
 
 const qreal ClassItem::m_margin{10.0};
 
-const qreal ClassItem::m_max_width{200.0}, ClassItem::m_max_height{400.0};
+const qreal ClassItem::m_max_width{200.0}, ClassItem::m_max_height{300.0};
 
 ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
 	QObject{model},
@@ -38,16 +39,45 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	font.setBold(true);
 	m_name->setFont(font);
 	
-	auto bounding      = m_name->boundingRect().size();
-	auto function_ymax = (m_max_height - bounding.height()) / 2 + bounding.height();
+	auto bounding = m_name->boundingRect().size();
 	
+	// assume all text items are of the same height
+	auto total_rows = static_cast<std::size_t>(m_max_height/bounding.height());
+	
+	// one row for the name
+	assert(total_rows > 0);
+	total_rows--;
+	
+	auto function_count = std::min(m_class.Functions().size(), total_rows);
+	auto field_count    = std::min(m_class.Fields().size(), total_rows);
+	std::cout << "bfore func = " << function_count << " field = " << field_count << " total = " << total_rows << std::endl;
+	
+	if ( field_count <= total_rows/2 && function_count > total_rows/2)
+		function_count = std::min(total_rows - field_count, function_count);
+	else if (function_count <= total_rows/2 && field_count > total_rows/2)
+		field_count = std::min(total_rows - function_count, field_count);
+	else if (field_count > total_rows/2 && function_count > total_rows/2)
+		field_count = function_count = total_rows/2;
+	
+	std::cout << "after func = " << function_count << " field = " << field_count << " total = " << total_rows << std::endl;
+	
+	assert(function_count <= total_rows);
+	assert(field_count    <= total_rows);
+	assert(function_count + field_count <= total_rows);
+	
+	std::size_t index=0;
 	for (auto& func : m_class.Functions())
-		if ( !CreateTextItem(&func, bounding, function_ymax) )
-			break;
-	
+	{
+		if (++index > function_count) break;
+		CreateTextItem(&func, bounding);
+	}
+	index=0;
 	for (auto& field : m_class.Fields())
-		if ( !CreateTextItem(&field, bounding, m_max_height) )
-			break;
+	{
+		if (++index > field_count) break;
+		CreateTextItem(&field, bounding);
+	}
+	m_show_function = function_count;
 	
 	// make all children center at origin
 	for (auto child : childItems())
@@ -87,8 +117,15 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// bounding rectangle
 	painter->drawRect(m_bounding);
 	
-	// line between class name and fields
+	// line between class name and function
 	auto ypos = m_name->y() + m_name->boundingRect().height();
+	painter->drawLine(
+		QPointF{m_bounding.left(), ypos},
+		QPointF{m_bounding.right(), ypos}
+	);
+	
+	// line between functions and fields
+	ypos += m_show_function * m_name->boundingRect().height();
 	painter->drawLine(
 		QPointF{m_bounding.left(), ypos},
 		QPointF{m_bounding.right(), ypos}
@@ -168,29 +205,24 @@ void ClassItem::MarkUnchanged()
 	m_changed = false;
 }
 
-bool ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal ymax)
+void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
 {
 	assert(entity);
 	
-	if (bounding.height() < ymax)
-	{
-		auto field_item = new QGraphicsSimpleTextItem{
-			QFontMetrics{QFont{}}.elidedText(
-				QString::fromStdString(entity->Render()),
-				Qt::ElideRight,
-				static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
-				0
-			),
-			this
-		};
-		field_item->moveBy(0, bounding.height());
-		
-		auto rect = field_item->boundingRect();
-		bounding.rheight() += rect.height();
-		bounding.rwidth() = std::max(bounding.width(), rect.width());
-	}
+	auto field_item = new QGraphicsSimpleTextItem{
+		QFontMetrics{QFont{}}.elidedText(
+			QString::fromStdString(entity->Render()),
+			Qt::ElideRight,
+			static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
+			0
+		),
+		this
+	};
+	field_item->moveBy(0, bounding.height());
 	
-	return bounding.height() < ymax;
+	auto rect = field_item->boundingRect();
+	bounding.rheight() += rect.height();
+	bounding.rwidth()   = std::max(bounding.width(), rect.width());
 }
 	
 }} // end of namespace

@@ -59,14 +59,15 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	bool CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal ymax);
+	void CreateTextItem(const codebase::Entity *entity, QSizeF& bounding);
 	
 private:
 	const codebase::DataType& m_class;
 	QRectF m_bounding;
 	QGraphicsSimpleTextItem *m_name;
 	std::vector<Edge*> m_edges;
-	
+
+	std::size_t        m_show_function{0};
 	mutable bool       m_changed{false};
 		
 	static const qreal m_margin, m_max_width, m_max_height;
