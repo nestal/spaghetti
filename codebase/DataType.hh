@@ -37,10 +37,9 @@ class EditAction;
  * This class represent particular data type in the code base. A data type is an
  * entity that can be used to definite data in C++.
  */
-class DataType : public Entity
+class DataType : public EntityVec
 {
 public:
-	using field_iterator = EntityVec<Variable>::const_iterator;
 	using idvec_iterator = std::vector<std::string>::const_iterator;
 	
 public:
@@ -50,35 +49,20 @@ public:
 	DataType& operator=(DataType&&) = default;
 	DataType& operator=(const DataType&) = delete;
 	
-	const std::string& Name() const override;
-	const std::string& ID() const override;
 	std::string Type() const override;
-	const std::string& Parent() const override;
 	
 	libclx::SourceLocation Location() const override;
 	
 	void Visit(libclx::Cursor self);
 	
-	boost::iterator_range<field_iterator> Fields() const;
 	boost::iterator_range<idvec_iterator> BaseClasses() const;
 
 	bool IsBaseOf(const DataType& other) const;
 	
-	std::size_t ChildCount() const override;
-	const Entity* Child(std::size_t idx) const override;
-	Entity* Child(std::size_t idx) override;
-	std::size_t IndexOf(const Entity* child) const override;
-	
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 
 private:
-	std::string m_name;
-	std::string m_usr;
-	std::string m_parent;
-	
 	libclx::SourceLocation m_definition;
-	EntityVec<Variable>    m_fields{"Fields", m_usr};
-	
 	std::vector<std::string> m_base_classes;
 };
 	

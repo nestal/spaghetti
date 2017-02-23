@@ -38,8 +38,9 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	
 	auto dx = m_name->boundingRect().width();
 	auto dy = m_name->boundingRect().height();
-	for (auto& field : m_class.Fields())
+	for (auto& cen : m_class)
 	{
+		auto& field = dynamic_cast<const codebase::Variable&>(cen);
 		auto field_item = new QGraphicsSimpleTextItem{
 			QFontMetrics{QFont{}}.elidedText(
 				QString::fromStdString(field.Name() + ":" + field.Type()),
