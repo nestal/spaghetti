@@ -11,3 +11,31 @@
 //
 
 #include "Function.hh"
+
+#include <iostream>
+
+namespace codebase {
+
+Function::Function(libclx::Cursor first_seen, const Entity *parent) :
+	LeafEntity{first_seen.Spelling(), first_seen.USR(), parent},
+	m_definition{first_seen.Location()}
+{
+}
+
+libclx::SourceLocation Function::Location() const
+{
+	return m_definition;
+}
+
+std::string Function::Type() const
+{
+	return "function";
+}
+
+void Function::Visit(libclx::Cursor self)
+{
+	assert(Parent());
+	m_definition = self.Location();
+}
+	
+} // end of namespace

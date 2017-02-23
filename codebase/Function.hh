@@ -14,10 +14,22 @@
 
 #include "Entity.hh"
 
+#include "libclx/SourceRange.hh"
+
 namespace codebase {
 
 class Function : public LeafEntity
 {
+public:
+	Function(libclx::Cursor first_seen, const Entity *parent);
+	
+	void Visit(libclx::Cursor self);
+	
+	std::string Type() const override;
+	libclx::SourceLocation Location() const override;
+	
+private:
+	libclx::SourceLocation m_definition;
 };
 	
 } // end of namespace

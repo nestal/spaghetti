@@ -12,6 +12,9 @@
 
 #include "DataType.hh"
 
+#include "Function.hh"
+#include "Variable.hh"
+
 #include <iostream>
 
 namespace codebase {
@@ -46,9 +49,13 @@ void DataType::Visit(libclx::Cursor self)
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
 	
+		case CXCursor_CXXMethod:
+			m_functions.push_back(Add<Function>(child, this));
+			break;
+			
 		default:
 //			if (!child.Location().IsFromSystemHeader())
-//				std::cout << m_name << " " <<  child.Spelling() << ' ' << child.Kind() << std::endl;
+//				std::cout << Name() << " " <<  child.Spelling() << ' ' << child.Kind() << std::endl;
 			break;
 		}
 	});
@@ -97,4 +104,17 @@ void DataType::RemoveUnused()
 	
 }
 
+void DataType::VisitFunction(libclx::Cursor func)
+{
+	auto it = std::find_if(m_functions.begin(), m_functions.end(), [func](auto& f){
+		return f->ID() == func.USR();
+	});
+	
+	// the definition of a member function should come after its declaration
+	if (it != m_functions.end())
+		(*it)->Visit(func);
+	
+	std::cout << Name() << " is " << (IsUsed() ? "used" : "not used") << std::endl;
+}
+	
 } // end of namespace

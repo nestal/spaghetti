@@ -147,6 +147,16 @@ Cursor Cursor::GetDefinition() const
 	return {::clang_getCursorDefinition(m_cursor)};
 }
 
+Cursor Cursor::SemanticParent() const
+{
+	return {::clang_getCursorSemanticParent(m_cursor)};
+}
+
+Cursor Cursor::LexicalParent() const
+{
+	return {::clang_getCursorLexicalParent(m_cursor)};
+}
+
 bool Cursor::IsDeclaration() const
 {
 	return ::clang_isDeclaration(Kind()) != 0 ;
@@ -226,5 +236,9 @@ std::string Diagnostic::Str() const
 	return XStr{::clang_formatDiagnostic(m_diag.get(), ::clang_defaultDiagnosticDisplayOptions())}.Str();
 }
 
+Type Type::ClassType() const
+{
+	return {::clang_Type_getClassType(m_type)};
+}
 
 } // end of namespace

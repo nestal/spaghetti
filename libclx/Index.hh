@@ -143,6 +143,8 @@ public:
 	bool IsDeclaration() const;
 	
 	Cursor GetDefinition() const;
+	Cursor SemanticParent() const;
+	Cursor LexicalParent() const;
 	
 	std::string Spelling() const ;
 	std::string DisplayName() const;
@@ -189,6 +191,7 @@ public:
 	Cursor Declaration() const;
 	
 	std::string Kind() const;
+	Type ClassType() const;
 	
 	friend std::ostream& operator<<(std::ostream& os, const Type& t);
 	

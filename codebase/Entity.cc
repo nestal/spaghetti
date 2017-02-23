@@ -60,6 +60,7 @@ LeafEntity::LeafEntity(const std::string& name, const std::string& usr, const En
 	m_usr{usr},
 	m_parent{parent}
 {
+	assert(m_parent);
 }
 
 std::size_t LeafEntity::ChildCount() const

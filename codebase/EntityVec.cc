@@ -19,6 +19,7 @@ EntityVec::EntityVec( const std::string& name, const std::string& usr, const Ent
 	m_id{usr},
 	m_parent{parent}
 {
+	assert(m_parent || usr == NullID());
 }
 
 const std::string& EntityVec::Name() const

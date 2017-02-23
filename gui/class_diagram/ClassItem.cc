@@ -14,6 +14,7 @@
 #include "Edge.hh"
 
 #include "codebase/DataType.hh"
+#include "codebase/Variable.hh"
 
 #include <QtGui/QFont>
 #include <QtGui/QPainter>

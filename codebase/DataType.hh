@@ -13,9 +13,8 @@
 
 #pragma once
 
-#include "Entity.hh"
-#include "Variable.hh"
 #include "EntityVec.hh"
+#include "libclx/SourceRange.hh"
 
 #include <boost/iterator/indirect_iterator.hpp>
 #include <boost/range/iterator_range_core.hpp>
@@ -24,13 +23,10 @@
 #include <vector>
 #include <iosfwd>
 
-namespace libclx {
-class SourceLocation;
-}
-
 namespace codebase {
 
-class EditAction;
+class Function;
+class Variable;
 
 /**
  * \brief Represent a C++ class/struct in the CodeBase.
@@ -56,6 +52,7 @@ public:
 	libclx::SourceLocation Location() const override;
 	
 	void Visit(libclx::Cursor self);
+	void VisitFunction(libclx::Cursor func);
 	
 	boost::iterator_range<field_iterator> Fields() const;
 	boost::iterator_range<idvec_iterator> BaseClasses() const;
@@ -70,6 +67,7 @@ private:
 	libclx::SourceLocation   m_definition;
 	std::vector<std::string> m_base_classes;
 	std::vector<Variable*>   m_fields;
+	std::vector<Function*>   m_functions;
 };
 	
 } // end of namespace

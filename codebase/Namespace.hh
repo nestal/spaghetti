@@ -40,6 +40,9 @@ public:
 	void RemoveUnused() override;
 	
 private:
+	void VisitMemberFunction(libclx::Cursor cursor);
+	
+private:
 	std::vector<DataType*>  m_types;
 	std::vector<Namespace*> m_ns;
 	std::vector<Variable*>  m_vars;
