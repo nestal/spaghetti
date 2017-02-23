@@ -44,16 +44,8 @@ void Namespace::Visit(libclx::Cursor self)
 		{
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
-		{
-			auto it = FindByID(m_types, id);
-			if (it == m_types.end())
-			{
-				m_types.push_back(Add<DataType>(cursor, this));
-				it = --m_types.end();
-			}
-			(*it)->Visit(cursor);
+			AddUnique<DataType>(m_types, id, cursor, this)->Visit(cursor);
 			break;
-		}
 		
 		case CXCursor_Namespace:
 		{

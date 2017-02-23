@@ -51,6 +51,9 @@ public:
 		return ptr;
 	}
 	
+	template <typename Type, typename EntityContainer, typename... Args>
+	Type* AddUnique(EntityContainer&& cont, const std::string& id, Args... arg);
+	
 	void MarkUsed() override;
 	bool IsUsed() const override;
 	
@@ -67,6 +70,18 @@ template <typename EntityContainer>
 auto FindByID(EntityContainer&& cont, const std::string& id) -> typename std::remove_reference_t<EntityContainer>::iterator
 {
 	return std::find_if(cont.begin(), cont.end(), [id](auto& e){return e->ID() == id;});
+}
+
+template <typename Type, typename EntityContainer, typename... Args>
+Type* EntityVec::AddUnique(EntityContainer&& cont, const std::string& id, Args... arg)
+{
+	auto it = FindByID(cont, id);
+	if (it == cont.end())
+	{
+		cont.push_back(Add<Type>(std::forward<Args>(arg)...));
+		it = --cont.end();
+	}
+	return *it;
 }
 
 } // end of namespace
