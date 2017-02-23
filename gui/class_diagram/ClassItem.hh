@@ -59,7 +59,7 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	void CreateTextItem(const codebase::Entity *entity, QSizeF& bounding);
+	bool CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal ymax);
 	
 private:
 	const codebase::DataType& m_class;
@@ -69,7 +69,7 @@ private:
 	
 	mutable bool       m_changed{false};
 		
-	static const qreal m_margin, m_max_width;
+	static const qreal m_margin, m_max_width, m_max_height;
 };
 	
 }} // end of namespace

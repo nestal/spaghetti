@@ -26,7 +26,7 @@ namespace class_diagram {
 
 const qreal ClassItem::m_margin{10.0};
 
-const qreal ClassItem::m_max_width{200.0};
+const qreal ClassItem::m_max_width{200.0}, ClassItem::m_max_height{400.0};
 
 ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
 	QObject{model},
@@ -38,12 +38,16 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	font.setBold(true);
 	m_name->setFont(font);
 	
-	auto bounding = m_name->boundingRect().size();
+	auto bounding      = m_name->boundingRect().size();
+	auto function_ymax = (m_max_height - bounding.height()) / 2 + bounding.height();
+	
 	for (auto& func : m_class.Functions())
-		CreateTextItem(&func, bounding);
+		if ( !CreateTextItem(&func, bounding, function_ymax) )
+			break;
 	
 	for (auto& field : m_class.Fields())
-		CreateTextItem(&field, bounding);
+		if ( !CreateTextItem(&field, bounding, m_max_height) )
+			break;
 	
 	// make all children center at origin
 	for (auto child : childItems())
@@ -164,24 +168,29 @@ void ClassItem::MarkUnchanged()
 	m_changed = false;
 }
 
-void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
+bool ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal ymax)
 {
 	assert(entity);
 	
-	auto field_item = new QGraphicsSimpleTextItem{
-		QFontMetrics{QFont{}}.elidedText(
-			QString::fromStdString(entity->Render()),
-			Qt::ElideRight,
-			static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
-			0
-		),
-		this
-	};
-	field_item->moveBy(0, bounding.height());
+	if (bounding.height() < ymax)
+	{
+		auto field_item = new QGraphicsSimpleTextItem{
+			QFontMetrics{QFont{}}.elidedText(
+				QString::fromStdString(entity->Render()),
+				Qt::ElideRight,
+				static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
+				0
+			),
+			this
+		};
+		field_item->moveBy(0, bounding.height());
+		
+		auto rect = field_item->boundingRect();
+		bounding.rheight() += rect.height();
+		bounding.rwidth() = std::max(bounding.width(), rect.width());
+	}
 	
-	auto rect = field_item->boundingRect();
-	bounding.rheight() += rect.height();
-	bounding.rwidth()   = std::max(bounding.width(), rect.width());
+	return bounding.height() < ymax;
 }
 	
 }} // end of namespace
