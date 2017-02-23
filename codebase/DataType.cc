@@ -43,15 +43,16 @@ void DataType::Visit(libclx::Cursor self)
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
-			m_fields.push_back(Add<Variable>(child, this));
+			AddUnique(m_fields, child.USR(), child, this);
 			break;
 			
 		case CXCursor_CXXBaseSpecifier:
+			// TODO: remove duplicate
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
 	
 		case CXCursor_CXXMethod:
-			m_functions.push_back(Add<Function>(child, this));
+			AddUnique(m_functions, child.USR(), child, this);
 			break;
 			
 		default:
