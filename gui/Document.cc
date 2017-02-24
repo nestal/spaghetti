@@ -144,6 +144,7 @@ void Document::Open(const QString& file)
 	}
 	catch (std::exception&)
 	{
+		QApplication::restoreOverrideCursor();
 		throw;
 	}
 }
