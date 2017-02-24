@@ -52,8 +52,7 @@ public:
 	}
 	
 	template <typename EntityContainer, typename... Args>
-	auto AddUnique(EntityContainer&& cont, const std::string& id, Args... arg) ->
-		typename std::remove_reference_t<EntityContainer>::value_type;
+	auto AddUnique(EntityContainer&& cont, const std::string& id, Args... arg);
 	
 	void MarkUsed() override;
 	bool IsUsed() const override;
@@ -68,14 +67,13 @@ private:
 };
 
 template <typename EntityContainer>
-auto FindByID(EntityContainer&& cont, const std::string& id) -> typename std::remove_reference_t<EntityContainer>::iterator
+auto FindByID(EntityContainer&& cont, const std::string& id)
 {
 	return std::find_if(cont.begin(), cont.end(), [id](auto& e){return e->ID() == id;});
 }
 
 template <typename EntityContainer, typename... Args>
-auto EntityVec::AddUnique(EntityContainer&& cont, const std::string& id, Args... arg) ->
-	typename std::remove_reference_t<EntityContainer>::value_type
+auto EntityVec::AddUnique(EntityContainer&& cont, const std::string& id, Args... arg)
 {
 	using Type = std::remove_pointer_t<typename std::remove_reference_t<EntityContainer>::value_type>;
 
