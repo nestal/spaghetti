@@ -139,6 +139,7 @@ MainWnd::MainWnd() :
 	});
 	
 	m_doc->NewClassDiagram("Class Diagram");
+	tabifyDockWidget(m_ui->m_project_dock, m_ui->m_logical_dock);
 }
 
 MainWnd::~MainWnd() = default;
