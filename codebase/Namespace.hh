@@ -30,7 +30,7 @@ public:
 	Namespace(Namespace&&) = default;
 	Namespace(const Namespace&) = delete;
 	
-	Namespace& operator=(Namespace&) = default;
+	Namespace& operator=(Namespace&&) = default;
 	Namespace& operator=(const Namespace&) = delete;
 	
 	std::string Type() const override;
