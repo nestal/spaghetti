@@ -97,7 +97,7 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 		if (json["version"].toString() != VERSION)
 			throw std::runtime_error("version mismatch!");
 		
-		m_project_dir = (base/json["project_dir"].toString().toStdString()).string();
+		m_project_dir = (base/json["project_dir"].toString().toStdString()).lexically_normal().string();
 		current_path(m_project_dir);
 		
 		m_compile_options.clear();
