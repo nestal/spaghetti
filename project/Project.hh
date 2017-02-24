@@ -33,6 +33,8 @@ class Project
 public:
 	Project() = default;
 	
+	void SetProjectDir(const std::string& dir);
+	const std::string& ProjectDir() const;
 	void AddSource(const std::string& source_file);
 		
 	void Save(const std::string& filename) const;
@@ -56,6 +58,7 @@ public:
 	void Erase(ModelBase *model);
 	
 private:
+	std::string                 m_project_dir{"."};
 	std::vector<std::string>    m_compile_options{
 		"-std=c++14",
 		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",

@@ -42,8 +42,14 @@ void Project::AddSource(const std::string& source_file)
 
 void Project::Save(const std::string& filename) const
 {
+	// all paths stored in disk file is relative to the parent directory
+	auto base = path{filename}.parent_path();
+	
 	QJsonObject root;
 	root.insert("version", VERSION);
+	root.insert("project_dir", QString::fromStdString(
+		relative(m_project_dir, base).string()
+	));
 	
 	QJsonArray cflags;
 	for (auto&& cflag : m_compile_options)
@@ -51,7 +57,6 @@ void Project::Save(const std::string& filename) const
 	
 	root.insert("cflags", cflags);
 	
-	auto base = path{filename}.parent_path();
 	QJsonArray tus;
 
 	for (auto&& tu : m_code_base.TranslationUnits())
@@ -85,9 +90,15 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 	{
 		auto json = QJsonDocument::fromJson(in.readAll()).object();
 		
+		// all paths stored in disk file is relative to the parent directory
+		auto base = path{filename}.parent_path();
+		
 		// TODO: provide backward compatibility in later versions
 		if (json["version"].toString() != VERSION)
 			throw std::runtime_error("version mismatch!");
+		
+		m_project_dir = (base/json["project_dir"].toString().toStdString()).lexically_normal().string();
+		current_path(m_project_dir);
 		
 		m_compile_options.clear();
 		for (auto&& cflag : json["cflags"].toArray())
@@ -98,7 +109,7 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 		m_models.clear();
 		
 		for (auto&& tu : json["translation_units"].toArray())
-			m_code_base.Parse(tu.toString().toStdString(), m_compile_options);
+			m_code_base.Parse((base/tu.toString().toStdString()).string(), m_compile_options);
 		
 		for (auto&& model_jval : json["models"].toArray())
 		{
@@ -147,6 +158,16 @@ void Project::Erase(ModelBase *model)
 const std::vector<std::string>& Project::CompileOptions() const
 {
 	return m_compile_options;
+}
+
+void Project::SetProjectDir(const std::string& dir)
+{
+	m_project_dir = dir;
+}
+
+const std::string& Project::ProjectDir() const
+{
+	return m_project_dir;
 }
 	
 } // end of namespace

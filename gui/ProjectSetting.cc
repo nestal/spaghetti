@@ -31,17 +31,19 @@ ProjectSetting::ProjectSetting(Document& doc, QWidget *parent) :
 		if (!dir.isNull())
 			m_ui->m_project_dir->setText(dir);
 	});
-	
+
+	m_ui->m_project_dir->setText(m_doc.ProjectDir());
 	m_ui->m_compiler_options->setPlainText(m_doc.CompileOptions());
 }
 
+ProjectSetting::~ProjectSetting() = default;
+
 void ProjectSetting::accept()
 {
+	m_doc.SetProjectDir(m_ui->m_project_dir->text());
 	m_doc.SetCompileOptions(m_ui->m_compiler_options->toPlainText());
 	
 	QDialog::accept();
 }
-
-ProjectSetting::~ProjectSetting() = default;
 
 } // end of namespace

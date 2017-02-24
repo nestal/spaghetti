@@ -60,6 +60,8 @@ public:
 	void AddSource(const QString& file);
 	QString CompileOptions() const;
 	void SetCompileOptions(const QString& opts);
+	QString ProjectDir() const;
+	void SetProjectDir(const QString& dir);
 	
 	// docking windows
 	logical_view::LogicalModel* ClassModel();

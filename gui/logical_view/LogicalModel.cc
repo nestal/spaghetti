@@ -46,7 +46,7 @@ int LogicalModel::rowCount(const QModelIndex& parent) const
 	return static_cast<int>(At(parent)->ChildCount());
 }
 
-const codebase::Entity *LogicalModel::At(const QModelIndex& idx) const
+const codebase::Entity* LogicalModel::At(const QModelIndex& idx) const
 {
 	return idx == QModelIndex{} ? m_root : reinterpret_cast<const codebase::Entity *>(idx.internalPointer());
 }
