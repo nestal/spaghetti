@@ -33,6 +33,7 @@ class Project
 public:
 	Project() = default;
 	
+	void SetProjectDir(const std::string& dir);
 	void AddSource(const std::string& source_file);
 		
 	void Save(const std::string& filename) const;

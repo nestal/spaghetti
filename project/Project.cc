@@ -97,8 +97,10 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 		// clear it before reloading the codebase
 		m_models.clear();
 		
+		auto base = path{filename}.parent_path();
+		
 		for (auto&& tu : json["translation_units"].toArray())
-			m_code_base.Parse(tu.toString().toStdString(), m_compile_options);
+			m_code_base.Parse((base/tu.toString().toStdString()).string(), m_compile_options);
 		
 		for (auto&& model_jval : json["models"].toArray())
 		{
