@@ -240,5 +240,15 @@ void Document::SetCompileOptions(const QString& opts)
 		cflags.push_back(flags.toStdString());
 	m_project->SetCompileOptions(cflags.begin(), cflags.end());
 }
+
+QString Document::ProjectDir() const
+{
+	return QString::fromStdString(m_project->ProjectDir());
+}
+
+void Document::SetProjectDir(const QString& dir)
+{
+	m_project->SetProjectDir(dir.toStdString());
+}
 	
 } // end of namespace
