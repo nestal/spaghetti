@@ -33,18 +33,19 @@ namespace fs = boost::filesystem;
 class Document::ProjectModel_ : public QAbstractListModel
 {
 public:
-	ProjectModel_(const codebase::CodeBase* codebase, QObject *parent) :
-		QAbstractListModel{parent}, m_base{fs::absolute(".")}, m_codebase{codebase}
+	ProjectModel_(const codebase::CodeBase* codebase, const fs::path& base, QObject *parent) :
+		QAbstractListModel{parent}, m_base{base}, m_codebase{codebase}
 	{
 		assert(m_codebase);
 	}
 	
-	void Reset(const codebase::CodeBase* codebase)
+	void Reset(const codebase::CodeBase* codebase, const fs::path& base)
 	{
 		assert(m_codebase);
 		
 		beginResetModel();
 		m_codebase = codebase;
+		m_base     = base;
 		endResetModel();
 	}
 	
@@ -57,7 +58,7 @@ public:
 	{
 		auto row = static_cast<std::size_t>(index.row());
 		return role == Qt::DisplayRole && row < m_codebase->Size() ?
-			QString::fromStdString(fs::path{m_codebase->At(row).Spelling()}.filename().string()) :
+			QString::fromStdString(relative(m_codebase->At(row).Spelling(), m_base).string()) :
 			QVariant{};
 	}
 	
@@ -65,7 +66,7 @@ public:
 	using QAbstractItemModel::endResetModel;
 
 private:
-	boost::filesystem::path     m_base;
+	fs::path                   m_base;
 	const codebase::CodeBase   *m_codebase;
 };
 
@@ -83,7 +84,7 @@ Document::Document(QObject *parent) :
 	QObject{parent},
 	m_project{std::make_unique<project::Project>()},
 	m_project_model{std::make_unique<ProjectModel_>(
-		&m_project->CodeBase(), this
+		&m_project->CodeBase(), m_project->ProjectDir(), this
 	)},
 	m_logical_model{std::make_unique<logical_view::LogicalModel>(
 		m_project->CodeBase().Root(), &m_project->CodeBase(), this
@@ -205,7 +206,7 @@ void Document::Reset(std::unique_ptr<project::Project>&& proj)
 	auto p = std::move(proj);
 	swap(m_project, p);
 	
-	m_project_model->Reset(&m_project->CodeBase());
+	m_project_model->Reset(&m_project->CodeBase(), m_project->ProjectDir());
 	m_logical_model->Reset(m_project->CodeBase().Root(), &m_project->CodeBase());
 	
 	// destroy old project by unique_ptr destructor
