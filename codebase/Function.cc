@@ -48,13 +48,13 @@ void Function::Visit(libclx::Cursor self)
 		switch (cursor.Kind())
 		{
 		case CXCursor_ParmDecl:
-			m_args.push_back(Add<Variable>(cursor, this));
-			std::cout << Name() << "::" <<  cursor.Spelling() << "\"" << cursor.Type() << "\"" << std::endl;
+			AddUnique(m_args, cursor.USR(), cursor, this);
+//			std::cout << Name() << "::" <<  cursor.Spelling() << "\"" << cursor.Type() << "\"" << std::endl;
 			break;
 			
 		default:
-			if (!cursor.Location().IsFromSystemHeader())
-				std::cout << Name() << " " <<  cursor.Spelling() << ' ' << cursor.Kind() << std::endl;
+//			if (!cursor.Location().IsFromSystemHeader())
+//				std::cout << Name() << " " <<  cursor.Spelling() << ' ' << cursor.Kind() << std::endl;
 			break;
 		}
 	});

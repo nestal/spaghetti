@@ -145,7 +145,7 @@ MainWnd::~MainWnd() = default;
 
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 {
-	auto loc = m_doc->LocateEntity(idx);
+	auto loc = m_doc->LocateEntity(m_proxy_model->mapToSource(idx));
 	if (loc != libclx::SourceLocation{})
 	{
 		std::string filename;
