@@ -86,10 +86,19 @@
     <addaction name="m_action_delete"/>
     <addaction name="m_action_copy"/>
    </widget>
+   <widget class="QMenu" name="menu_Windows">
+    <property name="title">
+     <string>&amp;Windows</string>
+    </property>
+    <addaction name="m_action_logical_view"/>
+    <addaction name="m_action_project_view"/>
+    <addaction name="m_action_logs"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menu_Project"/>
    <addaction name="menu_Help"/>
+   <addaction name="menu_Windows"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="m_logical_dock">
@@ -246,6 +255,39 @@
   <action name="m_action_cflags">
    <property name="text">
     <string>Compiler &amp;Options...</string>
+   </property>
+  </action>
+  <action name="m_action_logical_view">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Logical View</string>
+   </property>
+  </action>
+  <action name="m_action_project_view">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Project View</string>
+   </property>
+  </action>
+  <action name="m_action_logs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Logs</string>
    </property>
   </action>
  </widget>

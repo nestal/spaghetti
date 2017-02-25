@@ -21,13 +21,11 @@
 #include "source_view/Model.hh"
 #include "libclx/Index.hh"
 
-#include <QtWidgets/QStatusBar>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QInputDialog>
 
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 
@@ -122,6 +120,24 @@ MainWnd::MainWnd() :
 	connect(m_doc.get(), &Document::OnSetCurrentFile, [this](auto& file){
 		this->setWindowTitle("Spaghetti : " + file);}
 	);
+	connect(m_ui->m_logical_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_logical_view->setChecked(val);});
+	connect(m_ui->m_project_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_project_view->setChecked(val);});
+	connect(m_ui->m_log_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_logs->setChecked(val);});
+	connect(m_ui->m_action_logical_view, &QAction::triggered, [this]
+	{
+		m_ui->m_logical_dock->setVisible(!m_ui->m_logical_dock->isVisible());
+		m_ui->m_action_logical_view->setChecked(m_ui->m_logical_dock->isVisible());
+	});
+	connect(m_ui->m_action_project_view, &QAction::triggered, [this]
+	{
+		m_ui->m_project_dock->setVisible(!m_ui->m_project_dock->isVisible());
+		m_ui->m_action_project_view->setChecked(m_ui->m_project_dock->isVisible());
+	});
+	connect(m_ui->m_action_logs, &QAction::triggered, [this]
+	{
+		m_ui->m_log_dock->setVisible(!m_ui->m_log_dock->isVisible());
+		m_ui->m_action_logs->setChecked(m_ui->m_log_dock->isVisible());
+	});
 	setWindowTitle("Spaghetti : " + m_doc->Current());
 	
 	m_doc->NewClassDiagram("Class Diagram");
@@ -186,7 +202,6 @@ bool MainWnd::ConfirmDiscard()
 
 void MainWnd::Log(const QString& message)
 {
-	std::cout << "msg: " << message.toStdString() << std::endl;
 	m_ui->m_log_widget->appendPlainText(message);
 }
 	
