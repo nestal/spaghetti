@@ -43,6 +43,7 @@ include_directories(${Boost_INCLUDE_DIRS} ${LIBCLANG_HEADER})
 
 if (WIN32)
 	set(GUI_TYPE WIN32)
+	set(RC_FILE resources/spaghetti.rc)
 endif()
 
 # get build date
@@ -68,7 +69,7 @@ add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES} ${UTIL_F
 target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES} Qt5::Core)
 
 file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/spaghetti.qrc)
-add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES})
+add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES} ${RC_FILE})
 target_link_libraries(spaghetti-gui spag Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
 
 if (GTEST_FOUND)
