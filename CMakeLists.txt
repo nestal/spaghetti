@@ -7,7 +7,7 @@
 #
 
 cmake_minimum_required(VERSION 3.6)
-project(spaghetti VERSION 0.1)
+project(spaghetti VERSION 0.2)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -140,7 +140,7 @@ set(CPACK_PACKAGE_EXECUTABLES "spaghetti-gui" "Spaghetti: source code analyzer")
 set(CPACK_PACKAGE_NAME "spaghetti-gui")
 set(CPACK_PACKAGE_VENDOR "nestal.net")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
-set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "2")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 
-INCLUDE(CPack)
+include(CPack)
