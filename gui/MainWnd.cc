@@ -21,6 +21,7 @@
 #include "source_view/Model.hh"
 #include "libclx/Index.hh"
 
+#include <QtWidgets/QStatusBar>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QInputDialog>
@@ -92,6 +93,7 @@ MainWnd::MainWnd() :
 			try
 			{
 				m_doc->Open(file);
+				statusBar()->showMessage(m_doc->CompileDiagnotics());
 			}
 			catch (std::exception& e)
 			{

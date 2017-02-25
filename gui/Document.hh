@@ -63,6 +63,8 @@ public:
 	QString ProjectDir() const;
 	void SetProjectDir(const QString& dir);
 	
+	QString CompileDiagnotics() const;
+	
 	// docking windows
 	logical_view::LogicalModel* ClassModel();
 	QAbstractItemModel* ProjectModel();

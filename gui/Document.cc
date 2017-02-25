@@ -20,6 +20,7 @@
 #include "project/Project.hh"
 
 #include <QtCore/QAbstractListModel>
+#include <QtCore/QTextStream>
 #include <QtWidgets/QApplication>
 
 #include <boost/filesystem.hpp>
@@ -250,6 +251,18 @@ QString Document::ProjectDir() const
 void Document::SetProjectDir(const QString& dir)
 {
 	m_project->SetProjectDir(dir.toStdString());
+}
+
+QString Document::CompileDiagnotics() const
+{
+	QString result;
+	QTextStream str{&result};
+	
+	for (auto&& tu : m_project->CodeBase().TranslationUnits())
+		for (auto&& diag : tu.Diagnostics())
+			str << diag.Str().c_str();
+	
+	return result;
 }
 	
 } // end of namespace
