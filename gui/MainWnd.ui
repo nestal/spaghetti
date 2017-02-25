@@ -97,8 +97,8 @@
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menu_Project"/>
-   <addaction name="menu_Help"/>
    <addaction name="menu_Windows"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="m_logical_dock">

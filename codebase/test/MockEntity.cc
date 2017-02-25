@@ -36,8 +36,13 @@ bool MockEntity::IsUsed() const
 	return true;
 }
 
-void MockEntity::RemoveUnused()
+void MockEntity::MarkUsed()
 {
 }
-	
+
+void MockEntity::CrossReference(EntityMap *map)
+{
+	LeafEntity::CrossReference(map);
+}
+
 }} // end of namespace

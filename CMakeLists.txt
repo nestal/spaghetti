@@ -21,6 +21,7 @@ find_package(Threads)
 # find libclang
 find_library(LIBCLANG_LIBRARY NAMES clang libclang HINTS ${LIBCLANG_PREFIX})
 find_path(LIBCLANG_HEADER clang-c/Index.h HINTS ${LIBCLANG_PREFIX})
+find_file(LIBCLANG_DLL libclang.dll HINTS ${LIBCLANG_PREFIX}/bin)
 
 if (NOT LIBCLANG_LIBRARY OR NOT LIBCLANG_HEADER)
 	message(FATAL_ERROR "Cannot find libclang!")
@@ -41,8 +42,10 @@ elseif (MSVC)
 endif()
 include_directories(${Boost_INCLUDE_DIRS} ${LIBCLANG_HEADER})
 
-if (WIN32)
+# look like mingw doesn't need this either
+if (MSVC)
 	set(GUI_TYPE WIN32)
+	set(RC_FILE resources/spaghetti.rc)
 endif()
 
 # get build date
@@ -68,8 +71,9 @@ add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES} ${UTIL_F
 target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES} Qt5::Core)
 
 file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/spaghetti.qrc)
-add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES})
+add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES} ${RC_FILE})
 target_link_libraries(spaghetti-gui spag Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
+install(TARGETS spaghetti-gui RUNTIME DESTINATION bin)
 
 if (GTEST_FOUND)
 	include_directories(${GTEST_INCLUDE_DIRS})
@@ -79,3 +83,64 @@ if (GTEST_FOUND)
 	add_executable(unittest ${TEST_FILES})
 	target_link_libraries(unittest ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} spag)
 endif(GTEST_FOUND)
+
+if (LINUX)
+	set(CPACK_GENERATOR "RPM")
+elseif(WIN32)
+	
+	# NSIS specific settings
+	set(CPACK_GENERATOR "NSIS")
+	set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/resources/fork.ico")
+	set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/resources/fork.ico")
+
+	# install dependent libraries
+	install(FILES ${LIBCLANG_DLL} DESTINATION bin)
+
+	get_target_property(QtCore_location_Release     Qt5::Core    LOCATION_Release)
+	get_filename_component(QT_BINARY_DIR "${QtCore_location_Release}" DIRECTORY)
+
+	message(STATUS "qt is at ${QT_BINARY_DIR}")
+
+	install(FILES
+		${QT_BINARY_DIR}/Qt5Core.dll
+		${QT_BINARY_DIR}/Qt5Widgets.dll
+		${QT_BINARY_DIR}/Qt5Gui.dll
+		${QT_BINARY_DIR}/d3dcompiler_47.dll
+		${QT_BINARY_DIR}/libEGL.dll
+		${QT_BINARY_DIR}/libGLESV2.dll
+		${QT_BINARY_DIR}/opengl32sw.dll
+
+		DESTINATION bin
+	)
+	set(QT_PLUGINS_DIR "${QT_BINARY_DIR}/../plugins")
+	install(FILES
+		${QT_PLUGINS_DIR}/iconengines/qsvgicon.dll
+		DESTINATION bin/iconengines
+	)
+	install(FILES
+		${QT_PLUGINS_DIR}/platforms/qwindows.dll
+		DESTINATION bin/platforms
+	)
+	install(FILES
+		${QT_PLUGINS_DIR}/imageformats/qdds.dll
+		${QT_PLUGINS_DIR}/imageformats/qgif.dll
+		${QT_PLUGINS_DIR}/imageformats/qicns.dll
+		${QT_PLUGINS_DIR}/imageformats/qico.dll
+		${QT_PLUGINS_DIR}/imageformats/qjpeg.dll
+		${QT_PLUGINS_DIR}/imageformats/qsvg.dll
+		${QT_PLUGINS_DIR}/imageformats/qtga.dll
+		${QT_PLUGINS_DIR}/imageformats/qtiff.dll
+		${QT_PLUGINS_DIR}/imageformats/qwbmp.dll
+		${QT_PLUGINS_DIR}/imageformats/qwebp.dll
+		DESTINATION bin/imageformats
+	)
+endif()
+
+set(CPACK_PACKAGE_EXECUTABLES "spaghetti-gui" "Spaghetti: source code analyzer")
+set(CPACK_PACKAGE_NAME "spaghetti-gui")
+set(CPACK_PACKAGE_VENDOR "nestal.net")
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+
+INCLUDE(CPack)

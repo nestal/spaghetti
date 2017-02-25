@@ -22,8 +22,8 @@ class TestEntityVec : public EntityVec
 {
 public:
 	using EntityVec::EntityVec;
-	void RemoveUnused() override {}
 	std::string Type() const override {return {};}
+	void CrossReference(EntityMap *) override {}
 };
 
 TEST(EntityVecTest, Constructor_Wont_Throw)
