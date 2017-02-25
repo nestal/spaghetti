@@ -140,6 +140,10 @@ MainWnd::MainWnd() :
 		m_doc->NewClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
 	});
 	connect(m_doc.get(), &Document::OnCompileDiagnotics, this, &MainWnd::Log);
+	connect(m_doc.get(), &Document::OnSetCurrentFile, [this](auto& file){
+		this->setWindowTitle("Spaghetti : " + file);}
+	);
+	setWindowTitle("Spaghetti : " + m_doc->Current());
 	
 	m_doc->NewClassDiagram("Class Diagram");
 	tabifyDockWidget(m_ui->m_project_dock, m_ui->m_logical_dock);

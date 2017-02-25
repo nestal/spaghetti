@@ -91,6 +91,7 @@ Document::Document(QObject *parent) :
 		m_project->CodeBase().Root(), &m_project->CodeBase(), this
 	)}
 {
+	SetCurrentFile(tr("Untitled"));
 }
 
 Document::~Document() = default;
@@ -147,6 +148,7 @@ void Document::Open(const QString& file)
 				emit OnCompileDiagnotics(QString::fromStdString(diag.Str()));
 		
 		Reset(std::move(proj));
+		SetCurrentFile(file);
 	}
 	catch (std::exception&)
 	{
@@ -158,6 +160,7 @@ void Document::Open(const QString& file)
 void Document::SaveAs(const QString& file)
 {
 	m_project->Save(file.toStdString());
+	SetCurrentFile(file);
 }
 
 QAbstractItemModel* Document::ProjectModel()
@@ -202,6 +205,7 @@ void Document::New()
 {
 	// don't destroy the origin project yet, because some models may still be referring to it
 	Reset(std::make_unique<project::Project>());
+	SetCurrentFile(tr("Untitled"));
 	
 	NewClassDiagram("Class Diagram");
 }
@@ -267,6 +271,17 @@ QString Document::CompileDiagnotics() const
 			str << diag.Str().c_str();
 	
 	return result;
+}
+
+const QString& Document::Current() const
+{
+	return m_current_file;
+}
+
+void Document::SetCurrentFile(const QString& file)
+{
+	m_current_file = QString::fromStdString(fs::path{file.toStdString()}.filename().string());
+	emit OnSetCurrentFile(m_current_file);
 }
 	
 } // end of namespace
