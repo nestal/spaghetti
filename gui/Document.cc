@@ -142,6 +142,10 @@ void Document::Open(const QString& file)
 		proj->Open(file.toStdString(), factory);
 		QApplication::restoreOverrideCursor();
 		
+		for (auto&& tu : proj->CodeBase().TranslationUnits())
+			for (auto&& diag : tu.Diagnostics())
+				emit OnCompileDiagnotics(QString::fromStdString(diag.Str()));
+		
 		Reset(std::move(proj));
 	}
 	catch (std::exception&)

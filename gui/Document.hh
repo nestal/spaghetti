@@ -82,6 +82,7 @@ signals:
 	void OnCreateClassDiagramView(class_diagram::ClassModel *model);
 	void OnCreateSourceView(source_view::Model *model);
 	void OnDestroyModel(project::ModelBase *model);
+	void OnCompileDiagnotics(const QString& line);
 	
 private:
 	void Reset(std::unique_ptr<project::Project>&& proj);
