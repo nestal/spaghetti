@@ -48,9 +48,9 @@ void DataType::Visit(libclx::Cursor self)
 			
 		case CXCursor_CXXBaseSpecifier:
 			// TODO: remove duplicate
-			if (child.GetDefinition().Kind() == CXCursor_TypedefDecl)
+//			if (child.GetDefinition().Kind() == CXCursor_TypedefDecl)
 //				child = child.Referenced();
-		std::cout << "base = " << child.GetDefinition().Spelling() << " " << child.GetDefinition().Kind() << std::endl;
+//		std::cout << "base = " << child.GetDefinition().Spelling() << " " << child.GetDefinition().Kind() << std::endl;
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
 	
@@ -99,6 +99,19 @@ bool DataType::IsBaseOf(const DataType& other) const
 {
 	return std::find(other.m_base_classes.begin(), other.m_base_classes.end(), ID()) !=
 		other.m_base_classes.end();
+}
+
+bool DataType::IsUsedInMember(const DataType& other) const
+{
+	for (auto&& field : Fields())
+		std::cout << Name() << ":" << field.Name() << " " << field.TypeID() << " " << other.Name() << ":" << other.ID() << std::endl;
+	
+	auto fields = other.Fields();
+	auto& id = ID();
+	return std::find_if(fields.begin(), fields.end(), [&id](auto field)
+	{
+		return field.TypeID() == id;
+	}) != fields.end();
 }
 
 boost::iterator_range<DataType::field_iterator> DataType::Fields() const

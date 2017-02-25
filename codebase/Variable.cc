@@ -47,6 +47,11 @@ std::string Variable::UML() const
 	return Name() + " : " + Type();
 }
 
+std::string Variable::TypeID() const
+{
+	return m_type.Declaration().USR();
+}
+
 void Variable::CrossReference(EntityMap *map)
 {
 	if (IsUsed())

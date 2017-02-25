@@ -16,6 +16,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -61,7 +62,10 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 	
 	QLineF to_draw{from_pt, to_pt};
 	painter->drawLine(to_draw);
-	DrawArrow(painter, to_draw);
+	
+	auto relation = m_from->RelationOf(m_to);
+	if (relation == ItemRelation::base_class_of || relation == ItemRelation::derived_class_of)
+		DrawArrow(painter, to_draw);
 }
 
 QRectF Edge::boundingRect() const
@@ -119,7 +123,7 @@ void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
 
 bool Edge::IsChanged() const
 {
-	return false;//m_from->IsChanged() || m_to->IsChanged();
+	return false;
 }
 
 }} // end of namespace

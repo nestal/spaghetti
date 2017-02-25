@@ -64,6 +64,7 @@ public:
 	boost::iterator_range<idvec_iterator> BaseClasses() const;
 
 	bool IsBaseOf(const DataType& other) const;
+	bool IsUsedInMember(const DataType& other) const;
 	
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 
