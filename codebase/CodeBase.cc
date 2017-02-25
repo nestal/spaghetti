@@ -62,8 +62,8 @@ void CodeBase::AddToIndex(Entity *entity)
 void CodeBase::CrossReference(Entity *entity)
 {
 	entity->CrossReference(this);
-	for (auto&& c : *entity)
-		CrossReference(&c);
+	for (auto&& child : *entity)
+		CrossReference(&child);
 }
 
 const Entity *CodeBase::Root() const

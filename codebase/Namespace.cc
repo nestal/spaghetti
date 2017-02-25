@@ -69,7 +69,6 @@ void Namespace::Visit(libclx::Cursor self)
 
 void Namespace::CrossReference(EntityMap *)
 {
-	
 }
 
 void Namespace::VisitMemberFunction(libclx::Cursor cursor)

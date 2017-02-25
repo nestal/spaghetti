@@ -65,9 +65,7 @@ void Function::CrossReference(EntityMap *)
 	if (IsUsed())
 	{
 		for (auto& arg : m_args)
-		{
-			arg->IsUsed();
-		}
+			arg->MarkUsed();
 	}
 }
 
