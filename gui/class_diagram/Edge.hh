@@ -42,6 +42,8 @@ public:
 	
 private:
 	void DrawArrow(QPainter *painter, const QLineF& dia) const;
+	void DrawArrowHead(QPainter *painter, ItemRelation relation) const;
+	void DrawArrowTail(QPainter *painter, ItemRelation relation) const;
 	
 private:
 	const BaseItem *m_from;
