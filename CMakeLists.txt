@@ -90,6 +90,8 @@ elseif(WIN32)
 	
 	# NSIS specific settings
 	set(CPACK_GENERATOR "NSIS")
+	set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/resources/fork.ico")
+	set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/resources/fork.ico")
 
 	# install dependent libraries
 	install(FILES ${LIBCLANG_DLL} DESTINATION bin)
@@ -134,6 +136,7 @@ elseif(WIN32)
 	)
 endif()
 
+set(CPACK_PACKAGE_EXECUTABLES "spaghetti-gui" "Spaghetti: source code analyzer")
 set(CPACK_PACKAGE_NAME "spaghetti-gui")
 set(CPACK_PACKAGE_VENDOR "nestal.net")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
