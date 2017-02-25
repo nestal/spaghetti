@@ -45,6 +45,7 @@ public:
 	Cursor GetDefinition() const;
 	Cursor SemanticParent() const;
 	Cursor LexicalParent() const;
+	Cursor Referenced() const;
 	
 	std::string Spelling() const ;
 	std::string DisplayName() const;

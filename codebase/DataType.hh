@@ -68,6 +68,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 
 	void CrossReference(EntityMap *map) override;
+	void MarkUsed() override;
 	
 private:
 	void MarkBaseClassUsed(EntityMap *map);

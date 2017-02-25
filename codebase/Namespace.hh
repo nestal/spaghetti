@@ -38,6 +38,7 @@ public:
 	void Visit(libclx::Cursor cursor);
 	
 	void CrossReference(EntityMap *map) override;
+	void MarkUsed() override;
 	
 private:
 	void VisitMemberFunction(libclx::Cursor cursor);

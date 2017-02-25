@@ -44,6 +44,7 @@ void Namespace::Visit(libclx::Cursor self)
 		{
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
+		case CXCursor_ClassTemplate:
 			AddUnique(m_types, id, cursor, this)->Visit(cursor);
 			break;
 		
@@ -79,6 +80,11 @@ void Namespace::VisitMemberFunction(libclx::Cursor cursor)
 	
 	if (parent != m_types.end())
 		(*parent)->VisitFunction(cursor);
+}
+
+void Namespace::MarkUsed()
+{
+	MarkSelfUsedOnly();
 }
 	
 } // end of namespace

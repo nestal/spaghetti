@@ -56,7 +56,10 @@ public:
 	
 	void MarkUsed() override;
 	bool IsUsed() const override;
-	
+
+protected:
+	void MarkSelfUsedOnly();
+
 private:
 	std::string m_name;
 	std::string m_id;

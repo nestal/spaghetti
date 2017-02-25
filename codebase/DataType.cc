@@ -23,7 +23,7 @@ namespace codebase {
 DataType::DataType(libclx::Cursor cursor, const Entity* parent) :
 	EntityVec{cursor.Spelling(), cursor.USR(), parent}
 {
-	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl);
+	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl || cursor.Kind() == CXCursor_ClassTemplate);
 	if (cursor.IsDefinition())
 		m_definition = cursor.Location();
 }
@@ -31,7 +31,7 @@ DataType::DataType(libclx::Cursor cursor, const Entity* parent) :
 
 void DataType::Visit(libclx::Cursor self)
 {
-	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl);
+	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl || self.Kind() == CXCursor_ClassTemplate);
 	assert(Name() == self.Spelling());
 	assert(!ID().empty() && ID() == self.USR());
 	
@@ -48,6 +48,9 @@ void DataType::Visit(libclx::Cursor self)
 			
 		case CXCursor_CXXBaseSpecifier:
 			// TODO: remove duplicate
+			if (child.GetDefinition().Kind() == CXCursor_TypedefDecl)
+//				child = child.Referenced();
+		std::cout << "base = " << child.GetDefinition().Spelling() << " " << child.GetDefinition().Kind() << std::endl;
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
 	
@@ -65,6 +68,12 @@ void DataType::Visit(libclx::Cursor self)
 	// mark self and all children as used, after creating the children
 	if (IsUsed() || (self.IsDefinition() && self.Location().IsFromMainFile()))
 		MarkUsed();
+}
+
+void DataType::MarkUsed()
+{
+	std::cout << Name() << " is marked used" << std::endl;
+	EntityVec::MarkUsed();
 }
 
 std::string DataType::Type() const
@@ -114,6 +123,8 @@ void DataType::CrossReference(EntityMap *map)
 {
 	assert(map);
 	MarkBaseClassUsed(map);
+	
+	EntityVec::MarkUsed();
 }
 
 void DataType::MarkBaseClassUsed(EntityMap *map)
@@ -124,8 +135,13 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 		for (auto& base : m_base_classes)
 		{
 			auto base_entity = dynamic_cast<DataType*>(map->Find(base));
-			base_entity->MarkUsed();
-			base_entity->MarkBaseClassUsed(map);
+			
+			// TODO: support typedef base classes
+			if (base_entity)
+			{
+				base_entity->MarkUsed();
+				base_entity->MarkBaseClassUsed(map);
+			}
 		}
 	}
 }
