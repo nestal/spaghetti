@@ -14,34 +14,9 @@
         {
             "classes": [
                 {
-                    "id": "c:@N@libclx@S@SourceLocation",
-                    "x": -387,
-                    "y": 721
-                },
-                {
-                    "id": "c:@N@codebase@S@Function",
-                    "x": -699,
-                    "y": 464
-                },
-                {
-                    "id": "c:@N@codebase@S@Variable",
-                    "x": -128,
-                    "y": 462
-                },
-                {
-                    "id": "c:@N@codebase@S@DataType",
-                    "x": -398,
-                    "y": 466
-                },
-                {
-                    "id": "c:@N@codebase@S@LeafEntity",
-                    "x": -133,
-                    "y": 222
-                },
-                {
-                    "id": "c:@N@codebase@S@Entity",
-                    "x": -428,
-                    "y": 13
+                    "id": "c:@N@codebase@S@Namespace",
+                    "x": -979,
+                    "y": 446
                 },
                 {
                     "id": "c:@N@codebase@S@EntityVec",
@@ -49,85 +24,37 @@
                     "y": 213
                 },
                 {
-                    "id": "c:@N@codebase@S@Namespace",
-                    "x": -989,
-                    "y": 451
+                    "id": "c:@N@codebase@S@Entity",
+                    "x": -428,
+                    "y": 13
+                },
+                {
+                    "id": "c:@N@codebase@S@LeafEntity",
+                    "x": -133,
+                    "y": 222
+                },
+                {
+                    "id": "c:@N@codebase@S@DataType",
+                    "x": -398,
+                    "y": 466
+                },
+                {
+                    "id": "c:@N@codebase@S@Variable",
+                    "x": -128,
+                    "y": 462
+                },
+                {
+                    "id": "c:@N@codebase@S@Function",
+                    "x": -703,
+                    "y": 490
+                },
+                {
+                    "id": "c:@N@libclx@S@SourceLocation",
+                    "x": -397,
+                    "y": 718
                 }
             ],
             "name": "Entity Classes",
-            "type": "class_diagram"
-        },
-        {
-            "column": 8,
-            "fname": "/usr/include/stdio.h",
-            "line": 44,
-            "name": "/usr/include/stdio.h",
-            "type": "source_view"
-        },
-        {
-            "classes": [
-                {
-                    "id": "c:@S@QFrame",
-                    "x": -285,
-                    "y": 401
-                },
-                {
-                    "id": "c:@S@QPaintDevice",
-                    "x": 98,
-                    "y": 23
-                },
-                {
-                    "id": "c:@S@QDialog",
-                    "x": 532,
-                    "y": 455
-                },
-                {
-                    "id": "c:@S@QFileDialog",
-                    "x": 532,
-                    "y": 745
-                },
-                {
-                    "id": "c:@S@QLabel",
-                    "x": -302,
-                    "y": 686
-                },
-                {
-                    "id": "c:@S@QMainWindow",
-                    "x": -11,
-                    "y": 538
-                },
-                {
-                    "id": "c:@S@QTabWidget",
-                    "x": 272,
-                    "y": 561
-                },
-                {
-                    "id": "c:@S@QDockWidget",
-                    "x": 558,
-                    "y": 233
-                },
-                {
-                    "id": "c:@S@QWidget",
-                    "x": 100,
-                    "y": 264
-                },
-                {
-                    "id": "c:@S@QObject",
-                    "x": 654,
-                    "y": 21
-                },
-                {
-                    "id": "c:@N@gui@S@Document",
-                    "x": 921,
-                    "y": 683
-                },
-                {
-                    "id": "c:@N@gui@S@MainWnd",
-                    "x": -14,
-                    "y": 836
-                }
-            ],
-            "name": "GUI Classes",
             "type": "class_diagram"
         }
     ],

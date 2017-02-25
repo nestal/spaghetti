@@ -63,7 +63,7 @@ MainWnd::MainWnd() :
 	setWindowIcon(QIcon{":/images/fork2.svg"});
 	m_ui->setupUi(this);
 	m_ui->m_tab->Setup(*m_doc);
-
+	
 	// initialize logical view
 	m_ui->m_logical_view->setModel(m_proxy_model.get());
 	m_ui->m_logical_view->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -71,6 +71,18 @@ MainWnd::MainWnd() :
 	// initialize project view
 	m_ui->m_project_view->setModel(m_doc->ProjectModel());
 	
+	// other initializations
+	m_doc->NewClassDiagram("Class Diagram");
+	tabifyDockWidget(m_ui->m_project_dock, m_ui->m_logical_dock);
+	setWindowTitle("Spaghetti : " + m_doc->Current());
+	
+	ConnectSignals();
+}
+
+MainWnd::~MainWnd() = default;
+
+void MainWnd::ConnectSignals()
+{
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
 		AboutDialog dlg{this};
@@ -138,13 +150,7 @@ MainWnd::MainWnd() :
 		m_ui->m_log_dock->setVisible(!m_ui->m_log_dock->isVisible());
 		m_ui->m_action_logs->setChecked(m_ui->m_log_dock->isVisible());
 	});
-	setWindowTitle("Spaghetti : " + m_doc->Current());
-	
-	m_doc->NewClassDiagram("Class Diagram");
-	tabifyDockWidget(m_ui->m_project_dock, m_ui->m_logical_dock);
 }
-
-MainWnd::~MainWnd() = default;
 
 void MainWnd::OnOpen()
 {
