@@ -29,6 +29,8 @@
 
 namespace gui {
 
+static const QString file_dlg_filter{"JSON files (*.json)"};
+
 class AboutDialog : public QDialog
 {
 public:
@@ -61,7 +63,7 @@ MainWnd::MainWnd() :
 	setWindowIcon(QIcon{":/images/fork2.svg"});
 	m_ui->setupUi(this);
 	m_ui->m_tab->Setup(*m_doc);
-
+	
 	// initialize logical view
 	m_ui->m_logical_view->setModel(m_proxy_model.get());
 	m_ui->m_logical_view->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -69,6 +71,18 @@ MainWnd::MainWnd() :
 	// initialize project view
 	m_ui->m_project_view->setModel(m_doc->ProjectModel());
 	
+	// other initializations
+	m_doc->NewClassDiagram("Class Diagram");
+	tabifyDockWidget(m_ui->m_project_dock, m_ui->m_logical_dock);
+	setWindowTitle("Spaghetti : " + m_doc->Current());
+	
+	ConnectSignals();
+}
+
+MainWnd::~MainWnd() = default;
+
+void MainWnd::ConnectSignals()
+{
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
 		AboutDialog dlg{this};
@@ -78,34 +92,11 @@ MainWnd::MainWnd() :
 		if (ConfirmDiscard())
 			m_doc->New();
 	});
-	connect(m_ui->m_action_open, &QAction::triggered, [this]
-	{
-		assert(m_doc);
-		if (!ConfirmDiscard())
-			return;
-		
-		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));
-		
-		// string will be null if user press cancel
-		if (!file.isNull())
-		{
-			try
-			{
-				m_doc->Open(file);
-			}
-			catch (std::exception& e)
-			{
-				QMessageBox::critical(this, tr("Cannot open project"),
-					tr("%1 is not a valid speghetti project file: %2").arg(file, e.what())
-				);
-			}
-			
-		}
-	});
+	connect(m_ui->m_action_open, &QAction::triggered, this, &MainWnd::OnOpen);
 	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
 	{
 		assert(m_doc);
-		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"), {}, tr("JSON files (*.json)"));
+		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"), {}, file_dlg_filter);
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
@@ -124,8 +115,8 @@ MainWnd::MainWnd() :
 			m_doc->AddSource(file);
 		}
 	});
-	connect(m_ui->m_action_cflags, &QAction::triggered, [this]{
-		
+	connect(m_ui->m_action_cflags, &QAction::triggered, [this]
+	{
 		ProjectSetting dlg{*m_doc, this};
 		dlg.exec();
 	});
@@ -137,11 +128,54 @@ MainWnd::MainWnd() :
 	{
 		m_doc->NewClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
 	});
-	
-	m_doc->NewClassDiagram("Class Diagram");
+	connect(m_doc.get(), &Document::OnCompileDiagnotics, this, &MainWnd::Log);
+	connect(m_doc.get(), &Document::OnSetCurrentFile, [this](auto& file){
+		this->setWindowTitle("Spaghetti : " + file);}
+	);
+	connect(m_ui->m_logical_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_logical_view->setChecked(val);});
+	connect(m_ui->m_project_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_project_view->setChecked(val);});
+	connect(m_ui->m_log_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_logs->setChecked(val);});
+	connect(m_ui->m_action_logical_view, &QAction::triggered, [this]
+	{
+		m_ui->m_logical_dock->setVisible(!m_ui->m_logical_dock->isVisible());
+		m_ui->m_action_logical_view->setChecked(m_ui->m_logical_dock->isVisible());
+	});
+	connect(m_ui->m_action_project_view, &QAction::triggered, [this]
+	{
+		m_ui->m_project_dock->setVisible(!m_ui->m_project_dock->isVisible());
+		m_ui->m_action_project_view->setChecked(m_ui->m_project_dock->isVisible());
+	});
+	connect(m_ui->m_action_logs, &QAction::triggered, [this]
+	{
+		m_ui->m_log_dock->setVisible(!m_ui->m_log_dock->isVisible());
+		m_ui->m_action_logs->setChecked(m_ui->m_log_dock->isVisible());
+	});
 }
 
-MainWnd::~MainWnd() = default;
+void MainWnd::OnOpen()
+{
+	assert(m_doc);
+	if (!ConfirmDiscard())
+		return;
+	
+	auto file = QFileDialog::getOpenFileName(this, tr("Open Project"), {}, file_dlg_filter);
+
+	// string will be null if user press cancel
+	if (!file.isNull())
+	{
+		try
+		{
+			m_doc->Open(file);
+		}
+		catch (std::exception& e)
+		{
+			QMessageBox::critical(
+				this, tr("Cannot open project"),
+				tr("%1 is not a valid speghetti project file: %2").arg(file, e.what())
+			);
+		}
+	}
+}
 
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 {
@@ -172,4 +206,9 @@ bool MainWnd::ConfirmDiscard()
 		return true;
 }
 
+void MainWnd::Log(const QString& message)
+{
+	m_ui->m_log_widget->appendPlainText(message);
+}
+	
 } // end of namespace

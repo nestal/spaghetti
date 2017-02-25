@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Spaghetti</string>
   </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
@@ -24,7 +27,7 @@
        </sizepolicy>
       </property>
       <property name="tabShape">
-       <enum>QTabWidget::Triangular</enum>
+       <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
        <number>-1</number>
@@ -83,10 +86,19 @@
     <addaction name="m_action_delete"/>
     <addaction name="m_action_copy"/>
    </widget>
+   <widget class="QMenu" name="menu_Windows">
+    <property name="title">
+     <string>&amp;Windows</string>
+    </property>
+    <addaction name="m_action_logical_view"/>
+    <addaction name="m_action_project_view"/>
+    <addaction name="m_action_logs"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menu_Project"/>
    <addaction name="menu_Help"/>
+   <addaction name="menu_Windows"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="m_logical_dock">
@@ -163,6 +175,30 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="m_log_dock">
+   <property name="windowTitle">
+    <string>Lo&amp;gs</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPlainTextEdit" name="m_log_widget">
+       <property name="font">
+        <font>
+         <family>Monospace</family>
+        </font>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="m_action_exit">
    <property name="text">
     <string>E&amp;xit</string>
@@ -219,6 +255,39 @@
   <action name="m_action_cflags">
    <property name="text">
     <string>Compiler &amp;Options...</string>
+   </property>
+  </action>
+  <action name="m_action_logical_view">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Logical View</string>
+   </property>
+  </action>
+  <action name="m_action_project_view">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Project View</string>
+   </property>
+  </action>
+  <action name="m_action_logs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Logs</string>
    </property>
   </action>
  </widget>

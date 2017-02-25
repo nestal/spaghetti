@@ -63,6 +63,9 @@ public:
 	QString ProjectDir() const;
 	void SetProjectDir(const QString& dir);
 	
+	QString CompileDiagnotics() const;
+	const QString& Current() const;
+	
 	// docking windows
 	logical_view::LogicalModel* ClassModel();
 	QAbstractItemModel* ProjectModel();
@@ -80,19 +83,23 @@ signals:
 	void OnCreateClassDiagramView(class_diagram::ClassModel *model);
 	void OnCreateSourceView(source_view::Model *model);
 	void OnDestroyModel(project::ModelBase *model);
+	void OnCompileDiagnotics(const QString& line);
+	void OnSetCurrentFile(const QString& file);
 	
 private:
 	void Reset(std::unique_ptr<project::Project>&& proj);
+	void SetCurrentFile(const QString& file);
 	
 private:
 	class ModelFactory;
 	class ProjectModel_;
 	
-	std::unique_ptr<project::Project>       m_project;
+	QString                                         m_current_file;
+	std::unique_ptr<project::Project>               m_project;
 	
 	// for the docking windows
-	std::unique_ptr<ProjectModel_>          m_project_model;
-	std::unique_ptr<logical_view::LogicalModel>    m_logical_model;
+	std::unique_ptr<ProjectModel_>                  m_project_model;
+	std::unique_ptr<logical_view::LogicalModel>     m_logical_model;
 };
 
 } // end of namespace

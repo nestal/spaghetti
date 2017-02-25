@@ -1,0 +1,71 @@
+{
+    "cflags": [
+        "-std=c++14",
+        "-I",
+        "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+        "-I",
+        ".",
+        "-I",
+        "/usr/include/qt5",
+        "-fPIC",
+        "-I./cmake-build-debug"
+    ],
+    "models": [
+        {
+            "classes": [
+                {
+                    "id": "c:@N@codebase@S@Namespace",
+                    "x": -979,
+                    "y": 446
+                },
+                {
+                    "id": "c:@N@codebase@S@EntityVec",
+                    "x": -702,
+                    "y": 213
+                },
+                {
+                    "id": "c:@N@codebase@S@Entity",
+                    "x": -428,
+                    "y": 13
+                },
+                {
+                    "id": "c:@N@codebase@S@LeafEntity",
+                    "x": -133,
+                    "y": 222
+                },
+                {
+                    "id": "c:@N@codebase@S@DataType",
+                    "x": -398,
+                    "y": 466
+                },
+                {
+                    "id": "c:@N@codebase@S@Variable",
+                    "x": -128,
+                    "y": 462
+                },
+                {
+                    "id": "c:@N@codebase@S@Function",
+                    "x": -703,
+                    "y": 490
+                },
+                {
+                    "id": "c:@N@libclx@S@SourceLocation",
+                    "x": -397,
+                    "y": 718
+                }
+            ],
+            "name": "Entity Classes",
+            "type": "class_diagram"
+        }
+    ],
+    "project_dir": "..",
+    "translation_units": [
+        "../codebase/DataType.cc",
+        "../gui/MainWnd.cc",
+        "../codebase/CodeBase.cc",
+        "../codebase/Variable.cc",
+        "../codebase/Namespace.cc",
+        "../codebase/Function.cc"
+    ],
+    "version": "0.1"
+}

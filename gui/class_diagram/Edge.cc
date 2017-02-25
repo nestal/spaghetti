@@ -16,6 +16,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -96,30 +97,61 @@ void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
 	auto to_pt   = dia.p2();
 	
 	// build transform matrix for drawing at the point
-	QTransform transform;
-	
-	auto relation = m_from->RelationOf(m_to);
-	if (relation == ItemRelation::base_class_of)
-		transform.translate(from_pt.x(), from_pt.y());
-	else if (relation == ItemRelation::derived_class_of)
-		transform.translate(to_pt.x(), to_pt.y());
+	QTransform head{painter->transform()}, tail{painter->transform()};
+	head.translate(from_pt.x(), from_pt.y());
+	tail.translate(to_pt.x(), to_pt.y());
 	
 	auto angle = -std::atan(dia.dx()/dia.dy());
 	if (dia.dy() < 0)
 		angle += M_PI;
-	transform.rotateRadians(angle);
+	head.rotateRadians(angle);
+	tail.rotateRadians(angle - M_PI);
 	
-	painter->setBrush(QBrush{Qt::GlobalColor::white});
-	painter->setTransform(transform, true);
-	painter->drawPolygon(
-		QPolygonF{} << QPointF{} << QPointF{arrow_width,arrow_width} << QPointF{-arrow_width, arrow_width},
-		Qt::FillRule::WindingFill
-	);
+	auto relation = m_from->RelationOf(m_to);
+	painter->setTransform(head);
+	DrawArrowHead(painter, relation);
+	
+	painter->setTransform(tail);
+	DrawArrowTail(painter, relation);
 }
 
 bool Edge::IsChanged() const
 {
-	return false;//m_from->IsChanged() || m_to->IsChanged();
+	return false;
 }
 
+void Edge::DrawArrowHead(QPainter *painter, ItemRelation relation) const
+{
+	painter->setBrush(QBrush{Qt::GlobalColor::white});
+	
+	// draw a triangle
+	if (relation == ItemRelation::base_class_of || relation == ItemRelation::derived_class_of)
+		painter->drawPolygon(
+			QPolygonF{} << QPointF{} << QPointF{arrow_width,arrow_width} << QPointF{-arrow_width, arrow_width},
+			Qt::FillRule::WindingFill
+		);
+		
+	// draw an arrow head
+	else if (relation == ItemRelation::use_as_member|| relation == ItemRelation::used_by_as_member)
+		painter->drawPolyline(
+			QPolygonF{} << QPointF{arrow_width/2,arrow_width} << QPointF{} << QPointF{-arrow_width/2, arrow_width}
+		);
+}
+
+void Edge::DrawArrowTail(QPainter *painter, ItemRelation relation) const
+{
+	painter->setBrush(QBrush{Qt::GlobalColor::white});
+	
+	// draw a diamond
+	if (relation == ItemRelation::use_as_member|| relation == ItemRelation::used_by_as_member)
+		painter->drawPolygon(
+			QPolygonF{}
+				<< QPointF{}
+				<< QPointF{arrow_width/2,arrow_width}
+				<< QPointF{0, arrow_width*2}
+				<< QPointF{-arrow_width/2,arrow_width},
+			Qt::FillRule::WindingFill
+		);
+}
+	
 }} // end of namespace

@@ -31,6 +31,8 @@ enum class ItemRelation
 	
 	base_class_of,
 	derived_class_of,
+	use_as_member,
+	used_by_as_member,
 };
 
 }} // end of namespace

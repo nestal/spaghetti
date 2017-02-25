@@ -30,7 +30,7 @@ public:
 	Namespace(Namespace&&) = default;
 	Namespace(const Namespace&) = delete;
 	
-	Namespace& operator=(Namespace&) = default;
+	Namespace& operator=(Namespace&&) = default;
 	Namespace& operator=(const Namespace&) = delete;
 	
 	std::string Type() const override;
@@ -38,6 +38,7 @@ public:
 	void Visit(libclx::Cursor cursor);
 	
 	void CrossReference(EntityMap *map) override;
+	void MarkUsed() override;
 	
 private:
 	void VisitMemberFunction(libclx::Cursor cursor);

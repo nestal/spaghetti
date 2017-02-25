@@ -181,6 +181,12 @@ ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 		else if (m_class.IsBaseOf(class_->m_class))
 			return ItemRelation::base_class_of;
 		
+		else if (m_class.IsUsedInMember(class_->m_class))
+			return ItemRelation::used_by_as_member;
+		
+		else if (class_->m_class.IsUsedInMember(m_class))
+			return ItemRelation::use_as_member;
+		
 		// fall through
 	}
 	default:    return ItemRelation::no_relation;

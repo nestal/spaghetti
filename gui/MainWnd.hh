@@ -40,7 +40,11 @@ public:
 	MainWnd();
 	~MainWnd();
 
+	void Log(const QString& message);
+	
 private:
+	void ConnectSignals();
+	void OnOpen();
 	void OnDoubleClickItem(const QModelIndex& idx);
 	bool ConfirmDiscard();
 	

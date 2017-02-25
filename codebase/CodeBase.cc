@@ -13,7 +13,6 @@
 #include "CodeBase.hh"
 
 #include "libclx/Cursor.hh"
-#include <iostream>
 
 namespace codebase {
 
@@ -30,10 +29,6 @@ std::string CodeBase::Parse(const std::string& source, const std::vector<std::st
 	m_root.Visit(tu.Root());
 	AddToIndex(&m_root);
 	CrossReference(&m_root);
-	
-	for (auto&& diag : tu.Diagnostics())
-		std::cerr << diag.Str() << "\n";
-	
 	m_units.push_back(std::move(tu));
 	
 	return tu.Spelling();
@@ -62,8 +57,8 @@ void CodeBase::AddToIndex(Entity *entity)
 void CodeBase::CrossReference(Entity *entity)
 {
 	entity->CrossReference(this);
-	for (auto&& c : *entity)
-		CrossReference(&c);
+	for (auto&& child : *entity)
+		CrossReference(&child);
 }
 
 const Entity *CodeBase::Root() const

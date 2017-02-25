@@ -111,5 +111,5 @@ bool LeafEntity::IsUsed() const
 void LeafEntity::CrossReference(EntityMap *)
 {
 }
-
+	
 } // end of namespace

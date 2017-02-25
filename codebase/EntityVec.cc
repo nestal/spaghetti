@@ -71,4 +71,9 @@ bool EntityVec::IsUsed() const
 		std::find_if(m_children.begin(), m_children.end(), [](auto& child){return child->IsUsed();}) != m_children.end();
 }
 
+void EntityVec::MarkSelfUsedOnly()
+{
+	m_used = true;
+}
+	
 } // end of namespace
