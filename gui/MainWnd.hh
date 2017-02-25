@@ -43,6 +43,7 @@ public:
 	void Log(const QString& message);
 	
 private:
+	void OnOpen();
 	void OnDoubleClickItem(const QModelIndex& idx);
 	bool ConfirmDiscard();
 	

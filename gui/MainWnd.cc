@@ -31,6 +31,8 @@
 
 namespace gui {
 
+static const QString file_dlg_filter{"JSON files (*.json)"};
+
 class AboutDialog : public QDialog
 {
 public:
@@ -80,34 +82,11 @@ MainWnd::MainWnd() :
 		if (ConfirmDiscard())
 			m_doc->New();
 	});
-	connect(m_ui->m_action_open, &QAction::triggered, [this]
-	{
-		assert(m_doc);
-		if (!ConfirmDiscard())
-			return;
-		
-		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"));
-		
-		// string will be null if user press cancel
-		if (!file.isNull())
-		{
-			try
-			{
-				m_doc->Open(file);
-			}
-			catch (std::exception& e)
-			{
-				QMessageBox::critical(this, tr("Cannot open project"),
-					tr("%1 is not a valid speghetti project file: %2").arg(file, e.what())
-				);
-			}
-			
-		}
-	});
+	connect(m_ui->m_action_open, &QAction::triggered, this, &MainWnd::OnOpen);
 	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
 	{
 		assert(m_doc);
-		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"), {}, tr("JSON files (*.json)"));
+		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"), {}, file_dlg_filter);
 		
 		// string will be null if user press cancel
 		if (!file.isNull())
@@ -126,8 +105,8 @@ MainWnd::MainWnd() :
 			m_doc->AddSource(file);
 		}
 	});
-	connect(m_ui->m_action_cflags, &QAction::triggered, [this]{
-		
+	connect(m_ui->m_action_cflags, &QAction::triggered, [this]
+	{
 		ProjectSetting dlg{*m_doc, this};
 		dlg.exec();
 	});
@@ -150,6 +129,31 @@ MainWnd::MainWnd() :
 }
 
 MainWnd::~MainWnd() = default;
+
+void MainWnd::OnOpen()
+{
+	assert(m_doc);
+	if (!ConfirmDiscard())
+		return;
+	
+	auto file = QFileDialog::getOpenFileName(this, tr("Open Project"), {}, file_dlg_filter);
+
+	// string will be null if user press cancel
+	if (!file.isNull())
+	{
+		try
+		{
+			m_doc->Open(file);
+		}
+		catch (std::exception& e)
+		{
+			QMessageBox::critical(
+				this, tr("Cannot open project"),
+				tr("%1 is not a valid speghetti project file: %2").arg(file, e.what())
+			);
+		}
+	}
+}
 
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 {
