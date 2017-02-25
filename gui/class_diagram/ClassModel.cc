@@ -40,7 +40,6 @@ ClassModel::~ClassModel() = default;
 
 void ClassModel::SetRect(const QRectF& )
 {
-//	m_scene->setSceneRect(rect);
 }
 
 void ClassModel::Clear()
@@ -124,6 +123,9 @@ void ClassModel::AddLine(ClassItem *from, ClassItem *to)
 
 void ClassModel::Load(const QJsonObject& obj)
 {
+	// prevent AddEntity() to emit OnChange()
+	m_changed = true;
+	
 	for (auto&& item_jval : obj["classes"].toArray())
 	{
 		auto json = item_jval.toObject();

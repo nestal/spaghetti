@@ -4,7 +4,7 @@
 
 Spaghetti depends on the following software to build:
 
-* A C++14 compiler (e.g. [gcc](http://gcc.gnu.org))
+* A C++14 compiler (e.g. [gcc](http://gcc.gnu.org), or MSVC 2015)
 * [libclang-c](http://clang.llvm.org/doxygen/group__CINDEX.html)
 * [Qt 5.7](http://doc.qt.io/qt-5/index.html)
 * [Boost 1.60](http://www.boost.org/doc/libs/1_60_0/) (older version should

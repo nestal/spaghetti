@@ -16,7 +16,7 @@
 #include "Variable.hh"
 
 #include "libclx/Cursor.hh"
-#include <iostream>
+#include <ostream>
 
 namespace codebase {
 
@@ -72,7 +72,6 @@ void DataType::Visit(libclx::Cursor self)
 
 void DataType::MarkUsed()
 {
-	std::cout << Name() << " is marked used" << std::endl;
 	EntityVec::MarkUsed();
 }
 
@@ -103,9 +102,6 @@ bool DataType::IsBaseOf(const DataType& other) const
 
 bool DataType::IsUsedInMember(const DataType& other) const
 {
-	for (auto&& field : Fields())
-		std::cout << Name() << ":" << field.Name() << " " << field.TypeID() << " " << other.Name() << ":" << other.ID() << std::endl;
-	
 	auto fields = other.Fields();
 	auto& id = ID();
 	return std::find_if(fields.begin(), fields.end(), [&id](auto field)
