@@ -62,10 +62,7 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 	
 	QLineF to_draw{from_pt, to_pt};
 	painter->drawLine(to_draw);
-	
-	auto relation = m_from->RelationOf(m_to);
-	if (relation == ItemRelation::base_class_of || relation == ItemRelation::derived_class_of)
-		DrawArrow(painter, to_draw);
+	DrawArrow(painter, to_draw);
 }
 
 QRectF Edge::boundingRect() const
@@ -103,9 +100,9 @@ void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
 	QTransform transform;
 	
 	auto relation = m_from->RelationOf(m_to);
-	if (relation == ItemRelation::base_class_of)
+	if (relation == ItemRelation::base_class_of || relation == ItemRelation::use_as_member)
 		transform.translate(from_pt.x(), from_pt.y());
-	else if (relation == ItemRelation::derived_class_of)
+	else if (relation == ItemRelation::derived_class_of || relation == ItemRelation::used_by_as_member)
 		transform.translate(to_pt.x(), to_pt.y());
 	
 	auto angle = -std::atan(dia.dx()/dia.dy());
@@ -115,10 +112,20 @@ void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
 	
 	painter->setBrush(QBrush{Qt::GlobalColor::white});
 	painter->setTransform(transform, true);
-	painter->drawPolygon(
-		QPolygonF{} << QPointF{} << QPointF{arrow_width,arrow_width} << QPointF{-arrow_width, arrow_width},
-		Qt::FillRule::WindingFill
-	);
+	
+	// triangle
+	if (relation == ItemRelation::base_class_of || relation == ItemRelation::derived_class_of)
+		painter->drawPolygon(
+			QPolygonF{} << QPointF{} << QPointF{arrow_width,arrow_width} << QPointF{-arrow_width, arrow_width},
+			Qt::FillRule::WindingFill
+		);
+	
+	// diamond
+	else if (relation == ItemRelation::use_as_member|| relation == ItemRelation::used_by_as_member)
+		painter->drawPolygon(
+			QPolygonF{} << QPointF{} << QPointF{arrow_width/2,-arrow_width} << QPointF{0, -arrow_width*2} << QPointF{-arrow_width/2,-arrow_width},
+			Qt::FillRule::WindingFill
+		);
 }
 
 bool Edge::IsChanged() const
