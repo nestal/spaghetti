@@ -13,9 +13,10 @@
 #include "Document.hh"
 
 // gui namespace headers
-#include "gui/class_diagram/ClassModel.hh"
-#include "gui/source_view/SourceModel.hh"
-#include "gui/logical_view/LogicalModel.hh"
+#include "class_diagram/ClassModel.hh"
+#include "logical_view/LogicalModel.hh"
+#include "logical_view/ProxyModel.hh"
+#include "source_view/SourceModel.hh"
 
 #include "project/Project.hh"
 
@@ -26,6 +27,7 @@
 #include <boost/filesystem.hpp>
 
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 
@@ -89,7 +91,8 @@ Document::Document(QObject *parent) :
 	)},
 	m_logical_model{std::make_unique<logical_view::LogicalModel>(
 		m_project->CodeBase().Root(), &m_project->CodeBase().Map(), this
-	)}
+	)},
+	m_proxy_model{std::make_unique<logical_view::ProxyModel>(m_logical_model.get())}
 {
 	SetCurrentFile(tr("Untitled"));
 }
@@ -121,14 +124,14 @@ void Document::NewSourceView(const QString& name, unsigned line, unsigned column
 	m_project->Add(std::move(m));
 }
 
-logical_view::LogicalModel *Document::ClassModel()
+QAbstractItemModel *Document::ClassModel()
 {
-	return m_logical_model.get();
+	return m_proxy_model.get();
 }
 
 libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 {
-	auto entity = m_logical_model->At(idx);
+	auto entity = At(idx);
 	return entity ? entity->Location() : libclx::SourceLocation{};
 }
 
@@ -217,10 +220,27 @@ void Document::Reset(std::unique_ptr<project::Project>&& proj)
 	
 	m_project_model->Reset(&m_project->CodeBase(), m_project->ProjectDir());
 	m_logical_model->Reset(m_project->CodeBase().Root(), &m_project->CodeBase().Map());
-	
+	m_proxy_model->invalidate();
+		
 	// destroy old project by unique_ptr destructor
 	for (std::size_t i = 0 ; p && i < p->Count() ; i++)
 		emit OnDestroyModel(p->At(i));
+}
+
+/**
+ * \brief Re-compile all source files and update the models
+ *
+ * It behaves like Open(Current()), but it doesn't re-read from the JSON file.
+ */
+void Document::Reload()
+{
+	m_project->Reload([this](auto map, auto root)
+	{
+		m_project_model->Reset(&m_project->CodeBase(),       m_project->ProjectDir());
+		m_logical_model->Reset(root, map);
+	});
+	m_proxy_model->invalidate();
+	std::cout << "finished resetting" << std::endl;
 }
 
 bool Document::IsChanged() const
@@ -286,14 +306,9 @@ void Document::SetCurrentFile(const QString& file)
 	emit OnSetCurrentFile(m_current_file);
 }
 
-/**
- * \brief Re-compile all source files and update the models
- *
- * It behaves like Open(Current()), but it doesn't re-read from the JSON file.
- */
-void Document::Reload()
+const codebase::Entity *Document::At(const QModelIndex& idx) const
 {
-	m_project->Reload();
+	return m_logical_model->At(m_proxy_model->mapToSource(idx));
 }
-
+	
 } // end of namespace

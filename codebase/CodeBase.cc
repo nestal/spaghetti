@@ -96,7 +96,7 @@ std::string CodeBase::Parse(const std::string& source, const std::vector<std::st
 	return tu.Spelling();
 }
 
-void CodeBase::ReparseAll(std::function<void(const EntityMap*)> callback)
+void CodeBase::ReparseAll(std::function<void(const EntityMap*, const Entity*)> callback)
 {
 	// build a new tree and replace our own with it
 	Namespace   new_root;
@@ -112,7 +112,7 @@ void CodeBase::ReparseAll(std::function<void(const EntityMap*)> callback)
 	
 	// before the old root and search index are invalidate, notify
 	// the caller to update their data structures
-	callback(m_search_index.get());
+	callback(m_search_index.get(), &m_root);
 }
 
 void CodeBase::BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, SearchIndex& map)

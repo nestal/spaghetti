@@ -36,6 +36,7 @@ namespace gui {
 
 namespace logical_view {
 class LogicalModel;
+class ProxyModel;
 }
 
 /**
@@ -68,8 +69,9 @@ public:
 	const QString& Current() const;
 	
 	// docking windows
-	logical_view::LogicalModel* ClassModel();
+	QAbstractItemModel* ClassModel();
 	QAbstractItemModel* ProjectModel();
+	const codebase::Entity *At(const QModelIndex& idx) const;
 	
 	void NewClassDiagram(const QString& name);
 	void NewSourceView(const QString& name, unsigned line = 0, unsigned column = 0);
@@ -103,6 +105,7 @@ private:
 	// for the docking windows
 	std::unique_ptr<ProjectModel_>                  m_project_model;
 	std::unique_ptr<logical_view::LogicalModel>     m_logical_model;
+	std::unique_ptr<logical_view::ProxyModel>       m_proxy_model;
 };
 
 } // end of namespace

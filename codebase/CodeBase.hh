@@ -40,7 +40,7 @@ public:
 	~CodeBase();
 	
 	std::string Parse(const std::string& source, const std::vector<std::string>& ops);
-	void ReparseAll(std::function<void(const EntityMap*)> callback = {});
+	void ReparseAll(std::function<void(const EntityMap*, const Entity*)> callback = {});
 	
 	const Entity* Root() const;
 	const EntityMap& Map() const;

@@ -172,13 +172,4 @@ const std::string& Project::ProjectDir() const
 	return m_project_dir;
 }
 
-void Project::Reload()
-{
-	m_code_base.ReparseAll([this](const codebase::EntityMap *map)
-	{
-		for (auto&& model : m_models)
-			model->UpdateCodeBase(map);
-	});
-}
-	
 } // end of namespace

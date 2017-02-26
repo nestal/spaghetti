@@ -26,10 +26,6 @@ class QGraphicsScene;
 
 namespace gui {
 
-namespace logical_view {
-class ProxyModel;
-}
-
 class Document;
 
 class MainWnd : public QMainWindow
@@ -51,7 +47,6 @@ private:
 private:
 	std::unique_ptr<Ui::MainWnd>    m_ui;
 	std::unique_ptr<Document>       m_doc;
-	std::unique_ptr<logical_view::ProxyModel> m_proxy_model;
 };
 	
 } // end of namespace

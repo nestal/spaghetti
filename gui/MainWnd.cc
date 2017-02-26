@@ -17,7 +17,6 @@
 #include "ui_MainWnd.h"
 #include "ui_AboutBox.h"
 
-#include "logical_view/ProxyModel.hh"
 #include "gui/source_view/SourceModel.hh"
 #include "libclx/Index.hh"
 
@@ -57,15 +56,14 @@ private:
 
 MainWnd::MainWnd() :
 	m_ui{std::make_unique<Ui::MainWnd>()},
-	m_doc{std::make_unique<Document>(this)},
-	m_proxy_model{std::make_unique<logical_view::ProxyModel>(m_doc->ClassModel())}
+	m_doc{std::make_unique<Document>(this)}
 {
 	setWindowIcon(QIcon{":/images/fork2.svg"});
 	m_ui->setupUi(this);
 	m_ui->m_tab->Setup(*m_doc);
 	
 	// initialize logical view
-	m_ui->m_logical_view->setModel(m_proxy_model.get());
+	m_ui->m_logical_view->setModel(m_doc->ClassModel());
 	m_ui->m_logical_view->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	
 	// initialize project view
@@ -180,7 +178,7 @@ void MainWnd::OnOpen()
 
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 {
-	auto loc = m_doc->LocateEntity(m_proxy_model->mapToSource(idx));
+	auto loc = m_doc->LocateEntity(idx);
 	if (loc != libclx::SourceLocation{})
 	{
 		std::string filename;
