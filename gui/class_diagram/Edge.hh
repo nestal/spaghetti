@@ -43,9 +43,13 @@ public:
 	const BaseItem* Other(const BaseItem *one) const;
 	
 private:
-	void DrawArrow(QPainter *painter, const QLineF& dia) const;
-	void DrawArrowHead(QPainter *painter, ItemRelation relation) const;
-	void DrawArrowTail(QPainter *painter, ItemRelation relation) const;
+	void DrawEndings(QPainter *painter, const QLineF& dia) const;
+	void DrawToEnding(QPainter *painter, ItemRelation relation) const;
+	void DrawFromEnding(QPainter *painter, ItemRelation relation) const;
+	
+	void DrawInheritanceTrigangle(QPainter *painter) const;
+	void DrawAggregationDiamond(QPainter *painter) const;
+	void DrawArrowHead(QPainter *painter) const;
 	
 private:
 	const BaseItem *m_from;

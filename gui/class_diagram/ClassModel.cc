@@ -158,13 +158,38 @@ QJsonObject ClassModel::Save() const
 
 void ClassModel::DeleteSelectedItem()
 {
+	std::vector<Edge*> dangled;
+	std::vector<QGraphicsItem*> removed;
+	
 	for (auto&& item : m_scene->selectedItems())
 	{
 		SetChanged(true);
+
+		// gather all edges which will be dangled after deleting this item
+		if (auto citem = dynamic_cast<ClassItem*>(item))
+		{
+			for (auto&& other : m_scene->items())
+			{
+				auto cother = dynamic_cast<ClassItem*>(other);
+				if (cother && cother != citem)
+				{
+					auto edges = citem->RemoveEdgeWith(cother);
+					dangled.insert(dangled.end(), edges.begin(), edges.end());
+				}
+			}
+		}
 		
 		m_scene->removeItem(item);
-		delete item;
+		removed.push_back(item);
 	}
+	
+	std::cout << "deleting " << dangled.size() << " edges" << std::endl;
+	
+	// the edge pointers may be duplicated, need to unique before deleting
+	std::sort(dangled.begin(), dangled.end());
+	dangled.erase(std::unique(dangled.begin(), dangled.end()), dangled.end());
+	std::for_each(dangled.begin(), dangled.end(), std::default_delete<Edge>());
+	std::for_each(removed.begin(), removed.end(), std::default_delete<QGraphicsItem>());
 }
 
 bool ClassModel::IsChanged() const

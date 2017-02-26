@@ -13,6 +13,9 @@
 #pragma once
 
 #include <QtCore/QObject>
+
+#include <boost/range/iterator_range.hpp>
+
 #include "BaseItem.hh"
 
 class QGraphicsSimpleTextItem;
@@ -32,6 +35,9 @@ class Edge;
 class ClassItem : public QObject, public BaseItem
 {
 	Q_OBJECT
+
+public:
+	using edge_iterator = std::vector<Edge*>::const_iterator;
 
 public:
 	ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model);
@@ -58,6 +64,9 @@ public:
 	void MarkUnchanged();
 	
 	bool HasEdgeWith(const BaseItem *item) const;
+	
+	boost::iterator_range<edge_iterator> Edges() const;
+	std::vector<Edge*> RemoveEdgeWith(const BaseItem *other);
 
 signals:
 	void OnJustChanged(ClassItem *self);

@@ -62,7 +62,7 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 	
 	QLineF to_draw{from_pt, to_pt};
 	painter->drawLine(to_draw);
-	DrawArrow(painter, to_draw);
+	DrawEndings(painter, to_draw);
 }
 
 QRectF Edge::boundingRect() const
@@ -91,7 +91,7 @@ class_diagram::ItemType Edge::ItemType() const
 	return ItemType::edge;
 }
 
-void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
+void Edge::DrawEndings(QPainter *painter, const QLineF& dia) const
 {
 	auto from_pt = dia.p1();
 	auto to_pt   = dia.p2();
@@ -109,10 +109,10 @@ void Edge::DrawArrow(QPainter *painter, const QLineF& dia) const
 	
 	auto relation = m_from->RelationOf(m_to);
 	painter->setTransform(head);
-	DrawArrowHead(painter, relation);
+	DrawToEnding(painter, relation);
 	
 	painter->setTransform(tail);
-	DrawArrowTail(painter, relation);
+	DrawFromEnding(painter, relation);
 }
 
 bool Edge::IsChanged() const
@@ -120,38 +120,39 @@ bool Edge::IsChanged() const
 	return false;
 }
 
-void Edge::DrawArrowHead(QPainter *painter, ItemRelation relation) const
+void Edge::DrawToEnding(QPainter *painter, ItemRelation relation) const
 {
 	painter->setBrush(QBrush{Qt::GlobalColor::white});
 	
-	// draw a triangle
-	if (relation == ItemRelation::base_class_of || relation == ItemRelation::derived_class_of)
-		painter->drawPolygon(
-			QPolygonF{} << QPointF{} << QPointF{arrow_width,arrow_width} << QPointF{-arrow_width, arrow_width},
-			Qt::FillRule::WindingFill
-		);
-		
-	// draw an arrow head
-	else if (relation == ItemRelation::use_as_member || relation == ItemRelation::used_by_as_member)
-		painter->drawPolyline(
-			QPolygonF{} << QPointF{arrow_width/2,arrow_width} << QPointF{} << QPointF{-arrow_width/2, arrow_width}
-		);
+	switch (relation)
+	{
+	case ItemRelation::derived_class_of:        DrawInheritanceTrigangle(painter);  break;
+	case ItemRelation::use_as_member:           DrawArrowHead(painter);             break;
+	case ItemRelation::used_by_as_member:       DrawAggregationDiamond(painter);    break;
+	default: break;
+	}
 }
 
-void Edge::DrawArrowTail(QPainter *painter, ItemRelation relation) const
+void Edge::DrawFromEnding(QPainter *painter, ItemRelation relation) const
 {
 	painter->setBrush(QBrush{Qt::GlobalColor::white});
 	
-	// draw a diamond
-	if (relation == ItemRelation::use_as_member|| relation == ItemRelation::used_by_as_member)
-		painter->drawPolygon(
-			QPolygonF{}
-				<< QPointF{}
-				<< QPointF{arrow_width/2,arrow_width}
-				<< QPointF{0, arrow_width*2}
-				<< QPointF{-arrow_width/2,arrow_width},
-			Qt::FillRule::WindingFill
-		);
+	switch (relation)
+	{
+	case ItemRelation::used_by_as_member:       DrawArrowHead(painter);             break;
+	case ItemRelation::use_as_member:           DrawAggregationDiamond(painter);    break;
+	default: break;
+	}
+}
+
+void Edge::DrawInheritanceTrigangle(QPainter *painter) const
+{
+	assert(painter);
+	
+	painter->drawPolygon(
+		QPolygonF{} << QPointF{} << QPointF{arrow_width,arrow_width} << QPointF{-arrow_width, arrow_width},
+		Qt::FillRule::WindingFill
+	);
 }
 
 void Edge::Update(const codebase::EntityMap*)
@@ -162,6 +163,27 @@ const BaseItem *Edge::Other(const BaseItem *one) const
 {
 	return m_from == one ? m_to : (
 		m_to == one ? m_from : nullptr
+	);
+}
+
+void Edge::DrawArrowHead(QPainter *painter) const
+{
+	assert(painter);
+	painter->drawPolyline(
+		QPolygonF{} << QPointF{arrow_width/2,arrow_width} << QPointF{} << QPointF{-arrow_width/2, arrow_width}
+	);
+}
+
+void Edge::DrawAggregationDiamond(QPainter *painter) const
+{
+	assert(painter);
+	painter->drawPolygon(
+		QPolygonF{}
+			<< QPointF{}
+			<< QPointF{arrow_width/2,arrow_width}
+			<< QPointF{0, arrow_width*2}
+			<< QPointF{-arrow_width/2,arrow_width},
+		Qt::FillRule::WindingFill
 	);
 }
 	
