@@ -11,3 +11,35 @@
 //
 
 #include "BaseItem.hh"
+
+#include "Edge.hh"
+
+namespace gui {
+namespace class_diagram {
+
+void BaseItem::AddEdge(Edge *edge)
+{
+	m_edges.push_back(edge);
+}
+
+bool BaseItem::HasEdgeWith(const BaseItem *item) const
+{
+	for (auto&& edge : m_edges)
+	{
+		if (edge->Other(this) == item)
+			return true;
+	}
+	return false;
+}
+
+boost::iterator_range<BaseItem::edge_iterator> BaseItem::Edges() const
+{
+	return {m_edges.begin(), m_edges.end()};
+}
+
+void BaseItem::ClearEdges()
+{
+	m_edges.clear();
+}
+	
+}} // end of namespace

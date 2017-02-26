@@ -16,7 +16,6 @@
 
 #include "BaseItem.hh"
 
-#include <boost/range/iterator_range.hpp>
 #include <algorithm>
 
 class QGraphicsSimpleTextItem;
@@ -38,9 +37,6 @@ class ClassItem : public QObject, public BaseItem
 	Q_OBJECT
 
 public:
-	using edge_iterator = std::vector<Edge*>::const_iterator;
-
-public:
 	ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model);
 	~ClassItem();
 	
@@ -55,30 +51,12 @@ public:
 	
 	QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
 	
-	void AddEdge(Edge *edge);
-	
 	ItemRelation RelationOf(const BaseItem *other) const override;
 	class_diagram::ItemType ItemType() const override;
 	void Update(const codebase::EntityMap *map);
 	
 	bool IsChanged() const override;
 	void MarkUnchanged();
-	
-	bool HasEdgeWith(const BaseItem *item) const;
-	
-	boost::iterator_range<edge_iterator> Edges() const;
-
-	template <typename Func>
-	void RemoveEdgeWith(const BaseItem *other, Func func)
-	{
-		auto mid = std::partition(m_edges.begin(), m_edges.end(), [other, this](auto edge)
-		{
-			return edge->Other(this) != other;
-		});
-		std::for_each(mid, m_edges.end(), func);
-		m_edges.erase(mid, m_edges.end());
-	}
-
 
 signals:
 	void OnJustChanged(ClassItem *self);
@@ -93,7 +71,6 @@ private:
 	
 	std::string        m_class_id;
 	QRectF             m_bounding;
-	std::vector<Edge*> m_edges;
 
 	std::size_t        m_show_function{0};
 	mutable bool       m_changed{false};

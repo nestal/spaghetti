@@ -161,16 +161,11 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 		
 		m_changed = true;
 		
-		for (auto&& edge : m_edges)
+		for (auto&& edge : Edges())
 			edge->UpdatePosition();
 	}
 
 	return value;
-}
-
-void ClassItem::AddEdge(Edge *edge)
-{
-	m_edges.push_back(edge);
 }
 
 ItemRelation ClassItem::RelationOf(const BaseItem *other) const
@@ -244,7 +239,7 @@ void ClassItem::Update(const codebase::EntityMap *map)
 	m_class = map->TypedFind<codebase::DataType>(m_class_id);
 	
 	// remove all edges, the model will re-add them later
-	m_edges.clear();
+	ClearEdges();
 	
 	// remove all children
 	for (auto child : childItems())
@@ -254,19 +249,5 @@ void ClassItem::Update(const codebase::EntityMap *map)
 	CreateChildren();
 }
 
-bool ClassItem::HasEdgeWith(const BaseItem *item) const
-{
-	for (auto&& edge : m_edges)
-	{
-		if (edge->Other(this) == item)
-			return true;
-	}
-	return false;
-}
-
-boost::iterator_range<ClassItem::edge_iterator> ClassItem::Edges() const
-{
-	return {m_edges.begin(), m_edges.end()};
-}
 	
 }} // end of namespace

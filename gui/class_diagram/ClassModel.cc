@@ -167,11 +167,11 @@ void ClassModel::DeleteSelectedItem()
 		SetChanged(true);
 
 		// gather all edges which will be dangled after deleting this item
-		if (auto citem = qgraphicsitem_cast<ClassItem*>(item))
+		if (auto citem = dynamic_cast<BaseItem*>(item))
 		{
 			for (auto&& other : m_scene->items())
 			{
-				auto cother = qgraphicsitem_cast<ClassItem*>(other);
+				auto cother = dynamic_cast<BaseItem*>(other);
 				if (cother && cother != citem)
 					citem->RemoveEdgeWith(cother, [&dangled](auto edge){dangled.push_back(edge);});
 			}
