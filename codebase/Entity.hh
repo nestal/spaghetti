@@ -31,6 +31,18 @@ public:
 	
 	virtual const Entity* Find(const std::string& id) const = 0;
 	virtual Entity* Find(const std::string& id) = 0;
+	
+	template <typename EntityType>
+	EntityType* TypedFind(const std::string& id)
+	{
+		return dynamic_cast<EntityType*>(Find(id));
+	}
+	
+	template <typename EntityType>
+	const EntityType* TypedFind(const std::string& id) const
+	{
+		return dynamic_cast<const EntityType*>(Find(id));
+	}
 };
 
 /**

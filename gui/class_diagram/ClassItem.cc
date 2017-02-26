@@ -13,6 +13,7 @@
 #include "ClassItem.hh"
 #include "Edge.hh"
 
+#include "codebase/CodeBase.hh"
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
 #include "codebase/Function.hh"
@@ -31,14 +32,30 @@ const qreal ClassItem::m_max_width{200.0}, ClassItem::m_max_height{150.0};
 
 ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
 	QObject{model},
-	m_class{class_},
-	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class.Name()), this}}
+	m_class{&class_},
+	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class->Name()), this}},
+	m_class_id{class_.ID()}
 {
 	// use a bold font for class names
 	auto font = m_name->font();
 	font.setBold(true);
 	m_name->setFont(font);
 	
+	CreateChildren();
+
+	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
+	setPos(pos);
+	
+	// flags
+	setFlag(QGraphicsItem::ItemIsMovable);
+	setFlag(QGraphicsItem::ItemIsSelectable);
+	setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+}
+
+ClassItem::~ClassItem() = default;
+
+void ClassItem::CreateChildren()
+{
 	auto bounding = m_name->boundingRect().size();
 	
 	// assume all text items are of the same height
@@ -48,8 +65,8 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	assert(total_rows > 0);
 	total_rows--;
 	
-	auto function_count = std::min(m_class.Functions().size(), total_rows);
-	auto field_count    = std::min(m_class.Fields().size(), total_rows);
+	auto function_count = std::min(m_class->Functions().size(), total_rows);
+	auto field_count    = std::min(m_class->Fields().size(), total_rows);
 	
 	if ( field_count <= total_rows/2 && function_count > total_rows/2)
 		function_count = std::min(total_rows - field_count, function_count);
@@ -63,13 +80,13 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	assert(function_count + field_count <= total_rows);
 	
 	std::size_t index=0;
-	for (auto& func : m_class.Functions())
+	for (auto& func : m_class->Functions())
 	{
 		if (++index > function_count) break;
 		CreateTextItem(&func, bounding);
 	}
 	index=0;
-	for (auto& field : m_class.Fields())
+	for (auto& field : m_class->Fields())
 	{
 		if (++index > field_count) break;
 		CreateTextItem(&field, bounding);
@@ -89,16 +106,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 		bounding.height()/2+m_margin
 	);
 	
-	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
-	setPos(pos);
-	
-	// flags
-	setFlag(QGraphicsItem::ItemIsMovable);
-	setFlag(QGraphicsItem::ItemIsSelectable);
-	setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
-
-ClassItem::~ClassItem() = default;
 
 QRectF ClassItem::boundingRect() const
 {
@@ -131,12 +139,12 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
 const std::string& ClassItem::ID() const
 {
-	return m_class.ID();
+	return m_class->ID();
 }
 
 const codebase::DataType& ClassItem::DataType() const
 {
-	return m_class;
+	return *m_class;
 }
 
 int ClassItem::type() const
@@ -167,24 +175,26 @@ void ClassItem::AddEdge(Edge *edge)
 
 ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 {
+	assert(m_class);
 	assert(other);
+	
 	switch (other->ItemType())
 	{
 	case ItemType::class_item:
 	{
 		auto class_ = qgraphicsitem_cast<const ClassItem*>(other);
-		assert(class_);
+		assert(class_ && class_->m_class);
 		
-		if (class_->m_class.IsBaseOf(m_class))
+		if (class_->m_class->IsBaseOf(*m_class))
 			return ItemRelation::derived_class_of;
 		
-		else if (m_class.IsBaseOf(class_->m_class))
+		else if (m_class->IsBaseOf(*class_->m_class))
 			return ItemRelation::base_class_of;
 		
-		else if (m_class.IsUsedInMember(class_->m_class))
+		else if (m_class->IsUsedInMember(*class_->m_class))
 			return ItemRelation::used_by_as_member;
 		
-		else if (class_->m_class.IsUsedInMember(m_class))
+		else if (class_->m_class->IsUsedInMember(*m_class))
 			return ItemRelation::use_as_member;
 		
 		// fall through
@@ -226,6 +236,16 @@ void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
 	auto rect = field_item->boundingRect();
 	bounding.rheight() += rect.height();
 	bounding.rwidth()   = std::max(bounding.width(), rect.width());
+}
+
+void ClassItem::Update(const codebase::CodeBase& code_base)
+{
+	m_class = code_base.TypedFind<codebase::DataType>(m_class_id);
+	
+	// remove all edges, the model will re-add them later
+	m_edges.clear();
+	
+	CreateChildren();
 }
 	
 }} // end of namespace

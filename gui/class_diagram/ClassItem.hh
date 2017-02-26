@@ -51,6 +51,7 @@ public:
 	
 	ItemRelation RelationOf(const BaseItem *other) const override;
 	class_diagram::ItemType ItemType() const override;
+	void Update(const codebase::CodeBase& code_base);
 	
 	bool IsChanged() const override;
 	void MarkUnchanged();
@@ -60,11 +61,14 @@ signals:
 	
 private:
 	void CreateTextItem(const codebase::Entity *entity, QSizeF& bounding);
+	void CreateChildren();
 	
 private:
-	const codebase::DataType& m_class;
-	QRectF m_bounding;
-	QGraphicsSimpleTextItem *m_name;
+	const codebase::DataType *m_class;
+	QGraphicsSimpleTextItem  *m_name;
+	
+	std::string        m_class_id;
+	QRectF             m_bounding;
 	std::vector<Edge*> m_edges;
 
 	std::size_t        m_show_function{0};

@@ -153,5 +153,9 @@ void Edge::DrawArrowTail(QPainter *painter, ItemRelation relation) const
 			Qt::FillRule::WindingFill
 		);
 }
+
+void Edge::Update(const codebase::CodeBase&)
+{
+}
 	
 }} // end of namespace

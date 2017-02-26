@@ -54,7 +54,7 @@ void ClassModel::Clear()
 
 void ClassModel::AddEntity(const std::string& id, const QPointF& pos)
 {
-	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase->Find(id)))
+	if (auto data_type = m_codebase->TypedFind<codebase::DataType>(id))
 	{
 		auto item = new ClassItem{*data_type, pos, this};
 		connect(item, &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);

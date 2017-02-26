@@ -15,6 +15,10 @@
 #include "ItemType.hh"
 #include <QGraphicsItem>
 
+namespace codebase {
+class CodeBase;
+}
+
 namespace gui {
 namespace class_diagram {
 
@@ -26,6 +30,7 @@ public:
 	virtual class_diagram::ItemType ItemType() const = 0;
 	virtual ItemRelation RelationOf(const BaseItem *other) const = 0;
 	virtual bool IsChanged() const = 0;
+	virtual void Update(const codebase::CodeBase& code_base) = 0;
 };
 
 }} // end of namespace
