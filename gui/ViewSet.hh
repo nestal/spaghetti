@@ -24,6 +24,9 @@ class Document;
 
 /**
  * \brief A tab widget that contain widgets of type ViewBase
+ *
+ * This class is consider the "view" of the Document class. It is the
+ * overall view of the whole project model.
  */
 class ViewSet : public QTabWidget
 {

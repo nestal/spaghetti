@@ -18,6 +18,7 @@
 #include "ModelViewFwd.hh"
 
 #include <memory>
+#include <codebase/CodeBase.hh>
 
 class QAbstractItemModel;
 class QGraphicsScene;
@@ -78,6 +79,7 @@ public:
 	void RemoveModel(project::ModelBase *model);
 	
 	bool IsChanged() const;
+	void Reload();
 
 signals:
 	void OnCreateClassDiagramView(class_diagram::ClassModel *model);
@@ -85,6 +87,7 @@ signals:
 	void OnDestroyModel(project::ModelBase *model);
 	void OnCompileDiagnotics(const QString& line);
 	void OnSetCurrentFile(const QString& file);
+	void OnReload(const codebase::CodeBase& new_code_base);
 	
 private:
 	void Reset(std::unique_ptr<project::Project>&& proj);

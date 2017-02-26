@@ -283,5 +283,15 @@ void Document::SetCurrentFile(const QString& file)
 	m_current_file = QString::fromStdString(fs::path{file.toStdString()}.filename().string());
 	emit OnSetCurrentFile(m_current_file);
 }
-	
+
+/**
+ * \brief Re-compile all source files and update the models
+ *
+ * It behaves like Open(Current()), but it doesn't re-read from the JSON file.
+ */
+void Document::Reload()
+{
+	// TODO: implement it
+}
+
 } // end of namespace

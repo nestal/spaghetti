@@ -64,6 +64,7 @@ public:
 	CodeBase();
 	
 	std::string Parse(const std::string& source, const std::vector<std::string>& ops);
+	void ReparseAll();
 	
 	const Entity* Root() const;
 	const Entity* Find(const std::string& id) const override;
@@ -76,8 +77,11 @@ public:
 	std::size_t Size() const;
 	
 private:
-	void AddToIndex(Entity *entity) ;
-	void CrossReference(Entity *entity) ;
+	class MapByIndex;
+	
+	void BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, MapByIndex& map);
+	void AddToIndex(Entity *entity, MapByIndex& map) ;
+	void CrossReference(Entity *entity, MapByIndex& map) ;
 
 private:
 	libclx::Index  m_index;

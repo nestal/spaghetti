@@ -41,6 +41,7 @@ public:
 	Index(Index&&) = default;
 	
 	TranslationUnit Parse(const std::string& filename, const std::vector<std::string>& args, unsigned options);
+	void Reparse(TranslationUnit& tu);
 	
 private:
 	util::DeleteWith<
@@ -73,6 +74,8 @@ public:
 	TranslationUnit(TranslationUnit&&) = default;
 	TranslationUnit& operator=(const TranslationUnit&) = delete;
 	TranslationUnit& operator=(TranslationUnit&&) = default;
+	
+	void Reparse();
 	
 	std::string Spelling() const;
 	Cursor Root() const;
