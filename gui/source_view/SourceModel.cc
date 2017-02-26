@@ -86,7 +86,7 @@ bool SourceModel::IsChanged() const
 	return false;
 }
 
-void SourceModel::UpdateCodeBase(const codebase::CodeBase&)
+void SourceModel::UpdateCodeBase(const codebase::EntityMap*)
 {
 }
 	

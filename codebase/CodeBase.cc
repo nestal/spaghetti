@@ -16,10 +16,10 @@
 
 namespace codebase {
 
-class CodeBase::MapByIndex : public EntityMap
+class CodeBase::SearchIndex : public EntityMap
 {
 public:
-	MapByIndex(CodeBase::EntityIndex& index) : m_index{index} {}
+	SearchIndex() = default;
 	
 	const Entity* Find(const std::string& id) const override
 	{
@@ -37,25 +37,49 @@ public:
 	{
 		m_index.insert(e);
 	}
+	
+	void Clear()
+	{
+		m_index.clear();
+	}
 
 private:
-	CodeBase::EntityIndex& m_index;
+	struct ByID {};
+	
+	using EntityIndex = boost::multi_index_container<
+		Entity*,
+		boost::multi_index::indexed_by<
+			
+			// hash by ID
+			boost::multi_index::hashed_unique<
+				boost::multi_index::tag<ByID>,
+				boost::multi_index::const_mem_fun<
+					Entity,
+					const std::string&,
+					&Entity::ID
+				>
+			>
+		>
+	>;
+
+private:
+	EntityIndex m_index;
 };
 
-CodeBase::CodeBase()
+CodeBase::CodeBase() : m_search_index{std::make_unique<SearchIndex>()}
 {
-	MapByIndex map{m_search_index};
-	AddToIndex(&m_root, map);
+	AddToIndex(&m_root, *m_search_index);
 }
+
+CodeBase::~CodeBase() = default;
 
 std::string CodeBase::Parse(const std::string& source, const std::vector<std::string>& ops)
 {
 	auto tu = m_index.Parse(source, ops, CXTranslationUnit_SkipFunctionBodies);
 	
-	m_search_index.clear();
+	m_search_index->Clear();
 	
-	MapByIndex map{m_search_index};
-	BuildEntityTree(tu, m_root, map);
+	BuildEntityTree(tu, m_root, *m_search_index);
 	m_units.push_back(std::move(tu));
 	
 	return tu.Spelling();
@@ -65,25 +89,24 @@ void CodeBase::ReparseAll()
 {
 	// build a new tree and replace our own with it
 	Namespace   new_root;
-	EntityIndex new_index;
-	MapByIndex  map{new_index};
+	auto map = std::make_unique<SearchIndex>();
 	
 	for (auto&& tu : m_units)
-		BuildEntityTree(tu, new_root, map);
+		BuildEntityTree(tu, new_root, *map);
 	
 	// replace our own with the new one
-	m_root = std::move(new_root);
-	m_search_index = new_index;
+	m_root         = std::move(new_root);
+	m_search_index = std::move(map);
 }
 
-void CodeBase::BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, MapByIndex& map)
+void CodeBase::BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, SearchIndex& map)
 {
 	root.Visit(tu.Root());
 	AddToIndex(&root, map);
 	CrossReference(&root, map);
 }
 
-void CodeBase::AddToIndex(Entity *entity, MapByIndex& map)
+void CodeBase::AddToIndex(Entity *entity, SearchIndex& map)
 {
 	map.Insert(entity);
 	
@@ -91,7 +114,7 @@ void CodeBase::AddToIndex(Entity *entity, MapByIndex& map)
 		AddToIndex(&c, map);
 }
 
-void CodeBase::CrossReference(Entity *entity, MapByIndex& map)
+void CodeBase::CrossReference(Entity *entity, SearchIndex& map)
 {
 	entity->CrossReference(&map);
 	for (auto&& child : *entity)
@@ -129,17 +152,14 @@ std::size_t CodeBase::Size() const
 	return m_units.size();
 }
 
-const Entity *CodeBase::Find(const std::string& id) const
+const EntityMap& CodeBase::Map() const
 {
-	auto it = m_search_index.get<ByID>().find(id);
-	return it != m_search_index.get<ByID>().end() ? *it : nullptr;
+	return *m_search_index.get();
 }
 
-Entity *CodeBase::Find(const std::string& id)
+EntityMap& CodeBase::Map()
 {
-	auto it = m_search_index.get<ByID>().find(id);
-	return it != m_search_index.get<ByID>().end() ? *it : nullptr;
+	return *m_search_index.get();
 }
-
 	
 } // end of namespace

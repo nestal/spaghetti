@@ -13,7 +13,6 @@
 #include "ClassItem.hh"
 #include "Edge.hh"
 
-#include "codebase/CodeBase.hh"
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
 #include "codebase/Function.hh"
@@ -238,9 +237,10 @@ void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
 	bounding.rwidth()   = std::max(bounding.width(), rect.width());
 }
 
-void ClassItem::Update(const codebase::CodeBase& code_base)
+void ClassItem::Update(const codebase::EntityMap *code_base)
 {
-	m_class = code_base.TypedFind<codebase::DataType>(m_class_id);
+	assert(code_base);
+	m_class = code_base->TypedFind<codebase::DataType>(m_class_id);
 	
 	// remove all edges, the model will re-add them later
 	m_edges.clear();

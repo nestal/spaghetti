@@ -88,7 +88,7 @@ Document::Document(QObject *parent) :
 		&m_project->CodeBase(), m_project->ProjectDir(), this
 	)},
 	m_logical_model{std::make_unique<logical_view::LogicalModel>(
-		m_project->CodeBase().Root(), &m_project->CodeBase(), this
+		m_project->CodeBase().Root(), &m_project->CodeBase().Map(), this
 	)}
 {
 	SetCurrentFile(tr("Untitled"));
@@ -107,7 +107,7 @@ void Document::AddSource(const QString& file)
 
 void Document::NewClassDiagram(const QString& name)
 {
-	auto m = std::make_unique<class_diagram::ClassModel>(&m_project->CodeBase(), name, this);
+	auto m = std::make_unique<class_diagram::ClassModel>(&m_project->CodeBase().Map(), name, this);
 	emit OnCreateClassDiagramView(m.get());
 	m_project->Add(std::move(m));
 }
@@ -176,7 +176,7 @@ project::Model Document::ModelFactory::Create(project::ModelType type, const std
 	{
 	case project::ModelType::class_diagram:
 	{
-		auto m = std::make_unique<class_diagram::ClassModel>(&owner.CodeBase(), QString::fromStdString(name), m_parent);
+		auto m = std::make_unique<class_diagram::ClassModel>(&owner.CodeBase().Map(), QString::fromStdString(name), m_parent);
 		emit m_parent->OnCreateClassDiagramView(m.get());
 		result = std::move(m);
 		break;
@@ -216,7 +216,7 @@ void Document::Reset(std::unique_ptr<project::Project>&& proj)
 	swap(m_project, p);
 	
 	m_project_model->Reset(&m_project->CodeBase(), m_project->ProjectDir());
-	m_logical_model->Reset(m_project->CodeBase().Root(), &m_project->CodeBase());
+	m_logical_model->Reset(m_project->CodeBase().Root(), &m_project->CodeBase().Map());
 	
 	// destroy old project by unique_ptr destructor
 	for (std::size_t i = 0 ; p && i < p->Count() ; i++)

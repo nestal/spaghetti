@@ -186,7 +186,7 @@ void ClassModel::SetChanged(bool changed) const
 	}
 }
 
-void ClassModel::UpdateCodeBase(const codebase::CodeBase& codebase)
+void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
 {
 	for (auto child : m_scene->items())
 	{

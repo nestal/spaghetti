@@ -41,7 +41,7 @@ public:
 	ModelType Type() const override {return ModelType::source_view;}
 	
 	bool IsChanged() const override;
-	void UpdateCodeBase(const codebase::CodeBase& codebase) override;
+	void UpdateCodeBase(const codebase::EntityMap *codebase) override;
 	
 	void SetLocation(const QString& fname, unsigned line, unsigned column);
 	unsigned Line() const;

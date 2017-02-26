@@ -21,6 +21,7 @@ class QSizeF;
 namespace codebase {
 class DataType;
 class Entity;
+class EntityMap;
 }
 
 namespace gui {
@@ -51,7 +52,7 @@ public:
 	
 	ItemRelation RelationOf(const BaseItem *other) const override;
 	class_diagram::ItemType ItemType() const override;
-	void Update(const codebase::CodeBase& code_base);
+	void Update(const codebase::EntityMap *code_base);
 	
 	bool IsChanged() const override;
 	void MarkUnchanged();

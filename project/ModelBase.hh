@@ -21,7 +21,7 @@ class QString;
 class QJsonObject;
 
 namespace codebase {
-class CodeBase;
+class EntityMap;
 }
 
 namespace project {
@@ -54,7 +54,7 @@ public:
 	virtual ModelType Type() const = 0;
 	
 	virtual bool IsChanged() const = 0;
-	virtual void UpdateCodeBase(const codebase::CodeBase& codebase) = 0;
+	virtual void UpdateCodeBase(const codebase::EntityMap *codebase) = 0;
 };
 
 using Model = std::unique_ptr<ModelBase>;

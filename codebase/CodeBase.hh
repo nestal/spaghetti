@@ -37,38 +37,21 @@ namespace codebase {
 /**
  * \brief The root of the Entity tree in a code base.
  */
-class CodeBase : public EntityMap
+class CodeBase
 {
 public:
-	struct ByID {};
-	
-	using EntityIndex = boost::multi_index_container<
-		Entity*,
-		boost::multi_index::indexed_by<
-			
-			// hash by ID
-			boost::multi_index::hashed_unique<
-				boost::multi_index::tag<ByID>,
-				boost::multi_index::const_mem_fun<
-					Entity,
-					const std::string&,
-					&Entity::ID
-				>
-			>
-		>
-	>;
-
 	using iterator = std::vector<libclx::TranslationUnit>::const_iterator;
 	
 public:
 	CodeBase();
+	~CodeBase();
 	
 	std::string Parse(const std::string& source, const std::vector<std::string>& ops);
 	void ReparseAll();
 	
 	const Entity* Root() const;
-	const Entity* Find(const std::string& id) const override;
-	Entity* Find(const std::string& id) override;
+	const EntityMap& Map() const;
+	EntityMap& Map();
 
 	boost::optional<const libclx::TranslationUnit&> Locate(const libclx::SourceLocation& loc) const;
 	
@@ -77,18 +60,18 @@ public:
 	std::size_t Size() const;
 	
 private:
-	class MapByIndex;
+	class SearchIndex;
 	
-	void BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, MapByIndex& map);
-	void AddToIndex(Entity *entity, MapByIndex& map) ;
-	void CrossReference(Entity *entity, MapByIndex& map) ;
+	void BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, SearchIndex& map);
+	void AddToIndex(Entity *entity, SearchIndex& map) ;
+	void CrossReference(Entity *entity, SearchIndex& map) ;
 
 private:
 	libclx::Index  m_index;
 	std::vector<libclx::TranslationUnit> m_units;
 	
 	Namespace    m_root;
-	EntityIndex  m_search_index;
+	std::unique_ptr<SearchIndex> m_search_index;
 };
 
 } // end of namespace

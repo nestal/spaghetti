@@ -26,8 +26,8 @@ TEST(CodeBaseTest, TestInheritance)
 		"-I", SRC_DIR
 	});
 	
-	auto datatype_class = dynamic_cast<const DataType*>(subject.Find("c:@N@codebase@S@EntityVec"));
-	auto entity_class   = dynamic_cast<const Entity*>(subject.Find("c:@N@codebase@S@Entity"));
+	auto datatype_class = dynamic_cast<const DataType*>(subject.Map().Find("c:@N@codebase@S@EntityVec"));
+	auto entity_class   = dynamic_cast<const Entity*>(subject.Map().Find("c:@N@codebase@S@Entity"));
 	
 	ASSERT_TRUE(datatype_class);
 	ASSERT_TRUE(entity_class);

@@ -154,7 +154,7 @@ void Edge::DrawArrowTail(QPainter *painter, ItemRelation relation) const
 		);
 }
 
-void Edge::Update(const codebase::CodeBase&)
+void Edge::Update(const codebase::EntityMap*)
 {
 }
 	
