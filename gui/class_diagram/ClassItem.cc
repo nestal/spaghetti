@@ -32,14 +32,8 @@ const qreal ClassItem::m_max_width{200.0}, ClassItem::m_max_height{150.0};
 ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
 	QObject{model},
 	m_class{&class_},
-	m_name{new QGraphicsSimpleTextItem{QString::fromStdString(m_class->Name()), this}},
 	m_class_id{class_.ID()}
 {
-	// use a bold font for class names
-	auto font = m_name->font();
-	font.setBold(true);
-	m_name->setFont(font);
-	
 	CreateChildren();
 
 	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
@@ -55,6 +49,14 @@ ClassItem::~ClassItem() = default;
 
 void ClassItem::CreateChildren()
 {
+	assert(!m_name);
+	m_name = new QGraphicsSimpleTextItem{QString::fromStdString(m_class->Name()), this};
+	
+	// use a bold font for class names
+	auto font = m_name->font();
+	font.setBold(true);
+	m_name->setFont(font);
+		
 	auto bounding = m_name->boundingRect().size();
 	
 	// assume all text items are of the same height
@@ -237,16 +239,30 @@ void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
 	bounding.rwidth()   = std::max(bounding.width(), rect.width());
 }
 
-void ClassItem::Update(const codebase::EntityMap *code_base)
+void ClassItem::Update(const codebase::EntityMap *map)
 {
-	assert(code_base);
-	m_class = code_base->TypedFind<codebase::DataType>(m_class_id);
+	assert(map);
+	m_class = map->TypedFind<codebase::DataType>(m_class_id);
 	
 	// remove all edges, the model will re-add them later
 	m_edges.clear();
 	
-	m_name->setText(QString::fromStdString(m_class->Name()));
+	// remove all children
+	for (auto child : childItems())
+		delete child;
+	m_name = nullptr;
+	
 	CreateChildren();
+}
+
+bool ClassItem::HasEdgeWith(const BaseItem *item) const
+{
+	for (auto&& edge : m_edges)
+	{
+		if (edge->Other(this) == item)
+			return true;
+	}
+	return false;
 }
 	
 }} // end of namespace

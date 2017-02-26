@@ -102,7 +102,7 @@ void ClassModel::DetectEdges(ClassItem *item)
 	{
 		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
 		{
-			if (item->RelationOf(citem) != ItemRelation::no_relation)
+			if (item->RelationOf(citem) != ItemRelation::no_relation && !item->HasEdgeWith(citem))
 				AddLine(citem, item);
 		}
 	}
@@ -192,6 +192,13 @@ void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
 	{
 		if (auto item = dynamic_cast<BaseItem*>(child))
 			item->Update(codebase);
+	}
+	
+	// ClassItem::Update() will remove edges, need to add them back
+	for (auto child : m_scene->items())
+	{
+		if (auto item = dynamic_cast<ClassItem*>(child))
+			DetectEdges(item);
 	}
 }
 	

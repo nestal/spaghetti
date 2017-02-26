@@ -40,6 +40,7 @@ public:
 	void Update(const codebase::EntityMap *code_base);
 	
 	bool IsChanged() const override;
+	const BaseItem* Other(const BaseItem *one) const;
 	
 private:
 	void DrawArrow(QPainter *painter, const QLineF& dia) const;

@@ -132,7 +132,7 @@ void Edge::DrawArrowHead(QPainter *painter, ItemRelation relation) const
 		);
 		
 	// draw an arrow head
-	else if (relation == ItemRelation::use_as_member|| relation == ItemRelation::used_by_as_member)
+	else if (relation == ItemRelation::use_as_member || relation == ItemRelation::used_by_as_member)
 		painter->drawPolyline(
 			QPolygonF{} << QPointF{arrow_width/2,arrow_width} << QPointF{} << QPointF{-arrow_width/2, arrow_width}
 		);
@@ -156,6 +156,13 @@ void Edge::DrawArrowTail(QPainter *painter, ItemRelation relation) const
 
 void Edge::Update(const codebase::EntityMap*)
 {
+}
+
+const BaseItem *Edge::Other(const BaseItem *one) const
+{
+	return m_from == one ? m_to : (
+		m_to == one ? m_from : nullptr
+	);
 }
 	
 }} // end of namespace
