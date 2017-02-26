@@ -107,14 +107,11 @@ bool ClassModel::CanRename() const
  */
 void ClassModel::DetectEdges(ClassItem *item)
 {
-	for (auto child : m_scene->items())
+	ForEachItem<ClassItem>(m_scene->items(), [this, item](auto citem)
 	{
-		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
-		{
-			if (item->RelationOf(citem) != ItemRelation::no_relation && !item->HasEdgeWith(citem))
-				AddLine(citem, item);
-		}
-	}
+		if (item->RelationOf(citem) != ItemRelation::no_relation && !item->HasEdgeWith(citem))
+			this->AddLine(citem, item);
+	});
 }
 
 void ClassModel::AddLine(ClassItem *from, ClassItem *to)
@@ -147,18 +144,15 @@ void ClassModel::Load(const QJsonObject& obj)
 QJsonObject ClassModel::Save() const
 {
 	QJsonArray items;
-	for (auto child : m_scene->items())
+	ForEachItem<ClassItem>(m_scene->items(), [this, &items](auto citem)
 	{
-		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
-		{
-			items.append(QJsonObject{
-				{"id", QString::fromStdString(citem->DataType().ID())},
-				{"x", citem->x()},
-				{"y", citem->y()}
-			});
-			citem->MarkUnchanged();
-		}
-	}
+		items.append(QJsonObject{
+			{"id", QString::fromStdString(citem->DataType().ID())},
+			{"x", citem->x()},
+			{"y", citem->y()}
+		});
+		citem->MarkUnchanged();
+	});
 	
 	SetChanged(false);
 	
@@ -215,18 +209,16 @@ void ClassModel::SetChanged(bool changed) const
 
 void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
 {
-	for (auto child : m_scene->items())
+	ForEachItem<BaseItem>(m_scene->items(), [codebase](auto item)
 	{
-		if (auto item = dynamic_cast<BaseItem*>(child))
-			item->Update(codebase);
-	}
+		item->Update(codebase);
+	});
 	
 	// ClassItem::Update() will remove edges, need to add them back
-	for (auto child : m_scene->items())
+	ForEachItem<ClassItem>(m_scene->items(), [this](auto item)
 	{
-		if (auto item = dynamic_cast<ClassItem*>(child))
-			DetectEdges(item);
-	}
+		this->DetectEdges(item);
+	});
 }
 	
 }} // end of namespace
