@@ -39,6 +39,7 @@ public:
 		
 	void Save(const std::string& filename) const;
 	void Open(const std::string& filename, ModelFactory& factory);
+	void Reload();
 	
 	template <typename InputIt>
 	void SetCompileOptions(InputIt first, InputIt last)

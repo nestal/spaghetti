@@ -21,8 +21,9 @@
 #include <boost/optional.hpp>
 #include <boost/range.hpp>
 
-#include <vector>
+#include <functional>
 #include <memory>
+#include <vector>
 
 namespace codebase {
 
@@ -39,7 +40,7 @@ public:
 	~CodeBase();
 	
 	std::string Parse(const std::string& source, const std::vector<std::string>& ops);
-	void ReparseAll();
+	void ReparseAll(std::function<void(const EntityMap*)> callback = {});
 	
 	const Entity* Root() const;
 	const EntityMap& Map() const;

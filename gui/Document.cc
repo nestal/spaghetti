@@ -248,7 +248,9 @@ void Document::SetCompileOptions(const QString& opts)
 	std::vector<std::string> cflags;
 	for (auto&& flags : opts.split(" ", QString::SkipEmptyParts))
 		cflags.push_back(flags.toStdString());
+	
 	m_project->SetCompileOptions(cflags.begin(), cflags.end());
+	Reload();
 }
 
 QString Document::ProjectDir() const
@@ -291,7 +293,7 @@ void Document::SetCurrentFile(const QString& file)
  */
 void Document::Reload()
 {
-	// TODO: implement it
+	m_project->Reload();
 }
 
 } // end of namespace
