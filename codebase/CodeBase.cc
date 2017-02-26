@@ -125,7 +125,10 @@ void CodeBase::ReparseAll(std::function<void(const EntityMap*, const Entity*)> c
 	auto tree = std::make_unique<EntityTree>();
 	
 	for (auto&& tu : m_units)
+	{
+		tu.Reparse();
 		tree->Build(tu);
+	}
 	
 	// replace our own with the new one
 	// use Swap() to avoid dangling the references returned by Map()

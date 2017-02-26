@@ -13,6 +13,7 @@
 #include "Document.hh"
 
 // gui namespace headers
+#include "common/RaiiCursor.hh"
 #include "class_diagram/ClassModel.hh"
 #include "logical_view/LogicalModel.hh"
 #include "logical_view/ProxyModel.hh"
@@ -137,27 +138,18 @@ libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 
 void Document::Open(const QString& file)
 {
-	try
-	{
-		auto proj = std::make_unique<project::Project>();
-		
-		QApplication::setOverrideCursor(Qt::WaitCursor);
-		ModelFactory factory{this};
-		proj->Open(file.toStdString(), factory);
-		QApplication::restoreOverrideCursor();
-		
-		for (auto&& tu : proj->CodeBase().TranslationUnits())
-			for (auto&& diag : tu.Diagnostics())
-				emit OnCompileDiagnotics(QString::fromStdString(diag.Str()));
-		
-		Reset(std::move(proj));
-		SetCurrentFile(file);
-	}
-	catch (std::exception&)
-	{
-		QApplication::restoreOverrideCursor();
-		throw;
-	}
+	auto proj = std::make_unique<project::Project>();
+	
+	common::RaiiCursor cursor(Qt::WaitCursor);
+	ModelFactory factory{this};
+	proj->Open(file.toStdString(), factory);
+	
+	for (auto&& tu : proj->CodeBase().TranslationUnits())
+		for (auto&& diag : tu.Diagnostics())
+			emit OnCompileDiagnotics(QString::fromStdString(diag.Str()));
+	
+	Reset(std::move(proj));
+	SetCurrentFile(file);
 }
 
 void Document::SaveAs(const QString& file)
@@ -234,6 +226,7 @@ void Document::Reset(std::unique_ptr<project::Project>&& proj)
  */
 void Document::Reload()
 {
+	common::RaiiCursor cursor(Qt::WaitCursor);
 	m_project->Reload([this](auto map, auto root)
 	{
 		m_project_model->Reset(&m_project->CodeBase(),       m_project->ProjectDir());
