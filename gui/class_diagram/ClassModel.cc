@@ -102,12 +102,7 @@ void ClassModel::DetectEdges(ClassItem *item)
 	{
 		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
 		{
-			if (item->DataType().IsBaseOf(citem->DataType()) ||
-				item->DataType().IsUsedInMember(citem->DataType()))
-				AddLine(item, citem);
-				
-			else if (citem->DataType().IsBaseOf(item->DataType()) ||
-				citem->DataType().IsUsedInMember(item->DataType()))
+			if (item->RelationOf(citem) != ItemRelation::no_relation)
 				AddLine(citem, item);
 		}
 	}

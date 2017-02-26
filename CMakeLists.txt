@@ -21,7 +21,6 @@ find_package(Threads)
 # find libclang
 find_library(LIBCLANG_LIBRARY NAMES clang libclang HINTS ${LIBCLANG_PREFIX})
 find_path(LIBCLANG_HEADER clang-c/Index.h HINTS ${LIBCLANG_PREFIX})
-find_file(LIBCLANG_DLL libclang.dll HINTS ${LIBCLANG_PREFIX}/bin)
 
 if (NOT LIBCLANG_LIBRARY OR NOT LIBCLANG_HEADER)
 	message(FATAL_ERROR "Cannot find libclang!")
@@ -94,12 +93,11 @@ elseif(WIN32)
 	set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/resources/fork.ico")
 
 	# install dependent libraries
+	find_file(LIBCLANG_DLL libclang.dll HINTS ${LIBCLANG_PREFIX}/bin)
 	install(FILES ${LIBCLANG_DLL} DESTINATION bin)
 
 	get_target_property(QtCore_location_Release     Qt5::Core    LOCATION_Release)
 	get_filename_component(QT_BINARY_DIR "${QtCore_location_Release}" DIRECTORY)
-
-	message(STATUS "qt is at ${QT_BINARY_DIR}")
 
 	install(FILES
 		${QT_BINARY_DIR}/Qt5Core.dll

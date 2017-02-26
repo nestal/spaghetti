@@ -93,8 +93,10 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 		// all paths stored in disk file is relative to the parent directory
 		auto base = path{filename}.parent_path();
 		
-		// TODO: provide backward compatibility in later versions
-		if (json["version"].toString() != VERSION)
+		auto version_ok = false;
+		auto version = json["version"].toString().toDouble(&version_ok);
+		auto my_version = std::stod(VERSION);
+		if (version > my_version)
 			throw std::runtime_error("version mismatch!");
 		
 		m_project_dir = (base/json["project_dir"].toString().toStdString()).lexically_normal().string();
