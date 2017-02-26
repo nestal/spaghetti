@@ -87,14 +87,4 @@ void Namespace::MarkUsed()
 	MarkSelfUsedOnly();
 }
 
-void Namespace::Swap(Namespace& other)
-{
-	EntityVec::Swap(other);
-	
-	using std::swap;
-	swap(m_ns, other.m_ns);
-	swap(m_types, other.m_types);
-	swap(m_vars, other.m_vars);
-}
-	
 } // end of namespace

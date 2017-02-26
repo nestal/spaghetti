@@ -28,9 +28,9 @@ public:
 public:
 	EntityVec( const std::string& name, const std::string& usr, const Entity *parent);
 	
-	EntityVec(EntityVec&&) = default;
+	EntityVec(EntityVec&& other);
 	EntityVec(const EntityVec&) = delete;
-	EntityVec& operator=(EntityVec&&) = default;
+	EntityVec& operator=(EntityVec&& other);
 	EntityVec& operator=(const EntityVec&) = delete;
 
 	const std::string& Name() const override;
@@ -57,7 +57,6 @@ public:
 	void MarkUsed() override;
 	bool IsUsed() const override;
 	void Reparent(const Entity *parent) override;
-	void Swap(EntityVec& other);
 
 protected:
 	void MarkSelfUsedOnly();
@@ -92,10 +91,3 @@ auto EntityVec::AddUnique(EntityContainer&& cont, const std::string& id, Args...
 }
 
 } // end of namespace codebase
-
-namespace std {
-inline void swap(codebase::EntityVec& v1, codebase::EntityVec& v2)
-{
-	v1.Swap(v2);
-}
-} // end of namespace std

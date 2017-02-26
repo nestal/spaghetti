@@ -22,6 +22,31 @@ EntityVec::EntityVec( const std::string& name, const std::string& usr, const Ent
 	assert(m_parent || usr == NullID());
 }
 
+EntityVec::EntityVec(EntityVec&& other) :
+	m_name{std::move(other.m_name)},
+	m_id{std::move(other.m_id)},
+	m_parent{other.m_parent},
+	m_used{other.m_used},
+	m_children{std::move(other.m_children)}
+{
+	for (auto&& c : m_children)
+		c->Reparent(this);
+}
+
+EntityVec& EntityVec::operator=(EntityVec&& other)
+{
+	m_name     = std::move(other.m_name);
+	m_id       = std::move(other.m_id);
+	m_parent   = other.m_parent;
+	m_used     = other.m_used;
+	m_children = std::move(other.m_children);
+	
+	for (auto&& c : m_children)
+		c->Reparent(this);
+	
+	return *this;
+}
+
 const std::string& EntityVec::Name() const
 {
 	return m_name;
@@ -79,23 +104,6 @@ void EntityVec::MarkSelfUsedOnly()
 void EntityVec::Reparent(const Entity *parent)
 {
 	m_parent = parent;
-}
-
-void EntityVec::Swap(EntityVec& other)
-{
-	using std::swap;
-	swap(m_name, other.m_name);
-	swap(m_id, other.m_id);
-	swap(m_parent, other.m_parent);
-	swap(m_used, other.m_used);
-	
-	swap(m_children, other.m_children);
-	
-	for (auto&& c : m_children)
-		c->Reparent(this);
-	
-	for (auto&& c : other.m_children)
-		c->Reparent(&other);
 }
 	
 } // end of namespace
