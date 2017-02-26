@@ -18,6 +18,7 @@
 #include "ModelViewFwd.hh"
 
 #include <memory>
+#include <codebase/CodeBase.hh>
 
 class QAbstractItemModel;
 class QGraphicsScene;
@@ -35,6 +36,7 @@ namespace gui {
 
 namespace logical_view {
 class LogicalModel;
+class ProxyModel;
 }
 
 /**
@@ -67,8 +69,9 @@ public:
 	const QString& Current() const;
 	
 	// docking windows
-	logical_view::LogicalModel* ClassModel();
+	QAbstractItemModel* ClassModel();
 	QAbstractItemModel* ProjectModel();
+	const codebase::Entity *At(const QModelIndex& idx) const;
 	
 	void NewClassDiagram(const QString& name);
 	void NewSourceView(const QString& name, unsigned line = 0, unsigned column = 0);
@@ -78,13 +81,15 @@ public:
 	void RemoveModel(project::ModelBase *model);
 	
 	bool IsChanged() const;
+	void Reload();
 
 signals:
 	void OnCreateClassDiagramView(class_diagram::ClassModel *model);
-	void OnCreateSourceView(source_view::Model *model);
+	void OnCreateSourceView(source_view::SourceModel *model);
 	void OnDestroyModel(project::ModelBase *model);
 	void OnCompileDiagnotics(const QString& line);
 	void OnSetCurrentFile(const QString& file);
+	void OnReload(const codebase::CodeBase& new_code_base);
 	
 private:
 	void Reset(std::unique_ptr<project::Project>&& proj);
@@ -100,6 +105,7 @@ private:
 	// for the docking windows
 	std::unique_ptr<ProjectModel_>                  m_project_model;
 	std::unique_ptr<logical_view::LogicalModel>     m_logical_model;
+	std::unique_ptr<logical_view::ProxyModel>       m_proxy_model;
 };
 
 } // end of namespace

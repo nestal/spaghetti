@@ -12,61 +12,139 @@
 
 #include "CodeBase.hh"
 
+#include "Namespace.hh"
+
 #include "libclx/Cursor.hh"
+
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+#include <boost/multi_index/mem_fun.hpp>
 
 namespace codebase {
 
-CodeBase::CodeBase()
+class CodeBase::EntityTree : public EntityMap
 {
-	AddToIndex(&m_root);
+public:
+	EntityTree()
+	{
+		AddToIndex(&m_root);
+	}
+	
+	const Entity* Find(const std::string& id) const override
+	{
+		auto it = m_index.get<ByID>().find(id);
+		return it != m_index.get<ByID>().end() ? *it : nullptr;
+	}
+	
+	Entity* Find(const std::string& id) override
+	{
+		auto it = m_index.get<ByID>().find(id);
+		return it != m_index.get<ByID>().end() ? *it : nullptr;
+	}
+	
+	Entity* Root()
+	{
+		return &m_root;
+	}
+	
+	void Build(libclx::TranslationUnit& tu)
+	{
+		m_index.clear();
+		m_root.Visit(tu.Root());
+		AddToIndex(&m_root);
+		CrossReference(&m_root);
+	}
+	
+	void AddToIndex(Entity *entity)
+	{
+		m_index.insert(entity);
+		
+		for (auto&& c : *entity)
+			AddToIndex(&c);
+	}
+	
+	void CrossReference(Entity *entity)
+	{
+		entity->CrossReference(this);
+		for (auto&& child : *entity)
+			CrossReference(&child);
+	}
+	
+	void Swap(EntityTree& other)
+	{
+		using namespace std;
+		swap(m_index, other.m_index);
+		swap(m_root, other.m_root);
+	}
+
+private:
+	struct ByID {};
+	
+	using EntityIndex = boost::multi_index_container<
+		Entity*,
+		boost::multi_index::indexed_by<
+			
+			// hash by ID
+			boost::multi_index::hashed_unique<
+				boost::multi_index::tag<ByID>,
+				boost::multi_index::const_mem_fun<
+					Entity,
+					const std::string&,
+					&Entity::ID
+				>
+			>
+		>
+	>;
+
+private:
+	Namespace   m_root;
+	EntityIndex m_index;
+};
+
+CodeBase::CodeBase() :
+	m_tree{std::make_unique<EntityTree>()}
+{
 }
+
+CodeBase::~CodeBase() = default;
 
 std::string CodeBase::Parse(const std::string& source, const std::vector<std::string>& ops)
 {
 	auto tu = m_index.Parse(source, ops, CXTranslationUnit_SkipFunctionBodies);
 	
-	m_search_index.clear();
-	m_root.Visit(tu.Root());
-	AddToIndex(&m_root);
-	CrossReference(&m_root);
+	m_tree->Build(tu);
 	m_units.push_back(std::move(tu));
 	
 	return tu.Spelling();
 }
 
-const Entity *CodeBase::Find(const std::string& id) const
+void CodeBase::ReparseAll(std::function<void(const EntityMap*, const Entity*)> callback)
 {
-	auto it = m_search_index.get<ByID>().find(id);
-	return it != m_search_index.get<ByID>().end() ? *it : nullptr;
-}
-
-Entity *CodeBase::Find(const std::string& id)
-{
-	auto it = m_search_index.get<ByID>().find(id);
-	return it != m_search_index.get<ByID>().end() ? *it : nullptr;
-}
-
-void CodeBase::AddToIndex(Entity *entity)
-{
-	m_search_index.insert(entity);
+	// build a new tree and replace our own with it
+	auto tree = std::make_unique<EntityTree>();
 	
-	for (auto&& c : *entity)
-		AddToIndex(&c);
-}
-
-void CodeBase::CrossReference(Entity *entity)
-{
-	entity->CrossReference(this);
-	for (auto&& child : *entity)
-		CrossReference(&child);
+	for (auto&& tu : m_units)
+	{
+		tu.Reparse();
+		tree->Build(tu);
+	}
+	
+	// replace our own with the new one
+	// use Swap() to avoid dangling the references returned by Map()
+	m_tree->Swap(*tree);
+	
+	// before the old root and search index are invalidate, notify
+	// the caller to update their data structures
+	callback(m_tree.get(), m_tree->Root());
 }
 
 const Entity *CodeBase::Root() const
 {
-	return &m_root;
+	return m_tree->Root();
 }
 
-boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const SourceLocation& loc) const
+boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const libclx::SourceLocation& loc) const
 {
 	for (auto&& c : m_units)
 	{
@@ -90,6 +168,16 @@ const libclx::TranslationUnit& CodeBase::At(std::size_t idx) const
 std::size_t CodeBase::Size() const
 {
 	return m_units.size();
+}
+
+const EntityMap& CodeBase::Map() const
+{
+	return *m_tree.get();
+}
+
+EntityMap& CodeBase::Map()
+{
+	return *m_tree.get();
 }
 	
 } // end of namespace

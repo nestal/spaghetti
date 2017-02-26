@@ -86,5 +86,5 @@ void Namespace::MarkUsed()
 {
 	MarkSelfUsedOnly();
 }
-	
+
 } // end of namespace

@@ -31,6 +31,18 @@ public:
 	
 	virtual const Entity* Find(const std::string& id) const = 0;
 	virtual Entity* Find(const std::string& id) = 0;
+	
+	template <typename EntityType>
+	EntityType* TypedFind(const std::string& id)
+	{
+		return dynamic_cast<EntityType*>(Find(id));
+	}
+	
+	template <typename EntityType>
+	const EntityType* TypedFind(const std::string& id) const
+	{
+		return dynamic_cast<const EntityType*>(Find(id));
+	}
 };
 
 /**
@@ -84,6 +96,8 @@ public:
 	iterator end();
 	const_iterator begin() const;
 	const_iterator end() const;
+	
+	virtual void Reparent(const Entity *parent) = 0;
 	
 public:
 	bool HasChild(const Entity *child) const {return IndexOf(child) < ChildCount();}
@@ -160,6 +174,8 @@ public:
 	void MarkUsed() override;
 	void CrossReference(EntityMap *map) override;
 
+	void Reparent(const Entity *entity) override;
+	
 private:
 	std::string m_name;
 	std::string m_usr;

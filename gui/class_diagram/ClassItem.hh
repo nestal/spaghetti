@@ -13,7 +13,10 @@
 #pragma once
 
 #include <QtCore/QObject>
+
 #include "BaseItem.hh"
+
+#include <algorithm>
 
 class QGraphicsSimpleTextItem;
 class QSizeF;
@@ -21,6 +24,7 @@ class QSizeF;
 namespace codebase {
 class DataType;
 class Entity;
+class EntityMap;
 }
 
 namespace gui {
@@ -47,10 +51,9 @@ public:
 	
 	QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
 	
-	void AddEdge(Edge *edge);
-	
 	ItemRelation RelationOf(const BaseItem *other) const override;
 	class_diagram::ItemType ItemType() const override;
+	void Update(const codebase::EntityMap *map);
 	
 	bool IsChanged() const override;
 	void MarkUnchanged();
@@ -60,12 +63,14 @@ signals:
 	
 private:
 	void CreateTextItem(const codebase::Entity *entity, QSizeF& bounding);
+	void CreateChildren();
 	
 private:
-	const codebase::DataType& m_class;
-	QRectF m_bounding;
-	QGraphicsSimpleTextItem *m_name;
-	std::vector<Edge*> m_edges;
+	const codebase::DataType *m_class{};
+	QGraphicsSimpleTextItem  *m_name{};
+	
+	std::string        m_class_id;
+	QRectF             m_bounding;
 
 	std::size_t        m_show_function{0};
 	mutable bool       m_changed{false};

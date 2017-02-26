@@ -15,7 +15,7 @@
 #include "gui/common/ViewBase.hh"
 #include <QtWidgets/QPlainTextEdit>
 
-#include "Model.hh"
+#include "SourceModel.hh"
 #include <thread>
 #include <atomic>
 
@@ -25,7 +25,7 @@ namespace source_view {
 class View : public QPlainTextEdit, public common::ViewBase
 {
 public:
-	View(source_view::Model *model, QWidget *parent);
+	View(source_view::SourceModel *model, QWidget *parent);
 	~View();
 	
 	void Open(const std::string& fname, unsigned line, unsigned column);
@@ -33,7 +33,7 @@ public:
 	
 	const std::string& Filename() const;
 	
-	source_view::Model* Model() override;
+	source_view::SourceModel* Model() override;
 	QWidget* Widget() override;
 
 private:
@@ -43,7 +43,7 @@ private:
 	std::thread m_worker;
 	std::string m_filename;
 	
-	source_view::Model *m_model{};
+	source_view::SourceModel *m_model{};
 	
 	QTextCursor m_highlight;
 };

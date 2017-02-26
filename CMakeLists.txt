@@ -7,7 +7,7 @@
 #
 
 cmake_minimum_required(VERSION 3.6)
-project(spaghetti VERSION 0.1)
+project(spaghetti VERSION 0.2)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -21,7 +21,6 @@ find_package(Threads)
 # find libclang
 find_library(LIBCLANG_LIBRARY NAMES clang libclang HINTS ${LIBCLANG_PREFIX})
 find_path(LIBCLANG_HEADER clang-c/Index.h HINTS ${LIBCLANG_PREFIX})
-find_file(LIBCLANG_DLL libclang.dll HINTS ${LIBCLANG_PREFIX}/bin)
 
 if (NOT LIBCLANG_LIBRARY OR NOT LIBCLANG_HEADER)
 	message(FATAL_ERROR "Cannot find libclang!")
@@ -94,12 +93,11 @@ elseif(WIN32)
 	set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/resources/fork.ico")
 
 	# install dependent libraries
+	find_file(LIBCLANG_DLL libclang.dll HINTS ${LIBCLANG_PREFIX}/bin)
 	install(FILES ${LIBCLANG_DLL} DESTINATION bin)
 
 	get_target_property(QtCore_location_Release     Qt5::Core    LOCATION_Release)
 	get_filename_component(QT_BINARY_DIR "${QtCore_location_Release}" DIRECTORY)
-
-	message(STATUS "qt is at ${QT_BINARY_DIR}")
 
 	install(FILES
 		${QT_BINARY_DIR}/Qt5Core.dll
@@ -140,7 +138,7 @@ set(CPACK_PACKAGE_EXECUTABLES "spaghetti-gui" "Spaghetti: source code analyzer")
 set(CPACK_PACKAGE_NAME "spaghetti-gui")
 set(CPACK_PACKAGE_VENDOR "nestal.net")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
-set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "2")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 
-INCLUDE(CPack)
+include(CPack)

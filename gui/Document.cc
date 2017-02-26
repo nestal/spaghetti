@@ -13,9 +13,11 @@
 #include "Document.hh"
 
 // gui namespace headers
-#include "gui/class_diagram/ClassModel.hh"
-#include "source_view/Model.hh"
-#include "gui/logical_view/LogicalModel.hh"
+#include "common/RaiiCursor.hh"
+#include "class_diagram/ClassModel.hh"
+#include "logical_view/LogicalModel.hh"
+#include "logical_view/ProxyModel.hh"
+#include "source_view/SourceModel.hh"
 
 #include "project/Project.hh"
 
@@ -26,6 +28,7 @@
 #include <boost/filesystem.hpp>
 
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 
@@ -88,8 +91,9 @@ Document::Document(QObject *parent) :
 		&m_project->CodeBase(), m_project->ProjectDir(), this
 	)},
 	m_logical_model{std::make_unique<logical_view::LogicalModel>(
-		m_project->CodeBase().Root(), &m_project->CodeBase(), this
-	)}
+		m_project->CodeBase().Root(), &m_project->CodeBase().Map(), this
+	)},
+	m_proxy_model{std::make_unique<logical_view::ProxyModel>(m_logical_model.get())}
 {
 	SetCurrentFile(tr("Untitled"));
 }
@@ -107,54 +111,45 @@ void Document::AddSource(const QString& file)
 
 void Document::NewClassDiagram(const QString& name)
 {
-	auto m = std::make_unique<class_diagram::ClassModel>(&m_project->CodeBase(), name, this);
+	auto m = std::make_unique<class_diagram::ClassModel>(&m_project->CodeBase().Map(), name, this);
 	emit OnCreateClassDiagramView(m.get());
 	m_project->Add(std::move(m));
 }
 
 void Document::NewSourceView(const QString& name, unsigned line, unsigned column)
 {
-	auto m = std::make_unique<source_view::Model>(name, this);
+	auto m = std::make_unique<source_view::SourceModel>(name, this);
 	emit OnCreateSourceView(m.get());
 	
 	m->SetLocation(name, line, column);
 	m_project->Add(std::move(m));
 }
 
-logical_view::LogicalModel *Document::ClassModel()
+QAbstractItemModel *Document::ClassModel()
 {
-	return m_logical_model.get();
+	return m_proxy_model.get();
 }
 
 libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 {
-	auto entity = m_logical_model->At(idx);
+	auto entity = At(idx);
 	return entity ? entity->Location() : libclx::SourceLocation{};
 }
 
 void Document::Open(const QString& file)
 {
-	try
-	{
-		auto proj = std::make_unique<project::Project>();
-		
-		QApplication::setOverrideCursor(Qt::WaitCursor);
-		ModelFactory factory{this};
-		proj->Open(file.toStdString(), factory);
-		QApplication::restoreOverrideCursor();
-		
-		for (auto&& tu : proj->CodeBase().TranslationUnits())
-			for (auto&& diag : tu.Diagnostics())
-				emit OnCompileDiagnotics(QString::fromStdString(diag.Str()));
-		
-		Reset(std::move(proj));
-		SetCurrentFile(file);
-	}
-	catch (std::exception&)
-	{
-		QApplication::restoreOverrideCursor();
-		throw;
-	}
+	auto proj = std::make_unique<project::Project>();
+	
+	common::RaiiCursor cursor(Qt::WaitCursor);
+	ModelFactory factory{this};
+	proj->Open(file.toStdString(), factory);
+	
+	for (auto&& tu : proj->CodeBase().TranslationUnits())
+		for (auto&& diag : tu.Diagnostics())
+			emit OnCompileDiagnotics(QString::fromStdString(diag.Str()));
+	
+	Reset(std::move(proj));
+	SetCurrentFile(file);
 }
 
 void Document::SaveAs(const QString& file)
@@ -176,14 +171,14 @@ project::Model Document::ModelFactory::Create(project::ModelType type, const std
 	{
 	case project::ModelType::class_diagram:
 	{
-		auto m = std::make_unique<class_diagram::ClassModel>(&owner.CodeBase(), QString::fromStdString(name), m_parent);
+		auto m = std::make_unique<class_diagram::ClassModel>(&owner.CodeBase().Map(), QString::fromStdString(name), m_parent);
 		emit m_parent->OnCreateClassDiagramView(m.get());
 		result = std::move(m);
 		break;
 	}
 	case project::ModelType::source_view:
 	{
-		auto m = std::make_unique<source_view::Model>(QString::fromStdString(name), m_parent);
+		auto m = std::make_unique<source_view::SourceModel>(QString::fromStdString(name), m_parent);
 		emit m_parent->OnCreateSourceView(m.get());
 		result = std::move(m);
 		break;
@@ -216,11 +211,29 @@ void Document::Reset(std::unique_ptr<project::Project>&& proj)
 	swap(m_project, p);
 	
 	m_project_model->Reset(&m_project->CodeBase(), m_project->ProjectDir());
-	m_logical_model->Reset(m_project->CodeBase().Root(), &m_project->CodeBase());
-	
+	m_logical_model->Reset(m_project->CodeBase().Root(), &m_project->CodeBase().Map());
+	m_proxy_model->invalidate();
+		
 	// destroy old project by unique_ptr destructor
 	for (std::size_t i = 0 ; p && i < p->Count() ; i++)
 		emit OnDestroyModel(p->At(i));
+}
+
+/**
+ * \brief Re-compile all source files and update the models
+ *
+ * It behaves like Open(Current()), but it doesn't re-read from the JSON file.
+ */
+void Document::Reload()
+{
+	common::RaiiCursor cursor(Qt::WaitCursor);
+	m_project->Reload([this](auto map, auto root)
+	{
+		m_project_model->Reset(&m_project->CodeBase(),       m_project->ProjectDir());
+		m_logical_model->Reset(root, map);
+	});
+	m_proxy_model->invalidate();
+	std::cout << "finished resetting" << std::endl;
 }
 
 bool Document::IsChanged() const
@@ -248,7 +261,9 @@ void Document::SetCompileOptions(const QString& opts)
 	std::vector<std::string> cflags;
 	for (auto&& flags : opts.split(" ", QString::SkipEmptyParts))
 		cflags.push_back(flags.toStdString());
+	
 	m_project->SetCompileOptions(cflags.begin(), cflags.end());
+	Reload();
 }
 
 QString Document::ProjectDir() const
@@ -282,6 +297,11 @@ void Document::SetCurrentFile(const QString& file)
 {
 	m_current_file = QString::fromStdString(fs::path{file.toStdString()}.filename().string());
 	emit OnSetCurrentFile(m_current_file);
+}
+
+const codebase::Entity *Document::At(const QModelIndex& idx) const
+{
+	return m_logical_model->At(m_proxy_model->mapToSource(idx));
 }
 	
 } // end of namespace

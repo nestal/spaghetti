@@ -7,22 +7,21 @@
 */
 
 //
-// Created by nestal on 2/19/17.
+// Created by nestal on 2/26/17.
 //
 
 #pragma once
 
+class QCursor;
+
 namespace gui {
+namespace common {
 
-namespace class_diagram {
-class ClassItem;
-class ClassModel;
-class ClassView;
-}
+class RaiiCursor
+{
+public:
+	RaiiCursor(const QCursor& cursor);
+	~RaiiCursor();
+};
 
-namespace source_view {
-class View;
-class SourceModel;
-}
-
-} // end of namespace
+}} // end of namespace

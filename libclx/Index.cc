@@ -46,6 +46,11 @@ TranslationUnit::TranslationUnit(CXTranslationUnit tu) :
 {
 }
 
+void TranslationUnit::Reparse()
+{
+	::clang_reparseTranslationUnit(m_unit.get(), 0, nullptr, ::clang_defaultReparseOptions(m_unit.get()));
+}
+
 std::string TranslationUnit::Spelling() const
 {
 	return XStr{::clang_getTranslationUnitSpelling(m_unit.get())}.Str();

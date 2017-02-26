@@ -20,6 +20,10 @@ class QRectF;
 class QString;
 class QJsonObject;
 
+namespace codebase {
+class EntityMap;
+}
+
 namespace project {
 
 enum class ModelType {
@@ -50,6 +54,7 @@ public:
 	virtual ModelType Type() const = 0;
 	
 	virtual bool IsChanged() const = 0;
+	virtual void UpdateCodeBase(const codebase::EntityMap *codebase) = 0;
 };
 
 using Model = std::unique_ptr<ModelBase>;

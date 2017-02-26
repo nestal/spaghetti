@@ -70,6 +70,7 @@ public:
 	ModelType Type() const override {return ModelType::class_diagram;}
 	
 	bool IsChanged() const override;
+	void UpdateCodeBase(const codebase::EntityMap *codebase) override;
 
 signals:
 	void OnChanged(bool changed) const;

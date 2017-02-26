@@ -13,61 +13,38 @@
 #pragma once
 
 #include "Entity.hh"
-#include "TypeDB.hh"
-
-#include "DataType.hh"
-#include "EntityVec.hh"
-#include "Namespace.hh"
 
 #include "libclx/Index.hh"
-
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/hashed_index.hpp>
-#include <boost/multi_index/random_access_index.hpp>
-#include <boost/multi_index/mem_fun.hpp>
-#include <boost/multi_index/identity.hpp>
 
 #include <boost/optional.hpp>
 #include <boost/range.hpp>
 
+#include <functional>
+#include <memory>
 #include <vector>
 
 namespace codebase {
 
+class Namespace;
+
 /**
  * \brief The root of the Entity tree in a code base.
  */
-class CodeBase : public EntityMap
+class CodeBase
 {
 public:
-	struct ByID {};
-	
-	using EntityIndex = boost::multi_index_container<
-		Entity*,
-		boost::multi_index::indexed_by<
-			
-			// hash by ID
-			boost::multi_index::hashed_unique<
-				boost::multi_index::tag<ByID>,
-				boost::multi_index::const_mem_fun<
-					Entity,
-					const std::string&,
-					&Entity::ID
-				>
-			>
-		>
-	>;
-
 	using iterator = std::vector<libclx::TranslationUnit>::const_iterator;
 	
 public:
 	CodeBase();
+	~CodeBase();
 	
 	std::string Parse(const std::string& source, const std::vector<std::string>& ops);
+	void ReparseAll(std::function<void(const EntityMap*, const Entity*)> callback = {});
 	
 	const Entity* Root() const;
-	const Entity* Find(const std::string& id) const override;
-	Entity* Find(const std::string& id) override;
+	const EntityMap& Map() const;
+	EntityMap& Map();
 
 	boost::optional<const libclx::TranslationUnit&> Locate(const libclx::SourceLocation& loc) const;
 	
@@ -76,15 +53,13 @@ public:
 	std::size_t Size() const;
 	
 private:
-	void AddToIndex(Entity *entity) ;
-	void CrossReference(Entity *entity) ;
-
+	class EntityTree;
+	
 private:
 	libclx::Index  m_index;
 	std::vector<libclx::TranslationUnit> m_units;
 	
-	Namespace    m_root;
-	EntityIndex  m_search_index;
+	std::unique_ptr<EntityTree> m_tree;
 };
 
 } // end of namespace

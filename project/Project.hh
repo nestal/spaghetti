@@ -39,6 +39,18 @@ public:
 		
 	void Save(const std::string& filename) const;
 	void Open(const std::string& filename, ModelFactory& factory);
+
+	template <typename Func>
+	void Reload(Func callback)
+	{
+		m_code_base.ReparseAll([this, &callback](auto map, auto root)
+		{
+			for (auto&& model : m_models)
+				model->UpdateCodeBase(map);
+			
+			callback(map, root);
+		});
+	}
 	
 	template <typename InputIt>
 	void SetCompileOptions(InputIt first, InputIt last)

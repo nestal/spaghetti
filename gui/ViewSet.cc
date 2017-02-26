@@ -123,7 +123,7 @@ void ViewSet::NewClassDiagramView(class_diagram::ClassModel *model)
 	setCurrentIndex(tab);
 }
 
-void ViewSet::NewSourceView(source_view::Model *model)
+void ViewSet::NewSourceView(source_view::SourceModel *model)
 {
 	auto view = new source_view::View{model, this};
 	addTab(view, QString::fromStdString(model->Name()));

@@ -24,6 +24,9 @@ class Document;
 
 /**
  * \brief A tab widget that contain widgets of type ViewBase
+ *
+ * This class is consider the "view" of the Document class. It is the
+ * overall view of the whole project model.
  */
 class ViewSet : public QTabWidget
 {
@@ -69,7 +72,7 @@ public:
 
 private:
 	void NewClassDiagramView(class_diagram::ClassModel *model);
-	void NewSourceView(source_view::Model *model);
+	void NewSourceView(source_view::SourceModel *model);
 	void OnRenameTab(int idx);
 	
 private:

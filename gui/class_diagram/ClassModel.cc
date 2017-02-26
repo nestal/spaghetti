@@ -21,11 +21,20 @@
 #include <QtCore/QJsonArray>
 
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 namespace class_diagram {
 
+template <typename ItemType, typename Container, typename Func>
+auto ForEachItem(Container&& cont, Func func)
+{
+	for (auto&& i : cont)
+	{
+		if (auto item = dynamic_cast<ItemType*>(i))
+			func(item);
+	}
+	return func;
+}
 
 ClassModel::ClassModel(const codebase::EntityMap *codebase, const QString& name, QObject *parent) :
 	QObject{parent},
@@ -54,7 +63,7 @@ void ClassModel::Clear()
 
 void ClassModel::AddEntity(const std::string& id, const QPointF& pos)
 {
-	if (auto data_type = dynamic_cast<const codebase::DataType*>(m_codebase->Find(id)))
+	if (auto data_type = m_codebase->TypedFind<codebase::DataType>(id))
 	{
 		auto item = new ClassItem{*data_type, pos, this};
 		connect(item, &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);
@@ -98,19 +107,11 @@ bool ClassModel::CanRename() const
  */
 void ClassModel::DetectEdges(ClassItem *item)
 {
-	for (auto child : m_scene->items())
+	ForEachItem<ClassItem>(m_scene->items(), [this, item](auto citem)
 	{
-		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
-		{
-			if (item->DataType().IsBaseOf(citem->DataType()) ||
-				item->DataType().IsUsedInMember(citem->DataType()))
-				AddLine(item, citem);
-				
-			else if (citem->DataType().IsBaseOf(item->DataType()) ||
-				citem->DataType().IsUsedInMember(item->DataType()))
-				AddLine(citem, item);
-		}
-	}
+		if (item->RelationOf(citem) != ItemRelation::no_relation && !item->HasEdgeWith(citem))
+			this->AddLine(citem, item);
+	});
 }
 
 void ClassModel::AddLine(ClassItem *from, ClassItem *to)
@@ -143,18 +144,15 @@ void ClassModel::Load(const QJsonObject& obj)
 QJsonObject ClassModel::Save() const
 {
 	QJsonArray items;
-	for (auto child : m_scene->items())
+	ForEachItem<ClassItem>(m_scene->items(), [this, &items](auto citem)
 	{
-		if (auto citem = qgraphicsitem_cast<ClassItem*>(child))
-		{
-			items.append(QJsonObject{
-				{"id", QString::fromStdString(citem->DataType().ID())},
-				{"x", citem->x()},
-				{"y", citem->y()}
-			});
-			citem->MarkUnchanged();
-		}
-	}
+		items.append(QJsonObject{
+			{"id", QString::fromStdString(citem->DataType().ID())},
+			{"x", citem->x()},
+			{"y", citem->y()}
+		});
+		citem->MarkUnchanged();
+	});
 	
 	SetChanged(false);
 	
@@ -163,13 +161,31 @@ QJsonObject ClassModel::Save() const
 
 void ClassModel::DeleteSelectedItem()
 {
-	for (auto&& item : m_scene->selectedItems())
+	// save the pointers to be deleted instead of deleting them inside the
+	// loop, because they may still be referenced in the loop
+	std::vector<Edge*> dangled;
+	std::vector<QGraphicsItem*> removed;
+	
+	ForEachItem<BaseItem>(m_scene->selectedItems(), [this, &dangled, &removed](auto dead_item)
 	{
-		SetChanged(true);
+		this->SetChanged(true);
+
+		// gather all edges which will be dangled after deleting this item
+		ForEachItem<BaseItem>(m_scene->items(), [&dangled, dead_item](auto other)
+		{
+			if (other != dead_item)
+				other->RemoveEdgeWith(dead_item, [&dangled](auto edge){dangled.push_back(edge);});
+		});
 		
-		m_scene->removeItem(item);
-		delete dynamic_cast<BaseItem*>(item);
-	}
+		m_scene->removeItem(dead_item);
+		removed.push_back(dead_item);
+	});
+	
+	// the edge pointers may be duplicated, need to unique before deleting
+	std::sort(dangled.begin(), dangled.end());
+	dangled.erase(std::unique(dangled.begin(), dangled.end()), dangled.end());
+	std::for_each(dangled.begin(), dangled.end(), std::default_delete<Edge>());
+	std::for_each(removed.begin(), removed.end(), std::default_delete<QGraphicsItem>());
 }
 
 bool ClassModel::IsChanged() const
@@ -189,6 +205,20 @@ void ClassModel::SetChanged(bool changed) const
 		emit OnChanged(changed);
 		m_changed = changed;
 	}
+}
+
+void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
+{
+	ForEachItem<BaseItem>(m_scene->items(), [codebase](auto item)
+	{
+		item->Update(codebase);
+	});
+	
+	// ClassItem::Update() will remove edges, need to add them back
+	ForEachItem<ClassItem>(m_scene->items(), [this](auto item)
+	{
+		this->DetectEdges(item);
+	});
 }
 	
 }} // end of namespace
