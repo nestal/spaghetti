@@ -21,7 +21,6 @@
 #include <QtCore/QJsonArray>
 
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 namespace class_diagram {
@@ -158,6 +157,8 @@ QJsonObject ClassModel::Save() const
 
 void ClassModel::DeleteSelectedItem()
 {
+	// save the pointers to be deleted instead of deleting them inside the
+	// loop, because they may still be referenced in the loop
 	std::vector<Edge*> dangled;
 	std::vector<QGraphicsItem*> removed;
 	
@@ -166,11 +167,11 @@ void ClassModel::DeleteSelectedItem()
 		SetChanged(true);
 
 		// gather all edges which will be dangled after deleting this item
-		if (auto citem = dynamic_cast<ClassItem*>(item))
+		if (auto citem = qgraphicsitem_cast<ClassItem*>(item))
 		{
 			for (auto&& other : m_scene->items())
 			{
-				auto cother = dynamic_cast<ClassItem*>(other);
+				auto cother = qgraphicsitem_cast<ClassItem*>(other);
 				if (cother && cother != citem)
 					citem->RemoveEdgeWith(cother, [&dangled](auto edge){dangled.push_back(edge);});
 			}
@@ -179,8 +180,6 @@ void ClassModel::DeleteSelectedItem()
 		m_scene->removeItem(item);
 		removed.push_back(item);
 	}
-	
-	std::cout << "deleting " << dangled.size() << " edges" << std::endl;
 	
 	// the edge pointers may be duplicated, need to unique before deleting
 	std::sort(dangled.begin(), dangled.end());
