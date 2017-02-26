@@ -14,8 +14,6 @@
 
 #include "Entity.hh"
 
-#include "Namespace.hh"
-
 #include "libclx/Index.hh"
 
 #include <boost/optional.hpp>
@@ -26,6 +24,8 @@
 #include <vector>
 
 namespace codebase {
+
+class Namespace;
 
 /**
  * \brief The root of the Entity tree in a code base.
@@ -63,7 +63,7 @@ private:
 	libclx::Index  m_index;
 	std::vector<libclx::TranslationUnit> m_units;
 	
-	Namespace    m_root;
+	std::unique_ptr<Namespace>   m_root;
 	std::unique_ptr<SearchIndex> m_search_index;
 };
 

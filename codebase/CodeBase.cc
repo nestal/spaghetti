@@ -12,6 +12,8 @@
 
 #include "CodeBase.hh"
 
+#include "Namespace.hh"
+
 #include "libclx/Cursor.hh"
 
 #include <boost/multi_index_container.hpp>
@@ -77,9 +79,11 @@ private:
 	EntityIndex m_index;
 };
 
-CodeBase::CodeBase() : m_search_index{std::make_unique<SearchIndex>()}
+CodeBase::CodeBase() :
+	m_root{std::make_unique<Namespace>()},
+	m_search_index{std::make_unique<SearchIndex>()}
 {
-	AddToIndex(&m_root, *m_search_index);
+	AddToIndex(m_root.get(), *m_search_index);
 }
 
 CodeBase::~CodeBase() = default;
@@ -90,7 +94,7 @@ std::string CodeBase::Parse(const std::string& source, const std::vector<std::st
 	
 	m_search_index->Clear();
 	
-	BuildEntityTree(tu, m_root, *m_search_index);
+	BuildEntityTree(tu, *m_root, *m_search_index);
 	m_units.push_back(std::move(tu));
 	
 	return tu.Spelling();
@@ -99,20 +103,20 @@ std::string CodeBase::Parse(const std::string& source, const std::vector<std::st
 void CodeBase::ReparseAll(std::function<void(const EntityMap*, const Entity*)> callback)
 {
 	// build a new tree and replace our own with it
-	Namespace   new_root;
+	auto new_root = std::make_unique<Namespace>();
 	auto map = std::make_unique<SearchIndex>();
 	
 	for (auto&& tu : m_units)
-		BuildEntityTree(tu, new_root, *map);
+		BuildEntityTree(tu, *new_root, *map);
 	
 	// replace our own with the new one
 	// use Swap() to avoid dangling the references returned by Map()
-	m_root         = std::move(new_root);
+	m_root.swap(new_root);
 	m_search_index->Swap(*map);
 	
 	// before the old root and search index are invalidate, notify
 	// the caller to update their data structures
-	callback(m_search_index.get(), &m_root);
+	callback(m_search_index.get(), m_root.get());
 }
 
 void CodeBase::BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, SearchIndex& map)
@@ -139,7 +143,7 @@ void CodeBase::CrossReference(Entity *entity, SearchIndex& map)
 
 const Entity *CodeBase::Root() const
 {
-	return &m_root;
+	return m_root.get();
 }
 
 boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const libclx::SourceLocation& loc) const
