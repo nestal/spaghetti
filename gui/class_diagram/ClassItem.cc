@@ -245,6 +245,7 @@ void ClassItem::Update(const codebase::CodeBase& code_base)
 	// remove all edges, the model will re-add them later
 	m_edges.clear();
 	
+	m_name->setText(QString::fromStdString(m_class->Name()));
 	CreateChildren();
 }
 	

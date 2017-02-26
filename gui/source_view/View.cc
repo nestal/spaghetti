@@ -23,12 +23,12 @@
 namespace gui {
 namespace source_view {
 
-View::View(source_view::Model *model, QWidget *parent) :
+View::View(source_view::SourceModel *model, QWidget *parent) :
 	QPlainTextEdit{parent},
 	m_model{model},
 	m_highlight{document()}
 {
-	connect(m_model, &source_view::Model::OnLocationChanged, [this]{
+	connect(m_model, &source_view::SourceModel::OnLocationChanged, [this]{
 		Open(m_model->Name(), m_model->Line(), m_model->Column());
 	});
 }
@@ -156,7 +156,7 @@ void View::GoTo(unsigned line, unsigned column)
 	setTextCursor(cursor);
 }
 
-source_view::Model* View::Model()
+source_view::SourceModel* View::Model()
 {
 	return m_model;
 }

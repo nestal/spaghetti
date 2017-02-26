@@ -69,7 +69,7 @@ public:
 
 private:
 	void NewClassDiagramView(class_diagram::ClassModel *model);
-	void NewSourceView(source_view::Model *model);
+	void NewSourceView(source_view::SourceModel *model);
 	void OnRenameTab(int idx);
 	
 private:

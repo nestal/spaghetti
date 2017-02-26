@@ -18,7 +18,7 @@
 #include "ui_AboutBox.h"
 
 #include "logical_view/ProxyModel.hh"
-#include "source_view/Model.hh"
+#include "gui/source_view/SourceModel.hh"
 #include "libclx/Index.hh"
 
 #include <QtWidgets/QFileDialog>

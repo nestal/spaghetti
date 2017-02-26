@@ -14,7 +14,7 @@
 
 // gui namespace headers
 #include "gui/class_diagram/ClassModel.hh"
-#include "source_view/Model.hh"
+#include "gui/source_view/SourceModel.hh"
 #include "gui/logical_view/LogicalModel.hh"
 
 #include "project/Project.hh"
@@ -114,7 +114,7 @@ void Document::NewClassDiagram(const QString& name)
 
 void Document::NewSourceView(const QString& name, unsigned line, unsigned column)
 {
-	auto m = std::make_unique<source_view::Model>(name, this);
+	auto m = std::make_unique<source_view::SourceModel>(name, this);
 	emit OnCreateSourceView(m.get());
 	
 	m->SetLocation(name, line, column);
@@ -183,7 +183,7 @@ project::Model Document::ModelFactory::Create(project::ModelType type, const std
 	}
 	case project::ModelType::source_view:
 	{
-		auto m = std::make_unique<source_view::Model>(QString::fromStdString(name), m_parent);
+		auto m = std::make_unique<source_view::SourceModel>(QString::fromStdString(name), m_parent);
 		emit m_parent->OnCreateSourceView(m.get());
 		result = std::move(m);
 		break;

@@ -81,7 +81,7 @@ public:
 
 signals:
 	void OnCreateClassDiagramView(class_diagram::ClassModel *model);
-	void OnCreateSourceView(source_view::Model *model);
+	void OnCreateSourceView(source_view::SourceModel *model);
 	void OnDestroyModel(project::ModelBase *model);
 	void OnCompileDiagnotics(const QString& line);
 	void OnSetCurrentFile(const QString& file);

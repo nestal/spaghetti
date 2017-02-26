@@ -10,42 +10,42 @@
 // Created by nestal on 2/12/17.
 //
 
-#include "Model.hh"
+#include "SourceModel.hh"
 #include <QtCore/QJsonObject>
 
 namespace gui {
 namespace source_view {
 
 
-Model::Model(const QString& fname, QObject *parent) :
+SourceModel::SourceModel(const QString& fname, QObject *parent) :
 	QObject{parent},
 	m_fname{fname}
 {
 }
 
-void Model::AddEntity(const std::string&, const QPointF&)
+void SourceModel::AddEntity(const std::string&, const QPointF&)
 {
 }
 
-void Model::SetRect(const QRectF&)
+void SourceModel::SetRect(const QRectF&)
 {
 }
 
-std::string Model::Name() const
+std::string SourceModel::Name() const
 {
 	return m_fname.toStdString();
 }
 
-void Model::SetName(const QString&)
+void SourceModel::SetName(const QString&)
 {
 }
 
-bool Model::CanRename() const
+bool SourceModel::CanRename() const
 {
 	return false;
 }
 
-void Model::Load(const QJsonObject& json)
+void SourceModel::Load(const QJsonObject& json)
 {
 	m_fname  = json["fname"].toString();
 	m_line   = static_cast<unsigned>(json["line"].toInt(0));
@@ -54,7 +54,7 @@ void Model::Load(const QJsonObject& json)
 	emit OnLocationChanged();
 }
 
-QJsonObject Model::Save() const
+QJsonObject SourceModel::Save() const
 {
 	QJsonObject json;
 	json.insert("fname",  m_fname);
@@ -63,17 +63,17 @@ QJsonObject Model::Save() const
 	return json;
 }
 
-unsigned Model::Line() const
+unsigned SourceModel::Line() const
 {
 	return m_line;
 }
 
-unsigned Model::Column() const
+unsigned SourceModel::Column() const
 {
 	return m_column;
 }
 
-void Model::SetLocation(const QString& fname, unsigned line, unsigned column)
+void SourceModel::SetLocation(const QString& fname, unsigned line, unsigned column)
 {
 	m_fname  = fname;
 	m_line   = line;
@@ -81,9 +81,13 @@ void Model::SetLocation(const QString& fname, unsigned line, unsigned column)
 	emit OnLocationChanged();
 }
 
-bool Model::IsChanged() const
+bool SourceModel::IsChanged() const
 {
 	return false;
+}
+
+void SourceModel::UpdateCodeBase(const codebase::CodeBase&)
+{
 }
 	
 }} // end of namespace

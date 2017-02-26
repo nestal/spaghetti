@@ -21,12 +21,12 @@
 namespace gui {
 namespace source_view {
 
-class Model : public QObject, public project::ModelBase
+class SourceModel : public QObject, public project::ModelBase
 {
 	Q_OBJECT
 
 public:
-	Model(const QString& fname, QObject *parent);
+	SourceModel(const QString& fname, QObject *parent);
 	
 	void AddEntity(const std::string& id, const QPointF& pos) override;
 	void SetRect(const QRectF& rect) override;
@@ -41,6 +41,7 @@ public:
 	ModelType Type() const override {return ModelType::source_view;}
 	
 	bool IsChanged() const override;
+	void UpdateCodeBase(const codebase::CodeBase& codebase) override;
 	
 	void SetLocation(const QString& fname, unsigned line, unsigned column);
 	unsigned Line() const;

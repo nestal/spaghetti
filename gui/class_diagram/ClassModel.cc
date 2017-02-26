@@ -163,7 +163,7 @@ void ClassModel::DeleteSelectedItem()
 		SetChanged(true);
 		
 		m_scene->removeItem(item);
-		delete dynamic_cast<BaseItem*>(item);
+		delete item;
 	}
 }
 
@@ -183,6 +183,15 @@ void ClassModel::SetChanged(bool changed) const
 	{
 		emit OnChanged(changed);
 		m_changed = changed;
+	}
+}
+
+void ClassModel::UpdateCodeBase(const codebase::CodeBase& codebase)
+{
+	for (auto child : m_scene->items())
+	{
+		if (auto item = dynamic_cast<BaseItem*>(child))
+			item->Update(codebase);
 	}
 }
 	

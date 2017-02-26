@@ -22,7 +22,7 @@ class ClassView;
 
 namespace source_view {
 class View;
-class Model;
+class SourceModel;
 }
 
 } // end of namespace
