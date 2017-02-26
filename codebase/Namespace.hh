@@ -40,6 +40,8 @@ public:
 	void CrossReference(EntityMap *map) override;
 	void MarkUsed() override;
 	
+	void Swap(Namespace& other);
+	
 private:
 	void VisitMemberFunction(libclx::Cursor cursor);
 	
@@ -50,3 +52,10 @@ private:
 };
 	
 } // end of namespace
+
+namespace std {
+inline void swap(codebase::Namespace& v1, codebase::Namespace& v2)
+{
+	v1.Swap(v2);
+}
+} // end of namespace std

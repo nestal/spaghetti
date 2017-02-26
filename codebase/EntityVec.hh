@@ -56,6 +56,8 @@ public:
 	
 	void MarkUsed() override;
 	bool IsUsed() const override;
+	void Reparent(const Entity *parent) override;
+	void Swap(EntityVec& other);
 
 protected:
 	void MarkSelfUsedOnly();
@@ -89,4 +91,11 @@ auto EntityVec::AddUnique(EntityContainer&& cont, const std::string& id, Args...
 	return *it;
 }
 
-} // end of namespace
+} // end of namespace codebase
+
+namespace std {
+inline void swap(codebase::EntityVec& v1, codebase::EntityVec& v2)
+{
+	v1.Swap(v2);
+}
+} // end of namespace std

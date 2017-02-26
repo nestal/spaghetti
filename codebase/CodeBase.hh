@@ -53,18 +53,13 @@ public:
 	std::size_t Size() const;
 	
 private:
-	class SearchIndex;
+	class EntityTree;
 	
-	void BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, SearchIndex& map);
-	void AddToIndex(Entity *entity, SearchIndex& map) ;
-	void CrossReference(Entity *entity, SearchIndex& map) ;
-
 private:
 	libclx::Index  m_index;
 	std::vector<libclx::TranslationUnit> m_units;
 	
-	std::unique_ptr<Namespace>   m_root;
-	std::unique_ptr<SearchIndex> m_search_index;
+	std::unique_ptr<EntityTree> m_tree;
 };
 
 } // end of namespace

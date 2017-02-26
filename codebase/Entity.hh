@@ -97,6 +97,8 @@ public:
 	const_iterator begin() const;
 	const_iterator end() const;
 	
+	virtual void Reparent(const Entity *parent) = 0;
+	
 public:
 	bool HasChild(const Entity *child) const {return IndexOf(child) < ChildCount();}
 };
@@ -172,6 +174,8 @@ public:
 	void MarkUsed() override;
 	void CrossReference(EntityMap *map) override;
 
+	void Reparent(const Entity *entity) override;
+	
 private:
 	std::string m_name;
 	std::string m_usr;

@@ -111,5 +111,10 @@ bool LeafEntity::IsUsed() const
 void LeafEntity::CrossReference(EntityMap *)
 {
 }
+
+void LeafEntity::Reparent(const Entity *entity)
+{
+	m_parent = entity;
+}
 	
 } // end of namespace

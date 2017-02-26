@@ -23,10 +23,13 @@
 
 namespace codebase {
 
-class CodeBase::SearchIndex : public EntityMap
+class CodeBase::EntityTree : public EntityMap
 {
 public:
-	SearchIndex() = default;
+	EntityTree()
+	{
+		AddToIndex(&m_root);
+	}
 	
 	const Entity* Find(const std::string& id) const override
 	{
@@ -40,20 +43,39 @@ public:
 		return it != m_index.get<ByID>().end() ? *it : nullptr;
 	}
 	
-	void Insert(Entity *e)
+	Entity* Root()
 	{
-		m_index.insert(e);
+		return &m_root;
 	}
 	
-	void Clear()
+	void Build(libclx::TranslationUnit& tu)
 	{
 		m_index.clear();
+		m_root.Visit(tu.Root());
+		AddToIndex(&m_root);
+		CrossReference(&m_root);
 	}
 	
-	void Swap(SearchIndex& other)
+	void AddToIndex(Entity *entity)
+	{
+		m_index.insert(entity);
+		
+		for (auto&& c : *entity)
+			AddToIndex(&c);
+	}
+	
+	void CrossReference(Entity *entity)
+	{
+		entity->CrossReference(this);
+		for (auto&& child : *entity)
+			CrossReference(&child);
+	}
+	
+	void Swap(EntityTree& other)
 	{
 		using namespace std;
 		swap(m_index, other.m_index);
+		swap(m_root, other.m_root);
 	}
 
 private:
@@ -76,14 +98,13 @@ private:
 	>;
 
 private:
+	Namespace   m_root;
 	EntityIndex m_index;
 };
 
 CodeBase::CodeBase() :
-	m_root{std::make_unique<Namespace>()},
-	m_search_index{std::make_unique<SearchIndex>()}
+	m_tree{std::make_unique<EntityTree>()}
 {
-	AddToIndex(m_root.get(), *m_search_index);
 }
 
 CodeBase::~CodeBase() = default;
@@ -92,9 +113,7 @@ std::string CodeBase::Parse(const std::string& source, const std::vector<std::st
 {
 	auto tu = m_index.Parse(source, ops, CXTranslationUnit_SkipFunctionBodies);
 	
-	m_search_index->Clear();
-	
-	BuildEntityTree(tu, *m_root, *m_search_index);
+	m_tree->Build(tu);
 	m_units.push_back(std::move(tu));
 	
 	return tu.Spelling();
@@ -103,47 +122,23 @@ std::string CodeBase::Parse(const std::string& source, const std::vector<std::st
 void CodeBase::ReparseAll(std::function<void(const EntityMap*, const Entity*)> callback)
 {
 	// build a new tree and replace our own with it
-	auto new_root = std::make_unique<Namespace>();
-	auto map = std::make_unique<SearchIndex>();
+	auto tree = std::make_unique<EntityTree>();
 	
 	for (auto&& tu : m_units)
-		BuildEntityTree(tu, *new_root, *map);
+		tree->Build(tu);
 	
 	// replace our own with the new one
 	// use Swap() to avoid dangling the references returned by Map()
-	m_root.swap(new_root);
-	m_search_index->Swap(*map);
+	m_tree->Swap(*tree);
 	
 	// before the old root and search index are invalidate, notify
 	// the caller to update their data structures
-	callback(m_search_index.get(), m_root.get());
-}
-
-void CodeBase::BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, SearchIndex& map)
-{
-	root.Visit(tu.Root());
-	AddToIndex(&root, map);
-	CrossReference(&root, map);
-}
-
-void CodeBase::AddToIndex(Entity *entity, SearchIndex& map)
-{
-	map.Insert(entity);
-	
-	for (auto&& c : *entity)
-		AddToIndex(&c, map);
-}
-
-void CodeBase::CrossReference(Entity *entity, SearchIndex& map)
-{
-	entity->CrossReference(&map);
-	for (auto&& child : *entity)
-		CrossReference(&child, map);
+	callback(m_tree.get(), m_tree->Root());
 }
 
 const Entity *CodeBase::Root() const
 {
-	return m_root.get();
+	return m_tree->Root();
 }
 
 boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const libclx::SourceLocation& loc) const
@@ -174,12 +169,12 @@ std::size_t CodeBase::Size() const
 
 const EntityMap& CodeBase::Map() const
 {
-	return *m_search_index.get();
+	return *m_tree.get();
 }
 
 EntityMap& CodeBase::Map()
 {
-	return *m_search_index.get();
+	return *m_tree.get();
 }
 	
 } // end of namespace
