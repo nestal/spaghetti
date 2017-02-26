@@ -13,24 +13,16 @@
 #pragma once
 
 #include "Entity.hh"
-#include "TypeDB.hh"
 
-#include "DataType.hh"
-#include "EntityVec.hh"
 #include "Namespace.hh"
 
 #include "libclx/Index.hh"
-
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/hashed_index.hpp>
-#include <boost/multi_index/random_access_index.hpp>
-#include <boost/multi_index/mem_fun.hpp>
-#include <boost/multi_index/identity.hpp>
 
 #include <boost/optional.hpp>
 #include <boost/range.hpp>
 
 #include <vector>
+#include <memory>
 
 namespace codebase {
 

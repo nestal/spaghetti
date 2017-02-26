@@ -14,6 +14,11 @@
 
 #include "libclx/Cursor.hh"
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+#include <boost/multi_index/mem_fun.hpp>
+
 namespace codebase {
 
 class CodeBase::SearchIndex : public EntityMap
@@ -41,6 +46,12 @@ public:
 	void Clear()
 	{
 		m_index.clear();
+	}
+	
+	void Swap(SearchIndex& other)
+	{
+		using namespace std;
+		swap(m_index, other.m_index);
 	}
 
 private:
@@ -95,8 +106,9 @@ void CodeBase::ReparseAll()
 		BuildEntityTree(tu, new_root, *map);
 	
 	// replace our own with the new one
+	// use Swap() to avoid dangling the references returned by Map()
 	m_root         = std::move(new_root);
-	m_search_index = std::move(map);
+	m_search_index->Swap(*map);
 }
 
 void CodeBase::BuildEntityTree(libclx::TranslationUnit& tu, Namespace& root, SearchIndex& map)
@@ -126,7 +138,7 @@ const Entity *CodeBase::Root() const
 	return &m_root;
 }
 
-boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const SourceLocation& loc) const
+boost::optional<const libclx::TranslationUnit&> CodeBase::Locate(const libclx::SourceLocation& loc) const
 {
 	for (auto&& c : m_units)
 	{
