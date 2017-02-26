@@ -126,7 +126,7 @@ void Edge::DrawToEnding(QPainter *painter, ItemRelation relation) const
 	
 	switch (relation)
 	{
-	case ItemRelation::derived_class_of:        DrawInheritanceTrigangle(painter);  break;
+	case ItemRelation::base_class_of:           DrawInheritanceTrigangle(painter);  break;
 	case ItemRelation::use_as_member:           DrawArrowHead(painter);             break;
 	case ItemRelation::used_by_as_member:       DrawAggregationDiamond(painter);    break;
 	default: break;
@@ -139,6 +139,7 @@ void Edge::DrawFromEnding(QPainter *painter, ItemRelation relation) const
 	
 	switch (relation)
 	{
+	case ItemRelation::derived_class_of:        DrawInheritanceTrigangle(painter);  break;
 	case ItemRelation::used_by_as_member:       DrawArrowHead(painter);             break;
 	case ItemRelation::use_as_member:           DrawAggregationDiamond(painter);    break;
 	default: break;
