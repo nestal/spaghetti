@@ -120,6 +120,7 @@ void MainWnd::ConnectSignals()
 		ProjectSetting dlg{*m_doc, this};
 		dlg.exec();
 	});
+	connect(m_ui->m_action_reload_all, &QAction::triggered, m_doc.get(), &Document::Reload);
 	
 	// open source code when the user double click the item
 	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
