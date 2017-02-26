@@ -172,10 +172,7 @@ void ClassModel::DeleteSelectedItem()
 			{
 				auto cother = dynamic_cast<ClassItem*>(other);
 				if (cother && cother != citem)
-				{
-					auto edges = citem->RemoveEdgeWith(cother);
-					dangled.insert(dangled.end(), edges.begin(), edges.end());
-				}
+					citem->RemoveEdgeWith(cother, [&dangled](auto edge){dangled.push_back(edge);});
 			}
 		}
 		

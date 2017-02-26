@@ -14,9 +14,10 @@
 
 #include <QtCore/QObject>
 
-#include <boost/range/iterator_range.hpp>
-
 #include "BaseItem.hh"
+
+#include <boost/range/iterator_range.hpp>
+#include <algorithm>
 
 class QGraphicsSimpleTextItem;
 class QSizeF;
@@ -66,7 +67,18 @@ public:
 	bool HasEdgeWith(const BaseItem *item) const;
 	
 	boost::iterator_range<edge_iterator> Edges() const;
-	std::vector<Edge*> RemoveEdgeWith(const BaseItem *other);
+
+	template <typename Func>
+	void RemoveEdgeWith(const BaseItem *other, Func func)
+	{
+		auto mid = std::partition(m_edges.begin(), m_edges.end(), [other, this](auto edge)
+		{
+			return edge->Other(this) != other;
+		});
+		std::for_each(mid, m_edges.end(), func);
+		m_edges.erase(mid, m_edges.end());
+	}
+
 
 signals:
 	void OnJustChanged(ClassItem *self);

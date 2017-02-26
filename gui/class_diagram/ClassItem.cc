@@ -268,17 +268,5 @@ boost::iterator_range<ClassItem::edge_iterator> ClassItem::Edges() const
 {
 	return {m_edges.begin(), m_edges.end()};
 }
-
-std::vector<Edge*> ClassItem::RemoveEdgeWith(const BaseItem *other)
-{
-	auto mid = std::partition(m_edges.begin(), m_edges.end(), [other, this](auto edge)
-	{
-		return edge->Other(this) != other;
-	});
-	
-	std::vector<Edge*> result{mid, m_edges.end()};
-	m_edges.erase(mid, m_edges.end());
-	return result;
-}
 	
 }} // end of namespace
