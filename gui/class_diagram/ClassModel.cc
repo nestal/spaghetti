@@ -25,6 +25,16 @@
 namespace gui {
 namespace class_diagram {
 
+template <typename ItemType, typename Container, typename Func>
+auto ForEachItem(Container&& cont, Func func)
+{
+	for (auto&& i : cont)
+	{
+		if (auto item = dynamic_cast<ItemType*>(i))
+			func(item);
+	}
+	return func;
+}
 
 ClassModel::ClassModel(const codebase::EntityMap *codebase, const QString& name, QObject *parent) :
 	QObject{parent},
@@ -162,24 +172,20 @@ void ClassModel::DeleteSelectedItem()
 	std::vector<Edge*> dangled;
 	std::vector<QGraphicsItem*> removed;
 	
-	for (auto&& item : m_scene->selectedItems())
+	ForEachItem<BaseItem>(m_scene->selectedItems(), [this, &dangled, &removed](auto dead_item)
 	{
-		SetChanged(true);
+		this->SetChanged(true);
 
 		// gather all edges which will be dangled after deleting this item
-		if (auto citem = dynamic_cast<BaseItem*>(item))
+		ForEachItem<BaseItem>(m_scene->items(), [&dangled, dead_item](auto other)
 		{
-			for (auto&& other : m_scene->items())
-			{
-				auto cother = dynamic_cast<BaseItem*>(other);
-				if (cother && cother != citem)
-					cother->RemoveEdgeWith(citem, [&dangled](auto edge){dangled.push_back(edge);});
-			}
-		}
+			if (other != dead_item)
+				other->RemoveEdgeWith(dead_item, [&dangled](auto edge){dangled.push_back(edge);});
+		});
 		
-		m_scene->removeItem(item);
-		removed.push_back(item);
-	}
+		m_scene->removeItem(dead_item);
+		removed.push_back(dead_item);
+	});
 	
 	// the edge pointers may be duplicated, need to unique before deleting
 	std::sort(dangled.begin(), dangled.end());
