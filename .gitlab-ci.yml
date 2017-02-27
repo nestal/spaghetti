@@ -1,5 +1,7 @@
+image: fedora
+
 before_script:
-  - apt-get update -qq && apt-get install cmake
+  - dnf update && dnf install -y cmake gcc clang-devel qt5* boost-devel
 
 build:
   script:
