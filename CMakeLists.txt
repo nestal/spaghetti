@@ -83,10 +83,7 @@ if (GTEST_FOUND)
 	target_link_libraries(unittest ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} spag)
 endif(GTEST_FOUND)
 
-if (LINUX)
-	set(CPACK_GENERATOR "RPM")
-elseif(WIN32)
-	
+if(WIN32)
 	# NSIS specific settings
 	set(CPACK_GENERATOR "NSIS")
 	set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/resources/fork.ico")
@@ -132,6 +129,8 @@ elseif(WIN32)
 		${QT_PLUGINS_DIR}/imageformats/qwebp.dll
 		DESTINATION bin/imageformats
 	)
+else()
+	set(CPACK_GENERATOR "RPM")
 endif()
 
 set(CPACK_PACKAGE_EXECUTABLES "spaghetti-gui" "Spaghetti: source code analyzer")

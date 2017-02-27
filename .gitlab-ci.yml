@@ -13,7 +13,11 @@ build_spag:
     - mkdir build/
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
-    - make
+    - make package
+  artifacts:
+    name: "$CI_BUILD_NAME"
+    paths:
+      - build/spaghetti-gui-0.2.0-Linux.rpm
 
 run_ut:
   stage: test
