@@ -1,7 +1,7 @@
-image: fedora
+image: nestal/spaghetti-build
 
 before_script:
-  - dnf update -y && dnf install -y cmake gcc clang-devel qt5-qtbase-devel boost-devel
+  - dnf update -y && dnf install -y cmake gcc clang-devel qt5-qtbase-devel boost-devel rpm-build
 
 stages:
   - build
