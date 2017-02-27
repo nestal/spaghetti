@@ -88,6 +88,8 @@ if(WIN32)
 	set(CPACK_GENERATOR "NSIS")
 	set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/resources/fork.ico")
 	set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/resources/fork.ico")
+	set(CPACK_NSIS_CONTACT "me@nestal.net")
+	set(CPACK_NSIS_COMPRESSOR "/SOLID lzma")
 
 	# install dependent libraries
 	find_file(LIBCLANG_DLL libclang.dll HINTS ${LIBCLANG_PREFIX}/bin)
@@ -134,6 +136,9 @@ else()
 endif()
 
 set(CPACK_PACKAGE_EXECUTABLES "spaghetti-gui" "Spaghetti: source code analyzer")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Spaghetti: a tool to quickly understand spaghetti code")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 set(CPACK_PACKAGE_NAME "spaghetti-gui")
 set(CPACK_PACKAGE_VENDOR "nestal.net")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")

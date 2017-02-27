@@ -303,5 +303,15 @@ const codebase::Entity *Document::At(const QModelIndex& idx) const
 {
 	return m_logical_model->At(m_proxy_model->mapToSource(idx));
 }
+
+bool Document::IsShowAllClasses() const
+{
+	return m_proxy_model->IsShowAll();
+}
+
+void Document::SetShowAllClasses(bool value)
+{
+	m_proxy_model->SetShowAll(value);
+}
 	
 } // end of namespace

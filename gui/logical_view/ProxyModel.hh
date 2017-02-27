@@ -26,6 +26,11 @@ public:
 	
 	bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override;
 	
+	bool IsShowAll() const;
+	void SetShowAll(bool value);
+	
+private:
+	bool m_show_all{false};
 };
 	
 }} // end of namespace

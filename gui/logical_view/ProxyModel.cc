@@ -10,6 +10,7 @@
 // Created by nestal on 2/23/17.
 //
 
+#include <iostream>
 #include "ProxyModel.hh"
 
 #include "LogicalModel.hh"
@@ -28,10 +29,29 @@ ProxyModel::ProxyModel(LogicalModel *model) :
 
 bool ProxyModel::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const
 {
-	auto source = dynamic_cast<LogicalModel*>(sourceModel());
-	auto entity = source->At(source->index(source_row, 0, source_parent));
-	
-	return entity && entity->IsUsed();
+	if (m_show_all)
+		return true;
+	else
+	{
+		auto source = dynamic_cast<LogicalModel *>(sourceModel());
+		auto entity = source->At(source->index(source_row, 0, source_parent));
+		
+		return entity && entity->IsUsed();
+	}
+}
+
+bool ProxyModel::IsShowAll() const
+{
+	return m_show_all;
+}
+
+void ProxyModel::SetShowAll(bool value)
+{
+	if (value != m_show_all)
+	{
+		m_show_all = value;
+		invalidate();
+	}
 }
 	
 }} // end of namespace

@@ -149,6 +149,12 @@ void MainWnd::ConnectSignals()
 		m_ui->m_log_dock->setVisible(!m_ui->m_log_dock->isVisible());
 		m_ui->m_action_logs->setChecked(m_ui->m_log_dock->isVisible());
 	});
+	
+	connect(m_ui->m_action_show_all_classes, &QAction::triggered, [this](bool checked)
+	{
+		m_doc->SetShowAllClasses(checked);
+		m_ui->m_action_show_all_classes->setChecked(checked);
+	});
 }
 
 void MainWnd::OnOpen()
