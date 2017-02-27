@@ -1,7 +1,7 @@
 image: fedora
 
 before_script:
-  - dnf update && dnf install -y cmake gcc clang-devel qt5* boost-devel
+  - dnf update -y && dnf install -y cmake gcc clang-devel qt5* boost-devel
 
 build:
   script:
