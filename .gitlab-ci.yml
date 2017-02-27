@@ -3,9 +3,20 @@ image: fedora
 before_script:
   - dnf update -y && dnf install -y cmake gcc clang-devel qt5* boost-devel
 
-build:
+stages:
+  - build
+  - test
+
+build_spag:
+  stage: build
   script:
     - mkdir build/
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
     - make
+
+run_ut:
+  stage: test
+  script:
+    - cd build
+    - ./unittest
