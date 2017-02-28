@@ -25,6 +25,7 @@
 #include <QtWidgets/QInputDialog>
 
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 
@@ -148,6 +149,21 @@ void MainWnd::ConnectSignals()
 	{
 		m_ui->m_log_dock->setVisible(!m_ui->m_log_dock->isVisible());
 		m_ui->m_action_logs->setChecked(m_ui->m_log_dock->isVisible());
+	});
+	
+	connect(m_ui->m_action_show_all_classes, &QAction::triggered, [this](bool checked)
+	{
+		m_doc->SetShowAllClasses(checked);
+		m_ui->m_action_show_all_classes->setChecked(checked);
+	});
+	
+	connect(m_ui->m_logical_view, &QWidget::customContextMenuRequested, [this](auto& pos)
+	{
+		std::cout << "menu at " << pos.x() << " " << pos.y() << std::endl;
+		auto gpos = m_ui->m_logical_view->mapToGlobal(pos);
+		QMenu menu{m_ui->m_logical_view};
+		menu.addAction(m_ui->m_action_show_all_classes);
+		menu.exec(gpos);
 	});
 }
 

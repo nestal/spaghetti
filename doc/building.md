@@ -44,7 +44,7 @@ binaries. Download the source from [Boost official site](http://www.boost.org/us
 To build boost, I used the following commands:
 ```
     booststrap
-    .\b2 address_model=64 install
+    .\b2 address-model=64 install
 ```
 After b2 finishes, the boost headers and libraries will be installed to
 `c:\Boost`, unless you chose a different location.

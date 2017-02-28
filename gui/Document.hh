@@ -83,6 +83,9 @@ public:
 	bool IsChanged() const;
 	void Reload();
 
+	bool IsShowAllClasses() const;
+	void SetShowAllClasses(bool value);
+	
 signals:
 	void OnCreateClassDiagramView(class_diagram::ClassModel *model);
 	void OnCreateSourceView(source_view::SourceModel *model);

@@ -79,6 +79,7 @@
     <addaction name="m_action_new_class_diagram"/>
     <addaction name="m_action_cflags"/>
     <addaction name="m_action_reload_all"/>
+    <addaction name="m_action_show_all_classes"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
@@ -130,6 +131,9 @@
          <width>16777215</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
        </property>
        <property name="dragEnabled">
         <bool>true</bool>
@@ -293,7 +297,15 @@
   </action>
   <action name="m_action_reload_all">
    <property name="text">
-    <string>Reload All Source</string>
+    <string>&amp;Reload All Source</string>
+   </property>
+  </action>
+  <action name="m_action_show_all_classes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show All Classes</string>
    </property>
   </action>
  </widget>

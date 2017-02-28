@@ -12,15 +12,10 @@ build_spag:
   script:
     - mkdir build/
     - cd build
-    - cmake -DCMAKE_BUILD_TYPE=Debug ..
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make all
     - make package
   artifacts:
-    name: "$CI_BUILD_NAME"
+    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
     paths:
-      - build/spaghetti-gui-0.2.0-Linux.rpm
-
-run_ut:
-  stage: test
-  script:
-    - cd build
-    - ./unittest
+      - build/*.rpm
