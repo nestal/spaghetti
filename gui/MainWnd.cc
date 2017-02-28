@@ -87,11 +87,12 @@ void MainWnd::ConnectSignals()
 		AboutDialog dlg{this};
 		dlg.exec();
 	});
-	connect(m_ui->m_action_new, &QAction::triggered, m_doc.get(), [this]{
+	connect(m_ui->m_action_new,      &QAction::triggered, m_doc.get(), [this]
+	{
 		if (ConfirmDiscard())
 			m_doc->New();
 	});
-	connect(m_ui->m_action_open, &QAction::triggered, this, &MainWnd::OnOpen);
+	connect(m_ui->m_action_open,       &QAction::triggered, this, &MainWnd::OnOpen);
 	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
 	{
 		assert(m_doc);
@@ -129,7 +130,8 @@ void MainWnd::ConnectSignals()
 		m_doc->NewClassDiagram(tr("Class Diagram") + QString::number(m_ui->m_tab->count() + 1));
 	});
 	connect(m_doc.get(), &Document::OnCompileDiagnotics, this, &MainWnd::Log);
-	connect(m_doc.get(), &Document::OnSetCurrentFile, [this](auto& file){
+	connect(m_doc.get(), &Document::OnSetCurrentFile, [this](auto& file)
+	{
 		this->setWindowTitle("Spaghetti : " + file);}
 	);
 	connect(m_ui->m_logical_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_logical_view->setChecked(val);});
@@ -157,14 +159,7 @@ void MainWnd::ConnectSignals()
 		m_ui->m_action_show_all_classes->setChecked(checked);
 	});
 	
-	connect(m_ui->m_logical_view, &QWidget::customContextMenuRequested, [this](auto& pos)
-	{
-		std::cout << "menu at " << pos.x() << " " << pos.y() << std::endl;
-		auto gpos = m_ui->m_logical_view->mapToGlobal(pos);
-		QMenu menu{m_ui->m_logical_view};
-		menu.addAction(m_ui->m_action_show_all_classes);
-		menu.exec(gpos);
-	});
+	m_ui->m_logical_view->insertAction(nullptr, m_ui->m_action_show_all_classes);
 }
 
 void MainWnd::OnOpen()
