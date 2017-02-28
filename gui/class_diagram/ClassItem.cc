@@ -24,6 +24,8 @@
 #include <QtWidgets/QGraphicsScene>
 #include <iostream>
 
+// using https://github.com/cesarbs/sizegripitem to implement resize
+
 namespace gui {
 namespace class_diagram {
 
@@ -99,13 +101,13 @@ void ClassItem::ReCreateChildren(qreal width, qreal height, bool force_size)
 	assert(function_count + field_count <= total_rows);
 	
 	std::size_t index=0;
-	for (auto& func : m_class->Functions())
+	for (auto&& func : m_class->Functions())
 	{
 		if (++index > function_count) break;
 		CreateTextItem(&func, bounding, width);
 	}
 	index=0;
-	for (auto& field : m_class->Fields())
+	for (auto&& field : m_class->Fields())
 	{
 		if (++index > field_count) break;
 		CreateTextItem(&field, bounding, width);
