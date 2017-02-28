@@ -17,7 +17,7 @@
 namespace gui {
 namespace classgf {
 
-class Setting;
+struct Setting;
 
 class Viewport
 {
