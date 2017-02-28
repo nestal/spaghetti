@@ -13,8 +13,8 @@ build_spag:
     - mkdir build/
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make all
     - make package
-    - ./unittest
   artifacts:
     name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
     paths:
