@@ -69,7 +69,7 @@ add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES} ${UTIL_F
 # the classes in "project" namespace needs QtCore to serialize models to/from JSON files
 target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES} Qt5::Core)
 
-file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/spaghetti.qrc)
+file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/common/*.cpp gui/common/*.h gui/spaghetti.qrc)
 add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES} ${RC_FILE})
 target_link_libraries(spaghetti-gui spag Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
 install(TARGETS spaghetti-gui RUNTIME DESTINATION bin)
