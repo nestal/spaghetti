@@ -63,7 +63,7 @@ signals:
 	
 private:
 	void CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal width);
-	void ReCreateChildren(qreal width, qreal height);
+	void ReCreateChildren(qreal width, qreal height, bool force_size);
 	
 private:
 	class Resizer;

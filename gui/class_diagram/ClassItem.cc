@@ -39,7 +39,7 @@ public:
 		
 		std::cout << "width = " << rect.width( ) << " " << " height = " << rect.height() << std::endl;
 		
-		item->ReCreateChildren(rect.width(), rect.height());
+		item->ReCreateChildren(rect.width(), rect.height(), true);
 	}
 };
 
@@ -49,7 +49,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	m_class_id{class_.ID()}
 {
 	const qreal default_width{200.0}, default_height{150.0};
-	ReCreateChildren(default_width, default_height);
+	ReCreateChildren(default_width, default_height, false);
 
 	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
 	setPos(pos);
@@ -62,7 +62,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 
 ClassItem::~ClassItem() = default;
 
-void ClassItem::ReCreateChildren(qreal width, qreal height)
+void ClassItem::ReCreateChildren(qreal width, qreal height, bool force_size)
 {
 	// remove all children
 	delete m_name; m_name = nullptr;
@@ -112,6 +112,12 @@ void ClassItem::ReCreateChildren(qreal width, qreal height)
 	}
 	m_show_function = function_count;
 	
+	if (force_size)
+	{
+		bounding.setHeight(std::max(bounding.height(), height));
+		bounding.setWidth(std::max(bounding.width(), width));
+	}
+	
 	// make all children center at origin
 	for (auto child : childItems())
 		child->moveBy(-bounding.width()/2, -bounding.height()/2);
@@ -124,7 +130,6 @@ void ClassItem::ReCreateChildren(qreal width, qreal height)
 		bounding.width()/2+m_margin,
 		bounding.height()/2+m_margin
 	);
-	
 }
 
 QRectF ClassItem::boundingRect() const
@@ -264,7 +269,7 @@ void ClassItem::Update(const codebase::EntityMap *map)
 	// remove all edges, the model will re-add them later
 	ClearEdges();
 	
-	ReCreateChildren(m_bounding.width(), m_bounding.height());
+	ReCreateChildren(m_bounding.width(), m_bounding.height(), true);
 }
 
 }} // end of namespace
