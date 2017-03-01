@@ -155,9 +155,8 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// adjust vertical margin
 	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * field_font_met.height();
-	auto v_margin     = (m_bounding.height() - total_height) / 2;
-	content = m_bounding.adjusted(m_margin, v_margin, -m_margin, -v_margin);
-	
+	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
+
 	// TODO: make it configurable
 	painter->setPen(Qt::GlobalColor::magenta);
 	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
@@ -176,13 +175,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// line between class name and function
 	painter->drawLine(
-		QPointF{m_bounding.right(), name_rect.bottom()},
-		QPointF{m_bounding.left(),  name_rect.bottom()}
+		QPointF{m_bounding.right(), name_rect.bottom() + vspace_between_fields/2},
+		QPointF{m_bounding.left(),  name_rect.bottom() + vspace_between_fields/2}
 	);
 	
 	QRectF text_rect{
-		QPointF{content.left(),  name_rect.bottom()},
-		QPointF{content.right(), name_rect.bottom() + field_font_met.height()}
+		QPointF{content.left(),  name_rect.bottom() + vspace_between_fields},
+		QPointF{content.right(), name_rect.bottom() + vspace_between_fields + field_font_met.height()}
 	};
 	
 	// functions
@@ -199,13 +198,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 				content.width()
 			)
 		);
-		text_rect.adjust(0, field_font_met.height(), 0, field_font_met.height());
+		text_rect.adjust(0, field_font_met.height() + vspace_between_fields, 0, field_font_met.height() + vspace_between_fields);
 	}
 
 	// line between class name and function
 	painter->drawLine(
-		QPointF{m_bounding.right(), text_rect.top()},
-		QPointF{m_bounding.left(),  text_rect.top()}
+		QPointF{m_bounding.right(), text_rect.top() - vspace_between_fields/2},
+		QPointF{m_bounding.left(),  text_rect.top() - vspace_between_fields/2}
 	);
 	
 	index=0;
@@ -220,7 +219,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 				content.width()
 			)
 		);
-		text_rect.adjust(0, field_font_met.height(), 0, field_font_met.height());
+		text_rect.adjust(0, field_font_met.height() + vspace_between_fields, 0, field_font_met.height() + vspace_between_fields);
 	}
 }
 
