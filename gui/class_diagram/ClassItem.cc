@@ -41,7 +41,7 @@ public:
 		
 		std::cout << "width = " << rect.width( ) << " " << " height = " << rect.height() << std::endl;
 		
-//		item->ReCreateChildren(rect.width(), rect.height(), true);
+		item->Resize(rect);
 	}
 };
 
@@ -67,77 +67,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 }
 
 ClassItem::~ClassItem() = default;
-/*
-void ClassItem::ReCreateChildren(qreal width, qreal height, bool force_size)
-{
-	// remove all children
-	delete m_name; m_name = nullptr;
-	m_fields.clear();
-	
-	m_name = new QGraphicsSimpleTextItem{QString::fromStdString(m_class->Name()), this};
-	
-	// use a bold font for class names
-	auto font = m_name->font();
-	font.setBold(true);
-	m_name->setFont(font);
-		
-	auto bounding = m_name->boundingRect().size();
-	
-	// assume all text items are of the same height
-	auto total_rows = static_cast<std::size_t>(height/bounding.height());
-	
-	// one row for the name
-	assert(total_rows > 0);
-	total_rows--;
-	
-	auto function_count = std::min(m_class->Functions().size(), total_rows);
-	auto field_count    = std::min(m_class->Fields().size(), total_rows);
-	
-	if ( field_count <= total_rows/2 && function_count > total_rows/2)
-		function_count = std::min(total_rows - field_count, function_count);
-	else if (function_count <= total_rows/2 && field_count > total_rows/2)
-		field_count = std::min(total_rows - function_count, field_count);
-	else if (field_count > total_rows/2 && function_count > total_rows/2)
-		field_count = function_count = total_rows/2;
-	
-	assert(function_count <= total_rows);
-	assert(field_count    <= total_rows);
-	assert(function_count + field_count <= total_rows);
-	
-	std::size_t index=0;
-	for (auto&& func : m_class->Functions())
-	{
-		if (++index > function_count) break;
-		CreateTextItem(&func, bounding, width);
-	}
-	index=0;
-	for (auto&& field : m_class->Fields())
-	{
-		if (++index > field_count) break;
-		CreateTextItem(&field, bounding, width);
-	}
-	m_show_function = function_count;
-	
-	if (force_size)
-	{
-		bounding.setHeight(std::max(bounding.height(), height));
-		bounding.setWidth(std::max(bounding.width(), width));
-	}
-	
-	// make all children center at origin
-	for (auto child : childItems())
-		child->moveBy(-bounding.width()/2, -bounding.height()/2);
-	
-	// initialize geometry
-	prepareGeometryChange();
-	m_bounding.setCoords(
-		-bounding.width()/2-m_margin,
-		-bounding.height()/2-m_margin,
-		bounding.width()/2+m_margin,
-		bounding.height()/2+m_margin
-	);
-}
-*/
+
 QRectF ClassItem::boundingRect() const
 {
 	return m_bounding;
@@ -251,7 +181,10 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 			edge->UpdatePosition();
 	}
 	else if (change == QGraphicsItem::ItemSelectedChange)
-		new SizeGripItem{new Resizer, this};
+	{
+		if (!m_grip)
+			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+	}
 
 	return value;
 }
@@ -300,29 +233,7 @@ void ClassItem::MarkUnchanged()
 {
 	m_changed = false;
 }
-/*
-void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal width)
-{
-	assert(entity);
-	
-	auto field_item = new QGraphicsSimpleTextItem{
-		QFontMetrics{QFont{}}.elidedText(
-			QString::fromStdString(entity->UML()),
-			Qt::ElideRight,
-			static_cast<int>(std::max(m_name->boundingRect().width(), width)),
-			0
-		),
-		this
-	};
-	field_item->moveBy(0, bounding.height());
-	
-	auto rect = field_item->boundingRect();
-	bounding.rheight() += rect.height();
-	bounding.rwidth()   = std::max(bounding.width(), rect.width());
-	
-	m_fields.emplace_back(field_item);
-}
-*/
+
 void ClassItem::Update(const codebase::EntityMap *map)
 {
 	assert(map);
@@ -330,8 +241,6 @@ void ClassItem::Update(const codebase::EntityMap *map)
 	
 	// remove all edges, the model will re-add them later
 	ClearEdges();
-	
-//	ReCreateChildren(m_bounding.width(), m_bounding.height(), true);
 }
 
 void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font)
@@ -360,6 +269,12 @@ void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font
 	{
 		m_show_field = m_show_function = 0;
 	}
+}
+
+void ClassItem::Resize(const QRectF& rect)
+{
+	prepareGeometryChange();
+	m_bounding = rect;
 }
 	
 }} // end of namespace
