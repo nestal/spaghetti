@@ -42,7 +42,7 @@ class BaseItem;
 class ClassModel : public QObject, public project::ModelBase
 {
 	Q_OBJECT
-	
+		
 public:
 	ClassModel(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
 	ClassModel(const ClassModel&) = delete;
