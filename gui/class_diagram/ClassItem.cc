@@ -51,13 +51,12 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	m_class_id{class_.ID()}
 {
 	const qreal default_width{200.0}, default_height{150.0};
-//	ReCreateChildren(default_width, default_height, false);
 
 	m_bounding.setCoords(
 		-default_width/2, -default_height/2,
 		default_width/2,  default_height/2
 	);
-
+	
 	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
 	setPos(pos);
 	
@@ -146,6 +145,14 @@ QRectF ClassItem::boundingRect() const
 
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+	auto content = m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin);
+	
+	// use bold font for name
+	auto name_font = painter->font();
+	name_font.setBold(true);
+	QFontMetrics name_font_met{name_font}, field_font_met{painter->font()};
+	ComputeSize(content, name_font_met, field_font_met);
+	
 	// TODO: make it configurable
 	painter->setPen(Qt::GlobalColor::magenta);
 	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
@@ -153,17 +160,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// bounding rectangle
 	painter->drawRect(m_bounding);
 	
-	ComputeSize();
-	auto content = m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin);
-	
-	// use bold font for name
-	auto name_font = scene()->font();
-	name_font.setBold(true);
-	
 	QRectF name_rect;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->drawText(
-		QRectF{content.topLeft(), QPointF{content.right(), content.top()+QFontMetrics{name_font}.height()}},
+		QRectF{content.topLeft(), QPointF{content.right(), content.top()+name_font_met.height()}},
 		Qt::AlignHCenter,
 		QString::fromStdString(m_class->Name()),
 		&name_rect
@@ -175,10 +175,9 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		QPointF{m_bounding.left(),  name_rect.bottom()}
 	);
 	
-	QFontMetrics met{scene()->font()};
 	QRectF text_rect{
 		QPointF{content.left(),  name_rect.bottom()},
-		QPointF{content.right(), name_rect.bottom() + met.height()}
+		QPointF{content.right(), name_rect.bottom() + field_font_met.height()}
 	};
 	
 	// functions
@@ -189,16 +188,20 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		
 		painter->drawText(
 			text_rect,
-			met.elidedText(
+			field_font_met.elidedText(
 				QString::fromStdString(func.UML()),
 				Qt::ElideRight,
 				content.width()
 			)
 		);
-		text_rect.adjust(0, met.height(), 0, met.height());
+		text_rect.adjust(0, field_font_met.height(), 0, field_font_met.height());
 	}
-	// line between functions and fields
-	painter->drawLine(text_rect.topLeft(), text_rect.topRight());
+
+	// line between class name and function
+	painter->drawLine(
+		QPointF{m_bounding.right(), text_rect.top()},
+		QPointF{m_bounding.left(),  text_rect.top()}
+	);
 	
 	index=0;
 	for (auto&& field : m_class->Fields())
@@ -206,13 +209,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		if (++index > m_show_field) break;
 		painter->drawText(
 			text_rect,
-			met.elidedText(
+			field_font_met.elidedText(
 				QString::fromStdString(field.UML()),
 				Qt::ElideRight,
 				content.width()
 			)
 		);
-		text_rect.adjust(0, met.height(), 0, met.height());
+		text_rect.adjust(0, field_font_met.height(), 0, field_font_met.height());
 	}
 }
 
@@ -327,19 +330,12 @@ void ClassItem::Update(const codebase::EntityMap *map)
 //	ReCreateChildren(m_bounding.width(), m_bounding.height(), true);
 }
 
-void ClassItem::ComputeSize()
+void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font)
 {
-	auto content = m_bounding.adjusted(-m_margin, -m_margin, m_margin, m_margin);
-	QFontMetrics met{scene()->font()};
-	
-	// assume all text items are of the same height
-	auto total_rows = static_cast<std::size_t>(content.height()/met.height());
-	
+	auto total_rows = static_cast<std::size_t>((content.height() - name_font.height())/field_font.height());
+	std::cout << "total rows = " << total_rows << std::endl;
 	if (total_rows > 0)
 	{
-		// one row for the name
-		total_rows--;
-		
 		m_show_function = std::min(m_class->Functions().size(), total_rows);
 		m_show_field    = std::min(m_class->Fields().size(),    total_rows);
 		
@@ -348,7 +344,10 @@ void ClassItem::ComputeSize()
 		else if (m_show_function <= total_rows / 2 && m_show_field > total_rows / 2)
 			m_show_field = std::min(total_rows - m_show_function, m_show_field);
 		else if (m_show_field > total_rows / 2 && m_show_function > total_rows / 2)
-			m_show_field = m_show_function = total_rows / 2;
+		{
+			m_show_field    = total_rows / 2;
+			m_show_function = total_rows - m_show_field;
+		}
 		
 		assert(m_show_function <= total_rows);
 		assert(m_show_field <= total_rows);

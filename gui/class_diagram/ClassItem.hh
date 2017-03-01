@@ -62,7 +62,7 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	void ComputeSize();
+	void ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font);
 	
 private:
 	class Resizer;
