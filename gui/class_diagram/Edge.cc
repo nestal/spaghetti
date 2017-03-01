@@ -41,8 +41,8 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 		return;
 	
 	QLineF dia{
-		mapFromItem(from, QPointF{}),
-		mapFromItem(to,   QPointF{})
+		mapFromItem(from, QPointF{from->boundingRect().center()}),
+		mapFromItem(to,   QPointF{to->boundingRect().center()})
 	};
 	
 	QPointF from_pt, to_pt;
@@ -78,7 +78,7 @@ void Edge::UpdatePosition()
 	auto from = m_from->GraphicsItem();
 	auto to   = m_to->GraphicsItem();
 	
-	setPos(QRectF{from->pos(), to->pos()}.normalized().center());
+	setPos(QRectF{from->boundingRect().center(), to->boundingRect().center()}.normalized().center());
 	
 	prepareGeometryChange();
 	m_bounding = QRectF{

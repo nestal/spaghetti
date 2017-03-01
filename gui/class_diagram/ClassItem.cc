@@ -274,18 +274,8 @@ void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font
 void ClassItem::Resize(const QRectF& rect)
 {
 	prepareGeometryChange();
-
-	auto scene_center = mapToScene(rect.center());
-	
-	setPos(scene_center);
-	m_bounding.setCoords(
-		- rect.width()/2,
-		- rect.height()/2,
-		rect.width()/2,
-		rect.height()/2
-	);
-		
-	// how to move the pos()?
+	m_bounding = rect;
+	itemChange(QGraphicsItem::ItemPositionChange, {});
 }
 
 QGraphicsItem *ClassItem::GraphicsItem()
