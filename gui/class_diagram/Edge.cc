@@ -34,18 +34,21 @@ Edge::Edge(const BaseItem *from, const BaseItem *to) :
 
 void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-	if (m_from->collidesWithItem(m_to))
+	auto from = m_from->GraphicsItem();
+	auto to   = m_to->GraphicsItem();
+	
+	if (from->collidesWithItem(to))
 		return;
 	
 	QLineF dia{
-		mapFromItem(m_from, QPointF{}),
-		mapFromItem(m_to,   QPointF{})
+		mapFromItem(from, QPointF{from->boundingRect().center()}),
+		mapFromItem(to,   QPointF{to->boundingRect().center()})
 	};
 	
 	QPointF from_pt, to_pt;
 		
-	auto from_p = mapFromItem(m_from, m_from->boundingRect());
-	auto to_p   = mapFromItem(m_to,   m_to->boundingRect());
+	auto from_p = mapFromItem(from, from->boundingRect());
+	auto to_p   = mapFromItem(to,   to->boundingRect());
 	
 	for (int i = 0 ; i < from_p.size() ; ++i)
 	{
@@ -72,12 +75,15 @@ QRectF Edge::boundingRect() const
 
 void Edge::UpdatePosition()
 {
-	setPos(QRectF{m_from->pos(), m_to->pos()}.normalized().center());
+	auto from = m_from->GraphicsItem();
+	auto to   = m_to->GraphicsItem();
+	
+	setPos(QRectF{from->boundingRect().center(), to->boundingRect().center()}.normalized().center());
 	
 	prepareGeometryChange();
 	m_bounding = QRectF{
-		mapFromItem(m_from, QPointF{}),
-		mapFromItem(m_to,   QPointF{}),
+		mapFromItem(from, QPointF{}),
+		mapFromItem(to,   QPointF{}),
 	}.normalized().adjusted(-arrow_width, -arrow_width, arrow_width, arrow_width);
 }
 
@@ -186,6 +192,16 @@ void Edge::DrawAggregationDiamond(QPainter *painter) const
 			<< QPointF{-arrow_width/2,arrow_width},
 		Qt::FillRule::WindingFill
 	);
+}
+
+QGraphicsItem *Edge::GraphicsItem()
+{
+	return this;
+}
+
+const QGraphicsItem *Edge::GraphicsItem() const
+{
+	return this;
 }
 	
 }} // end of namespace

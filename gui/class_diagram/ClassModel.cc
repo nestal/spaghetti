@@ -164,7 +164,7 @@ void ClassModel::DeleteSelectedItem()
 	// save the pointers to be deleted instead of deleting them inside the
 	// loop, because they may still be referenced in the loop
 	std::vector<Edge*> dangled;
-	std::vector<QGraphicsItem*> removed;
+	std::vector<BaseItem*> removed;
 	
 	ForEachItem<BaseItem>(m_scene->selectedItems(), [this, &dangled, &removed](auto dead_item)
 	{
@@ -177,7 +177,7 @@ void ClassModel::DeleteSelectedItem()
 				other->RemoveEdgeWith(dead_item, [&dangled](auto edge){dangled.push_back(edge);});
 		});
 		
-		m_scene->removeItem(dead_item);
+		m_scene->removeItem(dead_item->GraphicsItem());
 		removed.push_back(dead_item);
 	});
 	
@@ -185,7 +185,7 @@ void ClassModel::DeleteSelectedItem()
 	std::sort(dangled.begin(), dangled.end());
 	dangled.erase(std::unique(dangled.begin(), dangled.end()), dangled.end());
 	std::for_each(dangled.begin(), dangled.end(), std::default_delete<Edge>());
-	std::for_each(removed.begin(), removed.end(), std::default_delete<QGraphicsItem>());
+	std::for_each(removed.begin(), removed.end(), std::default_delete<BaseItem>());
 }
 
 bool ClassModel::IsChanged() const

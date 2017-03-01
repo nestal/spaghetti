@@ -26,6 +26,7 @@ public:
 	using EntityPtr = std::unique_ptr<Entity>;
 
 public:
+	EntityVec() = default;
 	EntityVec( const std::string& name, const std::string& usr, const Entity *parent);
 	
 	EntityVec(EntityVec&& other);
@@ -63,8 +64,8 @@ protected:
 
 private:
 	std::string m_name;
-	std::string m_id;
-	const Entity *m_parent;
+	std::string m_id{NullID()};
+	const Entity *m_parent{};
 	bool m_used{false};
 
 	std::vector<EntityPtr> m_children;
