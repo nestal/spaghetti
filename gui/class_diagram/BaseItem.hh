@@ -16,8 +16,9 @@
 
 #include <boost/range/iterator_range.hpp>
 
-#include <QGraphicsItem>
 #include <vector>
+
+class QGraphicsItem;
 
 namespace codebase {
 class EntityMap;
@@ -28,10 +29,13 @@ namespace class_diagram {
 
 class Edge;
 
-class BaseItem : public QGraphicsItem
+class BaseItem
 {
 public:
-	using QGraphicsItem::QGraphicsItem;
+	virtual ~BaseItem() = default;
+	
+	virtual QGraphicsItem* GraphicsItem() = 0 ;
+	virtual const QGraphicsItem* GraphicsItem() const = 0 ;
 	
 	virtual class_diagram::ItemType ItemType() const = 0;
 	virtual ItemRelation RelationOf(const BaseItem *other) const = 0;

@@ -13,6 +13,7 @@
 #pragma once
 
 #include <QtCore/QObject>
+#include <QGraphicsItem>
 
 #include "BaseItem.hh"
 
@@ -34,13 +35,16 @@ namespace class_diagram {
 
 class Edge;
 
-class ClassItem : public QObject, public BaseItem
+class ClassItem : public QObject, public BaseItem, public QGraphicsItem
 {
 	Q_OBJECT
 
 public:
 	ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model);
 	~ClassItem();
+	
+	QGraphicsItem* GraphicsItem() override;
+	const QGraphicsItem* GraphicsItem() const override;
 	
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

@@ -13,6 +13,7 @@
 #pragma once
 
 #include "BaseItem.hh"
+#include <QGraphicsItem>
 
 namespace gui {
 namespace class_diagram {
@@ -25,10 +26,13 @@ namespace class_diagram {
  * on the roles of the two items being joined. If one item inherits the other, the edge draws
  * an UML inheritance arrow.
  */
-class Edge : public BaseItem
+class Edge : public BaseItem, public QGraphicsItem
 {
 public:
 	Edge(const BaseItem *from, const BaseItem *to);
+	
+	QGraphicsItem* GraphicsItem() override;
+	const QGraphicsItem* GraphicsItem() const override;
 	
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

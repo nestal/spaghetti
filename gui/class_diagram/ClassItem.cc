@@ -198,7 +198,7 @@ ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 	{
 	case ItemType::class_item:
 	{
-		auto class_ = qgraphicsitem_cast<const ClassItem*>(other);
+		auto class_ = dynamic_cast<const ClassItem*>(other);
 		assert(class_ && class_->m_class);
 		
 		if (class_->m_class->IsBaseOf(*m_class))
@@ -274,7 +274,28 @@ void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font
 void ClassItem::Resize(const QRectF& rect)
 {
 	prepareGeometryChange();
-	m_bounding = rect;
+
+	auto scene_center = mapToScene(rect.center());
+	
+	setPos(scene_center);
+	m_bounding.setCoords(
+		- rect.width()/2,
+		- rect.height()/2,
+		rect.width()/2,
+		rect.height()/2
+	);
+		
+	// how to move the pos()?
+}
+
+QGraphicsItem *ClassItem::GraphicsItem()
+{
+	return this;
+}
+
+const QGraphicsItem *ClassItem::GraphicsItem() const
+{
+	return this;
 }
 	
 }} // end of namespace
