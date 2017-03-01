@@ -10,6 +10,7 @@ build_spag:
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Release ..
     - make all
+    - ./unittest
     - make package
   artifacts:
     name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
