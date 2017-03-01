@@ -154,29 +154,66 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->drawRect(m_bounding);
 	
 	ComputeSize();
-	
 	auto content = m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin);
-	QFontMetrics met{scene()->font()};
 	
+	// use bold font for name
+	auto name_font = scene()->font();
+	name_font.setBold(true);
+	
+	QRectF name_rect;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->drawText(
-		QRectF{content.topLeft(), QPointF{content.right(), content.top()+met.height()}},
+		QRectF{content.topLeft(), QPointF{content.right(), content.top()+QFontMetrics{name_font}.height()}},
 		Qt::AlignHCenter,
-		QString::fromStdString(m_class->Name())
-	);
-	// line between class name and function
-/*	auto ypos = m_name->y() + m_name->boundingRect().height();
-	painter->drawLine(
-		QPointF{m_bounding.left(), ypos},
-		QPointF{m_bounding.right(), ypos}
+		QString::fromStdString(m_class->Name()),
+		&name_rect
 	);
 	
-	// line between functions and fields
-	ypos += m_show_function * m_name->boundingRect().height();
+	// line between class name and function
 	painter->drawLine(
-		QPointF{m_bounding.left(), ypos},
-		QPointF{m_bounding.right(), ypos}
-	);*/
+		QPointF{m_bounding.right(), name_rect.bottom()},
+		QPointF{m_bounding.left(),  name_rect.bottom()}
+	);
+	
+	QFontMetrics met{scene()->font()};
+	QRectF text_rect{
+		QPointF{content.left(),  name_rect.bottom()},
+		QPointF{content.right(), name_rect.bottom() + met.height()}
+	};
+	
+	// functions
+	std::size_t index=0;
+	for (auto&& func : m_class->Functions())
+	{
+		if (++index > m_show_function) break;
+		
+		painter->drawText(
+			text_rect,
+			met.elidedText(
+				QString::fromStdString(func.UML()),
+				Qt::ElideRight,
+				content.width()
+			)
+		);
+		text_rect.adjust(0, met.height(), 0, met.height());
+	}
+	// line between functions and fields
+	painter->drawLine(text_rect.topLeft(), text_rect.topRight());
+	
+	index=0;
+	for (auto&& field : m_class->Fields())
+	{
+		if (++index > m_show_field) break;
+		painter->drawText(
+			text_rect,
+			met.elidedText(
+				QString::fromStdString(field.UML()),
+				Qt::ElideRight,
+				content.width()
+			)
+		);
+		text_rect.adjust(0, met.height(), 0, met.height());
+	}
 }
 
 const std::string& ClassItem::ID() const
