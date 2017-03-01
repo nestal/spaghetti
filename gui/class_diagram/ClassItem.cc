@@ -41,7 +41,7 @@ public:
 		
 		std::cout << "width = " << rect.width( ) << " " << " height = " << rect.height() << std::endl;
 		
-		item->ReCreateChildren(rect.width(), rect.height(), true);
+//		item->ReCreateChildren(rect.width(), rect.height(), true);
 	}
 };
 
@@ -51,7 +51,12 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	m_class_id{class_.ID()}
 {
 	const qreal default_width{200.0}, default_height{150.0};
-	ReCreateChildren(default_width, default_height, false);
+//	ReCreateChildren(default_width, default_height, false);
+
+	m_bounding.setCoords(
+		-default_width/2, -default_height/2,
+		default_width/2,  default_height/2
+	);
 
 	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
 	setPos(pos);
@@ -63,7 +68,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 }
 
 ClassItem::~ClassItem() = default;
-
+/*
 void ClassItem::ReCreateChildren(qreal width, qreal height, bool force_size)
 {
 	// remove all children
@@ -133,7 +138,7 @@ void ClassItem::ReCreateChildren(qreal width, qreal height, bool force_size)
 		bounding.height()/2+m_margin
 	);
 }
-
+*/
 QRectF ClassItem::boundingRect() const
 {
 	return m_bounding;
@@ -142,14 +147,25 @@ QRectF ClassItem::boundingRect() const
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
 	// TODO: make it configurable
-	painter->setPen(QPen{QColor{Qt::GlobalColor::magenta}});
-	painter->setBrush(QBrush{QColor{isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow}});
+	painter->setPen(Qt::GlobalColor::magenta);
+	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
 	
 	// bounding rectangle
 	painter->drawRect(m_bounding);
 	
+	ComputeSize();
+	
+	auto content = m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin);
+	QFontMetrics met{scene()->font()};
+	
+	painter->setPen(Qt::GlobalColor::black);
+	painter->drawText(
+		QRectF{content.topLeft(), QPointF{content.right(), content.top()+met.height()}},
+		Qt::AlignHCenter,
+		QString::fromStdString(m_class->Name())
+	);
 	// line between class name and function
-	auto ypos = m_name->y() + m_name->boundingRect().height();
+/*	auto ypos = m_name->y() + m_name->boundingRect().height();
 	painter->drawLine(
 		QPointF{m_bounding.left(), ypos},
 		QPointF{m_bounding.right(), ypos}
@@ -160,7 +176,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->drawLine(
 		QPointF{m_bounding.left(), ypos},
 		QPointF{m_bounding.right(), ypos}
-	);
+	);*/
 }
 
 const std::string& ClassItem::ID() const
@@ -240,7 +256,7 @@ void ClassItem::MarkUnchanged()
 {
 	m_changed = false;
 }
-
+/*
 void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal width)
 {
 	assert(entity);
@@ -262,7 +278,7 @@ void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding,
 	
 	m_fields.emplace_back(field_item);
 }
-
+*/
 void ClassItem::Update(const codebase::EntityMap *map)
 {
 	assert(map);
@@ -271,7 +287,40 @@ void ClassItem::Update(const codebase::EntityMap *map)
 	// remove all edges, the model will re-add them later
 	ClearEdges();
 	
-	ReCreateChildren(m_bounding.width(), m_bounding.height(), true);
+//	ReCreateChildren(m_bounding.width(), m_bounding.height(), true);
 }
 
+void ClassItem::ComputeSize()
+{
+	auto content = m_bounding.adjusted(-m_margin, -m_margin, m_margin, m_margin);
+	QFontMetrics met{scene()->font()};
+	
+	// assume all text items are of the same height
+	auto total_rows = static_cast<std::size_t>(content.height()/met.height());
+	
+	if (total_rows > 0)
+	{
+		// one row for the name
+		total_rows--;
+		
+		m_show_function = std::min(m_class->Functions().size(), total_rows);
+		m_show_field    = std::min(m_class->Fields().size(),    total_rows);
+		
+		if (m_show_field <= total_rows / 2 && m_show_function > total_rows / 2)
+			m_show_function = std::min(total_rows - m_show_field, m_show_function);
+		else if (m_show_function <= total_rows / 2 && m_show_field > total_rows / 2)
+			m_show_field = std::min(total_rows - m_show_function, m_show_field);
+		else if (m_show_field > total_rows / 2 && m_show_function > total_rows / 2)
+			m_show_field = m_show_function = total_rows / 2;
+		
+		assert(m_show_function <= total_rows);
+		assert(m_show_field <= total_rows);
+		assert(m_show_function + m_show_field <= total_rows);
+	}
+	else
+	{
+		m_show_field = m_show_function = 0;
+	}
+}
+	
 }} // end of namespace

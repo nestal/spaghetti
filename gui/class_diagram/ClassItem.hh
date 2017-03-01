@@ -62,20 +62,19 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	void CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal width);
-	void ReCreateChildren(qreal width, qreal height, bool force_size);
+	void ComputeSize();
 	
 private:
 	class Resizer;
 	
 	const codebase::DataType *m_class{};
-	QGraphicsSimpleTextItem  *m_name{};
-	std::vector<std::unique_ptr<QGraphicsSimpleTextItem>> m_fields;
+/*	QGraphicsSimpleTextItem  *m_name{};
+	std::vector<std::unique_ptr<QGraphicsSimpleTextItem>> m_fields;*/
 	
 	std::string        m_class_id;
 	QRectF             m_bounding;
 
-	std::size_t        m_show_function{0};
+	std::size_t        m_show_function{0}, m_show_field{0};
 	mutable bool       m_changed{false};
 		
 	static const qreal m_margin;
