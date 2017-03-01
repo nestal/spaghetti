@@ -153,6 +153,11 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	QFontMetrics name_font_met{name_font}, field_font_met{painter->font()};
 	ComputeSize(content, name_font_met, field_font_met);
 	
+	// adjust vertical margin
+	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * field_font_met.height();
+	auto v_margin     = (m_bounding.height() - total_height) / 2;
+	content = m_bounding.adjusted(m_margin, v_margin, -m_margin, -v_margin);
+	
 	// TODO: make it configurable
 	painter->setPen(Qt::GlobalColor::magenta);
 	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
@@ -333,7 +338,6 @@ void ClassItem::Update(const codebase::EntityMap *map)
 void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font)
 {
 	auto total_rows = static_cast<std::size_t>((content.height() - name_font.height())/field_font.height());
-	std::cout << "total rows = " << total_rows << std::endl;
 	if (total_rows > 0)
 	{
 		m_show_function = std::min(m_class->Functions().size(), total_rows);
