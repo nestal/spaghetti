@@ -76,9 +76,10 @@
      <string>Pro&amp;ject</string>
     </property>
     <addaction name="m_action_add_source"/>
-    <addaction name="m_action_new_class_diagram"/>
     <addaction name="m_action_cflags"/>
     <addaction name="m_action_reload_all"/>
+    <addaction name="separator"/>
+    <addaction name="m_action_new_class_diagram"/>
     <addaction name="m_action_show_all_classes"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
@@ -133,7 +134,7 @@
         </size>
        </property>
        <property name="contextMenuPolicy">
-        <enum>Qt::CustomContextMenu</enum>
+        <enum>Qt::ActionsContextMenu</enum>
        </property>
        <property name="dragEnabled">
         <bool>true</bool>
@@ -305,7 +306,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show All Classes</string>
+    <string>&amp;Show All Classes</string>
    </property>
   </action>
  </widget>

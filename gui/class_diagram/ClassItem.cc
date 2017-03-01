@@ -17,23 +17,41 @@
 #include "codebase/Variable.hh"
 #include "codebase/Function.hh"
 
+#include "gui/common/SizeGripItem.h"
+
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QGraphicsScene>
+#include <iostream>
+
+// using https://github.com/cesarbs/sizegripitem to implement resize
 
 namespace gui {
 namespace class_diagram {
 
 const qreal ClassItem::m_margin{10.0};
 
-const qreal ClassItem::m_max_width{200.0}, ClassItem::m_max_height{150.0};
+class ClassItem::Resizer : public SizeGripItem::Resizer
+{
+public:
+	void operator()(QGraphicsItem* i, const QRectF& rect)
+	{
+		auto item = dynamic_cast<ClassItem*>(i);
+		assert(item);
+		
+		std::cout << "width = " << rect.width( ) << " " << " height = " << rect.height() << std::endl;
+		
+		item->ReCreateChildren(rect.width(), rect.height(), true);
+	}
+};
 
 ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
 	QObject{model},
 	m_class{&class_},
 	m_class_id{class_.ID()}
 {
-	CreateChildren();
+	const qreal default_width{200.0}, default_height{150.0};
+	ReCreateChildren(default_width, default_height, false);
 
 	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
 	setPos(pos);
@@ -46,9 +64,12 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 
 ClassItem::~ClassItem() = default;
 
-void ClassItem::CreateChildren()
+void ClassItem::ReCreateChildren(qreal width, qreal height, bool force_size)
 {
-	assert(!m_name);
+	// remove all children
+	delete m_name; m_name = nullptr;
+	m_fields.clear();
+	
 	m_name = new QGraphicsSimpleTextItem{QString::fromStdString(m_class->Name()), this};
 	
 	// use a bold font for class names
@@ -59,7 +80,7 @@ void ClassItem::CreateChildren()
 	auto bounding = m_name->boundingRect().size();
 	
 	// assume all text items are of the same height
-	auto total_rows = static_cast<std::size_t>(m_max_height/bounding.height());
+	auto total_rows = static_cast<std::size_t>(height/bounding.height());
 	
 	// one row for the name
 	assert(total_rows > 0);
@@ -80,18 +101,24 @@ void ClassItem::CreateChildren()
 	assert(function_count + field_count <= total_rows);
 	
 	std::size_t index=0;
-	for (auto& func : m_class->Functions())
+	for (auto&& func : m_class->Functions())
 	{
 		if (++index > function_count) break;
-		CreateTextItem(&func, bounding);
+		CreateTextItem(&func, bounding, width);
 	}
 	index=0;
-	for (auto& field : m_class->Fields())
+	for (auto&& field : m_class->Fields())
 	{
 		if (++index > field_count) break;
-		CreateTextItem(&field, bounding);
+		CreateTextItem(&field, bounding, width);
 	}
 	m_show_function = function_count;
+	
+	if (force_size)
+	{
+		bounding.setHeight(std::max(bounding.height(), height));
+		bounding.setWidth(std::max(bounding.width(), width));
+	}
 	
 	// make all children center at origin
 	for (auto child : childItems())
@@ -105,7 +132,6 @@ void ClassItem::CreateChildren()
 		bounding.width()/2+m_margin,
 		bounding.height()/2+m_margin
 	);
-	
 }
 
 QRectF ClassItem::boundingRect() const
@@ -164,6 +190,8 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 		for (auto&& edge : Edges())
 			edge->UpdatePosition();
 	}
+	else if (change == QGraphicsItem::ItemSelectedChange)
+		new SizeGripItem{new Resizer, this};
 
 	return value;
 }
@@ -213,7 +241,7 @@ void ClassItem::MarkUnchanged()
 	m_changed = false;
 }
 
-void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
+void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal width)
 {
 	assert(entity);
 	
@@ -221,7 +249,7 @@ void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
 		QFontMetrics{QFont{}}.elidedText(
 			QString::fromStdString(entity->UML()),
 			Qt::ElideRight,
-			static_cast<int>(std::max(m_name->boundingRect().width(), m_max_width)),
+			static_cast<int>(std::max(m_name->boundingRect().width(), width)),
 			0
 		),
 		this
@@ -231,6 +259,8 @@ void ClassItem::CreateTextItem(const codebase::Entity *entity, QSizeF& bounding)
 	auto rect = field_item->boundingRect();
 	bounding.rheight() += rect.height();
 	bounding.rwidth()   = std::max(bounding.width(), rect.width());
+	
+	m_fields.emplace_back(field_item);
 }
 
 void ClassItem::Update(const codebase::EntityMap *map)
@@ -241,13 +271,7 @@ void ClassItem::Update(const codebase::EntityMap *map)
 	// remove all edges, the model will re-add them later
 	ClearEdges();
 	
-	// remove all children
-	for (auto child : childItems())
-		delete child;
-	m_name = nullptr;
-	
-	CreateChildren();
+	ReCreateChildren(m_bounding.width(), m_bounding.height(), true);
 }
 
-	
 }} // end of namespace

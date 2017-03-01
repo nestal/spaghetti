@@ -16,7 +16,7 @@
 
 #include "BaseItem.hh"
 
-#include <algorithm>
+#include <memory>
 
 class QGraphicsSimpleTextItem;
 class QSizeF;
@@ -62,12 +62,15 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	void CreateTextItem(const codebase::Entity *entity, QSizeF& bounding);
-	void CreateChildren();
+	void CreateTextItem(const codebase::Entity *entity, QSizeF& bounding, qreal width);
+	void ReCreateChildren(qreal width, qreal height, bool force_size);
 	
 private:
+	class Resizer;
+	
 	const codebase::DataType *m_class{};
 	QGraphicsSimpleTextItem  *m_name{};
+	std::vector<std::unique_ptr<QGraphicsSimpleTextItem>> m_fields;
 	
 	std::string        m_class_id;
 	QRectF             m_bounding;
@@ -75,7 +78,7 @@ private:
 	std::size_t        m_show_function{0};
 	mutable bool       m_changed{false};
 		
-	static const qreal m_margin, m_max_width, m_max_height;
+	static const qreal m_margin;
 };
 	
 }} // end of namespace
