@@ -35,12 +35,13 @@ const qreal ClassItem::m_margin{10.0};
 class ClassItem::Resizer : public SizeGripItem::Resizer
 {
 public:
-	void operator()(QGraphicsItem* i, const QRectF& rect)
+	QRectF operator()(QGraphicsItem* i, const QRectF& rect)
 	{
 		auto item = dynamic_cast<ClassItem*>(i);
 		assert(item);
 	
 		item->Resize(rect);
+		return item->boundingRect();
 	}
 };
 
@@ -103,6 +104,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	);
 	
 	// line between class name and function
+	painter->setPen(Qt::GlobalColor::magenta);
 	painter->drawLine(
 		QPointF{m_bounding.right(), name_rect.bottom() + vspace_between_fields/2},
 		QPointF{m_bounding.left(),  name_rect.bottom() + vspace_between_fields/2}
@@ -114,6 +116,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	};
 	
 	painter->setFont(field_font);
+	painter->setPen(Qt::GlobalColor::black);
 	
 	// functions
 	std::size_t index=0;
@@ -133,10 +136,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	}
 
 	// line between class name and function
+	painter->setPen(Qt::GlobalColor::magenta);
 	painter->drawLine(
 		QPointF{m_bounding.right(), text_rect.top() - vspace_between_fields/2},
 		QPointF{m_bounding.left(),  text_rect.top() - vspace_between_fields/2}
 	);
+	
+	painter->setPen(Qt::GlobalColor::black);
 	
 	index=0;
 	for (auto&& field : m_class->Fields())
@@ -277,7 +283,15 @@ void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font
 void ClassItem::Resize(const QRectF& rect)
 {
 	prepareGeometryChange();
-	m_bounding = rect;
+	auto new_center = mapToScene(rect.center());
+	setPos(new_center);
+	m_bounding.setCoords(
+		-rect.width()/2,
+		-rect.height()/2,
+		+rect.width()/2,
+		+rect.height()/2
+	);
+	
 	itemChange(QGraphicsItem::ItemPositionChange, {});
 }
 
@@ -291,9 +305,8 @@ const QGraphicsItem *ClassItem::GraphicsItem() const
 	return this;
 }
 
-void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *)
 {
-	std::cout << "press event! " << event << std::endl;
 }
 
 void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

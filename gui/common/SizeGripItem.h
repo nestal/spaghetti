@@ -65,7 +65,7 @@ class SizeGripItem : public QGraphicsItem
         {
             public:
 	            virtual ~Resizer() = default;
-                virtual void operator()(QGraphicsItem* item,
+                virtual QRectF operator()(QGraphicsItem* item,
                                         const QRectF& rect) = 0;
         };
 

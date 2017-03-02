@@ -164,7 +164,7 @@ void SizeGripItem::doResize()
 {
     if (resizer_)
     {
-        (*resizer_)(parentItem(), rect_);
+        rect_ = (*resizer_)(parentItem(), rect_);
         updateHandleItemPositions();
     }
 }
