@@ -61,7 +61,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	setPos(pos);
 	
 	// flags
-	setFlags(/*QGraphicsItem::ItemIsMovable | */QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
+	setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
 }
 
 ClassItem::~ClassItem() = default;
@@ -192,7 +192,19 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 		if (!m_grip)
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
 		else
+		{
+			auto size = m_bounding.size();
+			auto pos  = mapToScene(m_bounding.center());
+			setPos(pos);
+			m_bounding.setCoords(
+				-size.width()/2,
+				-size.height()/2,
+				+size.width()/2,
+				+size.height()/2
+			);
+			
 			m_grip.reset();
+		}
 	}
 
 	return value;
@@ -283,14 +295,7 @@ void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font
 void ClassItem::Resize(const QRectF& rect)
 {
 	prepareGeometryChange();
-	auto new_center = mapToScene(rect.center());
-	setPos(new_center);
-	m_bounding.setCoords(
-		-rect.width()/2,
-		-rect.height()/2,
-		+rect.width()/2,
-		+rect.height()/2
-	);
+	m_bounding = rect;
 	
 	itemChange(QGraphicsItem::ItemPositionChange, {});
 }

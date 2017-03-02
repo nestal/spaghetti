@@ -146,10 +146,13 @@ QJsonObject ClassModel::Save() const
 	QJsonArray items;
 	ForEachItem<ClassItem>(m_scene->items(), [this, &items](auto citem)
 	{
+		auto size = citem->boundingRect().size();
 		items.append(QJsonObject{
 			{"id", QString::fromStdString(citem->DataType().ID())},
 			{"x", citem->x()},
-			{"y", citem->y()}
+			{"y", citem->y()},
+			{"width", size.width()},
+			{"height", size.height()}
 		});
 		citem->MarkUnchanged();
 	});
