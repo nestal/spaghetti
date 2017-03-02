@@ -22,8 +22,9 @@
  * IN THE SOFTWARE.
  */
 
-#include <QBrush>
 #include "SizeGripItem.h"
+
+#include <QBrush>
 
 SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem* parent)
     : QGraphicsRectItem(-4, -4, 8, 8, parent),
@@ -163,7 +164,7 @@ void SizeGripItem::doResize()
 {
     if (resizer_)
     {
-        (*resizer_)(parentItem(), rect_);
+        rect_ = (*resizer_)(parentItem(), rect_);
         updateHandleItemPositions();
     }
 }

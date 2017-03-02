@@ -22,6 +22,7 @@
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <iostream>
 
 // using https://github.com/cesarbs/sizegripitem to implement resize
@@ -34,36 +35,31 @@ const qreal ClassItem::m_margin{10.0};
 class ClassItem::Resizer : public SizeGripItem::Resizer
 {
 public:
-	void operator()(QGraphicsItem* i, const QRectF& rect)
+	QRectF operator()(QGraphicsItem* i, const QRectF& rect)
 	{
 		auto item = dynamic_cast<ClassItem*>(i);
 		assert(item);
-		
-		std::cout << "width = " << rect.width( ) << " " << " height = " << rect.height() << std::endl;
-		
+	
 		item->Resize(rect);
+		return item->boundingRect();
 	}
 };
 
-ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
+ClassItem::ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size) :
 	QObject{model},
 	m_class{&class_},
 	m_class_id{class_.ID()}
 {
-	const qreal default_width{200.0}, default_height{150.0};
-
 	m_bounding.setCoords(
-		-default_width/2, -default_height/2,
-		default_width/2,  default_height/2
+		-size.width()/2, -size.height()/2,
+		+size.width()/2, +size.height()/2
 	);
 	
 	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"
 	setPos(pos);
 	
 	// flags
-	setFlag(QGraphicsItem::ItemIsMovable);
-	setFlag(QGraphicsItem::ItemIsSelectable);
-	setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+	setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
 }
 
 ClassItem::~ClassItem() = default;
@@ -79,6 +75,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// use bold font for name
 	auto name_font = painter->font();
+	auto field_font = name_font;
 	name_font.setBold(true);
 	QFontMetrics name_font_met{name_font}, field_font_met{painter->font()};
 	ComputeSize(content, name_font_met, field_font_met);
@@ -95,6 +92,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->drawRect(m_bounding);
 	
 	QRectF name_rect;
+	painter->setFont(name_font);
 	painter->setPen(Qt::GlobalColor::black);
 	painter->drawText(
 		QRectF{content.topLeft(), QPointF{content.right(), content.top()+name_font_met.height()}},
@@ -104,6 +102,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	);
 	
 	// line between class name and function
+	painter->setPen(Qt::GlobalColor::magenta);
 	painter->drawLine(
 		QPointF{m_bounding.right(), name_rect.bottom() + vspace_between_fields/2},
 		QPointF{m_bounding.left(),  name_rect.bottom() + vspace_between_fields/2}
@@ -113,6 +112,9 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		QPointF{content.left(),  name_rect.bottom() + vspace_between_fields},
 		QPointF{content.right(), name_rect.bottom() + vspace_between_fields + field_font_met.height()}
 	};
+	
+	painter->setFont(field_font);
+	painter->setPen(Qt::GlobalColor::black);
 	
 	// functions
 	std::size_t index=0;
@@ -132,10 +134,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	}
 
 	// line between class name and function
+	painter->setPen(Qt::GlobalColor::magenta);
 	painter->drawLine(
 		QPointF{m_bounding.right(), text_rect.top() - vspace_between_fields/2},
 		QPointF{m_bounding.left(),  text_rect.top() - vspace_between_fields/2}
 	);
+	
+	painter->setPen(Qt::GlobalColor::black);
 	
 	index=0;
 	for (auto&& field : m_class->Fields())
@@ -184,6 +189,20 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 	{
 		if (!m_grip)
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+		else
+		{
+			auto size = m_bounding.size();
+			auto pos  = mapToScene(m_bounding.center());
+			setPos(pos);
+			m_bounding.setCoords(
+				-size.width()/2,
+				-size.height()/2,
+				+size.width()/2,
+				+size.height()/2
+			);
+			
+			m_grip.reset();
+		}
 	}
 
 	return value;
@@ -275,6 +294,7 @@ void ClassItem::Resize(const QRectF& rect)
 {
 	prepareGeometryChange();
 	m_bounding = rect;
+	
 	itemChange(QGraphicsItem::ItemPositionChange, {});
 }
 
@@ -287,5 +307,18 @@ const QGraphicsItem *ClassItem::GraphicsItem() const
 {
 	return this;
 }
-	
+
+void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *)
+{
+}
+
+void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+	if (event->button() | Qt::LeftButton)
+	{
+		auto distance = event->pos() - event->lastPos();
+		moveBy(distance.x(), distance.y());
+	}
+}
+
 }} // end of namespace

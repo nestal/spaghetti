@@ -25,6 +25,8 @@
 namespace gui {
 namespace class_diagram {
 
+const qreal default_item_width{225.0}, default_item_height{175.0};
+
 template <typename ItemType, typename Container, typename Func>
 auto ForEachItem(Container&& cont, Func func)
 {
@@ -63,9 +65,14 @@ void ClassModel::Clear()
 
 void ClassModel::AddEntity(const std::string& id, const QPointF& pos)
 {
+	AddEntityWithSize(id, pos, {default_item_width, default_item_height});
+}
+
+void ClassModel::AddEntityWithSize(const std::string& id, const QPointF& pos, const QSizeF& size)
+{
 	if (auto data_type = m_codebase->TypedFind<codebase::DataType>(id))
 	{
-		auto item = new ClassItem{*data_type, pos, this};
+		auto item = new ClassItem{*data_type, this, pos, size};
 		connect(item, &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);
 		
 		// draw arrows
@@ -130,11 +137,15 @@ void ClassModel::Load(const QJsonObject& obj)
 	for (auto&& item_jval : obj["classes"].toArray())
 	{
 		auto json = item_jval.toObject();
-		AddEntity(
+		AddEntityWithSize(
 			json["id"].toString().toStdString(),
 			QPointF{
 				json["x"].toDouble(),
 				json["y"].toDouble()
+			},
+			QSizeF{
+				json["width"].toDouble(default_item_width),
+				json["height"].toDouble(default_item_height)
 			}
 		);
 	}
@@ -146,10 +157,13 @@ QJsonObject ClassModel::Save() const
 	QJsonArray items;
 	ForEachItem<ClassItem>(m_scene->items(), [this, &items](auto citem)
 	{
+		auto size = citem->boundingRect().size();
 		items.append(QJsonObject{
 			{"id", QString::fromStdString(citem->DataType().ID())},
 			{"x", citem->x()},
-			{"y", citem->y()}
+			{"y", citem->y()},
+			{"width", size.width()},
+			{"height", size.height()}
 		});
 		citem->MarkUnchanged();
 	});
