@@ -78,12 +78,15 @@ void Edge::UpdatePosition()
 	auto from = m_from->GraphicsItem();
 	auto to   = m_to->GraphicsItem();
 	
-	setPos(QRectF{from->boundingRect().center(), to->boundingRect().center()}.normalized().center());
+	auto from_center = from->boundingRect().center();
+	auto to_center   = to->boundingRect().center();
+	
+	setPos(QRectF{from_center, to_center}.normalized().center());
 	
 	prepareGeometryChange();
 	m_bounding = QRectF{
-		mapFromItem(from, QPointF{}),
-		mapFromItem(to,   QPointF{}),
+		mapFromItem(from, from_center),
+		mapFromItem(to,   to_center),
 	}.normalized().adjusted(-arrow_width, -arrow_width, arrow_width, arrow_width);
 }
 

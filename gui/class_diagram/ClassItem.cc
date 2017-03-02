@@ -79,6 +79,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// use bold font for name
 	auto name_font = painter->font();
+	auto field_font = name_font;
 	name_font.setBold(true);
 	QFontMetrics name_font_met{name_font}, field_font_met{painter->font()};
 	ComputeSize(content, name_font_met, field_font_met);
@@ -95,6 +96,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->drawRect(m_bounding);
 	
 	QRectF name_rect;
+	painter->setFont(name_font);
 	painter->setPen(Qt::GlobalColor::black);
 	painter->drawText(
 		QRectF{content.topLeft(), QPointF{content.right(), content.top()+name_font_met.height()}},
@@ -113,6 +115,8 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		QPointF{content.left(),  name_rect.bottom() + vspace_between_fields},
 		QPointF{content.right(), name_rect.bottom() + vspace_between_fields + field_font_met.height()}
 	};
+	
+	painter->setFont(field_font);
 	
 	// functions
 	std::size_t index=0;
