@@ -67,6 +67,10 @@ public:
 
 	void Resize(const QRectF& rect);
 	
+protected:
+	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+	void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+	
 signals:
 	void OnJustChanged(ClassItem *self);
 	

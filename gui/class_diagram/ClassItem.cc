@@ -22,6 +22,7 @@
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <iostream>
 
 // using https://github.com/cesarbs/sizegripitem to implement resize
@@ -38,9 +39,7 @@ public:
 	{
 		auto item = dynamic_cast<ClassItem*>(i);
 		assert(item);
-		
-		std::cout << "width = " << rect.width( ) << " " << " height = " << rect.height() << std::endl;
-		
+	
 		item->Resize(rect);
 	}
 };
@@ -50,7 +49,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	m_class{&class_},
 	m_class_id{class_.ID()}
 {
-	const qreal default_width{200.0}, default_height{150.0};
+	const qreal default_width{225.0}, default_height{175.0};
 
 	m_bounding.setCoords(
 		-default_width/2, -default_height/2,
@@ -61,9 +60,7 @@ ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObje
 	setPos(pos);
 	
 	// flags
-	setFlag(QGraphicsItem::ItemIsMovable);
-	setFlag(QGraphicsItem::ItemIsSelectable);
-	setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+	setFlags(/*QGraphicsItem::ItemIsMovable | */QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
 }
 
 ClassItem::~ClassItem() = default;
@@ -188,6 +185,8 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 	{
 		if (!m_grip)
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+		else
+			m_grip.reset();
 	}
 
 	return value;
@@ -291,5 +290,19 @@ const QGraphicsItem *ClassItem::GraphicsItem() const
 {
 	return this;
 }
-	
+
+void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	std::cout << "press event! " << event << std::endl;
+}
+
+void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+	if (event->button() | Qt::LeftButton)
+	{
+		auto distance = event->pos() - event->lastPos();
+		moveBy(distance.x(), distance.y());
+	}
+}
+
 }} // end of namespace
