@@ -41,7 +41,7 @@ class ClassItem : public QObject, public BaseItem, public QGraphicsItem
 	Q_INTERFACES(QGraphicsItem)
 
 public:
-	ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model);
+	ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size = {225.0, 175.0});
 	~ClassItem();
 	
 	QGraphicsItem* GraphicsItem() override;

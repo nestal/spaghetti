@@ -45,16 +45,14 @@ public:
 	}
 };
 
-ClassItem::ClassItem(const codebase::DataType& class_, const QPointF& pos, QObject *model) :
+ClassItem::ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size) :
 	QObject{model},
 	m_class{&class_},
 	m_class_id{class_.ID()}
 {
-	const qreal default_width{225.0}, default_height{175.0};
-
 	m_bounding.setCoords(
-		-default_width/2, -default_height/2,
-		default_width/2,  default_height/2
+		-size.width()/2, -size.height()/2,
+		+size.width()/2, +size.height()/2
 	);
 	
 	// setting it here before setting ItemSendGeometryChanges will not trigger "is_changed"

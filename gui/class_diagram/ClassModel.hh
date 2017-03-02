@@ -56,6 +56,7 @@ public:
 	
 	// ModelBase overrides
 	void AddEntity(const std::string& id, const QPointF& pos) override;
+	void AddEntityWithSize(const std::string& id, const QPointF& pos, const QSizeF& size);
 	void SetRect(const QRectF& rect) override;
 	bool CanRename() const override;
 	std::string Name() const override;
