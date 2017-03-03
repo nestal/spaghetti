@@ -21,6 +21,7 @@
 
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
+#include <QtWidgets/QWidget>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 
@@ -51,7 +52,6 @@ ClassItem::ClassItem(const codebase::DataType& class_, QObject *model, const QPo
 {
 	setParent(model);
 	
-	qWarning() << "this class = " << metaObject()->className();
 	m_bounding.setCoords(
 		-size.width()/2, -size.height()/2,
 		+size.width()/2, +size.height()/2
@@ -71,9 +71,13 @@ QRectF ClassItem::boundingRect() const
 	return m_bounding;
 }
 
-void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *w)
 {
 	auto content = m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin);
+	
+	// assume parentWidth() of "w" is the view
+	auto var = (w && w->parentWidget() ? w->parentWidget()->property("lineColor") : QVariant{});
+	auto line_color = (var.canConvert<QColor>() ? var.value<QColor>() : Qt::GlobalColor::magenta);
 	
 	// use bold font for name
 	auto name_font = painter->font();
@@ -87,7 +91,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
 
 	// TODO: make it configurable
-	painter->setPen(m_line_color);
+	painter->setPen(line_color);
 	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
 	
 	// bounding rectangle
@@ -104,7 +108,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	);
 	
 	// line between class name and function
-	painter->setPen(m_line_color);
+	painter->setPen(line_color);
 	painter->drawLine(
 		QPointF{m_bounding.right(), name_rect.bottom() + vspace_between_fields/2},
 		QPointF{m_bounding.left(),  name_rect.bottom() + vspace_between_fields/2}
@@ -136,7 +140,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	}
 
 	// line between class name and function
-	painter->setPen(m_line_color);
+	painter->setPen(line_color);
 	painter->drawLine(
 		QPointF{m_bounding.right(), text_rect.top() - vspace_between_fields/2},
 		QPointF{m_bounding.left(),  text_rect.top() - vspace_between_fields/2}
@@ -319,17 +323,6 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		auto distance = event->pos() - event->lastPos();
 		moveBy(distance.x(), distance.y());
 	}
-}
-
-QColor ClassItem::GetLineColor() const
-{
-	return m_line_color;
-}
-
-void ClassItem::SetLineColor(QColor c)
-{
-	qWarning() << "setting line color";
-	m_line_color = c;
 }
 	
 } // end of namespace

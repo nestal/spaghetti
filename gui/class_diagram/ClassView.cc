@@ -19,7 +19,8 @@
 #include <sstream>
 #include <iostream>
 #include <QtWidgets/QAbstractItemView>
-#include <QtWidgets/QAbstractScrollArea>
+
+#include <QDebug>
 
 namespace gui {
 
@@ -69,5 +70,16 @@ void ClassView::DeleteSelectedItem()
 {
 	m_model->DeleteSelectedItem();
 }
-	
+
+QColor ClassView::GetLineColor() const
+{
+	return m_line_color;
+}
+
+void ClassView::SetLineColor(QColor c)
+{
+	qWarning() << "setting view color: " << (void*)this;
+	m_line_color = c;
+}
+
 } // end of namespace

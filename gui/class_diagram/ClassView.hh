@@ -21,7 +21,9 @@ namespace gui {
 
 class ClassView: public QGraphicsView, public ViewBase
 {
-Q_OBJECT
+	Q_OBJECT
+	
+	Q_PROPERTY(QColor lineColor READ GetLineColor WRITE SetLineColor DESIGNABLE true)
 
 public:
 	ClassView(ClassModel *model, QWidget *parent);
@@ -31,6 +33,9 @@ public:
 	
 	void DeleteSelectedItem();
 	
+	QColor GetLineColor() const;
+	void SetLineColor(QColor c);
+
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);
 
@@ -41,6 +46,7 @@ protected:
 	
 private:
 	ClassModel   *m_model{};
+	QColor        m_line_color{Qt::GlobalColor::black};
 };
 	
 } // end of namespace

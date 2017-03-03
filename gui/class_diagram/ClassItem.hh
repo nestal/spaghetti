@@ -37,8 +37,6 @@ class Edge;
 class ClassItem : public QGraphicsObject, public BaseItem
 {
 	Q_OBJECT
-	Q_PROPERTY(QColor lineColor READ GetLineColor WRITE SetLineColor DESIGNABLE true)
-	
 	Q_INTERFACES(QGraphicsItem)
 	
 public:
@@ -68,9 +66,6 @@ public:
 
 	void Resize(const QRectF& rect);
 	
-	QColor GetLineColor() const;
-	void SetLineColor(QColor c);
-	
 protected:
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 	
@@ -92,7 +87,6 @@ private:
 	mutable bool       m_changed{false};
 	
 	std::unique_ptr<SizeGripItem> m_grip;
-	QColor m_line_color{Qt::GlobalColor::magenta};
 	
 	static const qreal m_margin;
 };
