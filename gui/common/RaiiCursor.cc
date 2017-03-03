@@ -16,7 +16,6 @@
 #include <QtGui/QCursor>
 
 namespace gui {
-namespace common {
 
 RaiiCursor::RaiiCursor( const QCursor& cursor)
 {
@@ -28,4 +27,4 @@ RaiiCursor::~RaiiCursor()
 	QGuiApplication::restoreOverrideCursor();
 }
 
-}} // end of namespace
+} // end of namespace

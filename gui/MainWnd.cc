@@ -25,7 +25,7 @@
 #include <QtWidgets/QInputDialog>
 
 #include <cassert>
-#include <iostream>
+#include <QDebug>
 
 namespace gui {
 
@@ -219,6 +219,16 @@ bool MainWnd::ConfirmDiscard()
 void MainWnd::Log(const QString& message)
 {
 	m_ui->m_log_widget->appendPlainText(message);
+}
+
+QColor MainWnd::GetLineColor() const
+{
+	return QColor();
+}
+
+void MainWnd::SetLineColor(QColor c)
+{
+	qWarning() << "setting mainwnd color: " << c;
 }
 	
 } // end of namespace

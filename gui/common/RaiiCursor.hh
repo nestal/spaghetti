@@ -15,7 +15,6 @@
 class QCursor;
 
 namespace gui {
-namespace common {
 
 class RaiiCursor
 {
@@ -24,4 +23,4 @@ public:
 	~RaiiCursor();
 };
 
-}} // end of namespace
+} // end of namespace

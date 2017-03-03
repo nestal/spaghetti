@@ -28,7 +28,6 @@
 #include <typeindex>
 
 namespace gui {
-namespace logical_view {
 
 const QString LogicalModel::m_mime_type{"application/vnd.spag.usr"};
 
@@ -171,4 +170,4 @@ void LogicalModel::Reset(const codebase::Entity *root, const codebase::EntityMap
 	endResetModel();
 }
 	
-}} // end of namespace
+} // end of namespace

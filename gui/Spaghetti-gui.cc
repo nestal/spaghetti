@@ -9,7 +9,10 @@
 #include "gui/MainWnd.hh"
 
 #include <QApplication>
-#include <QCommandLineParser>
+#include <QtCore/QCommandLineParser>
+#include <QtCore/QFile>
+
+#include <QDebug>
 
 int main(int argc, char **argv)
 {
@@ -25,6 +28,16 @@ int main(int argc, char **argv)
 	parser.addVersionOption();
 	parser.addPositionalArgument("file", "The file to open.");
 	parser.process(app);
+	
+	qWarning() << "wow" ;
+	
+	QFile ss{"sheet.qss"};
+	if (ss.open(QFile::ReadOnly))
+	{
+		QString sstr{QLatin1String{ss.readAll()}};
+		qWarning() << "using stylesheet " << sstr;
+		app.setStyleSheet(sstr);
+	}
 	
 	using namespace gui;
 	MainWnd wnd;

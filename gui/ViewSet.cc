@@ -13,7 +13,7 @@
 #include "ViewSet.hh"
 
 #include "Document.hh"
-#include "source_view/View.hh"
+#include "gui/source_view/SourceView.hh"
 #include "gui/class_diagram/ClassView.hh"
 
 #include <QInputDialog>
@@ -39,11 +39,11 @@ bool ViewSet::iterator::equal(const ViewSet::iterator& other) const
 	return m_idx == other.m_idx && m_parent == other.m_parent;
 }
 
-common::ViewBase* ViewSet::iterator::dereference() const
+ViewBase* ViewSet::iterator::dereference() const
 {
 	assert(m_parent);
 	assert(m_idx >= 0);
-	return &dynamic_cast<common::ViewBase&>(*m_parent->widget(m_idx));
+	return &dynamic_cast<ViewBase&>(*m_parent->widget(m_idx));
 }
 
 QWidget *ViewSet::iterator::Widget() const
@@ -75,7 +75,7 @@ void ViewSet::Setup(Document& doc)
 	connect(m_doc, &Document::OnCreateSourceView,       this, &ViewSet::NewSourceView);
 	connect(m_doc, &Document::OnDestroyModel, [this](project::ModelBase *model)
 	{
-		std::vector<common::ViewBase*> to_delete;
+		std::vector<ViewBase*> to_delete;
 		std::copy_if(begin(), end(),
 			std::back_inserter(to_delete),
 			[model](auto v){return v->Model() == model;}
@@ -95,16 +95,16 @@ void ViewSet::Setup(Document& doc)
 	connect(tabBar(), &QTabBar::tabBarDoubleClicked, this, &ViewSet::OnRenameTab);
 }
 
-void ViewSet::NewClassDiagramView(class_diagram::ClassModel *model)
+void ViewSet::NewClassDiagramView(ClassModel *model)
 {
-	auto view   = new class_diagram::ClassView{model, this};
-	connect(view, &class_diagram::ClassView::DropEntity, model, &class_diagram::ClassModel::AddEntity);
+	auto view   = new ClassView{model, this};
+	connect(view, &ClassView::DropEntity, model, &ClassModel::AddEntity);
 	
 	// don't capture "view". instead, capture model and find for its view instead
 	// we can depend on the model because when the model is destroyed, this connection
 	// will be disconnect and the lambda callback won't run.
 	// if we capture "view" here, we may found that the view may be already destroyed
-	connect(model, &class_diagram::ClassModel::OnChanged, [this, model](bool changed)
+	connect(model, &ClassModel::OnChanged, [this, model](bool changed)
 	{
 		auto it = std::find_if(begin(), end(), [model](auto v){return v->Model() == model;});
 		if (it != end())
@@ -123,9 +123,9 @@ void ViewSet::NewClassDiagramView(class_diagram::ClassModel *model)
 	setCurrentIndex(tab);
 }
 
-void ViewSet::NewSourceView(source_view::SourceModel *model)
+void ViewSet::NewSourceView(SourceModel *model)
 {
-	auto view = new source_view::View{model, this};
+	auto view = new SourceView{model, this};
 	addTab(view, QString::fromStdString(model->Name()));
 	setCurrentWidget(view);
 	
@@ -137,7 +137,7 @@ void ViewSet::CloseTab(int tab)
 	auto w = widget(tab);
 	removeTab(tab);
 	
-	if (auto view = dynamic_cast<common::ViewBase*>(w))
+	if (auto view = dynamic_cast<ViewBase*>(w))
 	{
 		// destroy the view
 		auto model = view->Model();
@@ -159,7 +159,7 @@ void ViewSet::CloseAllTabs()
 
 void ViewSet::OnRenameTab(int idx)
 {
-	if (auto view = dynamic_cast<common::ViewBase*>(widget(idx)))
+	if (auto view = dynamic_cast<ViewBase*>(widget(idx)))
 	{
 		auto model = view->Model();
 		assert(model);
@@ -187,7 +187,7 @@ void ViewSet::ViewCode(const std::string& filename, unsigned line, unsigned colu
 	// search for existing tab showing the file
 	for (int i = 0 ; i < count() ; ++i)
 	{
-		auto view = dynamic_cast<source_view::View*>(widget(i));
+		auto view = dynamic_cast<SourceView*>(widget(i));
 		if (view && view->Filename() == filename)
 		{
 			view->GoTo(line, column);
@@ -202,7 +202,7 @@ void ViewSet::ViewCode(const std::string& filename, unsigned line, unsigned colu
 
 void ViewSet::OnDelete()
 {
-	if (auto view = dynamic_cast<class_diagram::ClassView*>(currentWidget()))
+	if (auto view = dynamic_cast<ClassView*>(currentWidget()))
 		view->DeleteSelectedItem();
 }
 	

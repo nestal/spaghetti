@@ -20,20 +20,19 @@
 #include <atomic>
 
 namespace gui {
-namespace source_view {
 
-class View : public QPlainTextEdit, public common::ViewBase
+class SourceView : public QPlainTextEdit, public ViewBase
 {
 public:
-	View(source_view::SourceModel *model, QWidget *parent);
-	~View();
+	SourceView(SourceModel *model, QWidget *parent);
+	~SourceView();
 	
 	void Open(const std::string& fname, unsigned line, unsigned column);
 	void GoTo(unsigned line, unsigned column);
 	
 	const std::string& Filename() const;
 	
-	source_view::SourceModel* Model() override;
+	SourceModel* Model() override;
 	QWidget* Widget() override;
 
 private:
@@ -43,9 +42,9 @@ private:
 	std::thread m_worker;
 	std::string m_filename;
 	
-	source_view::SourceModel *m_model{};
+	SourceModel *m_model{};
 	
 	QTextCursor m_highlight;
 };
 
-}} // end of namespace
+} // end of namespace

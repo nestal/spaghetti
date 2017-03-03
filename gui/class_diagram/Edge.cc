@@ -19,7 +19,6 @@
 #include <iostream>
 
 namespace gui {
-namespace class_diagram {
 
 const auto arrow_width = 15.0;
 
@@ -95,7 +94,7 @@ ItemRelation Edge::RelationOf(const BaseItem *) const
 	return ItemRelation::no_relation;
 }
 
-class_diagram::ItemType Edge::ItemType() const
+gui::ItemType Edge::ItemType() const
 {
 	return ItemType::edge;
 }
@@ -207,4 +206,4 @@ const QGraphicsItem *Edge::GraphicsItem() const
 	return this;
 }
 	
-}} // end of namespace
+} // end of namespace

@@ -20,10 +20,11 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
 
+#include <QDebug>
+
 #include <cassert>
 
 namespace gui {
-namespace class_diagram {
 
 const qreal default_item_width{225.0}, default_item_height{175.0};
 
@@ -234,5 +235,5 @@ void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
 		this->DetectEdges(item);
 	});
 }
-	
-}} // end of namespace
+
+} // end of namespace

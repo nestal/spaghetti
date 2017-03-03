@@ -19,7 +19,6 @@
 #include <QtCore/QString>
 
 namespace gui {
-namespace source_view {
 
 class SourceModel : public QObject, public project::ModelBase
 {
@@ -56,4 +55,4 @@ private:
 	unsigned m_column{};
 };
 
-}} // end of namespace
+} // end of namespace

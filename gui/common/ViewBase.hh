@@ -19,7 +19,6 @@ class ModelBase;
 class QWidget;
 
 namespace gui {
-namespace common {
 
 class ViewBase
 {
@@ -32,4 +31,4 @@ public:
 	virtual QWidget* Widget() = 0;
 };
 	
-}} // end of namespace
+} // end of namespace

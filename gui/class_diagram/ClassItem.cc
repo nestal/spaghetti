@@ -23,12 +23,12 @@
 #include <QtGui/QPainter>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
-#include <iostream>
+
+#include <QDebug>
 
 // using https://github.com/cesarbs/sizegripitem to implement resize
 
 namespace gui {
-namespace class_diagram {
 
 const qreal ClassItem::m_margin{10.0};
 
@@ -46,10 +46,12 @@ public:
 };
 
 ClassItem::ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size) :
-	QObject{model},
 	m_class{&class_},
 	m_class_id{class_.ID()}
 {
+	setParent(model);
+	
+	qWarning() << "this class = " << metaObject()->className();
 	m_bounding.setCoords(
 		-size.width()/2, -size.height()/2,
 		+size.width()/2, +size.height()/2
@@ -85,7 +87,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
 
 	// TODO: make it configurable
-	painter->setPen(Qt::GlobalColor::magenta);
+	painter->setPen(m_line_color);
 	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
 	
 	// bounding rectangle
@@ -102,7 +104,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	);
 	
 	// line between class name and function
-	painter->setPen(Qt::GlobalColor::magenta);
+	painter->setPen(m_line_color);
 	painter->drawLine(
 		QPointF{m_bounding.right(), name_rect.bottom() + vspace_between_fields/2},
 		QPointF{m_bounding.left(),  name_rect.bottom() + vspace_between_fields/2}
@@ -134,7 +136,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	}
 
 	// line between class name and function
-	painter->setPen(Qt::GlobalColor::magenta);
+	painter->setPen(m_line_color);
 	painter->drawLine(
 		QPointF{m_bounding.right(), text_rect.top() - vspace_between_fields/2},
 		QPointF{m_bounding.left(),  text_rect.top() - vspace_between_fields/2}
@@ -240,7 +242,7 @@ ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 	}
 }
 
-class_diagram::ItemType ClassItem::ItemType() const
+gui::ItemType ClassItem::ItemType() const
 {
 	return ItemType::class_item;
 }
@@ -319,4 +321,15 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	}
 }
 
-}} // end of namespace
+QColor ClassItem::GetLineColor() const
+{
+	return m_line_color;
+}
+
+void ClassItem::SetLineColor(QColor c)
+{
+	qWarning() << "setting line color";
+	m_line_color = c;
+}
+	
+} // end of namespace

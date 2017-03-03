@@ -31,12 +31,16 @@ class Document;
 class MainWnd : public QMainWindow
 {
 	Q_OBJECT
-
+	Q_PROPERTY(QColor lineColor READ GetLineColor WRITE SetLineColor DESIGNABLE true)
+	
 public:
 	MainWnd();
 	~MainWnd();
 
 	void Log(const QString& message);
+	
+	QColor GetLineColor() const;
+	void SetLineColor(QColor c);
 	
 private:
 	void ConnectSignals();

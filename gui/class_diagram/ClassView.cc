@@ -22,9 +22,8 @@
 #include <QtWidgets/QAbstractScrollArea>
 
 namespace gui {
-namespace class_diagram {
 
-ClassView::ClassView(class_diagram::ClassModel *model, QWidget *parent) :
+ClassView::ClassView(ClassModel *model, QWidget *parent) :
 	QGraphicsView{model->Scene(), parent},
 	m_model{model}
 {
@@ -34,14 +33,14 @@ ClassView::ClassView(class_diagram::ClassModel *model, QWidget *parent) :
 
 void ClassView::dragEnterEvent(QDragEnterEvent *event)
 {
-	if (event->mimeData()->hasFormat(logical_view::LogicalModel::m_mime_type))
+	if (event->mimeData()->hasFormat(LogicalModel::m_mime_type))
 		event->acceptProposedAction();
 }
 
 void ClassView::dropEvent(QDropEvent *event)
 {
 	auto scene_pos = mapToScene(event->pos());
-	std::istringstream usrs{event->mimeData()->data(logical_view::LogicalModel::m_mime_type).toStdString()};
+	std::istringstream usrs{event->mimeData()->data(LogicalModel::m_mime_type).toStdString()};
 	
 	std::string usr;
 	while (usrs >> usr)
@@ -52,11 +51,11 @@ void ClassView::dropEvent(QDropEvent *event)
 
 void ClassView::dragMoveEvent(QDragMoveEvent *event)
 {
-	if (event->mimeData()->hasFormat(logical_view::LogicalModel::m_mime_type))
+	if (event->mimeData()->hasFormat(LogicalModel::m_mime_type))
 		event->acceptProposedAction();
 }
 
-class_diagram::ClassModel *ClassView::Model()
+ClassModel *ClassView::Model()
 {
 	return m_model;
 }
@@ -71,4 +70,4 @@ void ClassView::DeleteSelectedItem()
 	m_model->DeleteSelectedItem();
 }
 	
-}} // end of namespace
+} // end of namespace
