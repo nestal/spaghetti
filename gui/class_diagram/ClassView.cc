@@ -11,7 +11,7 @@
 //
 
 #include "ClassView.hh"
-#include "gui/logical_view/LogicalModel.hh"
+#include "gui/common/MimeType.hh"
 
 #include <QDragEnterEvent>
 #include <QMimeData>
@@ -19,12 +19,12 @@
 #include <sstream>
 #include <iostream>
 #include <QtWidgets/QAbstractItemView>
-#include <QtWidgets/QAbstractScrollArea>
+
+#include <QDebug>
 
 namespace gui {
-namespace class_diagram {
 
-ClassView::ClassView(class_diagram::ClassModel *model, QWidget *parent) :
+ClassView::ClassView(ClassModel *model, QWidget *parent) :
 	QGraphicsView{model->Scene(), parent},
 	m_model{model}
 {
@@ -34,14 +34,14 @@ ClassView::ClassView(class_diagram::ClassModel *model, QWidget *parent) :
 
 void ClassView::dragEnterEvent(QDragEnterEvent *event)
 {
-	if (event->mimeData()->hasFormat(logical_view::LogicalModel::m_mime_type))
+	if (event->mimeData()->hasFormat(mime::usr))
 		event->acceptProposedAction();
 }
 
 void ClassView::dropEvent(QDropEvent *event)
 {
 	auto scene_pos = mapToScene(event->pos());
-	std::istringstream usrs{event->mimeData()->data(logical_view::LogicalModel::m_mime_type).toStdString()};
+	std::istringstream usrs{event->mimeData()->data(mime::usr).toStdString()};
 	
 	std::string usr;
 	while (usrs >> usr)
@@ -52,11 +52,11 @@ void ClassView::dropEvent(QDropEvent *event)
 
 void ClassView::dragMoveEvent(QDragMoveEvent *event)
 {
-	if (event->mimeData()->hasFormat(logical_view::LogicalModel::m_mime_type))
+	if (event->mimeData()->hasFormat(mime::usr))
 		event->acceptProposedAction();
 }
 
-class_diagram::ClassModel *ClassView::Model()
+ClassModel *ClassView::Model()
 {
 	return m_model;
 }
@@ -70,5 +70,15 @@ void ClassView::DeleteSelectedItem()
 {
 	m_model->DeleteSelectedItem();
 }
+
+QColor ClassView::GetLineColor() const
+{
+	return m_line_color;
+}
+
+void ClassView::SetLineColor(QColor c)
+{
+	m_line_color = c;
+}
 	
-}} // end of namespace
+} // end of namespace

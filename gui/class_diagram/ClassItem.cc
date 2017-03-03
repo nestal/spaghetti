@@ -21,14 +21,15 @@
 
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
+#include <QtWidgets/QWidget>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
-#include <iostream>
+
+#include <QDebug>
 
 // using https://github.com/cesarbs/sizegripitem to implement resize
 
 namespace gui {
-namespace class_diagram {
 
 const qreal ClassItem::m_margin{10.0};
 
@@ -46,10 +47,11 @@ public:
 };
 
 ClassItem::ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size) :
-	QObject{model},
 	m_class{&class_},
 	m_class_id{class_.ID()}
 {
+	setParent(model);
+	
 	m_bounding.setCoords(
 		-size.width()/2, -size.height()/2,
 		+size.width()/2, +size.height()/2
@@ -69,9 +71,14 @@ QRectF ClassItem::boundingRect() const
 	return m_bounding;
 }
 
-void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
 {
 	auto content = m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin);
+	
+	// assume the parent widget of the viewport is our ClassView
+	// query the properties to get rendering parameters
+	auto var = (viewport && viewport->parentWidget() ? viewport->parentWidget()->property("lineColor") : QVariant{});
+	auto line_color = (var.canConvert<QColor>() ? var.value<QColor>() : Qt::GlobalColor::magenta);
 	
 	// use bold font for name
 	auto name_font = painter->font();
@@ -85,7 +92,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
 
 	// TODO: make it configurable
-	painter->setPen(Qt::GlobalColor::magenta);
+	painter->setPen(line_color);
 	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
 	
 	// bounding rectangle
@@ -102,7 +109,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	);
 	
 	// line between class name and function
-	painter->setPen(Qt::GlobalColor::magenta);
+	painter->setPen(line_color);
 	painter->drawLine(
 		QPointF{m_bounding.right(), name_rect.bottom() + vspace_between_fields/2},
 		QPointF{m_bounding.left(),  name_rect.bottom() + vspace_between_fields/2}
@@ -134,7 +141,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	}
 
 	// line between class name and function
-	painter->setPen(Qt::GlobalColor::magenta);
+	painter->setPen(line_color);
 	painter->drawLine(
 		QPointF{m_bounding.right(), text_rect.top() - vspace_between_fields/2},
 		QPointF{m_bounding.left(),  text_rect.top() - vspace_between_fields/2}
@@ -176,36 +183,38 @@ int ClassItem::type() const
 QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
 {
 	if (change == QGraphicsItem::ItemPositionChange)
-	{
-		if (!m_changed)
-			emit OnJustChanged(this);
-		
-		m_changed = true;
-		
-		for (auto&& edge : Edges())
-			edge->UpdatePosition();
-	}
+		OnPositionChanged();
+	
 	else if (change == QGraphicsItem::ItemSelectedChange)
 	{
 		if (!m_grip)
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
 		else
 		{
+			m_grip.reset();
+			
 			auto size = m_bounding.size();
 			auto pos  = mapToScene(m_bounding.center());
 			setPos(pos);
 			m_bounding.setCoords(
-				-size.width()/2,
-				-size.height()/2,
-				+size.width()/2,
-				+size.height()/2
+				-size.width()/2, -size.height()/2,
+				+size.width()/2, +size.height()/2
 			);
-			
-			m_grip.reset();
 		}
 	}
 
 	return value;
+}
+
+void ClassItem::OnPositionChanged()
+{
+	if (!m_changed)
+		emit OnJustChanged(this);
+	
+	m_changed = true;
+	
+	for (auto&& edge : Edges())
+		edge->UpdatePosition();
 }
 
 ItemRelation ClassItem::RelationOf(const BaseItem *other) const
@@ -238,7 +247,7 @@ ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 	}
 }
 
-class_diagram::ItemType ClassItem::ItemType() const
+gui::ItemType ClassItem::ItemType() const
 {
 	return ItemType::class_item;
 }
@@ -295,7 +304,7 @@ void ClassItem::Resize(const QRectF& rect)
 	prepareGeometryChange();
 	m_bounding = rect;
 	
-	itemChange(QGraphicsItem::ItemPositionChange, {});
+	OnPositionChanged();
 }
 
 QGraphicsItem *ClassItem::GraphicsItem()
@@ -308,10 +317,6 @@ const QGraphicsItem *ClassItem::GraphicsItem() const
 	return this;
 }
 
-void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *)
-{
-}
-
 void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	if (event->button() | Qt::LeftButton)
@@ -320,5 +325,5 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		moveBy(distance.x(), distance.y());
 	}
 }
-
-}} // end of namespace
+	
+} // end of namespace

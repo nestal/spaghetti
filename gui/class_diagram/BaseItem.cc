@@ -15,7 +15,6 @@
 #include "Edge.hh"
 
 namespace gui {
-namespace class_diagram {
 
 void BaseItem::AddEdge(Edge *edge)
 {
@@ -42,4 +41,4 @@ void BaseItem::ClearEdges()
 	m_edges.clear();
 }
 	
-}} // end of namespace
+} // end of namespace

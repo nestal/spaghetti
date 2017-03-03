@@ -15,7 +15,6 @@
 #include <QtCore/QSortFilterProxyModel>
 
 namespace gui {
-namespace logical_view {
 
 class LogicalModel;
 
@@ -33,4 +32,4 @@ private:
 	bool m_show_all{false};
 };
 	
-}} // end of namespace
+} // end of namespace

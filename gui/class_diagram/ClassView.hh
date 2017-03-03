@@ -18,20 +18,24 @@
 #include "ClassModel.hh"
 
 namespace gui {
-namespace class_diagram {
 
-class ClassView: public QGraphicsView, public common::ViewBase
+class ClassView: public QGraphicsView, public ViewBase
 {
-Q_OBJECT
+	Q_OBJECT
+	
+	Q_PROPERTY(QColor lineColor READ GetLineColor WRITE SetLineColor DESIGNABLE true)
 
 public:
-	ClassView(class_diagram::ClassModel *model, QWidget *parent);
+	ClassView(ClassModel *model, QWidget *parent);
 
-	class_diagram::ClassModel* Model() override;
+	ClassModel* Model() override;
 	QWidget* Widget() override;
 	
 	void DeleteSelectedItem();
 	
+	QColor GetLineColor() const;
+	void SetLineColor(QColor c);
+
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);
 
@@ -41,7 +45,10 @@ protected:
 	void dropEvent(QDropEvent *event) override;
 	
 private:
-	class_diagram::ClassModel   *m_model{};
+	ClassModel   *m_model{};
+	
+	// rendering options
+	QColor        m_line_color{Qt::GlobalColor::magenta};
 };
 	
-}} // end of namespace
+} // end of namespace

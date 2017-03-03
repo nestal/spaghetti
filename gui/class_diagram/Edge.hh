@@ -16,7 +16,6 @@
 #include <QGraphicsItem>
 
 namespace gui {
-namespace class_diagram {
 
 /**
  * \brief A connector between two items in the class diagram.
@@ -40,7 +39,7 @@ public:
 	void UpdatePosition();
 	
 	ItemRelation RelationOf(const BaseItem *other) const override;
-	class_diagram::ItemType ItemType() const override;
+	gui::ItemType ItemType() const override;
 	void Update(const codebase::EntityMap *code_base);
 	
 	bool IsChanged() const override;
@@ -63,4 +62,4 @@ private:
 	QRectF m_bounding;
 };
 	
-}} // end of namespace
+} // end of namespace

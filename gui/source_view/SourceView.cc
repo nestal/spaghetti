@@ -10,7 +10,7 @@
 // Created by nestal on 2/5/17.
 //
 
-#include "View.hh"
+#include "SourceView.hh"
 
 #include "gui/common/SendFunctorEvent.hh"
 
@@ -21,25 +21,24 @@
 #include <QtCore/QFile>
 
 namespace gui {
-namespace source_view {
 
-View::View(source_view::SourceModel *model, QWidget *parent) :
+SourceView::SourceView(SourceModel *model, QWidget *parent) :
 	QPlainTextEdit{parent},
 	m_model{model},
 	m_highlight{document()}
 {
-	connect(m_model, &source_view::SourceModel::OnLocationChanged, [this]{
+	connect(m_model, &SourceModel::OnLocationChanged, [this]{
 		Open(m_model->Name(), m_model->Line(), m_model->Column());
 	});
 }
 
-View::~View()
+SourceView::~SourceView()
 {
 	if (m_worker.joinable())
 		m_worker.join();
 }
 
-void View::Open(const std::string& fname, unsigned line, unsigned column)
+void SourceView::Open(const std::string& fname, unsigned line, unsigned column)
 {
 	if (fname != m_filename)
 	{
@@ -64,10 +63,8 @@ void View::Open(const std::string& fname, unsigned line, unsigned column)
 		GoTo(line, column);
 }
 
-void View::Parse(unsigned line, unsigned column)
+void SourceView::Parse(unsigned line, unsigned column)
 {
-	using namespace common;
-	
 	QFile qfile{QString::fromStdString(m_filename)};
 	if (qfile.open(QIODevice::ReadOnly))
 	{
@@ -128,7 +125,7 @@ void View::Parse(unsigned line, unsigned column)
 	}, Qt::LowEventPriority);
 }
 
-void View::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
+void SourceView::Highlight(unsigned line, unsigned column, std::size_t stride, const QColor& colour)
 {
 	int block = m_highlight.blockNumber();
 	
@@ -142,12 +139,12 @@ void View::Highlight(unsigned line, unsigned column, std::size_t stride, const Q
 	m_highlight.mergeCharFormat(format);
 }
 
-const std::string& View::Filename() const
+const std::string& SourceView::Filename() const
 {
 	return m_filename;
 }
 
-void View::GoTo(unsigned line, unsigned column)
+void SourceView::GoTo(unsigned line, unsigned column)
 {
 	QTextCursor cursor{document()};
 	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
@@ -156,14 +153,14 @@ void View::GoTo(unsigned line, unsigned column)
 	setTextCursor(cursor);
 }
 
-source_view::SourceModel* View::Model()
+SourceModel* SourceView::Model()
 {
 	return m_model;
 }
 
-QWidget *View::Widget()
+QWidget *SourceView::Widget()
 {
 	return this;
 }
 	
-}} // end of namespace
+} // end of namespace

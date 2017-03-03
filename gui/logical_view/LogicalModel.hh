@@ -21,7 +21,6 @@ class EntityMap;
 }
 
 namespace gui {
-namespace logical_view {
 
 /**
  * \brief Model for entity tree
@@ -30,9 +29,6 @@ namespace logical_view {
  */
 class LogicalModel: public QAbstractItemModel
 {
-public:
-	static const QString m_mime_type;
-
 public:
 	LogicalModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent);
 
@@ -60,4 +56,4 @@ private:
 	const codebase::EntityMap *m_index{};
 };
 	
-}} // end of namespace
+} // end of namespace

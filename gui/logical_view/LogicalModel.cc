@@ -18,6 +18,8 @@
 #include "codebase/Function.hh"
 #include "codebase/Variable.hh"
 
+#include "gui/common/MimeType.hh"
+
 #include <QtCore/QMimeData>
 #include <QtCore/QIODevice>
 #include <QtCore/QDataStream>
@@ -28,9 +30,6 @@
 #include <typeindex>
 
 namespace gui {
-namespace logical_view {
-
-const QString LogicalModel::m_mime_type{"application/vnd.spag.usr"};
 
 LogicalModel::LogicalModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent) :
 	QAbstractItemModel{parent},
@@ -156,7 +155,7 @@ QMimeData *LogicalModel::mimeData(const QModelIndexList& ids) const
 	}
 	
 	auto mime = new QMimeData;
-	mime->setData(m_mime_type, usrs.str().c_str());
+	mime->setData(mime::usr, usrs.str().c_str());
 	return mime;
 }
 
@@ -171,4 +170,4 @@ void LogicalModel::Reset(const codebase::Entity *root, const codebase::EntityMap
 	endResetModel();
 }
 	
-}} // end of namespace
+} // end of namespace

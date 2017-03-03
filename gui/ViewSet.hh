@@ -37,9 +37,9 @@ public:
 	
 	class iterator : public boost::iterator_facade<
 		iterator,
-		common::ViewBase*,
+		ViewBase*,
 		boost::forward_traversal_tag,
-		common::ViewBase*
+		ViewBase*
 	>
 	{
 	public:
@@ -54,7 +54,7 @@ public:
 		void increment();
 		bool equal(const iterator& other) const;
 		
-		common::ViewBase* dereference() const;
+		ViewBase* dereference() const;
 		
 	private:
 		int     m_idx{};
@@ -71,8 +71,8 @@ public:
 	void ViewCode(const std::string& filename, unsigned line, unsigned column);
 
 private:
-	void NewClassDiagramView(class_diagram::ClassModel *model);
-	void NewSourceView(source_view::SourceModel *model);
+	void NewClassDiagramView(ClassModel *model);
+	void NewSourceView(SourceModel *model);
 	void OnRenameTab(int idx);
 	
 private:

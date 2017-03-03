@@ -106,7 +106,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="m_logical_dock">
    <property name="windowTitle">
-    <string>&amp;Logical View</string>
+    <string>&amp;Logical SourceView</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -161,7 +161,7 @@
   </widget>
   <widget class="QDockWidget" name="m_project_dock">
    <property name="windowTitle">
-    <string>Proje&amp;ct View</string>
+    <string>Proje&amp;ct SourceView</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -271,7 +271,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&amp;Logical View</string>
+    <string>&amp;Logical SourceView</string>
    </property>
   </action>
   <action name="m_action_project_view">
@@ -282,7 +282,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&amp;Project View</string>
+    <string>&amp;Project SourceView</string>
    </property>
   </action>
   <action name="m_action_logs">

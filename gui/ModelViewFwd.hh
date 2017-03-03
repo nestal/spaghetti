@@ -14,15 +14,11 @@
 
 namespace gui {
 
-namespace class_diagram {
 class ClassItem;
 class ClassModel;
 class ClassView;
-}
 
-namespace source_view {
-class View;
+class SourceView;
 class SourceModel;
-}
 
 } // end of namespace

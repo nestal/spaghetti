@@ -31,7 +31,7 @@ class Document;
 class MainWnd : public QMainWindow
 {
 	Q_OBJECT
-
+	
 public:
 	MainWnd();
 	~MainWnd();

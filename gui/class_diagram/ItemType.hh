@@ -15,7 +15,6 @@
 #include <QGraphicsItem>
 
 namespace gui {
-namespace class_diagram {
 
 enum class ItemType : int
 {
@@ -35,4 +34,4 @@ enum class ItemRelation
 	used_by_as_member,
 };
 
-}} // end of namespace
+} // end of namespace

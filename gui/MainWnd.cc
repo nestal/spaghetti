@@ -25,7 +25,6 @@
 #include <QtWidgets/QInputDialog>
 
 #include <cassert>
-#include <iostream>
 
 namespace gui {
 

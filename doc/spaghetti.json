@@ -15,59 +15,66 @@
             "classes": [
                 {
                     "height": 175,
-                    "id": "c:@N@libclx@S@SourceLocation",
+                    "id": "c:@N@libclx@S@Type",
                     "width": 225,
-                    "x": -397,
-                    "y": 718
+                    "x": -959,
+                    "y": 468
                 },
                 {
-                    "height": 230,
-                    "id": "c:@N@codebase@S@Function",
-                    "width": 225,
-                    "x": -723,
-                    "y": 485.5
+                    "height": 249,
+                    "id": "c:@N@codebase@S@Namespace",
+                    "width": 315,
+                    "x": -1062,
+                    "y": 221
                 },
                 {
-                    "height": 175,
-                    "id": "c:@N@codebase@S@Variable",
-                    "width": 225,
-                    "x": -128,
-                    "y": 462
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@codebase@S@DataType",
-                    "width": 225,
-                    "x": -398,
-                    "y": 466
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@codebase@S@LeafEntity",
-                    "width": 225,
-                    "x": -133,
-                    "y": 222
+                    "height": 179,
+                    "id": "c:@N@codebase@S@EntityVec",
+                    "width": 416,
+                    "x": -866.5,
+                    "y": -57
                 },
                 {
                     "height": 198,
                     "id": "c:@N@codebase@S@Entity",
                     "width": 441,
-                    "x": -421,
-                    "y": -101
-                },
-                {
-                    "height": 239,
-                    "id": "c:@N@codebase@S@EntityVec",
-                    "width": 316,
-                    "x": -720.5,
-                    "y": 190
+                    "x": -332,
+                    "y": -74
                 },
                 {
                     "height": 175,
-                    "id": "c:@N@codebase@S@Namespace",
+                    "id": "c:@N@codebase@S@LeafEntity",
                     "width": 225,
-                    "x": -979,
-                    "y": 446
+                    "x": -85,
+                    "y": 164
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@DataType",
+                    "width": 225,
+                    "x": -413,
+                    "y": 158
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@Variable",
+                    "width": 225,
+                    "x": -559,
+                    "y": 469
+                },
+                {
+                    "height": 230,
+                    "id": "c:@N@codebase@S@Function",
+                    "width": 225,
+                    "x": -722,
+                    "y": 212.5
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@libclx@S@SourceLocation",
+                    "width": 225,
+                    "x": -112,
+                    "y": 456
                 }
             ],
             "name": "Entity Classes",

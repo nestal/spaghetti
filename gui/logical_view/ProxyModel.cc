@@ -18,8 +18,6 @@
 #include "codebase/Entity.hh"
 
 namespace gui {
-namespace logical_view {
-
 
 ProxyModel::ProxyModel(LogicalModel *model) :
 	QSortFilterProxyModel{model}
@@ -54,4 +52,4 @@ void ProxyModel::SetShowAll(bool value)
 	}
 }
 	
-}} // end of namespace
+} // end of namespace

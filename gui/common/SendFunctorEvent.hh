@@ -15,7 +15,6 @@
 #include <QtCore/QCoreApplication>
 
 namespace gui {
-namespace common {
 
 template <typename F>
 void SendFunctorEvent(QObject *receiver, F&& func, int priority = Qt::NormalEventPriority)
@@ -37,4 +36,4 @@ void SendFunctorEvent(QObject *receiver, F&& func, int priority = Qt::NormalEven
 	QCoreApplication::postEvent(receiver, new Event{std::forward<F>(func)}, priority);
 }
 
-}} // end of namespace
+} // end of namespace

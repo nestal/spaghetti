@@ -31,7 +31,6 @@ class ClassDiagram;
 }
 
 namespace gui {
-namespace class_diagram {
 
 class ClassItem;
 class BaseItem;
@@ -42,7 +41,7 @@ class BaseItem;
 class ClassModel : public QObject, public project::ModelBase
 {
 	Q_OBJECT
-		
+	
 public:
 	ClassModel(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
 	ClassModel(const ClassModel&) = delete;
@@ -72,7 +71,7 @@ public:
 	
 	bool IsChanged() const override;
 	void UpdateCodeBase(const codebase::EntityMap *codebase) override;
-
+	
 signals:
 	void OnChanged(bool changed) const;
 	
@@ -90,4 +89,4 @@ private:
 	const codebase::EntityMap       *m_codebase{};
 };
 
-}} // end of namespace
+} // end of namespace

@@ -90,10 +90,10 @@ Document::Document(QObject *parent) :
 	m_project_model{std::make_unique<ProjectModel_>(
 		&m_project->CodeBase(), m_project->ProjectDir(), this
 	)},
-	m_logical_model{std::make_unique<logical_view::LogicalModel>(
+	m_logical_model{std::make_unique<LogicalModel>(
 		m_project->CodeBase().Root(), &m_project->CodeBase().Map(), this
 	)},
-	m_proxy_model{std::make_unique<logical_view::ProxyModel>(m_logical_model.get())}
+	m_proxy_model{std::make_unique<ProxyModel>(m_logical_model.get())}
 {
 	SetCurrentFile(tr("Untitled"));
 }
@@ -111,14 +111,14 @@ void Document::AddSource(const QString& file)
 
 void Document::NewClassDiagram(const QString& name)
 {
-	auto m = std::make_unique<class_diagram::ClassModel>(&m_project->CodeBase().Map(), name, this);
+	auto m = std::make_unique<gui::ClassModel>(&m_project->CodeBase().Map(), name, this);
 	emit OnCreateClassDiagramView(m.get());
 	m_project->Add(std::move(m));
 }
 
 void Document::NewSourceView(const QString& name, unsigned line, unsigned column)
 {
-	auto m = std::make_unique<source_view::SourceModel>(name, this);
+	auto m = std::make_unique<gui::SourceModel>(name, this);
 	emit OnCreateSourceView(m.get());
 	
 	m->SetLocation(name, line, column);
@@ -140,7 +140,7 @@ void Document::Open(const QString& file)
 {
 	auto proj = std::make_unique<project::Project>();
 	
-	common::RaiiCursor cursor(Qt::WaitCursor);
+	RaiiCursor cursor(Qt::WaitCursor);
 	ModelFactory factory{this};
 	proj->Open(file.toStdString(), factory);
 	
@@ -171,14 +171,14 @@ project::Model Document::ModelFactory::Create(project::ModelType type, const std
 	{
 	case project::ModelType::class_diagram:
 	{
-		auto m = std::make_unique<class_diagram::ClassModel>(&owner.CodeBase().Map(), QString::fromStdString(name), m_parent);
+		auto m = std::make_unique<gui::ClassModel>(&owner.CodeBase().Map(), QString::fromStdString(name), m_parent);
 		emit m_parent->OnCreateClassDiagramView(m.get());
 		result = std::move(m);
 		break;
 	}
 	case project::ModelType::source_view:
 	{
-		auto m = std::make_unique<source_view::SourceModel>(QString::fromStdString(name), m_parent);
+		auto m = std::make_unique<gui::SourceModel>(QString::fromStdString(name), m_parent);
 		emit m_parent->OnCreateSourceView(m.get());
 		result = std::move(m);
 		break;
@@ -226,7 +226,7 @@ void Document::Reset(std::unique_ptr<project::Project>&& proj)
  */
 void Document::Reload()
 {
-	common::RaiiCursor cursor(Qt::WaitCursor);
+	RaiiCursor cursor(Qt::WaitCursor);
 	m_project->Reload([this](auto map, auto root)
 	{
 		m_project_model->Reset(&m_project->CodeBase(),       m_project->ProjectDir());

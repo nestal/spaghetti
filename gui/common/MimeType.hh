@@ -7,20 +7,16 @@
 */
 
 //
-// Created by nestal on 2/26/17.
+// Created by nestal on 3/4/17.
 //
 
 #pragma once
 
-class QCursor;
+#include <QString>
 
 namespace gui {
+namespace mime {
 
-class RaiiCursor
-{
-public:
-	RaiiCursor(const QCursor& cursor);
-	~RaiiCursor();
-};
-
-} // end of namespace
+const QString usr{"application/vnd.spag.usr"};
+	
+}} // end of namespace

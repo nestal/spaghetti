@@ -25,7 +25,6 @@ class EntityMap;
 }
 
 namespace gui {
-namespace class_diagram {
 
 class Edge;
 
@@ -37,7 +36,7 @@ public:
 	virtual QGraphicsItem* GraphicsItem() = 0 ;
 	virtual const QGraphicsItem* GraphicsItem() const = 0 ;
 	
-	virtual class_diagram::ItemType ItemType() const = 0;
+	virtual gui::ItemType ItemType() const = 0;
 	virtual ItemRelation RelationOf(const BaseItem *other) const = 0;
 	virtual bool IsChanged() const = 0;
 	virtual void Update(const codebase::EntityMap *code_base) = 0;
@@ -65,4 +64,4 @@ private:
 	std::vector<Edge*> m_edges;
 };
 
-}} // end of namespace
+} // end of namespace

@@ -13,7 +13,7 @@
 #pragma once
 
 #include <QtCore/QObject>
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 
 #include "BaseItem.hh"
 
@@ -31,15 +31,14 @@ class EntityMap;
 }
 
 namespace gui {
-namespace class_diagram {
 
 class Edge;
 
-class ClassItem : public QObject, public BaseItem, public QGraphicsItem
+class ClassItem : public QGraphicsObject, public BaseItem
 {
 	Q_OBJECT
 	Q_INTERFACES(QGraphicsItem)
-
+	
 public:
 	ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size = {225.0, 175.0});
 	~ClassItem();
@@ -59,7 +58,7 @@ public:
 	QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
 	
 	ItemRelation RelationOf(const BaseItem *other) const override;
-	class_diagram::ItemType ItemType() const override;
+	gui::ItemType ItemType() const override;
 	void Update(const codebase::EntityMap *map);
 	
 	bool IsChanged() const override;
@@ -68,7 +67,6 @@ public:
 	void Resize(const QRectF& rect);
 	
 protected:
-	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 	
 signals:
@@ -76,6 +74,7 @@ signals:
 	
 private:
 	void ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font);
+	void OnPositionChanged();
 	
 private:
 	class Resizer;
@@ -92,4 +91,4 @@ private:
 	static const qreal m_margin;
 };
 	
-}} // end of namespace
+} // end of namespace
