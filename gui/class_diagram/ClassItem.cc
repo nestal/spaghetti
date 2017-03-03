@@ -176,36 +176,38 @@ int ClassItem::type() const
 QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
 {
 	if (change == QGraphicsItem::ItemPositionChange)
-	{
-		if (!m_changed)
-			emit OnJustChanged(this);
-		
-		m_changed = true;
-		
-		for (auto&& edge : Edges())
-			edge->UpdatePosition();
-	}
+		OnPositionChanged();
+	
 	else if (change == QGraphicsItem::ItemSelectedChange)
 	{
 		if (!m_grip)
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
 		else
 		{
+			m_grip.reset();
+			
 			auto size = m_bounding.size();
 			auto pos  = mapToScene(m_bounding.center());
 			setPos(pos);
 			m_bounding.setCoords(
-				-size.width()/2,
-				-size.height()/2,
-				+size.width()/2,
-				+size.height()/2
+				-size.width()/2, -size.height()/2,
+				+size.width()/2, +size.height()/2
 			);
-			
-			m_grip.reset();
 		}
 	}
 
 	return value;
+}
+
+void ClassItem::OnPositionChanged()
+{
+	if (!m_changed)
+		emit OnJustChanged(this);
+	
+	m_changed = true;
+	
+	for (auto&& edge : Edges())
+		edge->UpdatePosition();
 }
 
 ItemRelation ClassItem::RelationOf(const BaseItem *other) const
@@ -295,7 +297,7 @@ void ClassItem::Resize(const QRectF& rect)
 	prepareGeometryChange();
 	m_bounding = rect;
 	
-	itemChange(QGraphicsItem::ItemPositionChange, {});
+	OnPositionChanged();
 }
 
 QGraphicsItem *ClassItem::GraphicsItem()
@@ -306,10 +308,6 @@ QGraphicsItem *ClassItem::GraphicsItem()
 const QGraphicsItem *ClassItem::GraphicsItem() const
 {
 	return this;
-}
-
-void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *)
-{
 }
 
 void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

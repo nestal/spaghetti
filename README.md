@@ -6,9 +6,9 @@ to parse the source code, and use [Qt](http://doc.qt.io/qt-5/index.html) to
 render it.
 
 ![snapshot-1](./doc/snapshot1.png)
-Screenshot of Spaghetti pre-v0.1 (25 Feb 2017), viewing [spaghetti.json](./doc/spaghetti.json)
+Screenshot of Spaghetti pre-v0.2 (2 Mar 2017), viewing [spaghetti.json](./doc/spaghetti.json)
 
-# Features
+## Features
 
 * Draw UML class diagram easily by dragging classes from logical view
 * Detecting class hierarchies and aggregation from source code
@@ -18,7 +18,7 @@ Screenshot of Spaghetti pre-v0.1 (25 Feb 2017), viewing [spaghetti.json](./doc/s
 
 See [Building Spaghetti](doc/building.md) for details.
 
-# License
+## License
 
 [GNU General Public License Version 2](https://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -27,11 +27,11 @@ See the [COPYING](./COPYING) file for details.
 Any code contributed to the project must be licensed under GPLv2 to be
 accepted. There is no need to assign copyright to any party. 
 
-# Authors and Contributors
+## Authors and Contributors
 
 * [Nestal W.H. Wan](https://gitlab.com/nestal)
 * Siu Wan (for drawing the icons)
 
-# Help Wanted
+## Help Wanted
 
 * Algorithm for automatically arranging the items in UML class diagrams 
