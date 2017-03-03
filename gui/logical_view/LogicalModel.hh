@@ -30,9 +30,6 @@ namespace gui {
 class LogicalModel: public QAbstractItemModel
 {
 public:
-	static const QString m_mime_type;
-
-public:
 	LogicalModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent);
 
 	void Reset(const codebase::Entity *root, const codebase::EntityMap *index);
