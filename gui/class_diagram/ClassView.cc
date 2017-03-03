@@ -78,8 +78,7 @@ QColor ClassView::GetLineColor() const
 
 void ClassView::SetLineColor(QColor c)
 {
-	qWarning() << "setting view color: " << (void*)this;
 	m_line_color = c;
 }
-
+	
 } // end of namespace

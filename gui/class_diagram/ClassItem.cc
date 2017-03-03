@@ -71,12 +71,13 @@ QRectF ClassItem::boundingRect() const
 	return m_bounding;
 }
 
-void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *w)
+void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
 {
 	auto content = m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin);
 	
-	// assume parentWidth() of "w" is the view
-	auto var = (w && w->parentWidget() ? w->parentWidget()->property("lineColor") : QVariant{});
+	// assume the parent widget of the viewport is our ClassView
+	// query the properties to get rendering parameters
+	auto var = (viewport && viewport->parentWidget() ? viewport->parentWidget()->property("lineColor") : QVariant{});
 	auto line_color = (var.canConvert<QColor>() ? var.value<QColor>() : Qt::GlobalColor::magenta);
 	
 	// use bold font for name

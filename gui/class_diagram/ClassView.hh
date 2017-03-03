@@ -46,7 +46,9 @@ protected:
 	
 private:
 	ClassModel   *m_model{};
-	QColor        m_line_color{Qt::GlobalColor::black};
+	
+	// rendering options
+	QColor        m_line_color{Qt::GlobalColor::magenta};
 };
 	
 } // end of namespace
