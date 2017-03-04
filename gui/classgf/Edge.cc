@@ -12,6 +12,8 @@
 
 #include "Edge.hh"
 
+#include "ClassView.hh"
+
 #include <QtGui/QPainter>
 
 #include <cassert>
@@ -32,8 +34,13 @@ Edge::Edge(const BaseItem *from, const BaseItem *to) :
 	UpdatePosition();
 }
 
-void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
 {
+	// assume the parent widget of the viewport is our ClassView
+	// query the properties to get rendering parameters
+	auto view = (viewport && viewport->parentWidget()) ? dynamic_cast<ClassView*>(viewport->parentWidget()) : nullptr;
+	auto& setting = view ? view->Setting() : Setting{};
+	
 	auto from = m_from->GraphicsItem();
 	auto to = m_to->GraphicsItem();
 	

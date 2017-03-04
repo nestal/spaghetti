@@ -132,7 +132,11 @@ void ClassView::wheelEvent(QWheelEvent *event)
 		
 		setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 		setTransform(QTransform{}.scale(m_zoom, m_zoom));
+		
+		event->accept();
 	}
+	else
+		QGraphicsView::wheelEvent(event);
 }
 
 qreal ClassView::ZoomFactor() const
