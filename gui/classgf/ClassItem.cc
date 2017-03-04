@@ -357,7 +357,11 @@ void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	// avoid being selected
 	if (!isSelected())
 		m_release_action = MouseActionWhenRelease::select;
-	else
+	
+	else if (isSelected() && !m_grip)
+		m_release_action = MouseActionWhenRelease::grip;
+	
+	else if (isSelected() && m_grip)
 		m_release_action = MouseActionWhenRelease::deselect;
 	
 	event->accept();
@@ -373,6 +377,19 @@ void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	case MouseActionWhenRelease::deselect:
 		setSelected(false);
 		break;
+	case MouseActionWhenRelease::grip:
+		if (!m_grip)
+		{
+			for (auto&& item : scene()->selectedItems())
+			{
+				if (item != this)
+					item->setSelected(false);
+			}
+			
+			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+		}
+		break;
+		
 	case MouseActionWhenRelease::none:
 		break;
 	}

@@ -92,7 +92,7 @@ private:
 	
 	std::unique_ptr<SizeGripItem> m_grip;
 	
-	enum class MouseActionWhenRelease {select, deselect, none} ;
+	enum class MouseActionWhenRelease {select, deselect, grip, none} ;
 	MouseActionWhenRelease m_release_action{MouseActionWhenRelease::none};
 		
 	static const qreal m_margin;
