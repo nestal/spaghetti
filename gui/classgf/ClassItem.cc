@@ -344,6 +344,15 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	if (event->button() | Qt::LeftButton)
 	{
 		auto distance = event->pos() - event->lastPos();
+
+		// switch to select mode
+		if (m_grip)
+		{
+			m_grip.reset();
+			auto effect = new QGraphicsDropShadowEffect{this};
+			effect->setBlurRadius(10);
+			setGraphicsEffect(effect);
+		}
 		
 		for (auto&& item : scene()->selectedItems())
 			item->moveBy(distance.x(), distance.y());
@@ -358,13 +367,6 @@ void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		{
 			setGraphicsEffect(nullptr);
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
-			
-			// deselect other items
-			for (auto&& item : scene()->selectedItems())
-			{
-				if (item != this)
-					item->setSelected(false);
-			}
 		}
 		else
 		{
@@ -372,7 +374,6 @@ void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 			auto effect = new QGraphicsDropShadowEffect{this};
 			effect->setBlurRadius(10);
 			setGraphicsEffect(effect);
-			
 		}
 	}
 	QGraphicsItem::mousePressEvent(event);
