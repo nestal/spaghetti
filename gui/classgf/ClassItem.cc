@@ -24,10 +24,12 @@
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QGraphicsDropShadowEffect>
 
 #include <QDebug>
+#include <iostream>
 
 // using https://github.com/cesarbs/sizegripitem to implement resize
 
@@ -195,30 +197,7 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 		OnPositionChanged();
 	
 	else if (change == QGraphicsItem::ItemSelectedChange)
-	{
-		if (!m_grip)
-		{
-			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
-			
-			auto effect = new QGraphicsDropShadowEffect{this};
-			effect->setBlurRadius(10);
-			setGraphicsEffect(effect);
-		}
-		else
-		{
-			m_grip.reset();
-			
-			auto size = m_bounding.size();
-			auto pos  = mapToScene(m_bounding.center());
-			setPos(pos);
-			m_bounding.setCoords(
-				-size.width()/2, -size.height()/2,
-				+size.width()/2, +size.height()/2
-			);
-			
-			setGraphicsEffect(nullptr);
-		}
-	}
+		OnSelectedChange(value.toBool());
 
 	return value;
 }
@@ -232,6 +211,33 @@ void ClassItem::OnPositionChanged()
 	
 	for (auto&& edge : Edges())
 		edge->UpdatePosition();
+}
+
+void ClassItem::OnSelectedChange(bool selected)
+{
+	if (selected)
+	{
+		auto effect = new QGraphicsDropShadowEffect{this};
+		effect->setBlurRadius(10);
+		setGraphicsEffect(effect);
+	}
+	else
+	{
+		m_grip.reset();
+		Normalize();
+		setGraphicsEffect(nullptr);
+	}
+}
+
+void ClassItem::Normalize()
+{
+	auto size = m_bounding.size();
+	auto pos  = mapToScene(m_bounding.center());
+	setPos(pos);
+	m_bounding.setCoords(
+		-size.width()/2, -size.height()/2,
+		+size.width()/2, +size.height()/2
+	);
 }
 
 ItemRelation ClassItem::RelationOf(const BaseItem *other) const
@@ -336,11 +342,81 @@ const QGraphicsItem *ClassItem::GraphicsItem() const
 
 void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-	if (event->button() | Qt::LeftButton)
+	if (event->buttons() & Qt::LeftButton)
 	{
+		// the user clicks on this item, and started dragging it
+		// before releasing it.
+		// if the user just clicks and doesn't drag, we will select
+		// the item when the click is released.
+		// but if the user starts dragging, we need to move the item.
+		// so we select the item now, without waiting for click released.
+		if (m_release_action == MouseActionWhenRelease::select)
+			setSelected(true);
+		
 		auto distance = event->pos() - event->lastPos();
-		moveBy(distance.x(), distance.y());
+
+		// move all selected items
+		for (auto&& item : scene()->selectedItems())
+			item->moveBy(distance.x(), distance.y());
+
+		// the item is now selected anyway, so we don't need to
+		// do anything when click released.
+		m_release_action = MouseActionWhenRelease::none;
 	}
+}
+
+void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	if (event->button() == Qt::LeftButton)
+	{
+		// set the action to be done when the mouse is released base on the state when
+		// the mouse is pressed
+		if (!isSelected())
+			m_release_action = MouseActionWhenRelease::select;
+		
+		else
+			m_release_action = m_grip ? MouseActionWhenRelease::deselect : MouseActionWhenRelease::grip;
+	}
+		
+	// prevent default handling
+	event->accept();
+}
+
+void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	// if action is "select", we want to deselect all other items because selection is exclusive
+	// if action is "deselect", other items are not selected anyway
+	// if action is "grip", we don't want to keep other items being selected
+	if (m_release_action != MouseActionWhenRelease::none)
+	{
+		for (auto&& item : scene()->selectedItems())
+		{
+			if (item != this)
+				item->setSelected(false);
+		}
+	}
+	
+	switch (m_release_action)
+	{
+	case MouseActionWhenRelease::select:
+		setSelected(true);
+		break;
+	case MouseActionWhenRelease::deselect:
+		setSelected(false);
+		break;
+	case MouseActionWhenRelease::grip:
+		if (!m_grip)
+			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+		break;
+		
+	case MouseActionWhenRelease::none:
+		break;
+	}
+	
+	m_release_action = MouseActionWhenRelease::none;
+	
+	// prevent default handling
+	event->accept();
 }
 	
 }} // end of namespace

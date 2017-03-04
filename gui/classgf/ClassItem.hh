@@ -67,6 +67,8 @@ public:
 	void Resize(const QRectF& rect);
 	
 protected:
+	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 	
 signals:
@@ -75,6 +77,8 @@ signals:
 private:
 	void ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font);
 	void OnPositionChanged();
+	void OnSelectedChange(bool selected);
+	void Normalize();
 	
 private:
 	class Resizer;
@@ -88,6 +92,9 @@ private:
 	
 	std::unique_ptr<SizeGripItem> m_grip;
 	
+	enum class MouseActionWhenRelease {select, deselect, grip, none} ;
+	MouseActionWhenRelease m_release_action{MouseActionWhenRelease::none};
+		
 	static const qreal m_margin;
 };
 	
