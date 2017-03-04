@@ -164,7 +164,6 @@ void Document::Open(const QString& file)
 void Document::Save()
 {
 	assert(m_current_file.size() > 0);
-std::cout << "saving to " << m_current_file << std::endl;
 	SaveAs(QString::fromStdString(m_current_file.string()));
 }
 
@@ -253,7 +252,6 @@ void Document::Reload()
 		m_logical_model->Reset(root, map);
 	});
 	m_proxy_model->invalidate();
-	std::cout << "finished resetting" << std::endl;
 }
 
 bool Document::IsChanged() const
@@ -319,9 +317,10 @@ QString Document::Current() const
 void Document::SetCurrentFile(const boost::filesystem::path& abs_path)
 {
 	assert(abs_path.is_absolute() || abs_path.size() == 0);
-	
 	m_current_file = abs_path;
-std::cout << "openning from " << m_current_file << std::endl;
+	
+	// only emit the filename part of our current file
+	// the full path is too long to show in title bar
 	emit OnSetCurrentFile(
 		abs_path.size() > 0 ? QString::fromStdString(m_current_file.filename().string()) : tr("Untitled")
 	);
