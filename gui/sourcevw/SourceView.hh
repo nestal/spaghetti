@@ -35,6 +35,8 @@ public:
 	
 	SourceModel* Model() override;
 	QWidget* Widget() override;
+	
+	void ResetZoom() override ;
 
 private:
 	void Parse(unsigned line, unsigned column);

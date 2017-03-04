@@ -97,9 +97,16 @@
     <addaction name="m_action_project_view"/>
     <addaction name="m_action_logs"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="m_action_reset_zoom"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menu_Project"/>
+   <addaction name="menuView"/>
    <addaction name="menu_Windows"/>
    <addaction name="menu_Help"/>
   </widget>
@@ -307,6 +314,11 @@
    </property>
    <property name="text">
     <string>&amp;Show All Classes</string>
+   </property>
+  </action>
+  <action name="m_action_reset_zoom">
+   <property name="text">
+    <string>Reset zoom</string>
    </property>
   </action>
  </widget>

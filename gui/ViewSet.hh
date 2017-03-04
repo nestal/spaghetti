@@ -69,6 +69,7 @@ public:
 	void CloseTab(int tab);
 	
 	void ViewCode(const std::string& filename, unsigned line, unsigned column);
+	void ResetZoom();
 
 private:
 	void NewClassDiagramView(classgf::ClassModel *model);

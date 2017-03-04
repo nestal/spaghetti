@@ -127,7 +127,7 @@ void ClassView::wheelEvent(QWheelEvent *event)
 {
 	if ( QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
 	{
-		static const auto zoom_factor_base = 1.0015;
+		static const auto zoom_factor_base = 1.0005;
 		m_zoom *= qPow(zoom_factor_base, event->delta());
 		
 		setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
@@ -140,9 +140,12 @@ qreal ClassView::ZoomFactor() const
 	return m_zoom;
 }
 
-void ClassView::ResetZoom(qreal val)
+void ClassView::ResetZoom()
 {
-	m_zoom = val;
+	m_zoom = 1.0;
+	
+	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+	setTransform(QTransform{}.scale(m_zoom, m_zoom));
 }
 	
 }} // end of namespace

@@ -205,5 +205,11 @@ void ViewSet::OnDelete()
 	if (auto view = dynamic_cast<classgf::ClassView*>(currentWidget()))
 		view->DeleteSelectedItem();
 }
+
+void ViewSet::ResetZoom()
+{
+	if (auto view = dynamic_cast<ViewBase*>(currentWidget()))
+		view->ResetZoom();
+}
 	
 } // end of namespace

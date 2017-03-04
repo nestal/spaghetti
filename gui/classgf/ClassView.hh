@@ -48,7 +48,7 @@ public:
 
 	const classgf::Setting& Setting() const;
 	qreal ZoomFactor() const;
-	void ResetZoom(qreal val = 1.0);
+	void ResetZoom() override;
 	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);

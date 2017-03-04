@@ -156,6 +156,7 @@ void MainWnd::ConnectSignals()
 		m_doc->SetShowAllClasses(checked);
 		m_ui->m_action_show_all_classes->setChecked(checked);
 	});
+	connect(m_ui->m_action_reset_zoom, &QAction::triggered, m_ui->m_tab, &ViewSet::ResetZoom);
 	
 	m_ui->m_logical_view->insertAction(nullptr, m_ui->m_action_show_all_classes);
 }
