@@ -83,25 +83,24 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto& setting = view ? view->Setting() : Setting{};
 	
 	// use bold font for name
-	auto name_font = painter->font();
-	auto field_font = name_font;
-	name_font.setBold(true);
-	QFontMetrics name_font_met{name_font}, field_font_met{painter->font()};
-	ComputeSize(content, name_font_met, field_font_met);
+	QFontMetrics name_font_met{setting.class_name_font}, member_font_met{setting.class_member_font};
+	ComputeSize(content, name_font_met, member_font_met);
 	
 	// adjust vertical margin
-	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * field_font_met.height();
+	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * member_font_met.height();
 	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
 
-	// TODO: make it configurable
 	painter->setPen(setting.line_color);
-	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
+	
+//	QLinearGradient g{{0,0}, {0,20}};
+//	g.setColorAt(0, Qt::)
+	painter->setBrush(setting.class_box_color);
 	
 	// bounding rectangle
 	painter->drawRect(m_bounding);
 	
 	QRectF name_rect;
-	painter->setFont(name_font);
+	painter->setFont(setting.class_name_font);
 	painter->setPen(Qt::GlobalColor::black);
 	painter->drawText(
 		QRectF{content.topLeft(), QPointF{content.right(), content.top()+name_font_met.height()}},
@@ -119,10 +118,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	QRectF text_rect{
 		QPointF{content.left(),  name_rect.bottom() + vspace_between_fields},
-		QPointF{content.right(), name_rect.bottom() + vspace_between_fields + field_font_met.height()}
+		QPointF{content.right(), name_rect.bottom() + vspace_between_fields + member_font_met.height()}
 	};
 	
-	painter->setFont(field_font);
+	painter->setFont(setting.class_member_font);
 	painter->setPen(Qt::GlobalColor::black);
 	
 	// functions
@@ -133,13 +132,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		
 		painter->drawText(
 			text_rect,
-			field_font_met.elidedText(
+			member_font_met.elidedText(
 				QString::fromStdString(func.UML()),
 				Qt::ElideRight,
 				content.width()
 			)
 		);
-		text_rect.adjust(0, field_font_met.height() + vspace_between_fields, 0, field_font_met.height() + vspace_between_fields);
+		text_rect.adjust(0, member_font_met.height() + vspace_between_fields, 0, member_font_met.height() + vspace_between_fields);
 	}
 
 	// line between class name and function
@@ -157,13 +156,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		if (++index > m_show_field) break;
 		painter->drawText(
 			text_rect,
-			field_font_met.elidedText(
+			member_font_met.elidedText(
 				QString::fromStdString(field.UML()),
 				Qt::ElideRight,
 				content.width()
 			)
 		);
-		text_rect.adjust(0, field_font_met.height() + vspace_between_fields, 0, field_font_met.height() + vspace_between_fields);
+		text_rect.adjust(0, member_font_met.height() + vspace_between_fields, 0, member_font_met.height() + vspace_between_fields);
 	}
 }
 
