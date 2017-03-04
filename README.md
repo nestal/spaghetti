@@ -6,17 +6,23 @@ to parse the source code, and use [Qt](http://doc.qt.io/qt-5/index.html) to
 render it.
 
 ![snapshot-1](./doc/snapshot1.png)
-Screenshot of Spaghetti pre-v0.2 (2 Mar 2017), viewing [spaghetti.json](./doc/spaghetti.json)
+Screenshot of Spaghetti v0.2 (4 Mar 2017), viewing [spaghetti.json](./doc/spaghetti.json)
 
 ## Features
 
 * Draw UML class diagram easily by dragging classes from logical view
 * Detecting class hierarchies and aggregation from source code
 * Navigating to source view when double-clicking the classes in logical view
+* Zooming by ctrl-mouse wheel in class diagram
+* Show only used classes in logical view
 
-# Installation and Building
+## Installation and Building
 
 See [Building Spaghetti](doc/building.md) for details.
+
+## Version History and Download
+
+See [Change Log](CHANGELOG.md) for a detailed list.
 
 ## License
 
