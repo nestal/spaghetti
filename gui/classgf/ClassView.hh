@@ -17,7 +17,7 @@
 #include "Viewport.hh"
 
 #include "ClassModel.hh"
-#include "Setting.hh"
+#include "ItemRenderingOptions.hh"
 
 namespace gui {
 namespace classgf {
@@ -47,7 +47,7 @@ public:
 	void SetClassNameFont(QFont f) ;
 	void SetClassMemberFont(QFont f) ;
 
-	const classgf::Setting& Setting() const override;
+	const classgf::ItemRenderingOptions& Setting() const override;
 	qreal ZoomFactor() const override;
 	void ResetZoom() override;
 	
@@ -61,14 +61,27 @@ protected:
 		
 	void wheelEvent(QWheelEvent *event) override;
 	
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	
+	void keyPressEvent(QKeyEvent *event) override;
+	void keyReleaseEvent(QKeyEvent *event) override;
+	
+private:
+	void Pan(QPointF delta);
+	
 private:
 	ClassModel *m_model{};
 	
 	// rendering options
-	classgf::Setting m_setting;
+	classgf::ItemRenderingOptions m_setting;
 	
 	// zoom parameters
 	qreal m_zoom{1.0};
+	
+	// previous mouse position
+	QPoint m_last_pos;
 };
 	
 }} // end of namespace

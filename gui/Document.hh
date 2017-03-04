@@ -17,8 +17,11 @@
 
 #include "ModelViewFwd.hh"
 
+#include "codebase/CodeBase.hh"
+
+#include <boost/filesystem/path.hpp>
+
 #include <memory>
-#include <codebase/CodeBase.hh>
 
 class QAbstractItemModel;
 class QGraphicsScene;
@@ -57,6 +60,7 @@ public:
 
 	void New();
 	void Open(const QString& file);
+	void Save();
 	void SaveAs(const QString& file);
 	
 	void AddSource(const QString& file);
@@ -66,7 +70,7 @@ public:
 	void SetProjectDir(const QString& dir);
 	
 	QString CompileDiagnotics() const;
-	const QString& Current() const;
+	QString Current() const;
 	
 	// docking windows
 	QAbstractItemModel* ClassModel();
@@ -96,19 +100,21 @@ signals:
 	
 private:
 	void Reset(std::unique_ptr<project::Project>&& proj);
-	void SetCurrentFile(const QString& file);
+	void SetCurrentFile(const boost::filesystem::path& abs_path);
 	
 private:
 	class ModelFactory;
 	class ProjectModel_;
 	
-	QString                                     m_current_file;
+	boost::filesystem::path                     m_current_file;
 	std::unique_ptr<project::Project>           m_project;
 	
 	// for the docking windows
 	std::unique_ptr<ProjectModel_>              m_project_model;
 	std::unique_ptr<logicalvw::LogicalModel>    m_logical_model;
 	std::unique_ptr<logicalvw::ProxyModel>      m_proxy_model;
+	
+	bool m_changed{false};
 };
 
 } // end of namespace

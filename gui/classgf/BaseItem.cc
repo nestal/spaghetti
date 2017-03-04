@@ -15,7 +15,7 @@
 #include <QWidget>
 #include "Edge.hh"
 #include "Viewport.hh"
-#include "Setting.hh"
+#include "ItemRenderingOptions.hh"
 
 namespace gui {
 namespace classgf {
@@ -47,17 +47,18 @@ void BaseItem::ClearEdges()
 
 const Viewport& BaseItem::CurrentViewport(QWidget *viewport)
 {
-	static class MockViewport : public Viewport
+	class MockViewport : public Viewport
 	{
 	public:
-		const classgf::Setting& Setting() const override {return m_setting;}
+		const ItemRenderingOptions& Setting() const override {return m_setting;}
 		qreal ZoomFactor() const override {return 1.0;}
 	
 	private:
-		classgf::Setting m_setting;
-	} mock;
+		ItemRenderingOptions m_setting;
+	};
+	static const MockViewport mock;
 	
-	auto view = (viewport && viewport->parentWidget()) ? dynamic_cast<Viewport*>(viewport->parentWidget()) : nullptr;
+	const auto *view = (viewport && viewport->parentWidget()) ? dynamic_cast<Viewport*>(viewport->parentWidget()) : nullptr;
 	return view ? *view : mock;
 }
 	

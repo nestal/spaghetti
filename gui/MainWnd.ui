@@ -60,6 +60,7 @@
     </property>
     <addaction name="m_action_new"/>
     <addaction name="m_action_open"/>
+    <addaction name="m_action_save"/>
     <addaction name="m_action_save_as"/>
     <addaction name="separator"/>
     <addaction name="m_action_exit"/>
@@ -96,6 +97,8 @@
     <addaction name="m_action_logical_view"/>
     <addaction name="m_action_project_view"/>
     <addaction name="m_action_logs"/>
+    <addaction name="separator"/>
+    <addaction name="m_action_preference"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -226,6 +229,9 @@
    <property name="text">
     <string>&amp;Open...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="m_action_about_Qt">
    <property name="text">
@@ -318,7 +324,20 @@
   </action>
   <action name="m_action_reset_zoom">
    <property name="text">
-    <string>Reset zoom</string>
+    <string>&amp;Reset zoom</string>
+   </property>
+  </action>
+  <action name="m_action_preference">
+   <property name="text">
+    <string>Preference...</string>
+   </property>
+  </action>
+  <action name="m_action_save">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

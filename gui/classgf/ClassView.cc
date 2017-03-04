@@ -118,25 +118,25 @@ void ClassView::SetClassMemberFont(QFont f)
 	m_setting.class_member_font = f;
 }
 
-const classgf::Setting& ClassView::Setting() const
+const classgf::ItemRenderingOptions& ClassView::Setting() const
 {
 	return m_setting;
 }
 
 void ClassView::wheelEvent(QWheelEvent *event)
 {
-	if ( QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
 	{
 		static const auto zoom_factor_base = 1.0005;
 		m_zoom *= qPow(zoom_factor_base, event->delta());
 		
 		setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 		setTransform(QTransform{}.scale(m_zoom, m_zoom));
-		
+				
 		event->accept();
 	}
-	else
-		QGraphicsView::wheelEvent(event);
+
+	QGraphicsView::wheelEvent(event);
 }
 
 qreal ClassView::ZoomFactor() const
@@ -151,5 +151,69 @@ void ClassView::ResetZoom()
 	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 	setTransform(QTransform{}.scale(m_zoom, m_zoom));
 }
+
+void ClassView::mouseMoveEvent(QMouseEvent *event)
+{
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier && event->buttons() & Qt::LeftButton)
+	{
+		Pan(mapToScene(event->pos()) - mapToScene(m_last_pos));
+		event->accept();
+	}
+	else
+		QGraphicsView::mouseMoveEvent(event);
 	
+	m_last_pos = event->pos();
+}
+
+void ClassView::mousePressEvent(QMouseEvent *event)
+{
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier && event->button() == Qt::LeftButton)
+	{
+		setCursor(Qt::CursorShape::ClosedHandCursor);
+		m_last_pos = event->pos();
+		event->accept();
+	}
+	else
+		QGraphicsView::mousePressEvent(event);
+}
+
+void ClassView::mouseReleaseEvent(QMouseEvent *event)
+{
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier && event->button() == Qt::LeftButton)
+		setCursor(Qt::CursorShape::OpenHandCursor);
+
+	QGraphicsView::mouseReleaseEvent(event);
+}
+
+void ClassView::Pan(QPointF delta)
+{
+	delta *= m_zoom;
+	
+	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+	QPoint new_center{
+		static_cast<int>(viewport()->rect().width() / 2 - delta.x()),
+		static_cast<int>(viewport()->rect().height() / 2 - delta.y())
+	};
+	centerOn(mapToScene(new_center));
+	
+	// For zooming to anchor from the view center.
+	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+}
+
+void ClassView::keyPressEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Control)
+		setCursor(Qt::CursorShape::OpenHandCursor);
+	
+	QGraphicsView::keyPressEvent(event);
+}
+
+void ClassView::keyReleaseEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Control)
+		setCursor(Qt::CursorShape::ArrowCursor);
+	
+	QGraphicsView::keyReleaseEvent(event);
+}
+
 }} // end of namespace

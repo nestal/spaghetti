@@ -13,6 +13,7 @@
 #include "MainWnd.hh"
 #include "Document.hh"
 #include "ProjectSetting.hh"
+#include "PreferenceBox.hh"
 
 #include "ui_MainWnd.h"
 #include "ui_AboutBox.h"
@@ -24,6 +25,7 @@
 #include <QtWidgets/QInputDialog>
 
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 
@@ -72,7 +74,7 @@ MainWnd::MainWnd() :
 	// other initializations
 	m_doc->NewClassDiagram("Class Diagram");
 	tabifyDockWidget(m_ui->m_project_dock, m_ui->m_logical_dock);
-	setWindowTitle("Spaghetti : " + m_doc->Current());
+	setWindowTitle("Spaghetti : " + tr("Untitled"));
 	
 	ConnectSignals();
 }
@@ -86,21 +88,21 @@ void MainWnd::ConnectSignals()
 		AboutDialog dlg{this};
 		dlg.exec();
 	});
-	connect(m_ui->m_action_new,      &QAction::triggered, m_doc.get(), [this]
+	connect(m_ui->m_action_new,      &QAction::triggered, [this]
 	{
 		if (ConfirmDiscard())
 			m_doc->New();
 	});
-	connect(m_ui->m_action_open,       &QAction::triggered, this, &MainWnd::OnOpen);
-	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
+	connect(m_ui->m_action_open,       &QAction::triggered, this,  &MainWnd::OnOpen);
+	connect(m_ui->m_action_save,       &QAction::triggered, [this]
 	{
 		assert(m_doc);
-		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"), {}, file_dlg_filter);
-		
-		// string will be null if user press cancel
-		if (!file.isNull())
-			m_doc->SaveAs(file);
+		if (m_doc->Current().isEmpty())
+			OnSaveAs();
+		else
+			m_doc->Save();
 	});
+	connect(m_ui->m_action_save_as,    &QAction::triggered, this,        &MainWnd::OnSaveAs);
 	connect(m_ui->m_action_delete,     &QAction::triggered, m_ui->m_tab, &ViewSet::OnDelete );
 	connect(m_ui->m_action_about_Qt,   &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
@@ -120,6 +122,11 @@ void MainWnd::ConnectSignals()
 		dlg.exec();
 	});
 	connect(m_ui->m_action_reload_all, &QAction::triggered, m_doc.get(), &Document::Reload);
+	connect(m_ui->m_action_preference, &QAction::triggered, [this]
+	{
+		PreferenceBox dlg{this};
+		dlg.exec();
+	});
 	
 	// open source code when the user double click the item
 	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
@@ -131,7 +138,7 @@ void MainWnd::ConnectSignals()
 	connect(m_doc.get(), &Document::OnCompileDiagnotics, this, &MainWnd::Log);
 	connect(m_doc.get(), &Document::OnSetCurrentFile, [this](auto& file)
 	{
-		this->setWindowTitle("Spaghetti : " + file);}
+		this->setWindowTitle("Spaghetti : " + (file.isEmpty() ? tr("Untitled") : file));}
 	);
 	connect(m_ui->m_logical_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_logical_view->setChecked(val);});
 	connect(m_ui->m_project_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_project_view->setChecked(val);});
@@ -190,6 +197,16 @@ void MainWnd::Open(const QString& file)
 	}
 }
 
+void MainWnd::OnSaveAs()
+{
+	assert(m_doc);
+	auto file = QFileDialog::getSaveFileName(this, tr("Save Project"), {}, file_dlg_filter);
+	
+	// string will be null if user press cancel
+	if (!file.isNull())
+		m_doc->SaveAs(file);
+}
+
 void MainWnd::OnDoubleClickItem(const QModelIndex& idx)
 {
 	auto loc = m_doc->LocateEntity(idx);
@@ -223,5 +240,5 @@ void MainWnd::Log(const QString& message)
 {
 	m_ui->m_log_widget->appendPlainText(message);
 }
-	
+
 } // end of namespace

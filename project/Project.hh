@@ -53,11 +53,16 @@ public:
 	}
 	
 	template <typename InputIt>
-	void SetCompileOptions(InputIt first, InputIt last)
+	bool SetCompileOptions(InputIt first, InputIt last)
 	{
-		m_compile_options.assign(first, last);
+		std::vector<std::string> opt{first, last};
+		if (opt != m_compile_options)
+		{
+			m_compile_options = std::move(opt);
+			return true;
+		}
+		return false;
 	}
-	void SetCompileOptions(std::initializer_list<std::string> opts);
 	const std::vector<std::string>& CompileOptions() const;
 	
 	codebase::CodeBase& CodeBase();

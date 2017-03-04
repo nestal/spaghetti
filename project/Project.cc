@@ -26,11 +26,6 @@ namespace project {
 
 namespace fs = boost::filesystem;
 
-void Project::SetCompileOptions(std::initializer_list<std::string> opts)
-{
-	m_compile_options = std::move(opts);
-}
-
 codebase::CodeBase& Project::CodeBase()
 {
 	return m_code_base;
@@ -79,9 +74,13 @@ void Project::Save(const std::string& filename) const
 	
 	QJsonDocument json{root};
 	
+std::cout << "project saving to " << filename << std::endl;
+	
 	QFile out{QString::fromStdString(filename)};
 	if (out.open(QIODevice::WriteOnly))
 		out.write(json.toJson());
+	else
+		throw std::runtime_error("can't open " + filename);
 }
 
 void Project::Open(const std::string& filename, ModelFactory& factory)

@@ -12,19 +12,24 @@
 
 #pragma once
 
-#include <QtGui/QColor>
-#include <QtGui/QFont>
+#include <QtWidgets/QDialog>
+
+#include <memory>
+
+namespace Ui {
+class PreferenceBox;
+}
 
 namespace gui {
-namespace classgf {
 
-struct Setting
+class PreferenceBox : public QDialog
 {
-	QColor line_color{Qt::GlobalColor::magenta};
-	QColor class_box_color{Qt::GlobalColor::yellow};
-	QColor class_box_color2{Qt::GlobalColor::white};
-	QFont  class_name_font;
-	QFont  class_member_font;
+public:
+	PreferenceBox(QWidget *parent);
+	~PreferenceBox();
+	
+private:
+	std::unique_ptr<Ui::PreferenceBox> m_ui;
 };
 	
-}} // end of namespace
+} // end of namespace
