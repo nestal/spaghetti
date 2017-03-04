@@ -85,7 +85,7 @@ public:
 	void SetShowAllClasses(bool value);
 	
 signals:
-	void OnCreateClassDiagramView(gui::ClassModel *model);
+	void OnCreateClassDiagramView(classgf::ClassModel *model);
 	void OnCreateSourceView(SourceModel *model);
 	void OnDestroyModel(project::ModelBase *model);
 	void OnCompileDiagnotics(const QString& line);

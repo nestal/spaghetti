@@ -14,7 +14,7 @@
 
 // gui namespace headers
 #include "common/RaiiCursor.hh"
-#include "class_diagram/ClassModel.hh"
+#include "classgf/ClassModel.hh"
 #include "logical_view/LogicalModel.hh"
 #include "logical_view/ProxyModel.hh"
 #include "source_view/SourceModel.hh"
@@ -111,7 +111,7 @@ void Document::AddSource(const QString& file)
 
 void Document::NewClassDiagram(const QString& name)
 {
-	auto m = std::make_unique<gui::ClassModel>(&m_project->CodeBase().Map(), name, this);
+	auto m = std::make_unique<classgf::ClassModel>(&m_project->CodeBase().Map(), name, this);
 	emit OnCreateClassDiagramView(m.get());
 	m_project->Add(std::move(m));
 }
@@ -171,7 +171,7 @@ project::Model Document::ModelFactory::Create(project::ModelType type, const std
 	{
 	case project::ModelType::class_diagram:
 	{
-		auto m = std::make_unique<gui::ClassModel>(&owner.CodeBase().Map(), QString::fromStdString(name), m_parent);
+		auto m = std::make_unique<classgf::ClassModel>(&owner.CodeBase().Map(), QString::fromStdString(name), m_parent);
 		emit m_parent->OnCreateClassDiagramView(m.get());
 		result = std::move(m);
 		break;

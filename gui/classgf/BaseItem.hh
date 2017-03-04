@@ -25,6 +25,7 @@ class EntityMap;
 }
 
 namespace gui {
+namespace classgf {
 
 class Edge;
 
@@ -33,15 +34,15 @@ class BaseItem
 public:
 	virtual ~BaseItem() = default;
 	
-	virtual QGraphicsItem* GraphicsItem() = 0 ;
-	virtual const QGraphicsItem* GraphicsItem() const = 0 ;
+	virtual QGraphicsItem *GraphicsItem() = 0;
+	virtual const QGraphicsItem *GraphicsItem() const = 0;
 	
-	virtual gui::ItemType ItemType() const = 0;
+	virtual classgf::ItemType ItemType() const = 0;
 	virtual ItemRelation RelationOf(const BaseItem *other) const = 0;
 	virtual bool IsChanged() const = 0;
 	virtual void Update(const codebase::EntityMap *code_base) = 0;
-
-	using edge_iterator = std::vector<Edge*>::const_iterator;
+	
+	using edge_iterator = std::vector<Edge *>::const_iterator;
 	
 	// edge operations
 	void AddEdge(Edge *edge);
@@ -49,19 +50,21 @@ public:
 	boost::iterator_range<edge_iterator> Edges() const;
 	void ClearEdges();
 	
-	template <typename Func>
+	template<typename Func>
 	void RemoveEdgeWith(const BaseItem *other, Func func)
 	{
-		auto mid = std::partition(m_edges.begin(), m_edges.end(), [other, this](auto edge)
-		{
-			return edge->Other(this) != other;
-		});
+		auto mid = std::partition(
+			m_edges.begin(), m_edges.end(), [other, this](auto edge)
+			{
+				return edge->Other(this) != other;
+			}
+		);
 		std::for_each(mid, m_edges.end(), func);
 		m_edges.erase(mid, m_edges.end());
 	}
 
 private:
-	std::vector<Edge*> m_edges;
+	std::vector<Edge *> m_edges;
 };
-
-} // end of namespace
+	
+}} // end of namespace

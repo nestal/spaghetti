@@ -16,13 +16,14 @@
 #include <QDragEnterEvent>
 #include <QMimeData>
 
-#include <sstream>
-#include <iostream>
 #include <QtWidgets/QAbstractItemView>
 
+#include <sstream>
+#include <iostream>
 #include <QDebug>
 
 namespace gui {
+namespace classgf {
 
 ClassView::ClassView(ClassModel *model, QWidget *parent) :
 	QGraphicsView{model->Scene(), parent},
@@ -81,4 +82,4 @@ void ClassView::SetLineColor(QColor c)
 	m_line_color = c;
 }
 	
-} // end of namespace
+}} // end of namespace

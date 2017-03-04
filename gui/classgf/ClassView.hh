@@ -18,18 +18,24 @@
 #include "ClassModel.hh"
 
 namespace gui {
+namespace classgf {
 
-class ClassView: public QGraphicsView, public ViewBase
+class ClassView : public QGraphicsView, public ViewBase
 {
 	Q_OBJECT
-	
-	Q_PROPERTY(QColor lineColor READ GetLineColor WRITE SetLineColor DESIGNABLE true)
+	Q_PROPERTY(QColor lineColor
+		READ
+		GetLineColor
+		WRITE
+		SetLineColor
+		DESIGNABLE
+		true)
 
 public:
 	ClassView(ClassModel *model, QWidget *parent);
-
-	ClassModel* Model() override;
-	QWidget* Widget() override;
+	
+	ClassModel *Model() override;
+	QWidget *Widget() override;
 	
 	void DeleteSelectedItem();
 	
@@ -43,12 +49,12 @@ protected:
 	void dragEnterEvent(QDragEnterEvent *event) override;
 	void dragMoveEvent(QDragMoveEvent *event) override;
 	void dropEvent(QDropEvent *event) override;
-	
+
 private:
-	ClassModel   *m_model{};
+	ClassModel *m_model{};
 	
 	// rendering options
-	QColor        m_line_color{Qt::GlobalColor::magenta};
+	QColor m_line_color{Qt::GlobalColor::magenta};
 };
 	
-} // end of namespace
+}} // end of namespace

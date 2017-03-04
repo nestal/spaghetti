@@ -25,6 +25,7 @@
 #include <cassert>
 
 namespace gui {
+namespace classgf {
 
 const qreal default_item_width{225.0}, default_item_height{175.0};
 
@@ -236,4 +237,4 @@ void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
 	});
 }
 
-} // end of namespace
+}} // end of namespace

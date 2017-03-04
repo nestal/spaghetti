@@ -31,6 +31,7 @@ class EntityMap;
 }
 
 namespace gui {
+namespace classgf {
 
 class Edge;
 
@@ -58,7 +59,7 @@ public:
 	QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
 	
 	ItemRelation RelationOf(const BaseItem *other) const override;
-	gui::ItemType ItemType() const override;
+	classgf::ItemType ItemType() const override;
 	void Update(const codebase::EntityMap *map);
 	
 	bool IsChanged() const override;
@@ -91,4 +92,4 @@ private:
 	static const qreal m_margin;
 };
 	
-} // end of namespace
+}} // end of namespace

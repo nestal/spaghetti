@@ -30,6 +30,7 @@
 // using https://github.com/cesarbs/sizegripitem to implement resize
 
 namespace gui {
+namespace classgf {
 
 const qreal ClassItem::m_margin{10.0};
 
@@ -247,7 +248,7 @@ ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 	}
 }
 
-gui::ItemType ClassItem::ItemType() const
+classgf::ItemType ClassItem::ItemType() const
 {
 	return ItemType::class_item;
 }
@@ -326,4 +327,4 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	}
 }
 	
-} // end of namespace
+}} // end of namespace
