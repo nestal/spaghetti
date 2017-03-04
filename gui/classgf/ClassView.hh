@@ -47,6 +47,7 @@ public:
 	void SetClassMemberFont(QFont f) ;
 
 	const classgf::Setting& Setting() const;
+	qreal ZoomFactor() const;
 	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);
@@ -55,12 +56,17 @@ protected:
 	void dragEnterEvent(QDragEnterEvent *event) override;
 	void dragMoveEvent(QDragMoveEvent *event) override;
 	void dropEvent(QDropEvent *event) override;
-
+		
+	void wheelEvent(QWheelEvent *event) override;
+	
 private:
 	ClassModel *m_model{};
 	
 	// rendering options
 	classgf::Setting m_setting;
+	
+	// zoom parameters
+	qreal m_zoom{1.0};
 };
 	
 }} // end of namespace

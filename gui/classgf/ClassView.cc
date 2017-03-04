@@ -13,15 +13,15 @@
 #include "ClassView.hh"
 #include "gui/common/MimeType.hh"
 
-#include <QDragEnterEvent>
-#include <QMimeData>
-
+#include <QtGui/QtGui>
+#include <QtGui/QDragEnterEvent>
+#include <QtCore/QMimeData>
+#include <QtGui/QGuiApplication>
 #include <QtWidgets/QAbstractItemView>
-//#include <QOpenGLWidget>
+
+#include <QDebug>
 
 #include <sstream>
-#include <iostream>
-#include <QDebug>
 
 namespace gui {
 namespace classgf {
@@ -122,5 +122,17 @@ const classgf::Setting& ClassView::Setting() const
 {
 	return m_setting;
 }
-	
+
+void ClassView::wheelEvent(QWheelEvent *event)
+{
+	if ( QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
+	{
+		static const auto zoom_factor_base = 1.0015;
+		m_zoom *= qPow(zoom_factor_base, event->delta());
+		
+		setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+		setTransform(QTransform{}.scale(m_zoom, m_zoom));
+	}
+}
+
 }} // end of namespace
