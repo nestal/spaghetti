@@ -345,25 +345,26 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	{
 		auto distance = event->pos() - event->lastPos();
 
+		// move all selected items
 		for (auto&& item : scene()->selectedItems())
 			item->moveBy(distance.x(), distance.y());
-		
+
+		// don't change item mode if the user drags the item
 		m_release_action = MouseActionWhenRelease::none;
 	}
 }
 
 void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	// avoid being selected
+	// set the action to be done when the mouse is released base on the state when
+	// the mouse is pressed
 	if (!isSelected())
 		m_release_action = MouseActionWhenRelease::select;
 	
-	else if (isSelected() && !m_grip)
-		m_release_action = MouseActionWhenRelease::grip;
+	else
+		m_release_action = m_grip ? MouseActionWhenRelease::deselect : MouseActionWhenRelease::grip;
 	
-	else if (isSelected() && m_grip)
-		m_release_action = MouseActionWhenRelease::deselect;
-	
+	// prevent default handling
 	event->accept();
 }
 
@@ -380,6 +381,7 @@ void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	case MouseActionWhenRelease::grip:
 		if (!m_grip)
 		{
+			// when switch to grip mode, deselect all other items
 			for (auto&& item : scene()->selectedItems())
 			{
 				if (item != this)
@@ -393,6 +395,8 @@ void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	case MouseActionWhenRelease::none:
 		break;
 	}
+	
+	// prevent default handling
 	event->accept();
 }
 	
