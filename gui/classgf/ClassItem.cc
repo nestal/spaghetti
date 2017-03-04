@@ -195,30 +195,7 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 		OnPositionChanged();
 	
 	else if (change == QGraphicsItem::ItemSelectedChange)
-	{
-		if (!m_grip)
-		{
-			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
-			
-			auto effect = new QGraphicsDropShadowEffect{this};
-			effect->setBlurRadius(10);
-			setGraphicsEffect(effect);
-		}
-		else
-		{
-			m_grip.reset();
-			
-			auto size = m_bounding.size();
-			auto pos  = mapToScene(m_bounding.center());
-			setPos(pos);
-			m_bounding.setCoords(
-				-size.width()/2, -size.height()/2,
-				+size.width()/2, +size.height()/2
-			);
-			
-			setGraphicsEffect(nullptr);
-		}
-	}
+		OnSelectedChange(value.toBool());
 
 	return value;
 }
@@ -232,6 +209,33 @@ void ClassItem::OnPositionChanged()
 	
 	for (auto&& edge : Edges())
 		edge->UpdatePosition();
+}
+
+void ClassItem::OnSelectedChange(bool selected)
+{
+	if (selected)
+	{
+		auto effect = new QGraphicsDropShadowEffect{this};
+		effect->setBlurRadius(10);
+		setGraphicsEffect(effect);
+	}
+	else
+	{
+		m_grip.reset();
+		Normalize();
+		setGraphicsEffect(nullptr);
+	}
+}
+
+void ClassItem::Normalize()
+{
+	auto size = m_bounding.size();
+	auto pos  = mapToScene(m_bounding.center());
+	setPos(pos);
+	m_bounding.setCoords(
+		-size.width()/2, -size.height()/2,
+		+size.width()/2, +size.height()/2
+	);
 }
 
 ItemRelation ClassItem::RelationOf(const BaseItem *other) const
@@ -341,6 +345,17 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		auto distance = event->pos() - event->lastPos();
 		moveBy(distance.x(), distance.y());
 	}
+}
+
+void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	if (isSelected() && !m_grip)
+	{
+		setGraphicsEffect(nullptr);
+		m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+	}
+	
+	QGraphicsItem::mousePressEvent(event);
 }
 	
 }} // end of namespace

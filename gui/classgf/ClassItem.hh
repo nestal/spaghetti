@@ -67,6 +67,7 @@ public:
 	void Resize(const QRectF& rect);
 	
 protected:
+	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 	
 signals:
@@ -75,6 +76,8 @@ signals:
 private:
 	void ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font);
 	void OnPositionChanged();
+	void OnSelectedChange(bool selected);
+	void Normalize();
 	
 private:
 	class Resizer;
