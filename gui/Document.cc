@@ -15,9 +15,9 @@
 // gui namespace headers
 #include "common/RaiiCursor.hh"
 #include "classgf/ClassModel.hh"
-#include "logical_view/LogicalModel.hh"
-#include "logical_view/ProxyModel.hh"
-#include "source_view/SourceModel.hh"
+#include "logicalvw/LogicalModel.hh"
+#include "logicalvw/ProxyModel.hh"
+#include "sourcevw/SourceModel.hh"
 
 #include "project/Project.hh"
 
@@ -31,6 +31,10 @@
 #include <iostream>
 
 namespace gui {
+
+using namespace logicalvw;
+using namespace sourcevw;
+using namespace classgf;
 
 namespace fs = boost::filesystem;
 
@@ -118,7 +122,7 @@ void Document::NewClassDiagram(const QString& name)
 
 void Document::NewSourceView(const QString& name, unsigned line, unsigned column)
 {
-	auto m = std::make_unique<gui::SourceModel>(name, this);
+	auto m = std::make_unique<sourcevw::SourceModel>(name, this);
 	emit OnCreateSourceView(m.get());
 	
 	m->SetLocation(name, line, column);

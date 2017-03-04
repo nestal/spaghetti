@@ -20,6 +20,7 @@
 #include <atomic>
 
 namespace gui {
+namespace sourcevw {
 
 class SourceView : public QPlainTextEdit, public ViewBase
 {
@@ -47,4 +48,4 @@ private:
 	QTextCursor m_highlight;
 };
 
-} // end of namespace
+}} // end of namespace

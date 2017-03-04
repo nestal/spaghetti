@@ -14,8 +14,6 @@
 
 #include <QtWidgets/QMainWindow>
 
-#include "ModelViewFwd.hh"
-
 #include <memory>
 
 namespace Ui {

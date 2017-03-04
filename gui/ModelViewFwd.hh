@@ -22,7 +22,11 @@ class ClassView;
 
 }
 
+namespace sourcevw {
+
 class SourceView;
 class SourceModel;
+
+}
 
 } // end of namespace

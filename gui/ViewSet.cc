@@ -13,7 +13,7 @@
 #include "ViewSet.hh"
 
 #include "Document.hh"
-#include "source_view/SourceView.hh"
+#include "sourcevw/SourceView.hh"
 #include "classgf/ClassView.hh"
 
 #include <QInputDialog>
@@ -123,9 +123,9 @@ void ViewSet::NewClassDiagramView(classgf::ClassModel *model)
 	setCurrentIndex(tab);
 }
 
-void ViewSet::NewSourceView(SourceModel *model)
+void ViewSet::NewSourceView(sourcevw::SourceModel *model)
 {
-	auto view = new SourceView{model, this};
+	auto view = new sourcevw::SourceView{model, this};
 	addTab(view, QString::fromStdString(model->Name()));
 	setCurrentWidget(view);
 	
@@ -187,7 +187,7 @@ void ViewSet::ViewCode(const std::string& filename, unsigned line, unsigned colu
 	// search for existing tab showing the file
 	for (int i = 0 ; i < count() ; ++i)
 	{
-		auto view = dynamic_cast<SourceView*>(widget(i));
+		auto view = dynamic_cast<sourcevw::SourceView*>(widget(i));
 		if (view && view->Filename() == filename)
 		{
 			view->GoTo(line, column);

@@ -17,8 +17,7 @@
 #include "ui_MainWnd.h"
 #include "ui_AboutBox.h"
 
-#include "gui/source_view/SourceModel.hh"
-#include "libclx/Index.hh"
+#include "libclx/SourceRange.hh"
 
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>

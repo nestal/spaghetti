@@ -14,6 +14,7 @@
 #include <QtCore/QJsonObject>
 
 namespace gui {
+namespace sourcevw {
 
 SourceModel::SourceModel(const QString& fname, QObject *parent) :
 	QObject{parent},
@@ -88,4 +89,4 @@ void SourceModel::UpdateCodeBase(const codebase::EntityMap*)
 {
 }
 	
-} // end of namespace
+}} // end of namespace
