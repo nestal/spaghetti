@@ -22,6 +22,7 @@ struct Setting
 {
 	QColor line_color{Qt::GlobalColor::magenta};
 	QColor class_box_color{Qt::GlobalColor::yellow};
+	QColor class_box_color2{Qt::GlobalColor::white};
 	QFont  class_name_font;
 	QFont  class_member_font;
 };

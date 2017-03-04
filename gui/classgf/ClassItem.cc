@@ -92,9 +92,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
 	painter->setPen(setting.line_color);
 	
-//	QLinearGradient g{{0,0}, {0,20}};
-//	g.setColorAt(0, Qt::)
-	painter->setBrush(setting.class_box_color);
+	QLinearGradient g{m_bounding.topLeft(), m_bounding.bottomRight()};
+	g.setColorAt(0, setting.class_box_color);
+	g.setColorAt(1, setting.class_box_color2);
+	painter->setBrush(g);
 	
 	// bounding rectangle
 	painter->drawRect(m_bounding);
