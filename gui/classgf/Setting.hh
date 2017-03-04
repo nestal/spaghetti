@@ -12,11 +12,18 @@
 
 #pragma once
 
+#include <QtGui/QColor>
+#include <QtGui/QFont>
+
 namespace gui {
 namespace classgf {
 
-class Setting
+struct Setting
 {
+	QColor line_color{Qt::GlobalColor::magenta};
+	QColor class_box_color{Qt::GlobalColor::yellow};
+	QFont  class_name_font;
+	QFont  class_member_font;
 };
 	
 }} // end of namespace

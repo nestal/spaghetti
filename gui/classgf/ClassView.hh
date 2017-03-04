@@ -16,6 +16,7 @@
 #include "gui/common/ViewBase.hh"
 
 #include "ClassModel.hh"
+#include "Setting.hh"
 
 namespace gui {
 namespace classgf {
@@ -23,13 +24,10 @@ namespace classgf {
 class ClassView : public QGraphicsView, public ViewBase
 {
 	Q_OBJECT
-	Q_PROPERTY(QColor lineColor
-		READ
-		GetLineColor
-		WRITE
-		SetLineColor
-		DESIGNABLE
-		true)
+	Q_PROPERTY(QColor lineColor     READ GetLineColor     WRITE SetLineColor     DESIGNABLE true)
+	Q_PROPERTY(QColor classBoxColor READ GetClassBoxColor WRITE SetClassBoxColor DESIGNABLE true)
+	Q_PROPERTY(QFont  classNameFont READ GetClassNameFont WRITE SetClassNameFont DESIGNABLE true)
+	Q_PROPERTY(QFont  classMemberFont READ GetClassMemberFont WRITE SetClassMemberFont DESIGNABLE true)
 
 public:
 	ClassView(ClassModel *model, QWidget *parent);
@@ -40,8 +38,16 @@ public:
 	void DeleteSelectedItem();
 	
 	QColor GetLineColor() const;
+	QColor GetClassBoxColor() const;
+	QFont GetClassNameFont() const;
+	QFont GetClassMemberFont() const;
 	void SetLineColor(QColor c);
+	void SetClassBoxColor(QColor c) ;
+	void SetClassNameFont(QFont f) ;
+	void SetClassMemberFont(QFont f) ;
 
+	const classgf::Setting& Setting() const;
+	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);
 
@@ -54,7 +60,7 @@ private:
 	ClassModel *m_model{};
 	
 	// rendering options
-	QColor m_line_color{Qt::GlobalColor::magenta};
+	classgf::Setting m_setting;
 };
 	
 }} // end of namespace

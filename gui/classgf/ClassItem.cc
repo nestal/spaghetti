@@ -12,6 +12,7 @@
 
 #include "ClassItem.hh"
 #include "Edge.hh"
+#include "ClassView.hh"
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
@@ -78,8 +79,8 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
-	auto var = (viewport && viewport->parentWidget() ? viewport->parentWidget()->property("lineColor") : QVariant{});
-	auto line_color = (var.canConvert<QColor>() ? var.value<QColor>() : Qt::GlobalColor::magenta);
+	auto view = (viewport && viewport->parentWidget()) ? dynamic_cast<ClassView*>(viewport->parentWidget()) : nullptr;
+	auto& setting = view ? view->Setting() : Setting{};
 	
 	// use bold font for name
 	auto name_font = painter->font();
@@ -93,7 +94,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
 
 	// TODO: make it configurable
-	painter->setPen(line_color);
+	painter->setPen(setting.line_color);
 	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
 	
 	// bounding rectangle
@@ -110,7 +111,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	);
 	
 	// line between class name and function
-	painter->setPen(line_color);
+	painter->setPen(setting.line_color);
 	painter->drawLine(
 		QPointF{m_bounding.right(), name_rect.bottom() + vspace_between_fields/2},
 		QPointF{m_bounding.left(),  name_rect.bottom() + vspace_between_fields/2}
@@ -142,7 +143,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	}
 
 	// line between class name and function
-	painter->setPen(line_color);
+	painter->setPen(setting.line_color);
 	painter->drawLine(
 		QPointF{m_bounding.right(), text_rect.top() - vspace_between_fields/2},
 		QPointF{m_bounding.left(),  text_rect.top() - vspace_between_fields/2}

@@ -31,6 +31,9 @@ ClassView::ClassView(ClassModel *model, QWidget *parent) :
 {
 	setAcceptDrops(true);
 	setDragMode(QGraphicsView::RubberBandDrag);
+	
+	m_setting.class_name_font = m_setting.class_member_font = font();
+	m_setting.class_name_font.setBold(true);
 }
 
 void ClassView::dragEnterEvent(QDragEnterEvent *event)
@@ -74,12 +77,47 @@ void ClassView::DeleteSelectedItem()
 
 QColor ClassView::GetLineColor() const
 {
-	return m_line_color;
+	return m_setting.line_color;
 }
 
 void ClassView::SetLineColor(QColor c)
 {
-	m_line_color = c;
+	m_setting.line_color = c;
+}
+
+QColor ClassView::GetClassBoxColor() const
+{
+	return m_setting.class_box_color;
+}
+
+QFont ClassView::GetClassNameFont() const
+{
+	return m_setting.class_name_font;
+}
+
+QFont ClassView::GetClassMemberFont() const
+{
+	return m_setting.class_member_font;
+}
+
+void ClassView::SetClassBoxColor(QColor c)
+{
+	m_setting.class_box_color = c;
+}
+
+void ClassView::SetClassNameFont(QFont f)
+{
+	m_setting.class_name_font = f;
+}
+
+void ClassView::SetClassMemberFont(QFont f)
+{
+	m_setting.class_member_font = f;
+}
+
+const classgf::Setting& ClassView::Setting() const
+{
+	return m_setting;
 }
 	
 }} // end of namespace
