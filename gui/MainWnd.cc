@@ -25,6 +25,7 @@
 #include <QtWidgets/QInputDialog>
 
 #include <cassert>
+#include <iostream>
 
 namespace gui {
 
@@ -73,7 +74,7 @@ MainWnd::MainWnd() :
 	// other initializations
 	m_doc->NewClassDiagram("Class Diagram");
 	tabifyDockWidget(m_ui->m_project_dock, m_ui->m_logical_dock);
-	setWindowTitle("Spaghetti : " + m_doc->Current());
+	setWindowTitle("Spaghetti : " + tr("Untitled"));
 	
 	ConnectSignals();
 }
@@ -96,7 +97,7 @@ void MainWnd::ConnectSignals()
 	connect(m_ui->m_action_save,       &QAction::triggered, [this]
 	{
 		assert(m_doc);
-		if (m_doc->Current().isNull())
+		if (m_doc->Current().isEmpty())
 			OnSaveAs();
 		else
 			m_doc->Save();
@@ -137,7 +138,7 @@ void MainWnd::ConnectSignals()
 	connect(m_doc.get(), &Document::OnCompileDiagnotics, this, &MainWnd::Log);
 	connect(m_doc.get(), &Document::OnSetCurrentFile, [this](auto& file)
 	{
-		this->setWindowTitle("Spaghetti : " + file);}
+		this->setWindowTitle("Spaghetti : " + (file.isEmpty() ? tr("Untitled") : file));}
 	);
 	connect(m_ui->m_logical_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_logical_view->setChecked(val);});
 	connect(m_ui->m_project_dock, &QDockWidget::visibilityChanged, [this](bool val){m_ui->m_action_project_view->setChecked(val);});

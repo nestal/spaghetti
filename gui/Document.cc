@@ -99,7 +99,6 @@ Document::Document(QObject *parent) :
 	)},
 	m_proxy_model{std::make_unique<ProxyModel>(m_logical_model.get())}
 {
-	SetCurrentFile(tr("Untitled"));
 }
 
 Document::~Document() = default;
@@ -142,6 +141,11 @@ libclx::SourceLocation Document::LocateEntity(const QModelIndex& idx) const
 
 void Document::Open(const QString& file)
 {
+	// "file" may be a relative path
+	// therefore must deduce the absolute path before calling Project::Open(),
+	// which will change current directory
+	auto abs_path = absolute(fs::path{file.toStdString()});
+	
 	auto proj = std::make_unique<project::Project>();
 	
 	RaiiCursor cursor(Qt::WaitCursor);
@@ -153,21 +157,24 @@ void Document::Open(const QString& file)
 			emit OnCompileDiagnotics(QString::fromStdString(diag.Str()));
 	
 	Reset(std::move(proj));
-	SetCurrentFile(file);
+	SetCurrentFile(abs_path);
 	m_changed = false;
 }
 
 void Document::Save()
 {
-	assert(!m_current_file.isNull());
-	SaveAs(m_current_file);
+	assert(m_current_file.size() > 0);
+std::cout << "saving to " << m_current_file << std::endl;
+	SaveAs(QString::fromStdString(m_current_file.string()));
 }
 
 void Document::SaveAs(const QString& file)
 {
 	assert(!file.isNull());
+	auto abs_path = absolute(fs::path{file.toStdString()});
+	
 	m_project->Save(file.toStdString());
-	SetCurrentFile(file);
+	SetCurrentFile(abs_path);
 	m_changed = false;
 }
 
@@ -213,7 +220,7 @@ void Document::New()
 {
 	// don't destroy the origin project yet, because some models may still be referring to it
 	Reset(std::make_unique<project::Project>());
-	SetCurrentFile(tr("Untitled"));
+	SetCurrentFile({});
 	
 	NewClassDiagram("Class Diagram");
 }
@@ -304,15 +311,20 @@ QString Document::CompileDiagnotics() const
 	return result;
 }
 
-const QString& Document::Current() const
+QString Document::Current() const
 {
-	return m_current_file;
+	return QString::fromStdString(m_current_file.filename().string());
 }
 
-void Document::SetCurrentFile(const QString& file)
+void Document::SetCurrentFile(const boost::filesystem::path& abs_path)
 {
-	m_current_file = QString::fromStdString(fs::path{file.toStdString()}.filename().string());
-	emit OnSetCurrentFile(m_current_file);
+	assert(abs_path.is_absolute() || abs_path.size() == 0);
+	
+	m_current_file = abs_path;
+std::cout << "openning from " << m_current_file << std::endl;
+	emit OnSetCurrentFile(
+		abs_path.size() > 0 ? QString::fromStdString(m_current_file.filename().string()) : tr("Untitled")
+	);
 }
 
 const codebase::Entity *Document::At(const QModelIndex& idx) const

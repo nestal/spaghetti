@@ -17,8 +17,11 @@
 
 #include "ModelViewFwd.hh"
 
+#include "codebase/CodeBase.hh"
+
+#include <boost/filesystem/path.hpp>
+
 #include <memory>
-#include <codebase/CodeBase.hh>
 
 class QAbstractItemModel;
 class QGraphicsScene;
@@ -67,7 +70,7 @@ public:
 	void SetProjectDir(const QString& dir);
 	
 	QString CompileDiagnotics() const;
-	const QString& Current() const;
+	QString Current() const;
 	
 	// docking windows
 	QAbstractItemModel* ClassModel();
@@ -97,13 +100,13 @@ signals:
 	
 private:
 	void Reset(std::unique_ptr<project::Project>&& proj);
-	void SetCurrentFile(const QString& file);
+	void SetCurrentFile(const boost::filesystem::path& abs_path);
 	
 private:
 	class ModelFactory;
 	class ProjectModel_;
 	
-	QString                                     m_current_file;
+	boost::filesystem::path                     m_current_file;
 	std::unique_ptr<project::Project>           m_project;
 	
 	// for the docking windows

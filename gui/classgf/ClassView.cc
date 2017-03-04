@@ -22,7 +22,6 @@
 #include <QDebug>
 
 #include <sstream>
-#include <iostream>
 
 namespace gui {
 namespace classgf {
@@ -203,7 +202,6 @@ void ClassView::Pan(QPointF delta)
 
 void ClassView::keyPressEvent(QKeyEvent *event)
 {
-	std::cout << "pressed! " << std::hex << event->key() << std::endl;
 	if (event->key() == Qt::Key_Control)
 		setCursor(Qt::CursorShape::OpenHandCursor);
 	
