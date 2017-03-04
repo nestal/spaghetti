@@ -1,10 +1,12 @@
 # Change Log
 
-## [Version 0.2](https://gitlab.com/nestal/spaghetti/builds) (Upcoming)
+## [Version 0.2](https://github.com/nestal/spaghetti/releases/tag/v0.1) (4 March 2017)
 
 - Support resizing classes in class diagram
 - Support aggregation relationship in class diagram
 - Show only used classes in logical view
+- Gradient fills to improve appearance of the class diagram
+- Support zooming by ctrl-mouse wheel in class diagram
 
 ## [Version 0.1](https://github.com/nestal/spaghetti/releases/tag/v0.1) (25 February 2017)
 
