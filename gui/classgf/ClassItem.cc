@@ -29,6 +29,7 @@
 #include <QtWidgets/QGraphicsDropShadowEffect>
 
 #include <QDebug>
+#include <iostream>
 
 // using https://github.com/cesarbs/sizegripitem to implement resize
 
@@ -341,35 +342,60 @@ const QGraphicsItem *ClassItem::GraphicsItem() const
 
 void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-	if (event->button() | Qt::LeftButton)
+	if (event->buttons() & Qt::LeftButton)
 	{
+		// the user clicks on this item, and started dragging it
+		// before releasing it.
+		// if the user just clicks and doesn't drag, we will select
+		// the item when the click is released.
+		// but if the user starts dragging, we need to move the item.
+		// so we select the item now, without waiting for click released.
+		if (m_release_action == MouseActionWhenRelease::select)
+			setSelected(true);
+		
 		auto distance = event->pos() - event->lastPos();
 
 		// move all selected items
 		for (auto&& item : scene()->selectedItems())
 			item->moveBy(distance.x(), distance.y());
 
-		// don't change item mode if the user drags the item
+		// the item is now selected anyway, so we don't need to
+		// do anything when click released.
 		m_release_action = MouseActionWhenRelease::none;
 	}
 }
 
 void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	// set the action to be done when the mouse is released base on the state when
-	// the mouse is pressed
-	if (!isSelected())
-		m_release_action = MouseActionWhenRelease::select;
-	
-	else
-		m_release_action = m_grip ? MouseActionWhenRelease::deselect : MouseActionWhenRelease::grip;
-	
+	if (event->button() == Qt::LeftButton)
+	{
+		// set the action to be done when the mouse is released base on the state when
+		// the mouse is pressed
+		if (!isSelected())
+			m_release_action = MouseActionWhenRelease::select;
+		
+		else
+			m_release_action = m_grip ? MouseActionWhenRelease::deselect : MouseActionWhenRelease::grip;
+	}
+		
 	// prevent default handling
 	event->accept();
 }
 
 void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+	// if action is "select", we want to deselect all other items because selection is exclusive
+	// if action is "deselect", other items are not selected anyway
+	// if action is "grip", we don't want to keep other items being selected
+	if (m_release_action != MouseActionWhenRelease::none)
+	{
+		for (auto&& item : scene()->selectedItems())
+		{
+			if (item != this)
+				item->setSelected(false);
+		}
+	}
+	
 	switch (m_release_action)
 	{
 	case MouseActionWhenRelease::select:
@@ -380,21 +406,14 @@ void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 		break;
 	case MouseActionWhenRelease::grip:
 		if (!m_grip)
-		{
-			// when switch to grip mode, deselect all other items
-			for (auto&& item : scene()->selectedItems())
-			{
-				if (item != this)
-					item->setSelected(false);
-			}
-			
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
-		}
 		break;
 		
 	case MouseActionWhenRelease::none:
 		break;
 	}
+	
+	m_release_action = MouseActionWhenRelease::none;
 	
 	// prevent default handling
 	event->accept();
