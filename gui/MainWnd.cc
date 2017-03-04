@@ -13,6 +13,7 @@
 #include "MainWnd.hh"
 #include "Document.hh"
 #include "ProjectSetting.hh"
+#include "PreferenceBox.hh"
 
 #include "ui_MainWnd.h"
 #include "ui_AboutBox.h"
@@ -120,6 +121,11 @@ void MainWnd::ConnectSignals()
 		dlg.exec();
 	});
 	connect(m_ui->m_action_reload_all, &QAction::triggered, m_doc.get(), &Document::Reload);
+	connect(m_ui->m_action_preference, &QAction::triggered, [this]
+	{
+		PreferenceBox dlg{this};
+		dlg.exec();
+	});
 	
 	// open source code when the user double click the item
 	connect(m_ui->m_logical_view, &QAbstractItemView::doubleClicked, this, &MainWnd::OnDoubleClickItem);
@@ -223,5 +229,5 @@ void MainWnd::Log(const QString& message)
 {
 	m_ui->m_log_widget->appendPlainText(message);
 }
-	
+
 } // end of namespace

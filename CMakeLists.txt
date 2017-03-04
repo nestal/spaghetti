@@ -7,7 +7,7 @@
 #
 
 cmake_minimum_required(VERSION 3.6)
-project(spaghetti VERSION 0.2)
+project(spaghetti VERSION 0.3)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -142,7 +142,7 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 set(CPACK_PACKAGE_NAME "spaghetti-gui")
 set(CPACK_PACKAGE_VENDOR "nestal.net")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
-set(CPACK_PACKAGE_VERSION_MINOR "2")
+set(CPACK_PACKAGE_VERSION_MINOR "3")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 
 include(CPack)

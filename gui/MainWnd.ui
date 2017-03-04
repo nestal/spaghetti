@@ -96,6 +96,8 @@
     <addaction name="m_action_logical_view"/>
     <addaction name="m_action_project_view"/>
     <addaction name="m_action_logs"/>
+    <addaction name="separator"/>
+    <addaction name="m_action_preference"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -318,7 +320,12 @@
   </action>
   <action name="m_action_reset_zoom">
    <property name="text">
-    <string>Reset zoom</string>
+    <string>&amp;Reset zoom</string>
+   </property>
+  </action>
+  <action name="m_action_preference">
+   <property name="text">
+    <string>Preference...</string>
    </property>
   </action>
  </widget>
