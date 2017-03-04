@@ -23,8 +23,8 @@
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsDropShadowEffect>
 
 #include <QDebug>
 
@@ -190,7 +190,13 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 	else if (change == QGraphicsItem::ItemSelectedChange)
 	{
 		if (!m_grip)
+		{
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+			
+			auto effect = new QGraphicsDropShadowEffect{this};
+			effect->setBlurRadius(10);
+			setGraphicsEffect(effect);
+		}
 		else
 		{
 			m_grip.reset();
@@ -202,6 +208,8 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 				-size.width()/2, -size.height()/2,
 				+size.width()/2, +size.height()/2
 			);
+			
+			setGraphicsEffect(nullptr);
 		}
 	}
 
