@@ -38,7 +38,6 @@ class Edge;
 class ClassItem : public QGraphicsObject, public BaseItem
 {
 	Q_OBJECT
-	Q_INTERFACES(QGraphicsItem)
 	
 public:
 	ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size = {225.0, 175.0});

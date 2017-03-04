@@ -14,6 +14,7 @@
 
 #include <QGraphicsView>
 #include "gui/common/ViewBase.hh"
+#include "Viewport.hh"
 
 #include "ClassModel.hh"
 #include "Setting.hh"
@@ -21,7 +22,7 @@
 namespace gui {
 namespace classgf {
 
-class ClassView : public QGraphicsView, public ViewBase
+class ClassView : public QGraphicsView, public ViewBase, public Viewport
 {
 	Q_OBJECT
 	Q_PROPERTY(QColor lineColor     READ GetLineColor     WRITE SetLineColor     DESIGNABLE true)
@@ -46,8 +47,8 @@ public:
 	void SetClassNameFont(QFont f) ;
 	void SetClassMemberFont(QFont f) ;
 
-	const classgf::Setting& Setting() const;
-	qreal ZoomFactor() const;
+	const classgf::Setting& Setting() const override;
+	qreal ZoomFactor() const override;
 	void ResetZoom() override;
 	
 signals:

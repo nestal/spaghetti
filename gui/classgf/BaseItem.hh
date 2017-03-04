@@ -28,6 +28,7 @@ namespace gui {
 namespace classgf {
 
 class Edge;
+class Viewport;
 
 class BaseItem
 {
@@ -41,6 +42,9 @@ public:
 	virtual ItemRelation RelationOf(const BaseItem *other) const = 0;
 	virtual bool IsChanged() const = 0;
 	virtual void Update(const codebase::EntityMap *code_base) = 0;
+	
+	// helper
+	static const Viewport& CurrentViewport(QWidget *viewport) ;
 	
 	using edge_iterator = std::vector<Edge *>::const_iterator;
 	

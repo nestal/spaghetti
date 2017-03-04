@@ -12,7 +12,8 @@
 
 #include "ClassItem.hh"
 #include "Edge.hh"
-#include "ClassView.hh"
+#include "Viewport.hh"
+#include "Setting.hh"
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
@@ -79,14 +80,14 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
-	auto view = (viewport && viewport->parentWidget()) ? dynamic_cast<ClassView*>(viewport->parentWidget()) : nullptr;
-	auto& setting = view ? view->Setting() : Setting{};
+	auto& view = CurrentViewport(viewport);
+	auto& setting = view.Setting();
 	
 	// normalize font size
 	auto name_font = setting.class_name_font;
 	auto mem_font  = setting.class_member_font;
-	name_font.setPointSizeF(setting.class_name_font.pointSize() / view->ZoomFactor());
-	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view->ZoomFactor());
+	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
+	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
 	
 	// use bold font for name
 	QFontMetrics name_font_met{name_font}, member_font_met{mem_font};
