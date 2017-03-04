@@ -163,25 +163,28 @@ void MainWnd::ConnectSignals()
 void MainWnd::OnOpen()
 {
 	assert(m_doc);
-	if (!ConfirmDiscard())
-		return;
-	
-	auto file = QFileDialog::getOpenFileName(this, tr("Open Project"), {}, file_dlg_filter);
-
-	// string will be null if user press cancel
-	if (!file.isNull())
+	if (ConfirmDiscard())
 	{
-		try
-		{
-			m_doc->Open(file);
-		}
-		catch (std::exception& e)
-		{
-			QMessageBox::critical(
-				this, tr("Cannot open project"),
-				tr("%1 is not a valid speghetti project file: %2").arg(file, e.what())
-			);
-		}
+		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"), {}, file_dlg_filter);
+		
+		// string will be null if user press cancel
+		if (!file.isNull())
+			Open(file);
+	}
+}
+
+void MainWnd::Open(const QString& file)
+{
+	try
+	{
+		m_doc->Open(file);
+	}
+	catch (std::exception& e)
+	{
+		QMessageBox::critical(
+			this, tr("Cannot open project"),
+			tr("%1 is not a valid speghetti project file: %2").arg(file, e.what())
+		);
 	}
 }
 

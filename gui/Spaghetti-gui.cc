@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 	parser.setApplicationDescription(QCoreApplication::applicationName());
 	parser.addHelpOption();
 	parser.addVersionOption();
-	parser.addPositionalArgument("file", "The file to open.");
+	parser.addPositionalArgument("file", QCoreApplication::translate("main", "The file to open."));
 	parser.process(app);
 	
 	// use -stylesheet option to specific stylesheet
@@ -31,6 +31,10 @@ int main(int argc, char **argv)
 	using namespace gui;
 	MainWnd wnd;
 	wnd.show();
+	
+	auto args = parser.positionalArguments();
+	if (!args.empty())
+		wnd.Open(args.at(0));
 	
 	return app.exec();
 	

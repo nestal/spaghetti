@@ -147,7 +147,7 @@ void Document::Open(const QString& file)
 	RaiiCursor cursor(Qt::WaitCursor);
 	ModelFactory factory{this};
 	proj->Open(file.toStdString(), factory);
-	
+
 	for (auto&& tu : proj->CodeBase().TranslationUnits())
 		for (auto&& diag : tu.Diagnostics())
 			emit OnCompileDiagnotics(QString::fromStdString(diag.Str()));

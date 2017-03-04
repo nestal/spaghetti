@@ -17,6 +17,7 @@
 #include <QMimeData>
 
 #include <QtWidgets/QAbstractItemView>
+//#include <QOpenGLWidget>
 
 #include <sstream>
 #include <iostream>
@@ -34,6 +35,8 @@ ClassView::ClassView(ClassModel *model, QWidget *parent) :
 	
 	m_setting.class_name_font = m_setting.class_member_font = font();
 	m_setting.class_name_font.setBold(true);
+	
+//	setViewport(new QOpenGLWidget);
 }
 
 void ClassView::dragEnterEvent(QDragEnterEvent *event)

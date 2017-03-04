@@ -20,10 +20,11 @@
 #include <QtCore/QFile>
 
 #include <boost/filesystem.hpp>
+#include <iostream>
 
 namespace project {
 
-using namespace boost::filesystem;
+namespace fs = boost::filesystem;
 
 void Project::SetCompileOptions(std::initializer_list<std::string> opts)
 {
@@ -43,7 +44,7 @@ void Project::AddSource(const std::string& source_file)
 void Project::Save(const std::string& filename) const
 {
 	// all paths stored in disk file is relative to the parent directory
-	auto base = path{filename}.parent_path();
+	auto base = fs::path{filename}.parent_path();
 	
 	QJsonObject root;
 	root.insert("version", VERSION);
@@ -91,7 +92,7 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 		auto json = QJsonDocument::fromJson(in.readAll()).object();
 		
 		// all paths stored in disk file is relative to the parent directory
-		auto base = path{filename}.parent_path();
+		auto base = fs::absolute(filename).parent_path();
 		
 		auto version_ok = false;
 		auto version = json["version"].toString().toDouble(&version_ok);
@@ -99,8 +100,11 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 		if (version > my_version)
 			throw std::runtime_error("version mismatch!");
 		
-		m_project_dir = (base/json["project_dir"].toString().toStdString()).lexically_normal().string();
-		current_path(m_project_dir);
+		// set current path to the project path stored in the file
+		// otherwise the relative paths specified by -I compile option will not work
+		auto project_path = (base/json["project_dir"].toString().toStdString()).lexically_normal();
+		current_path(project_path);
+		m_project_dir = project_path.string();
 		
 		m_compile_options.clear();
 		for (auto&& cflag : json["cflags"].toArray())
