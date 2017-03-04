@@ -351,7 +351,11 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		// but if the user starts dragging, we need to move the item.
 		// so we select the item now, without waiting for click released.
 		if (m_release_action == MouseActionWhenRelease::select)
+		{
+			for (auto&& item : scene()->selectedItems())
+				item->setSelected(false);
 			setSelected(true);
+		}
 		
 		auto distance = event->pos() - event->lastPos();
 

@@ -22,7 +22,6 @@
 #include <QDebug>
 
 #include <sstream>
-#include <iostream>
 
 namespace gui {
 namespace classgf {
@@ -126,7 +125,7 @@ const classgf::ItemRenderingOptions& ClassView::Setting() const
 
 void ClassView::wheelEvent(QWheelEvent *event)
 {
-	if ( QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
 	{
 		static const auto zoom_factor_base = 1.0005;
 		m_zoom *= qPow(zoom_factor_base, event->delta());
@@ -136,8 +135,8 @@ void ClassView::wheelEvent(QWheelEvent *event)
 				
 		event->accept();
 	}
-	else
-		QGraphicsView::wheelEvent(event);
+
+	QGraphicsView::wheelEvent(event);
 }
 
 qreal ClassView::ZoomFactor() const
