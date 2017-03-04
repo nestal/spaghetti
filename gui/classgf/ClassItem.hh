@@ -68,6 +68,7 @@ public:
 	
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 	
 signals:
@@ -91,6 +92,9 @@ private:
 	
 	std::unique_ptr<SizeGripItem> m_grip;
 	
+	enum class MouseActionWhenRelease {select, deselect, none} ;
+	MouseActionWhenRelease m_release_action{MouseActionWhenRelease::none};
+		
 	static const qreal m_margin;
 };
 	

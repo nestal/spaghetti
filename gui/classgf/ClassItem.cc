@@ -345,38 +345,38 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	{
 		auto distance = event->pos() - event->lastPos();
 
-		// switch to select mode
-		if (m_grip)
-		{
-			m_grip.reset();
-			auto effect = new QGraphicsDropShadowEffect{this};
-			effect->setBlurRadius(10);
-			setGraphicsEffect(effect);
-		}
-		
 		for (auto&& item : scene()->selectedItems())
 			item->moveBy(distance.x(), distance.y());
+		
+		m_release_action = MouseActionWhenRelease::none;
 	}
 }
 
 void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	if (isSelected())
+	// avoid being selected
+	if (!isSelected())
+		m_release_action = MouseActionWhenRelease::select;
+	else
+		m_release_action = MouseActionWhenRelease::deselect;
+	
+	event->accept();
+}
+
+void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	switch (m_release_action)
 	{
-		if (!m_grip)
-		{
-			setGraphicsEffect(nullptr);
-			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
-		}
-		else
-		{
-			m_grip.reset();
-			auto effect = new QGraphicsDropShadowEffect{this};
-			effect->setBlurRadius(10);
-			setGraphicsEffect(effect);
-		}
+	case MouseActionWhenRelease::select:
+		setSelected(true);
+		break;
+	case MouseActionWhenRelease::deselect:
+		setSelected(false);
+		break;
+	case MouseActionWhenRelease::none:
+		break;
 	}
-	QGraphicsItem::mousePressEvent(event);
+	event->accept();
 }
 	
 }} // end of namespace
