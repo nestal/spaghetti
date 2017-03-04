@@ -154,6 +154,7 @@ void Document::Open(const QString& file)
 	
 	Reset(std::move(proj));
 	SetCurrentFile(file);
+	m_changed = false;
 }
 
 void Document::Save()
@@ -167,6 +168,7 @@ void Document::SaveAs(const QString& file)
 	assert(!file.isNull());
 	m_project->Save(file.toStdString());
 	SetCurrentFile(file);
+	m_changed = false;
 }
 
 QAbstractItemModel* Document::ProjectModel()
@@ -250,11 +252,11 @@ void Document::Reload()
 bool Document::IsChanged() const
 {
 	assert(m_project);
-	for (std::size_t i = 0 ; i < m_project->Count() ; i++)
+	for (std::size_t i = 0 ; !m_changed && i < m_project->Count() ; i++)
 		if (m_project->At(i)->IsChanged())
 			return true;
 	
-	return false;
+	return m_changed;
 }
 
 QString Document::CompileOptions() const
@@ -273,8 +275,11 @@ void Document::SetCompileOptions(const QString& opts)
 	for (auto&& flags : opts.split(" ", QString::SkipEmptyParts))
 		cflags.push_back(flags.toStdString());
 	
-	m_project->SetCompileOptions(cflags.begin(), cflags.end());
-	Reload();
+	if (m_project->SetCompileOptions(cflags.begin(), cflags.end()))
+	{
+		m_changed = true;
+		Reload();
+	}
 }
 
 QString Document::ProjectDir() const

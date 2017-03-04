@@ -110,6 +110,8 @@ private:
 	std::unique_ptr<ProjectModel_>              m_project_model;
 	std::unique_ptr<logicalvw::LogicalModel>    m_logical_model;
 	std::unique_ptr<logicalvw::ProxyModel>      m_proxy_model;
+	
+	bool m_changed{false};
 };
 
 } // end of namespace

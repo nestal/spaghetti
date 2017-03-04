@@ -26,11 +26,6 @@ namespace project {
 
 namespace fs = boost::filesystem;
 
-void Project::SetCompileOptions(std::initializer_list<std::string> opts)
-{
-	m_compile_options = std::move(opts);
-}
-
 codebase::CodeBase& Project::CodeBase()
 {
 	return m_code_base;
