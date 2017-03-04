@@ -135,4 +135,14 @@ void ClassView::wheelEvent(QWheelEvent *event)
 	}
 }
 
+qreal ClassView::ZoomFactor() const
+{
+	return m_zoom;
+}
+
+void ClassView::ResetZoom(qreal val)
+{
+	m_zoom = val;
+}
+	
 }} // end of namespace

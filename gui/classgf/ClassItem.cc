@@ -82,8 +82,14 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto view = (viewport && viewport->parentWidget()) ? dynamic_cast<ClassView*>(viewport->parentWidget()) : nullptr;
 	auto& setting = view ? view->Setting() : Setting{};
 	
+	// normalize font size
+	auto name_font = setting.class_name_font;
+	auto mem_font  = setting.class_member_font;
+	name_font.setPointSizeF(setting.class_name_font.pointSize() / view->ZoomFactor());
+	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view->ZoomFactor());
+	
 	// use bold font for name
-	QFontMetrics name_font_met{setting.class_name_font}, member_font_met{setting.class_member_font};
+	QFontMetrics name_font_met{name_font}, member_font_met{mem_font};
 	ComputeSize(content, name_font_met, member_font_met);
 	
 	// adjust vertical margin
@@ -101,7 +107,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->drawRect(m_bounding);
 	
 	QRectF name_rect;
-	painter->setFont(setting.class_name_font);
+	painter->setFont(name_font);
 	painter->setPen(Qt::GlobalColor::black);
 	painter->drawText(
 		QRectF{content.topLeft(), QPointF{content.right(), content.top()+name_font_met.height()}},
@@ -122,7 +128,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		QPointF{content.right(), name_rect.bottom() + vspace_between_fields + member_font_met.height()}
 	};
 	
-	painter->setFont(setting.class_member_font);
+	painter->setFont(mem_font);
 	painter->setPen(Qt::GlobalColor::black);
 	
 	// functions
