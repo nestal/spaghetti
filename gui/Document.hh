@@ -57,6 +57,7 @@ public:
 
 	void New();
 	void Open(const QString& file);
+	void Save();
 	void SaveAs(const QString& file);
 	
 	void AddSource(const QString& file);

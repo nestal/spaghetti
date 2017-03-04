@@ -40,6 +40,7 @@ public:
 private:
 	void ConnectSignals();
 	void OnOpen();
+	void OnSaveAs();
 	void OnDoubleClickItem(const QModelIndex& idx);
 	bool ConfirmDiscard();
 	

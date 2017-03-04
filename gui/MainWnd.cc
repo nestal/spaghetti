@@ -87,21 +87,21 @@ void MainWnd::ConnectSignals()
 		AboutDialog dlg{this};
 		dlg.exec();
 	});
-	connect(m_ui->m_action_new,      &QAction::triggered, m_doc.get(), [this]
+	connect(m_ui->m_action_new,      &QAction::triggered, [this]
 	{
 		if (ConfirmDiscard())
 			m_doc->New();
 	});
-	connect(m_ui->m_action_open,       &QAction::triggered, this, &MainWnd::OnOpen);
-	connect(m_ui->m_action_save_as,    &QAction::triggered, [this]
+	connect(m_ui->m_action_open,       &QAction::triggered, this,  &MainWnd::OnOpen);
+	connect(m_ui->m_action_save,       &QAction::triggered, [this]
 	{
 		assert(m_doc);
-		auto file = QFileDialog::getSaveFileName(this, tr("Save Project"), {}, file_dlg_filter);
-		
-		// string will be null if user press cancel
-		if (!file.isNull())
-			m_doc->SaveAs(file);
+		if (m_doc->Current().isNull())
+			OnSaveAs();
+		else
+			m_doc->Save();
 	});
+	connect(m_ui->m_action_save_as,    &QAction::triggered, this,  &MainWnd::OnSaveAs);
 	connect(m_ui->m_action_delete,     &QAction::triggered, m_ui->m_tab, &ViewSet::OnDelete );
 	connect(m_ui->m_action_about_Qt,   &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
@@ -230,4 +230,14 @@ void MainWnd::Log(const QString& message)
 	m_ui->m_log_widget->appendPlainText(message);
 }
 
+void MainWnd::OnSaveAs()
+{
+	assert(m_doc);
+	auto file = QFileDialog::getSaveFileName(this, tr("Save Project"), {}, file_dlg_filter);
+	
+	// string will be null if user press cancel
+	if (!file.isNull())
+		m_doc->SaveAs(file);
+}
+	
 } // end of namespace

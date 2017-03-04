@@ -156,8 +156,15 @@ void Document::Open(const QString& file)
 	SetCurrentFile(file);
 }
 
+void Document::Save()
+{
+	assert(!m_current_file.isNull());
+	SaveAs(m_current_file);
+}
+
 void Document::SaveAs(const QString& file)
 {
+	assert(!file.isNull());
 	m_project->Save(file.toStdString());
 	SetCurrentFile(file);
 }
@@ -317,5 +324,5 @@ void Document::SetShowAllClasses(bool value)
 {
 	m_proxy_model->SetShowAll(value);
 }
-	
+
 } // end of namespace
