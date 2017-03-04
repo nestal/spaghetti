@@ -349,12 +349,22 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	if (isSelected() && !m_grip)
+	if (isSelected())
 	{
-		setGraphicsEffect(nullptr);
-		m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+		if (!m_grip)
+		{
+			setGraphicsEffect(nullptr);
+			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+		}
+		else
+		{
+			m_grip.reset();
+			auto effect = new QGraphicsDropShadowEffect{this};
+			effect->setBlurRadius(10);
+			setGraphicsEffect(effect);
+			
+		}
 	}
-	
 	QGraphicsItem::mousePressEvent(event);
 }
 	
