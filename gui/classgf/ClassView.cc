@@ -118,7 +118,7 @@ void ClassView::SetClassMemberFont(QFont f)
 	m_setting.class_member_font = f;
 }
 
-const classgf::Setting& ClassView::Setting() const
+const classgf::ItemRenderingOptions& ClassView::Setting() const
 {
 	return m_setting;
 }

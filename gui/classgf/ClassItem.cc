@@ -13,7 +13,7 @@
 #include "ClassItem.hh"
 #include "Edge.hh"
 #include "Viewport.hh"
-#include "Setting.hh"
+#include "ItemRenderingOptions.hh"
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"

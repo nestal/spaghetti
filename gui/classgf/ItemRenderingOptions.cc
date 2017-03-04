@@ -10,4 +10,4 @@
 // Created by nestal on 3/4/17.
 //
 
-#include "Setting.hh"
+#include "ItemRenderingOptions.hh"

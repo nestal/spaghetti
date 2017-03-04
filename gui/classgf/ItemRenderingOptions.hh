@@ -18,7 +18,7 @@
 namespace gui {
 namespace classgf {
 
-struct Setting
+struct ItemRenderingOptions
 {
 	QColor line_color{Qt::GlobalColor::magenta};
 	QColor class_box_color{Qt::GlobalColor::yellow};
