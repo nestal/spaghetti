@@ -22,6 +22,7 @@
 #include <QDebug>
 
 #include <sstream>
+#include <iostream>
 
 namespace gui {
 namespace classgf {
@@ -167,13 +168,22 @@ void ClassView::mouseMoveEvent(QMouseEvent *event)
 
 void ClassView::mousePressEvent(QMouseEvent *event)
 {
-	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier && event->buttons() & Qt::LeftButton)
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier && event->button() == Qt::LeftButton)
 	{
+		setCursor(Qt::CursorShape::ClosedHandCursor);
 		m_last_pos = event->pos();
 		event->accept();
 	}
 	else
 		QGraphicsView::mousePressEvent(event);
+}
+
+void ClassView::mouseReleaseEvent(QMouseEvent *event)
+{
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier && event->button() == Qt::LeftButton)
+		setCursor(Qt::CursorShape::OpenHandCursor);
+
+	QGraphicsView::mouseReleaseEvent(event);
 }
 
 void ClassView::Pan(QPointF delta)
@@ -190,5 +200,22 @@ void ClassView::Pan(QPointF delta)
 	// For zooming to anchor from the view center.
 	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 }
+
+void ClassView::keyPressEvent(QKeyEvent *event)
+{
+	std::cout << "pressed! " << std::hex << event->key() << std::endl;
+	if (event->key() == Qt::Key_Control)
+		setCursor(Qt::CursorShape::OpenHandCursor);
 	
+	QGraphicsView::keyPressEvent(event);
+}
+
+void ClassView::keyReleaseEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Control)
+		setCursor(Qt::CursorShape::ArrowCursor);
+	
+	QGraphicsView::keyReleaseEvent(event);
+}
+
 }} // end of namespace
