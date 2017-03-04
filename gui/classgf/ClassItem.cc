@@ -96,14 +96,15 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * member_font_met.height();
 	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
 
-	painter->setPen(setting.line_color);
-	
 	QLinearGradient g{m_bounding.topLeft(), m_bounding.bottomRight()};
 	g.setColorAt(0, setting.class_box_color);
 	g.setColorAt(1, setting.class_box_color2);
 	painter->setBrush(g);
 	
-	// bounding rectangle
+	// draw lines and bounding rectangle
+	QPen line_pen{setting.line_color};
+	line_pen.setCosmetic(true);
+	painter->setPen(line_pen);
 	painter->drawRect(m_bounding);
 	
 	QRectF name_rect;
@@ -117,11 +118,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	);
 	
 	// line between class name and function
-	painter->setPen(setting.line_color);
-	painter->drawLine(
-		QPointF{m_bounding.right(), name_rect.bottom() + vspace_between_fields/2},
-		QPointF{m_bounding.left(),  name_rect.bottom() + vspace_between_fields/2}
-	);
+	auto name_line = name_rect.bottom() + vspace_between_fields/2;
 	
 	QRectF text_rect{
 		QPointF{content.left(),  name_rect.bottom() + vspace_between_fields},
@@ -129,7 +126,6 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	};
 	
 	painter->setFont(mem_font);
-	painter->setPen(Qt::GlobalColor::black);
 	
 	// functions
 	std::size_t index=0;
@@ -149,13 +145,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	}
 
 	// line between class name and function
-	painter->setPen(setting.line_color);
-	painter->drawLine(
-		QPointF{m_bounding.right(), text_rect.top() - vspace_between_fields/2},
-		QPointF{m_bounding.left(),  text_rect.top() - vspace_between_fields/2}
-	);
-	
-	painter->setPen(Qt::GlobalColor::black);
+	auto func_line = text_rect.top() - vspace_between_fields/2;
 	
 	index=0;
 	for (auto&& field : m_class->Fields())
@@ -171,6 +161,16 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		);
 		text_rect.adjust(0, member_font_met.height() + vspace_between_fields, 0, member_font_met.height() + vspace_between_fields);
 	}
+	
+	painter->setPen(line_pen);
+	painter->drawLine(
+		QPointF{m_bounding.right(), name_line},
+		QPointF{m_bounding.left(),  name_line}
+	);
+	painter->drawLine(
+		QPointF{m_bounding.right(), func_line},
+		QPointF{m_bounding.left(),  func_line}
+	);
 }
 
 const std::string& ClassItem::ID() const

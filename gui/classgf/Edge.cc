@@ -63,6 +63,10 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 			break;
 	}
 	
+	QPen line_pen{Qt::GlobalColor::black};
+	line_pen.setCosmetic(true);
+	painter->setPen(line_pen);
+	
 	QLineF to_draw{from_pt, to_pt};
 	painter->drawLine(to_draw);
 	DrawEndings(painter, to_draw);
