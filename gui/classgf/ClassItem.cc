@@ -24,6 +24,7 @@
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QGraphicsDropShadowEffect>
 
@@ -343,7 +344,9 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	if (event->button() | Qt::LeftButton)
 	{
 		auto distance = event->pos() - event->lastPos();
-		moveBy(distance.x(), distance.y());
+		
+		for (auto&& item : scene()->selectedItems())
+			item->moveBy(distance.x(), distance.y());
 	}
 }
 
@@ -355,6 +358,13 @@ void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		{
 			setGraphicsEffect(nullptr);
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+			
+			// deselect other items
+			for (auto&& item : scene()->selectedItems())
+			{
+				if (item != this)
+					item->setSelected(false);
+			}
 		}
 		else
 		{
