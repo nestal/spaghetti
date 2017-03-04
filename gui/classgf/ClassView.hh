@@ -61,6 +61,12 @@ protected:
 		
 	void wheelEvent(QWheelEvent *event) override;
 	
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	
+private:
+	void Pan(QPointF delta);
+	
 private:
 	ClassModel *m_model{};
 	
@@ -69,6 +75,9 @@ private:
 	
 	// zoom parameters
 	qreal m_zoom{1.0};
+	
+	// previous mouse position
+	QPoint m_last_pos;
 };
 	
 }} // end of namespace

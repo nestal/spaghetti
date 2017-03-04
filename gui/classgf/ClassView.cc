@@ -22,6 +22,7 @@
 #include <QDebug>
 
 #include <sstream>
+#include <iostream>
 
 namespace gui {
 namespace classgf {
@@ -132,7 +133,7 @@ void ClassView::wheelEvent(QWheelEvent *event)
 		
 		setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 		setTransform(QTransform{}.scale(m_zoom, m_zoom));
-		
+				
 		event->accept();
 	}
 	else
@@ -150,6 +151,38 @@ void ClassView::ResetZoom()
 	
 	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 	setTransform(QTransform{}.scale(m_zoom, m_zoom));
+}
+
+void ClassView::mouseMoveEvent(QMouseEvent *event)
+{
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
+		Pan(mapToScene(event->pos()) - mapToScene(m_last_pos));
+	
+	QGraphicsView::mouseMoveEvent(event);
+	m_last_pos = event->pos();
+}
+
+void ClassView::mousePressEvent(QMouseEvent *event)
+{
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
+		m_last_pos = event->pos();
+	
+	QGraphicsView::mousePressEvent(event);
+}
+
+void ClassView::Pan(QPointF delta)
+{
+	delta *= m_zoom;
+	
+	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+	QPoint new_center{
+		static_cast<int>(viewport()->rect().width() / 2 - delta.x()),
+		static_cast<int>(viewport()->rect().height() / 2 - delta.y())
+	};
+	centerOn(mapToScene(new_center));
+	
+	// For zooming to anchor from the view center.
+	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 }
 	
 }} // end of namespace
