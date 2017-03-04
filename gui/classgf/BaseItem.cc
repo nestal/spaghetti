@@ -12,9 +12,13 @@
 
 #include "BaseItem.hh"
 
+#include <QWidget>
 #include "Edge.hh"
+#include "Viewport.hh"
+#include "Setting.hh"
 
 namespace gui {
+namespace classgf {
 
 void BaseItem::AddEdge(Edge *edge)
 {
@@ -40,5 +44,21 @@ void BaseItem::ClearEdges()
 {
 	m_edges.clear();
 }
+
+const Viewport& BaseItem::CurrentViewport(QWidget *viewport)
+{
+	static class MockViewport : public Viewport
+	{
+	public:
+		const classgf::Setting& Setting() const override {return m_setting;}
+		qreal ZoomFactor() const override {return 1.0;}
 	
-} // end of namespace
+	private:
+		classgf::Setting m_setting;
+	} mock;
+	
+	auto view = (viewport && viewport->parentWidget()) ? dynamic_cast<Viewport*>(viewport->parentWidget()) : nullptr;
+	return view ? *view : mock;
+}
+	
+}} // end of namespace

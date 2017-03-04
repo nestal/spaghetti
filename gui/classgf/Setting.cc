@@ -7,26 +7,7 @@
 */
 
 //
-// Created by nestal on 2/19/17.
+// Created by nestal on 3/4/17.
 //
 
-#pragma once
-
-namespace gui {
-
-namespace classgf {
-
-class ClassItem;
-class ClassModel;
-class ClassView;
-
-}
-
-namespace sourcevw {
-
-class SourceView;
-class SourceModel;
-
-}
-
-} // end of namespace
+#include "Setting.hh"

@@ -17,8 +17,7 @@
 #include "ui_MainWnd.h"
 #include "ui_AboutBox.h"
 
-#include "gui/source_view/SourceModel.hh"
-#include "libclx/Index.hh"
+#include "libclx/SourceRange.hh"
 
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
@@ -157,6 +156,7 @@ void MainWnd::ConnectSignals()
 		m_doc->SetShowAllClasses(checked);
 		m_ui->m_action_show_all_classes->setChecked(checked);
 	});
+	connect(m_ui->m_action_reset_zoom, &QAction::triggered, m_ui->m_tab, &ViewSet::ResetZoom);
 	
 	m_ui->m_logical_view->insertAction(nullptr, m_ui->m_action_show_all_classes);
 }
@@ -164,25 +164,28 @@ void MainWnd::ConnectSignals()
 void MainWnd::OnOpen()
 {
 	assert(m_doc);
-	if (!ConfirmDiscard())
-		return;
-	
-	auto file = QFileDialog::getOpenFileName(this, tr("Open Project"), {}, file_dlg_filter);
-
-	// string will be null if user press cancel
-	if (!file.isNull())
+	if (ConfirmDiscard())
 	{
-		try
-		{
-			m_doc->Open(file);
-		}
-		catch (std::exception& e)
-		{
-			QMessageBox::critical(
-				this, tr("Cannot open project"),
-				tr("%1 is not a valid speghetti project file: %2").arg(file, e.what())
-			);
-		}
+		auto file = QFileDialog::getOpenFileName(this, tr("Open Project"), {}, file_dlg_filter);
+		
+		// string will be null if user press cancel
+		if (!file.isNull())
+			Open(file);
+	}
+}
+
+void MainWnd::Open(const QString& file)
+{
+	try
+	{
+		m_doc->Open(file);
+	}
+	catch (std::exception& e)
+	{
+		QMessageBox::critical(
+			this, tr("Cannot open project"),
+			tr("%1 is not a valid speghetti project file: %2").arg(file, e.what())
+		);
 	}
 }
 

@@ -10,9 +10,6 @@
 
 #include <QApplication>
 #include <QtCore/QCommandLineParser>
-#include <QtCore/QFile>
-
-#include <QDebug>
 
 int main(int argc, char **argv)
 {
@@ -26,22 +23,18 @@ int main(int argc, char **argv)
 	parser.setApplicationDescription(QCoreApplication::applicationName());
 	parser.addHelpOption();
 	parser.addVersionOption();
-	parser.addPositionalArgument("file", "The file to open.");
+	parser.addPositionalArgument("file", QCoreApplication::translate("main", "The file to open."));
 	parser.process(app);
 	
-	qWarning() << "wow" ;
-	
-	QFile ss{"sheet.qss"};
-	if (ss.open(QFile::ReadOnly))
-	{
-		QString sstr{QLatin1String{ss.readAll()}};
-		qWarning() << "using stylesheet " << sstr;
-		app.setStyleSheet(sstr);
-	}
+	// use -stylesheet option to specific stylesheet
 	
 	using namespace gui;
 	MainWnd wnd;
 	wnd.show();
+	
+	auto args = parser.positionalArguments();
+	if (!args.empty())
+		wnd.Open(args.at(0));
 	
 	return app.exec();
 	

@@ -69,10 +69,11 @@ public:
 	void CloseTab(int tab);
 	
 	void ViewCode(const std::string& filename, unsigned line, unsigned column);
+	void ResetZoom();
 
 private:
-	void NewClassDiagramView(ClassModel *model);
-	void NewSourceView(SourceModel *model);
+	void NewClassDiagramView(classgf::ClassModel *model);
+	void NewSourceView(sourcevw::SourceModel *model);
 	void OnRenameTab(int idx);
 	
 private:

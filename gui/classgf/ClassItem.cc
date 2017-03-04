@@ -12,6 +12,8 @@
 
 #include "ClassItem.hh"
 #include "Edge.hh"
+#include "Viewport.hh"
+#include "Setting.hh"
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
@@ -22,14 +24,15 @@
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsDropShadowEffect>
 
 #include <QDebug>
 
 // using https://github.com/cesarbs/sizegripitem to implement resize
 
 namespace gui {
+namespace classgf {
 
 const qreal ClassItem::m_margin{10.0};
 
@@ -77,25 +80,32 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
-	auto var = (viewport && viewport->parentWidget() ? viewport->parentWidget()->property("lineColor") : QVariant{});
-	auto line_color = (var.canConvert<QColor>() ? var.value<QColor>() : Qt::GlobalColor::magenta);
+	auto& view = CurrentViewport(viewport);
+	auto& setting = view.Setting();
+	
+	// normalize font size
+	auto name_font = setting.class_name_font;
+	auto mem_font  = setting.class_member_font;
+	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
+	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
 	
 	// use bold font for name
-	auto name_font = painter->font();
-	auto field_font = name_font;
-	name_font.setBold(true);
-	QFontMetrics name_font_met{name_font}, field_font_met{painter->font()};
-	ComputeSize(content, name_font_met, field_font_met);
+	QFontMetrics name_font_met{name_font}, member_font_met{mem_font};
+	ComputeSize(content, name_font_met, member_font_met);
 	
 	// adjust vertical margin
-	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * field_font_met.height();
+	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * member_font_met.height();
 	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
 
-	// TODO: make it configurable
-	painter->setPen(line_color);
-	painter->setBrush(isSelected() ? Qt::GlobalColor::cyan : Qt::GlobalColor::yellow);
+	QLinearGradient g{m_bounding.topLeft(), m_bounding.bottomRight()};
+	g.setColorAt(0, setting.class_box_color);
+	g.setColorAt(1, setting.class_box_color2);
+	painter->setBrush(g);
 	
-	// bounding rectangle
+	// draw lines and bounding rectangle
+	QPen line_pen{setting.line_color};
+	line_pen.setCosmetic(true);
+	painter->setPen(line_pen);
 	painter->drawRect(m_bounding);
 	
 	QRectF name_rect;
@@ -109,19 +119,14 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	);
 	
 	// line between class name and function
-	painter->setPen(line_color);
-	painter->drawLine(
-		QPointF{m_bounding.right(), name_rect.bottom() + vspace_between_fields/2},
-		QPointF{m_bounding.left(),  name_rect.bottom() + vspace_between_fields/2}
-	);
+	auto name_line = name_rect.bottom() + vspace_between_fields/2;
 	
 	QRectF text_rect{
 		QPointF{content.left(),  name_rect.bottom() + vspace_between_fields},
-		QPointF{content.right(), name_rect.bottom() + vspace_between_fields + field_font_met.height()}
+		QPointF{content.right(), name_rect.bottom() + vspace_between_fields + member_font_met.height()}
 	};
 	
-	painter->setFont(field_font);
-	painter->setPen(Qt::GlobalColor::black);
+	painter->setFont(mem_font);
 	
 	// functions
 	std::size_t index=0;
@@ -131,23 +136,17 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		
 		painter->drawText(
 			text_rect,
-			field_font_met.elidedText(
+			member_font_met.elidedText(
 				QString::fromStdString(func.UML()),
 				Qt::ElideRight,
 				content.width()
 			)
 		);
-		text_rect.adjust(0, field_font_met.height() + vspace_between_fields, 0, field_font_met.height() + vspace_between_fields);
+		text_rect.adjust(0, member_font_met.height() + vspace_between_fields, 0, member_font_met.height() + vspace_between_fields);
 	}
 
 	// line between class name and function
-	painter->setPen(line_color);
-	painter->drawLine(
-		QPointF{m_bounding.right(), text_rect.top() - vspace_between_fields/2},
-		QPointF{m_bounding.left(),  text_rect.top() - vspace_between_fields/2}
-	);
-	
-	painter->setPen(Qt::GlobalColor::black);
+	auto func_line = text_rect.top() - vspace_between_fields/2;
 	
 	index=0;
 	for (auto&& field : m_class->Fields())
@@ -155,14 +154,24 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		if (++index > m_show_field) break;
 		painter->drawText(
 			text_rect,
-			field_font_met.elidedText(
+			member_font_met.elidedText(
 				QString::fromStdString(field.UML()),
 				Qt::ElideRight,
 				content.width()
 			)
 		);
-		text_rect.adjust(0, field_font_met.height() + vspace_between_fields, 0, field_font_met.height() + vspace_between_fields);
+		text_rect.adjust(0, member_font_met.height() + vspace_between_fields, 0, member_font_met.height() + vspace_between_fields);
 	}
+	
+	painter->setPen(line_pen);
+	painter->drawLine(
+		QPointF{m_bounding.right(), name_line},
+		QPointF{m_bounding.left(),  name_line}
+	);
+	painter->drawLine(
+		QPointF{m_bounding.right(), func_line},
+		QPointF{m_bounding.left(),  func_line}
+	);
 }
 
 const std::string& ClassItem::ID() const
@@ -188,7 +197,13 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 	else if (change == QGraphicsItem::ItemSelectedChange)
 	{
 		if (!m_grip)
+		{
 			m_grip = std::make_unique<SizeGripItem>(new Resizer, this);
+			
+			auto effect = new QGraphicsDropShadowEffect{this};
+			effect->setBlurRadius(10);
+			setGraphicsEffect(effect);
+		}
 		else
 		{
 			m_grip.reset();
@@ -200,6 +215,8 @@ QVariant ClassItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 				-size.width()/2, -size.height()/2,
 				+size.width()/2, +size.height()/2
 			);
+			
+			setGraphicsEffect(nullptr);
 		}
 	}
 
@@ -247,7 +264,7 @@ ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 	}
 }
 
-gui::ItemType ClassItem::ItemType() const
+classgf::ItemType ClassItem::ItemType() const
 {
 	return ItemType::class_item;
 }
@@ -326,4 +343,4 @@ void ClassItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	}
 }
 	
-} // end of namespace
+}} // end of namespace

@@ -16,6 +16,7 @@
 #include <QGraphicsItem>
 
 namespace gui {
+namespace classgf {
 
 /**
  * \brief A connector between two items in the class diagram.
@@ -30,8 +31,8 @@ class Edge : public BaseItem, public QGraphicsItem
 public:
 	Edge(const BaseItem *from, const BaseItem *to);
 	
-	QGraphicsItem* GraphicsItem() override;
-	const QGraphicsItem* GraphicsItem() const override;
+	QGraphicsItem *GraphicsItem() override;
+	const QGraphicsItem *GraphicsItem() const override;
 	
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -39,12 +40,12 @@ public:
 	void UpdatePosition();
 	
 	ItemRelation RelationOf(const BaseItem *other) const override;
-	gui::ItemType ItemType() const override;
+	classgf::ItemType ItemType() const override;
 	void Update(const codebase::EntityMap *code_base);
 	
 	bool IsChanged() const override;
-	const BaseItem* Other(const BaseItem *one) const;
-	
+	const BaseItem *Other(const BaseItem *one) const;
+
 private:
 	void DrawEndings(QPainter *painter, const QLineF& dia) const;
 	void DrawToEnding(QPainter *painter, ItemRelation relation) const;
@@ -53,7 +54,7 @@ private:
 	void DrawInheritanceTrigangle(QPainter *painter) const;
 	void DrawAggregationDiamond(QPainter *painter) const;
 	void DrawArrowHead(QPainter *painter) const;
-	
+
 private:
 	const BaseItem *m_from;
 	const BaseItem *m_to;
@@ -62,4 +63,4 @@ private:
 	QRectF m_bounding;
 };
 	
-} // end of namespace
+}} // end of namespace

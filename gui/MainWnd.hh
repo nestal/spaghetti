@@ -14,8 +14,6 @@
 
 #include <QtWidgets/QMainWindow>
 
-#include "ModelViewFwd.hh"
-
 #include <memory>
 
 namespace Ui {
@@ -37,6 +35,7 @@ public:
 	~MainWnd();
 
 	void Log(const QString& message);
+	void Open(const QString& file);
 	
 private:
 	void ConnectSignals();

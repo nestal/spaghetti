@@ -7,26 +7,26 @@
 */
 
 //
-// Created by nestal on 2/19/17.
+// Created by nestal on 3/4/17.
 //
 
 #pragma once
 
-namespace gui {
+#include <QtCore/QtGlobal>
 
+namespace gui {
 namespace classgf {
 
-class ClassItem;
-class ClassModel;
-class ClassView;
+class Setting;
 
-}
+class Viewport
+{
+protected:
+	~Viewport() = default;
+	
+public:
+	virtual const classgf::Setting& Setting() const = 0;
+	virtual qreal ZoomFactor() const = 0;
+};
 
-namespace sourcevw {
-
-class SourceView;
-class SourceModel;
-
-}
-
-} // end of namespace
+}} // end of namespace

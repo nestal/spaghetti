@@ -26,11 +26,8 @@ class DataType;
 class EntityMap;
 }
 
-namespace project {
-class ClassDiagram;
-}
-
 namespace gui {
+namespace classgf {
 
 class ClassItem;
 class BaseItem;
@@ -40,8 +37,8 @@ class BaseItem;
  */
 class ClassModel : public QObject, public project::ModelBase
 {
-	Q_OBJECT
-	
+Q_OBJECT
+
 public:
 	ClassModel(const codebase::EntityMap *codebase, const QString& name, QObject *parent);
 	ClassModel(const ClassModel&) = delete;
@@ -51,7 +48,7 @@ public:
 	ClassModel& operator=(const ClassModel&) = delete;
 	ClassModel& operator=(ClassModel&&) = default;
 	
-	QGraphicsScene* Scene();
+	QGraphicsScene *Scene();
 	
 	// ModelBase overrides
 	void AddEntity(const std::string& id, const QPointF& pos) override;
@@ -61,32 +58,32 @@ public:
 	std::string Name() const override;
 	void SetName(const QString& name) override;
 	void Clear();
-
+	
 	void Load(const QJsonObject& obj) override;
 	QJsonObject Save() const override;
 	
 	void DeleteSelectedItem();
-
-	ModelType Type() const override {return ModelType::class_diagram;}
+	
+	ModelType Type() const override { return ModelType::class_diagram; }
 	
 	bool IsChanged() const override;
 	void UpdateCodeBase(const codebase::EntityMap *codebase) override;
-	
+
 signals:
 	void OnChanged(bool changed) const;
-	
+
 private:
 	void DetectEdges(ClassItem *item);
 	void AddLine(ClassItem *from, ClassItem *to);
 	void OnChildChanged(BaseItem *child);
 	void SetChanged(bool changed) const;
-	
+
 private:
-	QString                         m_name;
-	mutable bool                    m_changed{false};
+	QString m_name;
+	mutable bool m_changed{false};
 	
 	std::unique_ptr<QGraphicsScene> m_scene;
-	const codebase::EntityMap       *m_codebase{};
+	const codebase::EntityMap *m_codebase{};
 };
-
-} // end of namespace
+	
+}} // end of namespace

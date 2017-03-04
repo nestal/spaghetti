@@ -31,13 +31,13 @@ class EntityMap;
 }
 
 namespace gui {
+namespace classgf {
 
 class Edge;
 
 class ClassItem : public QGraphicsObject, public BaseItem
 {
 	Q_OBJECT
-	Q_INTERFACES(QGraphicsItem)
 	
 public:
 	ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size = {225.0, 175.0});
@@ -58,7 +58,7 @@ public:
 	QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
 	
 	ItemRelation RelationOf(const BaseItem *other) const override;
-	gui::ItemType ItemType() const override;
+	classgf::ItemType ItemType() const override;
 	void Update(const codebase::EntityMap *map);
 	
 	bool IsChanged() const override;
@@ -91,4 +91,4 @@ private:
 	static const qreal m_margin;
 };
 	
-} // end of namespace
+}} // end of namespace

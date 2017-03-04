@@ -20,6 +20,7 @@
 #include <atomic>
 
 namespace gui {
+namespace sourcevw {
 
 class SourceView : public QPlainTextEdit, public ViewBase
 {
@@ -34,6 +35,8 @@ public:
 	
 	SourceModel* Model() override;
 	QWidget* Widget() override;
+	
+	void ResetZoom() override ;
 
 private:
 	void Parse(unsigned line, unsigned column);
@@ -47,4 +50,4 @@ private:
 	QTextCursor m_highlight;
 };
 
-} // end of namespace
+}} // end of namespace

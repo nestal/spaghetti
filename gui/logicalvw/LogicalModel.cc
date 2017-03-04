@@ -30,6 +30,7 @@
 #include <typeindex>
 
 namespace gui {
+namespace logicalvw {
 
 LogicalModel::LogicalModel(const codebase::Entity *root, const codebase::EntityMap *index, QObject *parent) :
 	QAbstractItemModel{parent},
@@ -45,7 +46,7 @@ int LogicalModel::rowCount(const QModelIndex& parent) const
 	return static_cast<int>(At(parent)->ChildCount());
 }
 
-const codebase::Entity* LogicalModel::At(const QModelIndex& idx) const
+const codebase::Entity *LogicalModel::At(const QModelIndex& idx) const
 {
 	return idx == QModelIndex{} ? m_root : reinterpret_cast<const codebase::Entity *>(idx.internalPointer());
 }
@@ -56,15 +57,15 @@ QVariant LogicalModel::data(const QModelIndex& index, int role) const
 	assert(entity);
 	
 	static const std::map<std::type_index, QIcon> icons = {
-		{typeid(const codebase::DataType&),  QIcon{":/images/class.png"}},
+		{typeid(const codebase::DataType&), QIcon{":/images/class.png"}},
 		{typeid(const codebase::Namespace&), QIcon{":/images/namespace.png"}},
-		{typeid(const codebase::Function&),  QIcon{":/images/function.png"}},
-		{typeid(const codebase::Variable&),  QIcon{":/images/variable.png"}},
+		{typeid(const codebase::Function&), QIcon{":/images/function.png"}},
+		{typeid(const codebase::Variable&), QIcon{":/images/variable.png"}},
 	};
 	
 	switch (role)
 	{
-	case Qt::DisplayRole:    return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->Type());
+	case Qt::DisplayRole: return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->Type());
 	case Qt::DecorationRole:
 	{
 		if (index.column() == 0)
@@ -97,7 +98,7 @@ QVariant LogicalModel::headerData(int section, Qt::Orientation orientation, int 
 		case 1: return tr("Type");
 		}
 	}
-		
+	
 	return {};
 }
 
@@ -170,4 +171,4 @@ void LogicalModel::Reset(const codebase::Entity *root, const codebase::EntityMap
 	endResetModel();
 }
 	
-} // end of namespace
+}} // end of namespace

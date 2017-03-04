@@ -19,6 +19,7 @@
 #include <QtCore/QString>
 
 namespace gui {
+namespace sourcevw {
 
 class SourceModel : public QObject, public project::ModelBase
 {
@@ -55,4 +56,4 @@ private:
 	unsigned m_column{};
 };
 
-} // end of namespace
+}} // end of namespace

@@ -15,6 +15,7 @@
 #include <QtCore/QSortFilterProxyModel>
 
 namespace gui {
+namespace logicalvw {
 
 class LogicalModel;
 
@@ -27,9 +28,9 @@ public:
 	
 	bool IsShowAll() const;
 	void SetShowAll(bool value);
-	
+
 private:
 	bool m_show_all{false};
 };
 	
-} // end of namespace
+}} // end of namespace

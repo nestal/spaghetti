@@ -34,8 +34,10 @@ class SourceLocation;
 
 namespace gui {
 
+namespace logicalvw {
 class LogicalModel;
 class ProxyModel;
+}
 
 /**
  * \brief Aggregates all models in this application
@@ -85,8 +87,8 @@ public:
 	void SetShowAllClasses(bool value);
 	
 signals:
-	void OnCreateClassDiagramView(gui::ClassModel *model);
-	void OnCreateSourceView(SourceModel *model);
+	void OnCreateClassDiagramView(classgf::ClassModel *model);
+	void OnCreateSourceView(sourcevw::SourceModel *model);
 	void OnDestroyModel(project::ModelBase *model);
 	void OnCompileDiagnotics(const QString& line);
 	void OnSetCurrentFile(const QString& file);
@@ -100,13 +102,13 @@ private:
 	class ModelFactory;
 	class ProjectModel_;
 	
-	QString                                         m_current_file;
-	std::unique_ptr<project::Project>               m_project;
+	QString                                     m_current_file;
+	std::unique_ptr<project::Project>           m_project;
 	
 	// for the docking windows
-	std::unique_ptr<ProjectModel_>                  m_project_model;
-	std::unique_ptr<LogicalModel>     m_logical_model;
-	std::unique_ptr<ProxyModel>       m_proxy_model;
+	std::unique_ptr<ProjectModel_>              m_project_model;
+	std::unique_ptr<logicalvw::LogicalModel>    m_logical_model;
+	std::unique_ptr<logicalvw::ProxyModel>      m_proxy_model;
 };
 
 } // end of namespace

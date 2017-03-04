@@ -13,8 +13,8 @@
 #include "ViewSet.hh"
 
 #include "Document.hh"
-#include "gui/source_view/SourceView.hh"
-#include "gui/class_diagram/ClassView.hh"
+#include "sourcevw/SourceView.hh"
+#include "classgf/ClassView.hh"
 
 #include <QInputDialog>
 #include <QTabBar>
@@ -95,16 +95,16 @@ void ViewSet::Setup(Document& doc)
 	connect(tabBar(), &QTabBar::tabBarDoubleClicked, this, &ViewSet::OnRenameTab);
 }
 
-void ViewSet::NewClassDiagramView(ClassModel *model)
+void ViewSet::NewClassDiagramView(classgf::ClassModel *model)
 {
-	auto view   = new ClassView{model, this};
-	connect(view, &ClassView::DropEntity, model, &ClassModel::AddEntity);
+	auto view   = new classgf::ClassView{model, this};
+	connect(view, &classgf::ClassView::DropEntity, model, &classgf::ClassModel::AddEntity);
 	
 	// don't capture "view". instead, capture model and find for its view instead
 	// we can depend on the model because when the model is destroyed, this connection
 	// will be disconnect and the lambda callback won't run.
 	// if we capture "view" here, we may found that the view may be already destroyed
-	connect(model, &ClassModel::OnChanged, [this, model](bool changed)
+	connect(model, &classgf::ClassModel::OnChanged, [this, model](bool changed)
 	{
 		auto it = std::find_if(begin(), end(), [model](auto v){return v->Model() == model;});
 		if (it != end())
@@ -123,9 +123,9 @@ void ViewSet::NewClassDiagramView(ClassModel *model)
 	setCurrentIndex(tab);
 }
 
-void ViewSet::NewSourceView(SourceModel *model)
+void ViewSet::NewSourceView(sourcevw::SourceModel *model)
 {
-	auto view = new SourceView{model, this};
+	auto view = new sourcevw::SourceView{model, this};
 	addTab(view, QString::fromStdString(model->Name()));
 	setCurrentWidget(view);
 	
@@ -187,7 +187,7 @@ void ViewSet::ViewCode(const std::string& filename, unsigned line, unsigned colu
 	// search for existing tab showing the file
 	for (int i = 0 ; i < count() ; ++i)
 	{
-		auto view = dynamic_cast<SourceView*>(widget(i));
+		auto view = dynamic_cast<sourcevw::SourceView*>(widget(i));
 		if (view && view->Filename() == filename)
 		{
 			view->GoTo(line, column);
@@ -202,8 +202,14 @@ void ViewSet::ViewCode(const std::string& filename, unsigned line, unsigned colu
 
 void ViewSet::OnDelete()
 {
-	if (auto view = dynamic_cast<ClassView*>(currentWidget()))
+	if (auto view = dynamic_cast<classgf::ClassView*>(currentWidget()))
 		view->DeleteSelectedItem();
+}
+
+void ViewSet::ResetZoom()
+{
+	if (auto view = dynamic_cast<ViewBase*>(currentWidget()))
+		view->ResetZoom();
 }
 	
 } // end of namespace

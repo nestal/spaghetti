@@ -21,6 +21,7 @@
 #include <QtCore/QFile>
 
 namespace gui {
+namespace sourcevw {
 
 SourceView::SourceView(SourceModel *model, QWidget *parent) :
 	QPlainTextEdit{parent},
@@ -162,5 +163,9 @@ QWidget *SourceView::Widget()
 {
 	return this;
 }
+
+void SourceView::ResetZoom()
+{
+}
 	
-} // end of namespace
+}} // end of namespace

@@ -21,6 +21,7 @@ class EntityMap;
 }
 
 namespace gui {
+namespace logicalvw {
 
 /**
  * \brief Model for entity tree
@@ -56,4 +57,4 @@ private:
 	const codebase::EntityMap *m_index{};
 };
 	
-} // end of namespace
+}} // end of namespace
