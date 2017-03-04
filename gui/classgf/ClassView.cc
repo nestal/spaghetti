@@ -154,19 +154,26 @@ void ClassView::ResetZoom()
 
 void ClassView::mouseMoveEvent(QMouseEvent *event)
 {
-	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier && event->buttons() & Qt::LeftButton)
+	{
 		Pan(mapToScene(event->pos()) - mapToScene(m_last_pos));
+		event->accept();
+	}
+	else
+		QGraphicsView::mouseMoveEvent(event);
 	
-	QGraphicsView::mouseMoveEvent(event);
 	m_last_pos = event->pos();
 }
 
 void ClassView::mousePressEvent(QMouseEvent *event)
 {
-	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier)
+	if (QGuiApplication::keyboardModifiers() == Qt::ControlModifier && event->buttons() & Qt::LeftButton)
+	{
 		m_last_pos = event->pos();
-	
-	QGraphicsView::mousePressEvent(event);
+		event->accept();
+	}
+	else
+		QGraphicsView::mousePressEvent(event);
 }
 
 void ClassView::Pan(QPointF delta)
