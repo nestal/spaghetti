@@ -79,7 +79,8 @@ private:
 	void OnPositionChanged();
 	void OnSelectedChange(bool selected);
 	void Normalize();
-	QRectF DrawName(QPainter *painter, const QRectF& content, QFont& font, QFontMetrics& met);
+	QRectF DrawName(QPainter *painter, QRectF content, QFont& font, QFontMetrics& met);
+	qreal Margin(const QFontMetrics& name_font) const;
 	
 private:
 	class Resizer;

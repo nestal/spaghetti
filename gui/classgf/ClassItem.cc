@@ -30,6 +30,7 @@
 
 #include <QDebug>
 #include <iostream>
+#include <cmath>
 
 // using https://github.com/cesarbs/sizegripitem to implement resize
 
@@ -76,14 +77,46 @@ QRectF ClassItem::boundingRect() const
 	return m_bounding;
 }
 
-QRectF ClassItem::DrawName(QPainter *painter, const QRectF& content, QFont& font, QFontMetrics& met)
+qreal ClassItem::Margin(const QFontMetrics& name_font) const
+{
+	// assume content has 1 line
+	auto remain_height = m_bounding.height() - name_font.height();
+	
+	return remain_height > name_font.height() ? m_margin : std::max(remain_height/2, 0.0);
+}
+
+QRectF ClassItem::DrawName(QPainter *painter, QRectF content, QFont& font, QFontMetrics& met)
 {
 	auto text = QString::fromStdString(m_class->Name());
 	
-	if (content.height() < met.height() || content.width() < met.width(text))
+	auto width  = met.width(text);
+	auto height = met.height();
+	
+	// use the whole content box if no other member to be shown
+	auto name_only = (m_show_field == 0 && m_show_function == 0);
+	if (!name_only)
+		content.setBottom(content.top()+met.height());
+	
+	// try to break the name into multiple lines
+	else if (content.width() < width && content.height() > height)
+	{
+		auto line_count = static_cast<int>(std::ceil(content.height()/met.height()));
+		assert(line_count > 1);
+		
+		width  = 0;
+		auto interval = text.size() / line_count;
+		for (auto i = 1 ; i < line_count ; i++)
+		{
+			width   = std::max(width, met.width(text.mid((i-1)*interval, interval)));
+			text.insert(i * interval, '\n');
+		}
+		height = line_count * met.height() ;
+	}
+	
+	if (content.height() < height || content.width() < width)
 	{
 		auto name = QString::fromStdString(m_class->Name());
-		auto font_factor = content.width() / met.width(name);
+		auto font_factor = std::min(content.width() / width, content.height() / height);
 		if (font_factor < 1.0 || font_factor > 1.25)
 			font.setPointSizeF(font.pointSizeF() * font_factor);
 	}
@@ -108,15 +141,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
 	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
 	
+	QFontMetrics name_font_met{name_font}, member_font_met{mem_font};
+	
 	// normalize margin
-	auto margin = m_margin / view.ZoomFactor();
+	auto margin  = Margin(name_font_met);
 	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
 	
-	// use bold font for name
-	QFontMetrics name_font_met{name_font}, member_font_met{mem_font};
 	ComputeSize(content, name_font_met, member_font_met);
-	
-	auto name_only = (m_show_field == 0 && m_show_function == 0);
 	
 	// adjust vertical margin
 	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * member_font_met.height();
@@ -136,7 +167,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// draw class name
 	auto name_rect = DrawName(
 		painter,
-		name_only ? content : QRectF{content.topLeft(), QPointF{content.right(), content.top()+name_font_met.height()}},
+		content,
 		name_font,
 		name_font_met
 	);
