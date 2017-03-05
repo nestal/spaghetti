@@ -81,8 +81,8 @@ QRectF ClassItem::boundingRect() const
 qreal ClassItem::Margin(const QFontMetrics& name_font, qreal factor) const
 {
 	// assume content has 1 line
-	auto remain_height = m_bounding.height() - name_font.height()/factor;
-	return remain_height > name_font.height() ? m_margin : std::max(remain_height/2, 0.0);
+	auto remain_height = m_bounding.height() - name_font.height();
+	return remain_height > name_font.height() ? m_margin/factor : std::max(remain_height/2, 0.0);
 }
 
 QStaticText ClassItem::NameText(const QTransform& transform, const QRectF& content, QFont& font)

@@ -49,7 +49,6 @@ void Function::Visit(libclx::Cursor self)
 		{
 		case CXCursor_ParmDecl:
 			AddUnique(m_args, cursor.USR(), cursor, this);
-//			std::cout << Name() << "::" <<  cursor.Spelling() << "\"" << cursor.Type() << "\"" << std::endl;
 			break;
 			
 		default:
