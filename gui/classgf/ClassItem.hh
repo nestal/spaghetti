@@ -75,10 +75,11 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	bool ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font);
+	void ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font);
 	void OnPositionChanged();
 	void OnSelectedChange(bool selected);
 	void Normalize();
+	QRectF DrawName(QPainter *painter, const QRectF& content, QFont& font, QFontMetrics& met);
 	
 private:
 	class Resizer;
