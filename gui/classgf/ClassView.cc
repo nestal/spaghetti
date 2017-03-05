@@ -195,16 +195,47 @@ void ClassView::mouseDoubleClickEvent(QMouseEvent *event)
 	{
 		if (auto item = dynamic_cast<ClassItem *>(anitem))
 		{
-			setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-			centerOn(item->mapToScene(item->boundingRect().center()));
-			
 			//m_zoom = item->mapToScene
 			auto top_left     = mapFromScene(item->mapToScene(item->boundingRect().topLeft()));
 			auto bottom_right = mapFromScene(item->mapToScene(item->boundingRect().bottomRight()));
 			
-			auto width = QRectF{top_left, bottom_right}.width();
-			m_zoom = viewport()->rect().width()/width;
+			auto width  = bottom_right.x() - top_left.x();
+			auto height = bottom_right.y() - top_left.y();
+			
+			std::cout << "item is " << width << " " << viewport()->rect().width() << " wide in viewport: " << m_zoom << std::endl;
+			std::cout << "item is " << height << " " << viewport()->rect().height() << " high in viewport: " << m_zoom << std::endl;
+			
+			m_zoom *= std::min(
+				viewport()->rect().width()/static_cast<qreal>(width),
+				viewport()->rect().height()/static_cast<qreal>(height)
+			);
+			std::cout << "new zoom is " << m_zoom << std::endl;
+			
+			setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 			setTransform(QTransform{}.scale(m_zoom, m_zoom));
+			
+			// after zooming, item's width in viewport coordinate should be equal to viewport width
+			
+			auto top_left2     = mapFromScene(item->mapToScene(item->boundingRect().topLeft()));
+			auto bottom_right2 = mapFromScene(item->mapToScene(item->boundingRect().bottomRight()));
+			auto width2  = bottom_right2.x() - top_left2.x();
+			auto height2 = bottom_right2.y() - top_left2.y();
+			
+			std::cout << "item2 is " << width2 << " " << viewport()->rect().width() << " wide in viewport: " << m_zoom << std::endl;
+			std::cout << "item2 is " << height2 << " " << viewport()->rect().height() << " high in viewport: " << m_zoom << std::endl;
+			
+/*			auto item_view = QRectF{
+				item->boundingRect().topLeft(),
+				QPointF{ item->boundingRect().right(), item->boundingRect().top() + viewport()->rect().height() }
+			};
+			
+			std::cout << "item view = " << item_view.top() << " " << item_view.left() << " " << item_view.bottom() << " " << item_view.right() << std::endl;
+			
+			ensureVisible(QRectF{
+				item->mapToScene(item->boundingRect().topLeft()),
+				item->mapToScene(QPointF{item->boundingRect().right(), item->boundingRect().top() + viewport()->rect().height()})
+			}, 0, 0);*/
+			centerOn(item);
 		}
 	}
 }
