@@ -31,23 +31,20 @@ Edge::Edge(const BaseItem *from, const BaseItem *to) :
 	UpdatePosition();
 }
 
-void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+QLineF Edge::Dia() const
 {
 	auto from = m_from->GraphicsItem();
 	auto to = m_to->GraphicsItem();
 	
-	if (from->collidesWithItem(to))
-		return;
-	
 	QLineF dia{
 		mapFromItem(from, QPointF{from->boundingRect().center()}),
-		mapFromItem(to, QPointF{to->boundingRect().center()})
+		mapFromItem(to,   QPointF{to->boundingRect().center()})
 	};
 	
 	QPointF from_pt, to_pt;
 	
 	auto from_p = mapFromItem(from, from->boundingRect());
-	auto to_p = mapFromItem(to, to->boundingRect());
+	auto to_p   = mapFromItem(to, to->boundingRect());
 	
 	for (int i = 0; i < from_p.size(); ++i)
 	{
@@ -61,12 +58,22 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 		if (dia.intersect(line, &to_pt) == QLineF::BoundedIntersection)
 			break;
 	}
+	return {from_pt, to_pt};
+}
+
+void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
+	auto from = m_from->GraphicsItem();
+	auto to = m_to->GraphicsItem();
+	
+	if (from->collidesWithItem(to))
+		return;
 	
 	QPen line_pen{Qt::GlobalColor::black};
 	line_pen.setCosmetic(true);
 	painter->setPen(line_pen);
 	
-	QLineF to_draw{from_pt, to_pt};
+	auto to_draw = Dia();
 	painter->drawLine(to_draw);
 	DrawEndings(painter, to_draw);
 }
@@ -89,7 +96,7 @@ void Edge::UpdatePosition()
 	prepareGeometryChange();
 	m_bounding = QRectF{
 		mapFromItem(from, from_center),
-		mapFromItem(to, to_center),
+		mapFromItem(to,   to_center),
 	}.normalized().adjusted(-arrow_width, -arrow_width, arrow_width, arrow_width);
 }
 

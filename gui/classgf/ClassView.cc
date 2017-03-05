@@ -11,6 +11,8 @@
 //
 
 #include "ClassView.hh"
+
+#include "ClassItem.hh"
 #include "gui/common/MimeType.hh"
 
 #include <QtGui/QtGui>
@@ -22,6 +24,7 @@
 #include <QDebug>
 
 #include <sstream>
+#include <iostream>
 
 namespace gui {
 namespace classgf {
@@ -185,6 +188,27 @@ void ClassView::mouseReleaseEvent(QMouseEvent *event)
 	QGraphicsView::mouseReleaseEvent(event);
 }
 
+void ClassView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	// try to fill the clicked item in the whole viewport
+	for (auto&& anitem : items(event->pos()))
+	{
+		if (auto item = dynamic_cast<ClassItem *>(anitem))
+		{
+			setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+			centerOn(item->mapToScene(item->boundingRect().center()));
+			
+			//m_zoom = item->mapToScene
+			auto top_left     = mapFromScene(item->mapToScene(item->boundingRect().topLeft()));
+			auto bottom_right = mapFromScene(item->mapToScene(item->boundingRect().bottomRight()));
+			
+			auto width = QRectF{top_left, bottom_right}.width();
+			m_zoom = viewport()->rect().width()/width;
+			setTransform(QTransform{}.scale(m_zoom, m_zoom));
+		}
+	}
+}
+
 void ClassView::Pan(QPointF delta)
 {
 	delta *= m_zoom;
@@ -215,5 +239,5 @@ void ClassView::keyReleaseEvent(QKeyEvent *event)
 	
 	QGraphicsView::keyReleaseEvent(event);
 }
-
+	
 }} // end of namespace

@@ -47,6 +47,8 @@ public:
 	const BaseItem *Other(const BaseItem *one) const;
 
 private:
+	QLineF Dia() const;
+	
 	void DrawEndings(QPainter *painter, const QLineF& dia) const;
 	void DrawToEnding(QPainter *painter, ItemRelation relation) const;
 	void DrawFromEnding(QPainter *painter, ItemRelation relation) const;
