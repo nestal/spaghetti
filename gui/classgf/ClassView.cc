@@ -11,6 +11,8 @@
 //
 
 #include "ClassView.hh"
+
+#include "ClassItem.hh"
 #include "gui/common/MimeType.hh"
 
 #include <QtGui/QtGui>
@@ -22,6 +24,7 @@
 #include <QDebug>
 
 #include <sstream>
+#include <iostream>
 
 namespace gui {
 namespace classgf {
@@ -135,8 +138,8 @@ void ClassView::wheelEvent(QWheelEvent *event)
 				
 		event->accept();
 	}
-
-	QGraphicsView::wheelEvent(event);
+	else
+		QGraphicsView::wheelEvent(event);
 }
 
 qreal ClassView::ZoomFactor() const
@@ -185,6 +188,38 @@ void ClassView::mouseReleaseEvent(QMouseEvent *event)
 	QGraphicsView::mouseReleaseEvent(event);
 }
 
+void ClassView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	// try to fill the clicked item in the whole viewport
+	for (auto&& anitem : items(event->pos()))
+	{
+		if (auto item = dynamic_cast<ClassItem *>(anitem))
+		{
+			// item bounding rectangle in scene coordinates
+			auto top_left     = mapFromScene(item->mapToScene(item->boundingRect().topLeft()));
+			auto bottom_right = mapFromScene(item->mapToScene(item->boundingRect().bottomRight()));
+			
+			// ensure to use floating point arithmetic in calculation the zoom ratio
+			qreal width  = bottom_right.x() - top_left.x();
+			qreal height = bottom_right.y() - top_left.y();
+			
+			// calculate the zoom ratio such that the item's width or height in viewport coordinate
+			// to match the viewport
+			m_zoom *= std::min(
+				viewport()->rect().width()   / width,
+				viewport()->rect().height()  / height
+			);
+			
+			setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+			setTransform(QTransform{}.scale(m_zoom, m_zoom));
+			
+			// point the item in the center of the viewport. after zooming, the viewport should
+			// be large enough to view the whole item
+			centerOn(item);
+		}
+	}
+}
+
 void ClassView::Pan(QPointF delta)
 {
 	delta *= m_zoom;
@@ -215,5 +250,5 @@ void ClassView::keyReleaseEvent(QKeyEvent *event)
 	
 	QGraphicsView::keyReleaseEvent(event);
 }
-
+	
 }} // end of namespace

@@ -15,6 +15,8 @@
 #include "ModelBase.hh"
 #include "codebase/CodeBase.hh"
 
+#include <boost/filesystem/path.hpp>
+
 #include <vector>
 
 /**
@@ -25,6 +27,9 @@
  * to manage all user input data that cannot be deduced from the code base.
  * These data includes the class diagram data (e.g. how many diagrams, what
  * classes does these diagrams contains).
+ *
+ * All boost "path" objects in data members are absolute paths. They will
+ * be converted to relative paths when saving the project to disk.
  */
 namespace project {
 
@@ -33,12 +38,12 @@ class Project
 public:
 	Project() = default;
 	
-	void SetProjectDir(const std::string& dir);
-	const std::string& ProjectDir() const;
+	bool SetProjectDir(const boost::filesystem::path& dir);
+	const boost::filesystem::path& ProjectDir() const;
 	void AddSource(const std::string& source_file);
 		
-	void Save(const std::string& filename) const;
-	void Open(const std::string& filename, ModelFactory& factory);
+	void Save(const boost::filesystem::path& path) const;
+	void Open(const boost::filesystem::path& path, ModelFactory& factory);
 
 	template <typename Func>
 	void Reload(Func callback)
@@ -75,7 +80,7 @@ public:
 	void Erase(ModelBase *model);
 	
 private:
-	std::string                 m_project_dir{"."};
+	boost::filesystem::path     m_project_dir{"."};
 	std::vector<std::string>    m_compile_options{
 		"-std=c++14",
 		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",

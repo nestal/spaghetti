@@ -21,6 +21,7 @@
 
 class QGraphicsSimpleTextItem;
 class QSizeF;
+class QStaticText;
 
 class SizeGripItem;
 
@@ -75,10 +76,15 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	void ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font);
+	void ComputeSize(const QRectF& content, const QSizeF& name, const QFontMetrics& field_font);
 	void OnPositionChanged();
 	void OnSelectedChange(bool selected);
 	void Normalize();
+	QStaticText NameText(const QTransform& transform, const QRectF& content, QFont& font);
+	qreal Margin(const QFontMetrics& name_font, qreal factor) const;
+	
+	template <typename Member>
+	QPointF DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met);
 	
 private:
 	class Resizer;

@@ -36,15 +36,16 @@ void Project::AddSource(const std::string& source_file)
 	m_code_base.Parse(source_file, m_compile_options);
 }
 
-void Project::Save(const std::string& filename) const
+void Project::Save(const fs::path& path) const
 {
 	// all paths stored in disk file is relative to the parent directory
-	auto base = fs::path{filename}.parent_path();
+	// of the disk file
+	assert(path.is_absolute());
 	
 	QJsonObject root;
 	root.insert("version", VERSION);
 	root.insert("project_dir", QString::fromStdString(
-		relative(m_project_dir, base).string()
+		relative(m_project_dir, path.parent_path()).string()
 	));
 	
 	QJsonArray cflags;
@@ -57,7 +58,7 @@ void Project::Save(const std::string& filename) const
 
 	for (auto&& tu : m_code_base.TranslationUnits())
 		tus.append(QString::fromStdString(
-			relative(tu.Spelling(), base).string()
+			relative(tu.Spelling(), path.parent_path()).string()
 		));
 	root.insert("translation_units", tus);
 	
@@ -74,24 +75,24 @@ void Project::Save(const std::string& filename) const
 	
 	QJsonDocument json{root};
 	
-std::cout << "project saving to " << filename << std::endl;
-	
-	QFile out{QString::fromStdString(filename)};
+	QFile out{QString::fromStdString(path.string())};
 	if (out.open(QIODevice::WriteOnly))
 		out.write(json.toJson());
 	else
-		throw std::runtime_error("can't open " + filename);
+		throw std::runtime_error("can't open " + path.string());
 }
 
-void Project::Open(const std::string& filename, ModelFactory& factory)
+void Project::Open(const fs::path& path, ModelFactory& factory)
 {
-	QFile in{QString::fromStdString(filename)};
+	// all paths stored in disk file is relative to the parent directory
+	assert(path.is_absolute());
+	
+	QFile in{QString::fromStdString(path.string())};
 	if (in.open(QIODevice::ReadOnly))
 	{
 		auto json = QJsonDocument::fromJson(in.readAll()).object();
 		
-		// all paths stored in disk file is relative to the parent directory
-		auto base = fs::absolute(filename).parent_path();
+		auto base = path.parent_path();
 		
 		auto version_ok = false;
 		auto version = json["version"].toString().toDouble(&version_ok);
@@ -99,9 +100,11 @@ void Project::Open(const std::string& filename, ModelFactory& factory)
 		if (version > my_version)
 			throw std::runtime_error("version mismatch!");
 		
+		// project path is relative to the parent path of the file being loaded
+		auto project_path = (base/json["project_dir"].toString().toStdString()).lexically_normal();
+		
 		// set current path to the project path stored in the file
 		// otherwise the relative paths specified by -I compile option will not work
-		auto project_path = (base/json["project_dir"].toString().toStdString()).lexically_normal();
 		current_path(project_path);
 		m_project_dir = project_path.string();
 		
@@ -165,12 +168,20 @@ const std::vector<std::string>& Project::CompileOptions() const
 	return m_compile_options;
 }
 
-void Project::SetProjectDir(const std::string& dir)
+bool Project::SetProjectDir(const boost::filesystem::path& dir)
 {
-	m_project_dir = dir;
+	assert(dir.is_absolute());
+	
+	if (m_project_dir != dir)
+	{
+		m_project_dir = dir;
+		return true;
+	}
+	else
+		return false;
 }
 
-const std::string& Project::ProjectDir() const
+const boost::filesystem::path& Project::ProjectDir() const
 {
 	return m_project_dir;
 }

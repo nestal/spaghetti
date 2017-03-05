@@ -13,9 +13,12 @@
 #include "project/Project.hh"
 #include "util/Visitor.hh"
 
+#include <boost/filesystem/operations.hpp>
+
 #include <gtest/gtest.h>
 
 using namespace project;
+namespace fs = boost::filesystem;
 
 TEST(PROJECT_TEST, Test_Open_Project)
 {
@@ -27,7 +30,7 @@ TEST(PROJECT_TEST, Test_Open_Save)
 {
 	Project p;
 	p.AddSource(SRC_DIR + std::string{"project/Project.cc"});
-	p.Save("test_project");
+	p.Save(fs::absolute("test_project"));
 	
 	Project p2;
 //	p2.Open("test_project");
