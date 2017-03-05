@@ -23,6 +23,7 @@
 
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
+#include <QtGui/QStaticText>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
@@ -81,51 +82,22 @@ qreal ClassItem::Margin(const QFontMetrics& name_font) const
 {
 	// assume content has 1 line
 	auto remain_height = m_bounding.height() - name_font.height();
-	
 	return remain_height > name_font.height() ? m_margin : std::max(remain_height/2, 0.0);
 }
 
-QRectF ClassItem::DrawName(QPainter *painter, QRectF content, QFont& font, QFontMetrics& met)
+QStaticText ClassItem::NameText(const QTransform& transform, QRectF content, const QFont& font)
 {
-	auto text = QString::fromStdString(m_class->Name());
+	QStaticText text{QString::fromStdString(m_class->Name())};
+	text.setTextWidth(content.width());
 	
-	auto width  = met.width(text);
-	auto height = met.height();
+	QTextOption ops{Qt::AlignCenter};
+	ops.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+	text.setTextOption(ops);
+	text.setTextFormat(Qt::PlainText);
 	
-	// use the whole content box if no other member to be shown
-	auto name_only = (m_show_field == 0 && m_show_function == 0);
-	if (!name_only)
-		content.setBottom(content.top()+met.height());
+	text.prepare(transform, font);
 	
-	// try to break the name into multiple lines
-	else if (content.width() < width && content.height() > height)
-	{
-		auto line_count = static_cast<int>(std::ceil(content.height()/met.height()));
-		assert(line_count > 1);
-		
-		width  = 0;
-		auto interval = text.size() / line_count;
-		for (auto i = 1 ; i < line_count ; i++)
-		{
-			width   = std::max(width, met.width(text.mid((i-1)*interval, interval)));
-			text.insert(i * interval, '\n');
-		}
-		height = line_count * met.height() ;
-	}
-	
-	if (content.height() < height || content.width() < width)
-	{
-		auto name = QString::fromStdString(m_class->Name());
-		auto font_factor = std::min(content.width() / width, content.height() / height);
-		if (font_factor < 1.0 || font_factor > 1.25)
-			font.setPointSizeF(font.pointSizeF() * font_factor);
-	}
-	
-	QRectF rect;
-	painter->setFont(font);
-	painter->setPen(Qt::GlobalColor::black);
-	painter->drawText(content, Qt::AlignCenter, text, &rect);
-	return rect;
+	return text;
 }
 
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
@@ -141,16 +113,20 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
 	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
 	
-	QFontMetrics name_font_met{name_font}, member_font_met{mem_font};
-	
 	// normalize margin
-	auto margin  = Margin(name_font_met);
+	auto margin  = Margin(QFontMetrics{name_font});
 	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
 	
-	ComputeSize(content, name_font_met, member_font_met);
+	auto name = NameText(painter->transform(), content, name_font);
+	QFontMetrics member_font_met{mem_font};
+	ComputeSize(content, name.size(), member_font_met);
+	
+	// don't let the member gets bigger than the name
+	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
+	member_font_met = QFontMetrics{mem_font};
 	
 	// adjust vertical margin
-	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * member_font_met.height();
+	auto total_height = name.size().height() + (m_show_field+m_show_function) * member_font_met.height();
 	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
 
 	QLinearGradient g{m_bounding.topLeft(), m_bounding.bottomRight()};
@@ -165,19 +141,16 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->drawRect(m_bounding);
 
 	// draw class name
-	auto name_rect = DrawName(
-		painter,
-		content,
-		name_font,
-		name_font_met
-	);
+	painter->setPen(Qt::GlobalColor::black);
+	painter->setFont(name_font);
+	painter->drawStaticText(content.topLeft(), name);
 	
 	// line between class name and function
-	auto name_line = name_rect.bottom() + vspace_between_fields/2;
+	auto name_line = content.top() + name.size().height() + vspace_between_fields/2;
 	
 	QRectF text_rect{
-		QPointF{content.left(),  name_rect.bottom() + vspace_between_fields},
-		QPointF{content.right(), name_rect.bottom() + vspace_between_fields + member_font_met.height()}
+		QPointF{content.left(),  content.top() + name.size().height() + vspace_between_fields},
+		QPointF{content.right(), content.top() + name.size().height() + vspace_between_fields + member_font_met.height()}
 	};
 	
 	painter->setFont(mem_font);
@@ -218,14 +191,16 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	}
 	
 	painter->setPen(line_pen);
-	painter->drawLine(
-		QPointF{m_bounding.right(), name_line},
-		QPointF{m_bounding.left(),  name_line}
-	);
-	painter->drawLine(
-		QPointF{m_bounding.right(), func_line},
-		QPointF{m_bounding.left(),  func_line}
-	);
+	if (m_show_field > 0 || m_show_function > 0)
+		painter->drawLine(
+			QPointF{m_bounding.right(), name_line},
+			QPointF{m_bounding.left(),  name_line}
+		);
+	if (m_show_field > 0)
+		painter->drawLine(
+			QPointF{m_bounding.right(), func_line},
+			QPointF{m_bounding.left(),  func_line}
+		);
 }
 
 const std::string& ClassItem::ID() const
@@ -352,13 +327,13 @@ void ClassItem::Update(const codebase::EntityMap *map)
  * \param name_font     the metric of the font to render the class name
  * \param field_font    the metric of the font to render the functions and fields
  */
-void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font)
+void ClassItem::ComputeSize(const QRectF& content, const QSizeF& name, const QFontMetrics& field_font)
 {
 	// total number of function and fields that can be rendered
-	auto total_rows = static_cast<std::size_t>((content.height() - name_font.height())/field_font.height());
+	auto total_rows = static_cast<std::size_t>((content.height() - name.height())/field_font.height());
 	
 	// determine how to distribute the space between function and fields
-	if (total_rows > 0)
+	if (content.height() > name.height() && total_rows > 0)
 	{
 		m_show_function = std::min(m_class->Functions().size(), total_rows);
 		m_show_field    = std::min(m_class->Fields().size(),    total_rows);
