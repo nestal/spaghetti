@@ -25,15 +25,24 @@
 #include "SizeGripItem.h"
 
 #include <QBrush>
+#include <QPen>
+
+const qreal box_width = 20.0;
 
 SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem* parent)
-    : QGraphicsRectItem(-4, -4, 8, 8, parent),
+    : QGraphicsRectItem(-box_width/2, -box_width/2, box_width, box_width, parent),
       positionFlags_(positionFlags),
       parent_(parent)
 {
-    setBrush(QBrush(Qt::lightGray));
+	auto color = QColor{Qt::lightGray};
+	color.setAlphaF(0.5);
+    setBrush(color);
+	
+	setPen(Qt::NoPen);
+	
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
+    setFlag(ItemIgnoresTransformations);
 }
 
 int SizeGripItem::HandleItem::positionFlags() const
