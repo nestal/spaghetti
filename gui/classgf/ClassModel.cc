@@ -204,6 +204,11 @@ void ClassModel::DeleteSelectedItem()
 	std::for_each(removed.begin(), removed.end(), std::default_delete<BaseItem>());
 }
 
+void ClassModel::DeleteItem(ClassItem *)
+{
+	// TODO: implement this
+}
+
 bool ClassModel::IsChanged() const
 {
 	return m_changed;
@@ -236,5 +241,5 @@ void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
 		this->DetectEdges(item);
 	});
 }
-
+	
 }} // end of namespace

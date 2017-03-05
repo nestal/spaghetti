@@ -469,10 +469,12 @@ void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		
 		else
 			m_release_action = m_grip ? MouseActionWhenRelease::deselect : MouseActionWhenRelease::grip;
-	}
 		
-	// prevent default handling
-	event->accept();
+		// prevent default handling
+		event->accept();
+	}
+	else
+		QGraphicsObject::mouseMoveEvent(event);
 }
 
 void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)

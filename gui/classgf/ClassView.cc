@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <QtWidgets/QMenu>
 
 namespace gui {
 namespace classgf {
@@ -39,7 +40,7 @@ ClassView::ClassView(ClassModel *model, QWidget *parent) :
 	m_setting.class_name_font = m_setting.class_member_font = font();
 	m_setting.class_name_font.setBold(true);
 	
-//	setViewport(new QOpenGLWidget);
+	setContextMenuPolicy(Qt::DefaultContextMenu);
 }
 
 void ClassView::dragEnterEvent(QDragEnterEvent *event)
@@ -249,6 +250,30 @@ void ClassView::keyReleaseEvent(QKeyEvent *event)
 		setCursor(Qt::CursorShape::ArrowCursor);
 	
 	QGraphicsView::keyReleaseEvent(event);
+}
+
+void ClassView::contextMenuEvent(QContextMenuEvent *event)
+{
+	std::cout << "menu" << std::endl;
+	
+	QMenu menu;
+	auto del_action = menu.addAction("Delete");
+	
+	auto pos = event->pos();
+	connect(del_action, &QAction::triggered, [pos, this]
+	{
+		// try to fill the clicked item in the whole viewport
+		for (auto&& anitem : items(pos))
+		{
+			if (auto item = dynamic_cast<ClassItem *>(anitem))
+			{
+				m_model->DeleteItem(item);
+				break;
+			}
+		}
+	});
+	menu.exec(event->globalPos());
+	event->accept();
 }
 	
 }} // end of namespace
