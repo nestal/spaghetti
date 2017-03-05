@@ -161,14 +161,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
 	
 	auto name = NameText(painter->transform(), content, name_font);
-	QFontMetrics member_font_met{mem_font};
-	ComputeSize(content, name.size(), member_font_met);
+	ComputeSize(content, name.size(), QFontMetrics{mem_font});
 	
 	// don't let the member gets bigger than the name
 	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
-	member_font_met = QFontMetrics{mem_font};
 	
 	// adjust vertical margin
+	QFontMetrics member_font_met{mem_font};
 	auto total_height = name.size().height() + (m_show_field+m_show_function) * member_font_met.height();
 	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
 
@@ -183,7 +182,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->setPen(line_pen);
 	painter->drawRect(m_bounding);
 
-	// draw class name
+	// draw class name in the middle of the box if there's no other member
 	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ? (content.height()-name.size().height())/2 : 0.0;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(name_font);
@@ -192,10 +191,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// line between class name and function
 	auto name_line = content.top() + name.size().height() + vspace_between_fields/2;
 	
-	QRectF text_rect{
-		QPointF{content.left(),  content.top() + name.size().height() + vspace_between_fields},
-		QPointF{content.right(), content.top() + name.size().height() + vspace_between_fields + member_font_met.height()}
-	};
+	QPointF text_pt{content.left(), content.top() + name.size().height() + vspace_between_fields};
 	
 	painter->setFont(mem_font);
 	
@@ -204,34 +200,17 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	for (auto&& func : m_class->Functions())
 	{
 		if (++index > m_show_function) break;
-		
-		painter->drawText(
-			text_rect,
-			member_font_met.elidedText(
-				QString::fromStdString(func.UML()),
-				Qt::ElideRight,
-				content.width()
-			)
-		);
-		text_rect.adjust(0, member_font_met.height() + vspace_between_fields, 0, member_font_met.height() + vspace_between_fields);
+		text_pt = DrawMember(painter, &func, text_pt, content.right(), vspace_between_fields, member_font_met);
 	}
 
 	// line between class name and function
-	auto func_line = text_rect.top() - vspace_between_fields/2;
+	auto func_line = text_pt.y() - vspace_between_fields/2;
 	
 	index=0;
 	for (auto&& field : m_class->Fields())
 	{
 		if (++index > m_show_field) break;
-		painter->drawText(
-			text_rect,
-			member_font_met.elidedText(
-				QString::fromStdString(field.UML()),
-				Qt::ElideRight,
-				content.width()
-			)
-		);
-		text_rect.adjust(0, member_font_met.height() + vspace_between_fields, 0, member_font_met.height() + vspace_between_fields);
+		text_pt = DrawMember(painter, &field, text_pt, content.right(), vspace_between_fields, member_font_met);
 	}
 	
 	painter->setPen(line_pen);
@@ -245,6 +224,22 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 			QPointF{m_bounding.right(), func_line},
 			QPointF{m_bounding.left(),  func_line}
 		);
+}
+
+QPointF ClassItem::DrawMember(QPainter *painter, const codebase::Entity *member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met)
+{
+	QRectF out;
+	painter->drawText(
+		QRectF{pos, QPointF{right, pos.y()+met.height()}},
+		Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
+		met.elidedText(
+			QString::fromStdString(member->UML()),
+			Qt::ElideRight,
+			right - pos.x()
+		),
+		&out
+	);
+	return QPointF{pos.x(), out.bottom() + vspace};
 }
 
 const std::string& ClassItem::ID() const
