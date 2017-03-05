@@ -135,8 +135,8 @@ void ClassView::wheelEvent(QWheelEvent *event)
 				
 		event->accept();
 	}
-
-	QGraphicsView::wheelEvent(event);
+	else
+		QGraphicsView::wheelEvent(event);
 }
 
 qreal ClassView::ZoomFactor() const
