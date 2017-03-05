@@ -81,7 +81,7 @@ private:
 	void OnSelectedChange(bool selected);
 	void Normalize();
 	QStaticText NameText(const QTransform& transform, const QRectF& content, QFont& font);
-	qreal Margin(const QFontMetrics& name_font) const;
+	qreal Margin(const QFontMetrics& name_font, qreal factor) const;
 	
 private:
 	class Resizer;

@@ -78,18 +78,21 @@ QRectF ClassItem::boundingRect() const
 	return m_bounding;
 }
 
-qreal ClassItem::Margin(const QFontMetrics& name_font) const
+qreal ClassItem::Margin(const QFontMetrics& name_font, qreal factor) const
 {
 	// assume content has 1 line
-	auto remain_height = m_bounding.height() - name_font.height();
+	auto remain_height = m_bounding.height() - name_font.height()/factor;
 	return remain_height > name_font.height() ? m_margin : std::max(remain_height/2, 0.0);
 }
 
 QStaticText ClassItem::NameText(const QTransform& transform, const QRectF& content, QFont& font)
 {
+	assert(content.width() > 0);
+	assert(content.height() > 0);
+	
 	QStaticText text{QString::fromStdString(m_class->Name())};
 	
-	for (auto trial = 0 ; ; trial++)
+	for (auto trial = 0 ; trial < 5 ; trial++)
 	{
 		QTextOption ops{Qt::AlignCenter};
 		ops.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
@@ -105,20 +108,33 @@ QStaticText ClassItem::NameText(const QTransform& transform, const QRectF& conte
 			break;
 		
 		// reduce font and retry
-		auto font_factor = 0.75;
+		auto font_factor = 0.0;
 		
 		// width OK, but height is not enough
 		if (size.width() <= content.width() && size.height() > content.height())
-			font_factor = std::max(font_factor, content.height() / size.height());
+			font_factor = content.height() / size.height();
 		
 		// height OK, but width not enough
 		else if (size.height() <= content.height() && size.width() > content.width())
-			font_factor = std::max(font_factor, content.width() / size.width());
+			font_factor = content.width() / size.width();
 		
-		std::cout << "trial " << trial << " reducing point size by " << font_factor << " for class " << m_class->Name() << std::endl;
-		
+		else
+		{
+			assert(!std::isnan(size.width()));
+			assert(!std::isnan(size.height()));
+			
+			assert(size.height() >= content.height());
+			assert(size.width() >= content.width());
+			font_factor = std::min(
+				std::max(0.0, content.height() / size.height()),
+				std::max(0.0, content.width() / size.width())
+			);
+		}
+				
 		assert(font_factor <= 1.0);
-		if (font_factor < 1.0)
+		auto new_size = font.pointSizeF() * font_factor;
+		
+		if (font_factor < 1.0 && new_size > 0)
 			font.setPointSizeF(font.pointSizeF() * font_factor);
 		else
 			break;
@@ -141,7 +157,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
 	
 	// normalize margin
-	auto margin  = Margin(QFontMetrics{name_font});
+	auto margin  = Margin(QFontMetrics{name_font}, view.ZoomFactor());
 	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
 	
 	auto name = NameText(painter->transform(), content, name_font);
