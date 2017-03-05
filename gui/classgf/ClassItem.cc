@@ -95,7 +95,13 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// use bold font for name
 	QFontMetrics name_font_met{name_font}, member_font_met{mem_font};
-	ComputeSize(content, name_font_met, member_font_met);
+	if (!ComputeSize(content, name_font_met, member_font_met))
+	{
+		auto name = QString::fromStdString(m_class->Name());
+		auto font_factor = content.width() / name_font_met.width(name);
+		if (font_factor < 1.0 || font_factor > 1.25)
+			name_font.setPointSizeF(name_font.pointSizeF() * font_factor);
+	}
 	
 	// adjust vertical margin
 	auto total_height = name_font_met.height() + (m_show_field+m_show_function) * member_font_met.height();
@@ -296,9 +302,19 @@ void ClassItem::Update(const codebase::EntityMap *map)
 	ClearEdges();
 }
 
-void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font)
+/**
+ * \brief Determine how many member functions and variables (fields) that can be fitted in the box
+ * \param content       the size of the box to fit in
+ * \param name_font     the metric of the font to render the class name
+ * \param field_font    the metric of the font to render the functions and fields
+ * \return true if there is enough size, otherwise false
+ */
+bool ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font, const QFontMetrics& field_font)
 {
+	// total number of function and fields that can be rendered
 	auto total_rows = static_cast<std::size_t>((content.height() - name_font.height())/field_font.height());
+	
+	// determine how to distribute the space between function and fields
 	if (total_rows > 0)
 	{
 		m_show_function = std::min(m_class->Functions().size(), total_rows);
@@ -318,10 +334,13 @@ void ClassItem::ComputeSize(const QRectF& content, const QFontMetrics& name_font
 		assert(m_show_field <= total_rows);
 		assert(m_show_function + m_show_field <= total_rows);
 	}
+		
+	// no space to render any function or fields
 	else
-	{
 		m_show_field = m_show_function = 0;
-	}
+	
+	return content.height() >= name_font.height() &&
+		content.width() >= name_font.width(QString::fromStdString(m_class->Name()));
 }
 
 void ClassItem::Resize(const QRectF& rect)
