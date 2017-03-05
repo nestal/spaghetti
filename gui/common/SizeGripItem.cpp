@@ -34,7 +34,7 @@ SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem* parent)
       positionFlags_(positionFlags),
       parent_(parent)
 {
-	auto color = QColor{Qt::lightGray};
+	auto color = QColor{Qt::gray};
 	color.setAlphaF(0.5);
     setBrush(color);
 	
