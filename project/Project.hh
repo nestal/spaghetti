@@ -15,6 +15,8 @@
 #include "ModelBase.hh"
 #include "codebase/CodeBase.hh"
 
+#include <boost/filesystem/path.hpp>
+
 #include <vector>
 
 /**
@@ -37,8 +39,8 @@ public:
 	const std::string& ProjectDir() const;
 	void AddSource(const std::string& source_file);
 		
-	void Save(const std::string& filename) const;
-	void Open(const std::string& filename, ModelFactory& factory);
+	void Save(const boost::filesystem::path& path) const;
+	void Open(const boost::filesystem::path& path, ModelFactory& factory);
 
 	template <typename Func>
 	void Reload(Func callback)

@@ -25,7 +25,7 @@
 #include <QtCore/QTextStream>
 #include <QtWidgets/QApplication>
 
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include <cassert>
 #include <iostream>
@@ -150,7 +150,7 @@ void Document::Open(const QString& file)
 	
 	RaiiCursor cursor(Qt::WaitCursor);
 	ModelFactory factory{this};
-	proj->Open(file.toStdString(), factory);
+	proj->Open(abs_path, factory);
 
 	for (auto&& tu : proj->CodeBase().TranslationUnits())
 		for (auto&& diag : tu.Diagnostics())
@@ -163,8 +163,9 @@ void Document::Open(const QString& file)
 
 void Document::Save()
 {
-	assert(m_current_file.size() > 0);
-	SaveAs(QString::fromStdString(m_current_file.string()));
+	assert(m_current_file.is_absolute());
+	m_project->Save(m_current_file);
+	m_changed = false;
 }
 
 void Document::SaveAs(const QString& file)
