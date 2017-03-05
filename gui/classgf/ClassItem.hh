@@ -82,7 +82,9 @@ private:
 	void Normalize();
 	QStaticText NameText(const QTransform& transform, const QRectF& content, QFont& font);
 	qreal Margin(const QFontMetrics& name_font, qreal factor) const;
-	QPointF DrawMember(QPainter *painter, const codebase::Entity *member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met);
+	
+	template <typename Member>
+	QPointF DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met);
 	
 private:
 	class Resizer;

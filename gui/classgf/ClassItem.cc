@@ -200,7 +200,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	for (auto&& func : m_class->Functions())
 	{
 		if (++index > m_show_function) break;
-		text_pt = DrawMember(painter, &func, text_pt, content.right(), vspace_between_fields, member_font_met);
+		text_pt = DrawMember(painter, func, text_pt, content.right(), vspace_between_fields, member_font_met);
 	}
 
 	// line between class name and function
@@ -210,7 +210,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	for (auto&& field : m_class->Fields())
 	{
 		if (++index > m_show_field) break;
-		text_pt = DrawMember(painter, &field, text_pt, content.right(), vspace_between_fields, member_font_met);
+		text_pt = DrawMember(painter, field, text_pt, content.right(), vspace_between_fields, member_font_met);
 	}
 	
 	painter->setPen(line_pen);
@@ -226,14 +226,15 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		);
 }
 
-QPointF ClassItem::DrawMember(QPainter *painter, const codebase::Entity *member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met)
+template <typename Member>
+QPointF ClassItem::DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met)
 {
 	QRectF out;
 	painter->drawText(
 		QRectF{pos, QPointF{right, pos.y()+met.height()}},
 		Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
 		met.elidedText(
-			QString::fromStdString(member->UML()),
+			QString::fromStdString(member.UML()),
 			Qt::ElideRight,
 			right - pos.x()
 		),
