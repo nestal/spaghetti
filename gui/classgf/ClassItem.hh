@@ -35,6 +35,7 @@ namespace gui {
 namespace classgf {
 
 class Edge;
+class ItemRenderingOptions;
 
 class ClassItem : public QGraphicsObject, public BaseItem
 {
@@ -80,6 +81,7 @@ private:
 	void OnPositionChanged();
 	void OnSelectedChange(bool selected);
 	void Normalize();
+	void DrawBox(QPainter *painter, const ItemRenderingOptions& setting);
 	QStaticText NameText(const QTransform& transform, const QRectF& content, QFont& font);
 	qreal Margin(const QFontMetrics& name_font, qreal factor) const;
 	

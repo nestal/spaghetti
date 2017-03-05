@@ -63,6 +63,7 @@ public:
 	QJsonObject Save() const override;
 	
 	void DeleteSelectedItem();
+	void DeleteItem(ClassItem *item);
 	
 	ModelType Type() const override { return ModelType::class_diagram; }
 	

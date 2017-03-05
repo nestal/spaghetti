@@ -143,34 +143,8 @@ QStaticText ClassItem::NameText(const QTransform& transform, const QRectF& conte
 	return text;
 }
 
-void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
+void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
 {
-	// assume the parent widget of the viewport is our ClassView
-	// query the properties to get rendering parameters
-	auto& view = CurrentViewport(viewport);
-	auto& setting = view.Setting();
-	
-	// normalize font size
-	auto name_font = setting.class_name_font;
-	auto mem_font  = setting.class_member_font;
-	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
-	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
-	
-	// normalize margin
-	auto margin  = Margin(QFontMetrics{name_font}, view.ZoomFactor());
-	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
-	
-	auto name = NameText(painter->transform(), content, name_font);
-	ComputeSize(content, name.size(), QFontMetrics{mem_font});
-	
-	// don't let the member gets bigger than the name
-	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
-	
-	// adjust vertical margin
-	QFontMetrics member_font_met{mem_font};
-	auto total_height = name.size().height() + (m_show_field+m_show_function) * member_font_met.height();
-	auto vspace_between_fields = (content.height() - total_height) / (m_show_field+m_show_function); // include space between name
-
 	QLinearGradient g{m_bounding.topLeft(), m_bounding.bottomRight()};
 	g.setColorAt(0, setting.class_box_color);
 	g.setColorAt(1, setting.class_box_color2);
@@ -181,38 +155,77 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	line_pen.setCosmetic(true);
 	painter->setPen(line_pen);
 	painter->drawRect(m_bounding);
+}
 
+void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
+{
+	// assume the parent widget of the viewport is our ClassView
+	// query the properties to get rendering parameters
+	auto& view = CurrentViewport(viewport);
+	auto& setting = view.Setting();
+	
+	DrawBox(painter, setting);
+	
+	// normalize font size
+	auto name_font = setting.class_name_font;
+	auto mem_font  = setting.class_member_font;
+	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
+	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
+	
+	// normalize margin
+	auto margin  = Margin(QFontMetrics{name_font}, view.ZoomFactor());
+	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
+
+	// fix bug found by Isis
+	if (content.isEmpty())
+		return;
+
+	auto name = NameText(painter->transform(), content, name_font);
+	ComputeSize(content, name.size(), QFontMetrics{mem_font});
+	
+	// don't let the member gets bigger than the name
+	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
+	
+	// adjust vertical margin
+	QFontMetrics member_font_met{mem_font};
+	auto total_height = name.size().height() + (m_show_field + m_show_function) * member_font_met.height();
+	auto vspace_between_fields =
+		(content.height() - total_height) / (m_show_field + m_show_function); // include space between name
+	
 	// draw class name in the middle of the box if there's no other member
-	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ? (content.height()-name.size().height())/2 : 0.0;
+	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ?
+		(content.height() - name.size().height()) / 2 : 0.0;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(name_font);
 	painter->drawStaticText(QPointF{content.left(), content.top() + name_yoffset}, name);
 	
 	// line between class name and function
-	auto name_line = content.top() + name.size().height() + vspace_between_fields/2;
+	auto name_line = content.top() + name.size().height() + vspace_between_fields / 2;
 	
 	QPointF text_pt{content.left(), content.top() + name.size().height() + vspace_between_fields};
 	
 	painter->setFont(mem_font);
 	
 	// functions
-	std::size_t index=0;
+	std::size_t index = 0;
 	for (auto&& func : m_class->Functions())
 	{
 		if (++index > m_show_function) break;
 		text_pt = DrawMember(painter, func, text_pt, content.right(), vspace_between_fields, member_font_met);
 	}
-
-	// line between class name and function
-	auto func_line = text_pt.y() - vspace_between_fields/2;
 	
-	index=0;
+	// line between class name and function
+	auto func_line = text_pt.y() - vspace_between_fields / 2;
+	
+	index = 0;
 	for (auto&& field : m_class->Fields())
 	{
 		if (++index > m_show_field) break;
 		text_pt = DrawMember(painter, field, text_pt, content.right(), vspace_between_fields, member_font_met);
 	}
 	
+	QPen line_pen{setting.line_color};
+	line_pen.setCosmetic(true);
 	painter->setPen(line_pen);
 	if (m_show_field > 0 || m_show_function > 0)
 		painter->drawLine(
@@ -236,7 +249,7 @@ QPointF ClassItem::DrawMember(QPainter *painter, const Member& member, const QPo
 		met.elidedText(
 			QString::fromStdString(member.UML()),
 			Qt::ElideRight,
-			right - pos.x()
+			static_cast<int>(right - pos.x())
 		),
 		&out
 	);
@@ -456,10 +469,12 @@ void ClassItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		
 		else
 			m_release_action = m_grip ? MouseActionWhenRelease::deselect : MouseActionWhenRelease::grip;
-	}
 		
-	// prevent default handling
-	event->accept();
+		// prevent default handling
+		event->accept();
+	}
+	else
+		QGraphicsObject::mouseMoveEvent(event);
 }
 
 void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)

@@ -1,0 +1,167 @@
+{
+    "cflags": [
+        "-std=c++14",
+        "-I",
+        "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+        "-I",
+        ".",
+        "-I",
+        "/usr/include/qt5",
+        "-fPIC",
+        "-I./cmake-build-debug",
+        "-I",
+        "/usr/include/qt5/QtCore",
+        "-I",
+        "/usr/include/qt5/QtGui",
+        "-I",
+        "/usr/include/qt5/QtWidgets"
+    ],
+    "models": [
+        {
+            "classes": [
+                {
+                    "height": 175,
+                    "id": "c:@N@libclx@S@Type",
+                    "width": 225,
+                    "x": -959,
+                    "y": 468
+                },
+                {
+                    "height": 249,
+                    "id": "c:@N@codebase@S@Namespace",
+                    "width": 315,
+                    "x": -1072,
+                    "y": 150
+                },
+                {
+                    "height": 179,
+                    "id": "c:@N@codebase@S@EntityVec",
+                    "width": 416,
+                    "x": -857.5,
+                    "y": -128
+                },
+                {
+                    "height": 198,
+                    "id": "c:@N@codebase@S@Entity",
+                    "width": 441,
+                    "x": -332,
+                    "y": -274
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@LeafEntity",
+                    "width": 225,
+                    "x": -113,
+                    "y": 9
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@DataType",
+                    "width": 225,
+                    "x": -466,
+                    "y": 10
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@Variable",
+                    "width": 225,
+                    "x": -418,
+                    "y": 473
+                },
+                {
+                    "height": 230,
+                    "id": "c:@N@codebase@S@Function",
+                    "width": 225,
+                    "x": -686,
+                    "y": 229.5
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@libclx@S@SourceLocation",
+                    "width": 225,
+                    "x": -124,
+                    "y": 335
+                }
+            ],
+            "name": "Entity Classes",
+            "type": "class_diagram"
+        },
+        {
+            "classes": [
+                {
+                    "height": 175,
+                    "id": "c:@S@SizeGripItem",
+                    "width": 225,
+                    "x": -1854,
+                    "y": 445
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsObject",
+                    "width": 225,
+                    "x": -1564,
+                    "y": 449
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@ClassView",
+                    "width": 225,
+                    "x": -722,
+                    "y": 570
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@BaseItem",
+                    "width": 225,
+                    "x": -1164,
+                    "y": 146
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@ClassItem",
+                    "width": 225,
+                    "x": -1518,
+                    "y": 736
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@Edge",
+                    "width": 225,
+                    "x": -1112,
+                    "y": 743
+                },
+                {
+                    "height": 263,
+                    "id": "c:@S@QGraphicsView",
+                    "width": 339,
+                    "x": -730,
+                    "y": 208
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsItem",
+                    "width": 225,
+                    "x": -1554,
+                    "y": 147
+                }
+            ],
+            "name": "Class Diagram2",
+            "type": "class_diagram"
+        }
+    ],
+    "project_dir": "..",
+    "translation_units": [
+        "../codebase/DataType.cc",
+        "../gui/MainWnd.cc",
+        "../codebase/CodeBase.cc",
+        "../codebase/Variable.cc",
+        "../codebase/Namespace.cc",
+        "../codebase/Function.cc",
+        "../gui/Document.cc",
+        "../gui/ViewSet.cc",
+        "../gui/classgf/ClassItem.cc",
+        "../gui/classgf/ClassModel.cc",
+        "../gui/classgf/BaseItem.cc"
+    ],
+    "version": "0.3"
+}
