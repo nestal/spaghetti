@@ -52,7 +52,10 @@ public:
  * member function, a namespace and anything. Entities are organized in a tree structure.
  * Each Entity has a parent (except for the root) and optionally a list of child entities.
  *
- * Each Entity has an ID to unique identify them in the code base.
+ * Each Entity has an ID to unique identify them in the code base. In libclang-c this ID
+ * is called an USR. In other words, the definition of an Entity is a libclang-c object
+ * with a unique USR. In libclang-c terms, the parent-child relationship corresponds to
+ * the semantic-parent relationship, not the lexical one.
  */
 class Entity
 {
@@ -61,6 +64,15 @@ public:
 	
 	static const std::string& NullID();
 	
+	/**
+	 * \brief Name of the entity.
+	 *
+	 * If the entity is a class, this function returns its class name. Similarly it returns
+	 * the function name if the entity is a function. The namespace prefix will not be
+	 * included in any case.
+	 *
+	 * \return
+	 */
 	virtual const std::string& Name() const = 0;
 	virtual const std::string& ID() const = 0;
 	
