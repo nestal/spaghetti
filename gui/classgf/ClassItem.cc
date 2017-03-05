@@ -78,8 +78,6 @@ QRectF ClassItem::boundingRect() const
 
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
 {
-	auto content = m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin);
-	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
 	auto& view = CurrentViewport(viewport);
@@ -90,6 +88,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto mem_font  = setting.class_member_font;
 	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
 	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
+	
+	// normalize margin
+	auto margin = m_margin / view.ZoomFactor();
+	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
 	
 	// use bold font for name
 	QFontMetrics name_font_met{name_font}, member_font_met{mem_font};
