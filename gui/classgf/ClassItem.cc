@@ -85,17 +85,44 @@ qreal ClassItem::Margin(const QFontMetrics& name_font) const
 	return remain_height > name_font.height() ? m_margin : std::max(remain_height/2, 0.0);
 }
 
-QStaticText ClassItem::NameText(const QTransform& transform, QRectF content, const QFont& font)
+QStaticText ClassItem::NameText(const QTransform& transform, const QRectF& content, QFont& font)
 {
 	QStaticText text{QString::fromStdString(m_class->Name())};
-	text.setTextWidth(content.width());
 	
-	QTextOption ops{Qt::AlignCenter};
-	ops.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-	text.setTextOption(ops);
-	text.setTextFormat(Qt::PlainText);
+	for (auto trial = 0 ; ; trial++)
+	{
+		QTextOption ops{Qt::AlignCenter};
+		ops.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+		text.setTextOption(ops);
 	
-	text.prepare(transform, font);
+		text.setTextFormat(Qt::PlainText);
+		text.setTextWidth(content.width());
+		text.prepare(transform, font);
+
+		// try to fit in box
+		auto size = text.size();
+		if (size.width() <= content.width() && size.height() <= content.height())
+			break;
+		
+		// reduce font and retry
+		auto font_factor = 0.75;
+		
+		// width OK, but height is not enough
+		if (size.width() <= content.width() && size.height() > content.height())
+			font_factor = std::max(font_factor, content.height() / size.height());
+		
+		// height OK, but width not enough
+		else if (size.height() <= content.height() && size.width() > content.width())
+			font_factor = std::max(font_factor, content.width() / size.width());
+		
+		std::cout << "trial " << trial << " reducing point size by " << font_factor << " for class " << m_class->Name() << std::endl;
+		
+		assert(font_factor <= 1.0);
+		if (font_factor < 1.0)
+			font.setPointSizeF(font.pointSizeF() * font_factor);
+		else
+			break;
+	}
 	
 	return text;
 }
