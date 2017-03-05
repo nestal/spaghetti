@@ -282,20 +282,24 @@ void Document::SetCompileOptions(const QString& opts)
 		cflags.push_back(flags.toStdString());
 	
 	if (m_project->SetCompileOptions(cflags.begin(), cflags.end()))
-	{
-		m_changed = true;
-		Reload();
-	}
+		OnProjectChanged();
+}
+
+void Document::OnProjectChanged()
+{
+	m_changed = true;
+	Reload();
 }
 
 QString Document::ProjectDir() const
 {
-	return QString::fromStdString(m_project->ProjectDir());
+	return QString::fromStdString(m_project->ProjectDir().string());
 }
 
 void Document::SetProjectDir(const QString& dir)
 {
-	m_project->SetProjectDir(dir.toStdString());
+	if (m_project->SetProjectDir(fs::absolute(dir.toStdString())))
+		OnProjectChanged();
 }
 
 QString Document::CompileDiagnotics() const

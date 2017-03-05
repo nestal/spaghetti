@@ -168,12 +168,20 @@ const std::vector<std::string>& Project::CompileOptions() const
 	return m_compile_options;
 }
 
-void Project::SetProjectDir(const std::string& dir)
+bool Project::SetProjectDir(const boost::filesystem::path& dir)
 {
-	m_project_dir = dir;
+	assert(dir.is_absolute());
+	
+	if (m_project_dir != dir)
+	{
+		m_project_dir = dir;
+		return true;
+	}
+	else
+		return false;
 }
 
-const std::string& Project::ProjectDir() const
+const boost::filesystem::path& Project::ProjectDir() const
 {
 	return m_project_dir;
 }

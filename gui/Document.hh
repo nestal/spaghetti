@@ -17,14 +17,17 @@
 
 #include "ModelViewFwd.hh"
 
-#include "codebase/CodeBase.hh"
-
 #include <boost/filesystem/path.hpp>
 
 #include <memory>
 
 class QAbstractItemModel;
 class QGraphicsScene;
+
+namespace codebase {
+class Entity;
+class CodeBase;
+}
 
 namespace project {
 class Project;
@@ -99,6 +102,7 @@ signals:
 	void OnReload(const codebase::CodeBase& new_code_base);
 	
 private:
+	void OnProjectChanged();
 	void Reset(std::unique_ptr<project::Project>&& proj);
 	void SetCurrentFile(const boost::filesystem::path& abs_path);
 	
