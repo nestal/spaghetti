@@ -141,9 +141,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->drawRect(m_bounding);
 
 	// draw class name
+	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ? (content.height()-name.size().height())/2 : 0.0;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(name_font);
-	painter->drawStaticText(content.topLeft(), name);
+	painter->drawStaticText(QPointF{content.left(), content.top() + name_yoffset}, name);
 	
 	// line between class name and function
 	auto name_line = content.top() + name.size().height() + vspace_between_fields/2;
