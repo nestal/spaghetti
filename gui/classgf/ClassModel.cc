@@ -177,18 +177,18 @@ QJsonObject ClassModel::Save() const
 
 void ClassModel::DeleteSelectedItem()
 {
-	ForEachItem<BaseItem>(m_scene->selectedItems(), [this](auto dead_item)
+	ForEachItem<ClassItem>(m_scene->selectedItems(), [this](auto dead_item)
 	{
-		this->SetChanged(true);
-
-		m_scene->removeItem(dead_item->GraphicsItem());
-		delete dead_item;
+		this->DeleteItem(dead_item);
 	});
 }
 
-void ClassModel::DeleteItem(ClassItem *)
+void ClassModel::DeleteItem(ClassItem *dead_item)
 {
-	// TODO: implement this
+	this->SetChanged(true);
+	
+	m_scene->removeItem(dead_item->GraphicsItem());
+	delete dead_item;
 }
 
 bool ClassModel::IsChanged() const
