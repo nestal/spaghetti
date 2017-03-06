@@ -14,6 +14,7 @@
 #include "Edge.hh"
 #include "Viewport.hh"
 #include "ItemRenderingOptions.hh"
+#include "ClassView.hh"
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
@@ -197,7 +198,17 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		(content.height() - name.size().height()) / 2 : 0.0;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(name_font);
-	painter->drawStaticText(QPointF{content.left(), content.top() + name_yoffset}, name);
+//	painter->drawStaticText(QPointF{content.left(), content.top() + name_yoffset}, name);
+	
+	auto name_font2 = setting.class_name_font;
+	painter->setFont(name_font2);
+	auto v = dynamic_cast<const ClassView*>(&view);
+	auto screen_pos = deviceTransform(v->viewportTransform()).map(QPointF{ content.left(), content.top() + name_yoffset });
+
+	auto mat = painter->transform();
+	painter->resetTransform();
+	painter->drawText(screen_pos, QString::fromStdString(m_class->Name()));
+	painter->setTransform(mat);
 	
 	// line between class name and function
 	auto name_line = content.top() + name.size().height() + vspace_between_fields / 2;
