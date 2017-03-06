@@ -161,20 +161,26 @@ void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
 
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
 {
+	auto t = painter->transform();
+	assert(t.isAffine());
+	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
 	auto& view = CurrentViewport(viewport);
 	auto& setting = view.Setting();
+	
+	assert(t.m11() == t.m22());
+	auto zoom_factor = t.m11();
 	
 	DrawBox(painter, setting);
 	
 	// normalize font size
 	auto name_font = setting.class_name_font;
 	auto mem_font  = setting.class_member_font;
-	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
+	mem_font.setPointSizeF(setting.class_member_font.pointSize() / zoom_factor);
 	
 	// normalize margin
-	auto margin  = Margin(QFontMetrics{name_font}, view.ZoomFactor());
+	auto margin  = Margin(QFontMetrics{name_font}, zoom_factor);
 	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
 
 	// fix bug found by Isis
@@ -183,16 +189,16 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
 	// do not scale the font, scale the content size inversely instead
 	// we want to keep the text size constant regardless of zoom level
-	auto name = NameText(content.size() * view.ZoomFactor(), name_font);
+	auto name = NameText(content.size() * zoom_factor, name_font);
 	
 	// size of the class name in item-space
 	// calculate by scaling back
-	auto name_isize = name.size() / view.ZoomFactor();
+	auto name_isize = name.size() / zoom_factor;
 	
 	ComputeSize(content.height(), name_isize.height(), QFontMetrics{mem_font}.height());
 	
 	// don't let the member gets bigger than the name
-	mem_font.setPointSizeF(std::min(name_font.pointSizeF()/view.ZoomFactor(), mem_font.pointSizeF()));
+	mem_font.setPointSizeF(std::min(name_font.pointSizeF()/zoom_factor, mem_font.pointSizeF()));
 	
 	// adjust vertical margin
 	QFontMetrics member_font_met{mem_font};
@@ -208,10 +214,6 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// reset transform to make the text size unaffected by zoom factor
 	painter->save();
-	
-	auto t = painter->transform();
-	assert(t.isAffine());
-	
 	auto dx = content.left() * t.m11();
 	auto dy = (content.top() + name_yoffset) * t.m22();
 	
