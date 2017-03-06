@@ -190,22 +190,29 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	auto name_rect_item = vp_transform.inverted().mapRect(vp_name);
 	auto name_size_item = name_rect_item.size();
+	
+	painter->setPen(Qt::GlobalColor::green);
 	painter->drawRect(name_rect_item);
 
+	std::cout << "name size in item-space: " << name_rect_item.width() << " " << name_rect_item.height() << std::endl;
+	
 	ComputeSize(content, name_size_item, QFontMetrics{mem_font});
 	
 	// don't let the member gets bigger than the name
-//	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
+	mem_font.setPointSizeF(std::min(name_font.pointSizeF()/view.ZoomFactor(), mem_font.pointSizeF()));
 	
 	// adjust vertical margin
 	QFontMetrics member_font_met{mem_font};
+	std::cout << "member size in item-space: " << member_font_met.height() << std::endl;
 	auto total_height = name_size_item.height() + (m_show_field + m_show_function) * member_font_met.height();
 	auto vspace_between_fields =
 		(content.height() - total_height) / (m_show_field + m_show_function); // include space between name
 	
+	std::cout << "total height/space: " << total_height << " " << vspace_between_fields << std::endl;
+	
 	// draw class name in the middle of the box if there's no other member
-	auto name_yoffset = /*(m_show_field == 0 && m_show_function == 0) ?
-		(content.height() - name_size_item.height()) / 2 :*/ 0.0;
+	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ?
+		(content.height() - name_size_item.height()) / 2 : 0.0;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(name_font);
 	
@@ -216,7 +223,6 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->resetTransform();
 	
 	name.prepare(painter->transform(), name_font);
-//	painter->drawRect(screen_top_left.x(), screen_top_left.y(), name.size().width(), name.size().height());
 	painter->drawStaticText(screen_top_left, name);
 
 	painter->restore();
