@@ -88,6 +88,9 @@ private:
 	template <typename Member>
 	QPointF DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met);
 	
+	template <typename DrawFunc>
+	void DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc func);
+	
 private:
 	class Resizer;
 	

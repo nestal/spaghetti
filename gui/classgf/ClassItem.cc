@@ -213,19 +213,9 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->setFont(name_font);
 	
 	// reset transform to make the text size unaffected by zoom factor
-	painter->save();
-	auto dx = content.left() * t.m11();
-	auto dy = (content.top() + name_yoffset) * t.m22();
-	
-	// set the scale to 1 but keep the translation
-	painter->setTransform({
-		1, 0, 0,
-		0, 1, 0,
-		t.m31() + dx, t.m32() + dy, 1
+	DrawUnScaledText(painter, QPointF{content.left(), content.top() + name_yoffset}, [&name, painter]{
+		painter->drawStaticText(0, 0, name);
 	});
-	
-	painter->drawStaticText(0, 0, name);
-	painter->restore();
 	
 	// line between class name and function
 	auto name_line = content.top() + name_isize.height() + vspace_between_fields / 2;
@@ -282,6 +272,27 @@ QPointF ClassItem::DrawMember(QPainter *painter, const Member& member, const QPo
 		&out
 	);
 	return QPointF{pos.x(), out.bottom() + vspace};
+}
+
+template <typename DrawFunc>
+void ClassItem::DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc func)
+{
+	painter->save();
+	auto t = painter->transform();
+	
+	auto dx = pos.x() * t.m11();
+	auto dy = pos.y() * t.m22();
+	
+	// set the scale to 1 but keep the translation
+	painter->setTransform({
+		1, 0, 0,
+		0, 1, 0,
+		t.m31() + dx, t.m32() + dy, 1
+	});
+	
+//	painter->drawStaticText(0, 0, text);
+	func();
+	painter->restore();
 }
 
 const std::string& ClassItem::ID() const
