@@ -80,9 +80,11 @@ QRectF ClassItem::boundingRect() const
 
 qreal ClassItem::Margin(const QFontMetrics& name_font, qreal factor) const
 {
+	auto name_height = name_font.height()/factor;
+	
 	// assume content has 1 line
-	auto remain_height = m_bounding.height() - name_font.height();
-	return remain_height > name_font.height() ? m_margin/factor : std::max(remain_height/2, 0.0);
+	auto remain_height = m_bounding.height() - name_height;
+	return remain_height > name_height ? m_margin/factor : std::max(remain_height/2, 0.0);
 }
 
 QStaticText ClassItem::NameText(const QTransform& transform, const QSizeF& content, QFont& font)
@@ -205,7 +207,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto name_yoffset = /*(m_show_field == 0 && m_show_function == 0) ?
 		(content.height() - name_size_item.height()) / 2 :*/ 0.0;
 	painter->setPen(Qt::GlobalColor::black);
-	painter->setFont(setting.class_name_font);
+	painter->setFont(name_font);
 	
 	auto screen_top_left  = vp_transform.map(QPointF{content.left(),  content.top() + name_yoffset});
 
@@ -213,7 +215,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->save();
 	painter->resetTransform();
 	
-	name.prepare(painter->transform(), setting.class_name_font);
+	name.prepare(painter->transform(), name_font);
 //	painter->drawRect(screen_top_left.x(), screen_top_left.y(), name.size().width(), name.size().height());
 	painter->drawStaticText(screen_top_left, name);
 
