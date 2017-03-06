@@ -181,26 +181,28 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	if (content.isEmpty())
 		return;
 
-	auto vp_transform = deviceTransform(view.Transform());
-	auto vp_content = vp_transform.mapRect(content);
-
-	auto name = NameText(vp_content.size(), name_font);
-	auto name_size_item = QSizeF{name.size().width() / view.ZoomFactor(), name.size().height() / view.ZoomFactor()};
+	// do not scale the font, scale the content size inversely instead
+	// we want to keep the text size constant regardless of zoom level
+	auto name = NameText(content.size() * view.ZoomFactor(), name_font);
 	
-	ComputeSize(content, name_size_item, QFontMetrics{mem_font});
+	// size of the class name in item-space
+	// calculate by scaling back
+	auto name_isize = name.size() / view.ZoomFactor();
+	
+	ComputeSize(content, name_isize, QFontMetrics{mem_font});
 	
 	// don't let the member gets bigger than the name
 	mem_font.setPointSizeF(std::min(name_font.pointSizeF()/view.ZoomFactor(), mem_font.pointSizeF()));
 	
 	// adjust vertical margin
 	QFontMetrics member_font_met{mem_font};
-	auto total_height = name_size_item.height() + (m_show_field + m_show_function) * member_font_met.height();
+	auto total_height = name_isize.height() + (m_show_field + m_show_function) * member_font_met.height();
 	auto vspace_between_fields =
 		(content.height() - total_height) / (m_show_field + m_show_function); // include space between name
 	
 	// draw class name in the middle of the box if there's no other member
 	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ?
-		(content.height() - name_size_item.height()) / 2 : 0.0;
+		(content.height() - name_isize.height()) / 2 : 0.0;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(name_font);
 	
@@ -212,9 +214,9 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->restore();
 	
 	// line between class name and function
-	auto name_line = content.top() + name_size_item.height() + vspace_between_fields / 2;
+	auto name_line = content.top() + name_isize.height() + vspace_between_fields / 2;
 	
-	QPointF text_pt{content.left(), content.top() + name_size_item.height() + vspace_between_fields};
+	QPointF text_pt{content.left(), content.top() + name_isize.height() + vspace_between_fields};
 	
 	painter->setFont(mem_font);
 	
