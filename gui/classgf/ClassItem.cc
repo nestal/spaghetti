@@ -159,6 +159,38 @@ void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
 	painter->drawRect(m_bounding);
 }
 
+template <typename Member>
+auto ClassItem::DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetrics& met)
+{
+	auto zoom_factor = painter->transform().m11();
+	
+	QRectF rect{0, 0,
+		width * zoom_factor,
+		static_cast<qreal>(met.height())
+	};
+	DrawUnScaledText(painter, pos, [painter, &rect, &met, &member]
+	{
+		painter->setPen(Qt::NoPen);
+		
+		QColor background{Qt::GlobalColor::white};
+		background.setAlphaF(0.5);
+		painter->setBrush(background);
+		painter->drawRect(rect);
+		
+		painter->setPen(Qt::SolidLine);
+		painter->drawText(
+			rect,
+			Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
+			met.elidedText(
+				QString::fromStdString(member.UML()),
+				Qt::ElideRight,
+				static_cast<int>(rect.width())
+			)
+		);
+	});
+	return QPointF{pos.x(), pos.y() + met.height() / zoom_factor};
+}
+
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
 {
 	auto t = painter->transform();
@@ -174,10 +206,8 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	DrawBox(painter, setting);
 	
-	// normalize font size
 	auto name_font = setting.class_name_font;
 	auto mem_font  = setting.class_member_font;
-//	mem_font.setPointSizeF(setting.class_member_font.pointSize() / zoom_factor);
 	
 	// normalize margin
 	auto margin  = Margin(QFontMetrics{name_font}, zoom_factor);
@@ -198,11 +228,12 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// don't let the member gets bigger than the name
 	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
 	
-	ComputeSize(content.height(), name_isize.height(), QFontMetrics{mem_font}.height() / zoom_factor);
+	QFontMetrics member_font_met{mem_font};
+	auto member_height = member_font_met.height() / zoom_factor;
+	ComputeSize(content.height(), name_isize.height(), member_height);
 	
 	// adjust vertical space between text
-	QFontMetrics member_font_met{mem_font};
-	auto total_height = name_isize.height() + (m_show_field + m_show_function) * member_font_met.height()/zoom_factor;
+	auto total_height = name_isize.height() + (m_show_field + m_show_function) * member_height;
 	auto vspace_between_fields =
 		(content.height() - total_height) / (m_show_field + m_show_function); // include space between name
 	
@@ -229,7 +260,8 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	for (auto&& func : m_class->Functions())
 	{
 		if (++index > m_show_function) break;
-		text_pt = DrawMember(painter, func, text_pt, content.right(), vspace_between_fields, member_font_met);
+		text_pt = DrawMember(painter, func, text_pt, content.width(), member_font_met);
+		text_pt.ry() += vspace_between_fields;
 	}
 	
 	// line between class name and function
@@ -239,7 +271,8 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	for (auto&& field : m_class->Fields())
 	{
 		if (++index > m_show_field) break;
-		text_pt = DrawMember(painter, field, text_pt, content.right(), vspace_between_fields, member_font_met);
+		text_pt = DrawMember(painter, field, text_pt, content.width(), member_font_met);
+		text_pt.ry() += vspace_between_fields;
 	}
 	
 	QPen line_pen{setting.line_color};
@@ -255,38 +288,6 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 			QPointF{m_bounding.right(), func_line},
 			QPointF{m_bounding.left(),  func_line}
 		);
-}
-
-template <typename Member>
-QPointF ClassItem::DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met)
-{
-	auto zoom_factor = painter->transform().m11();
-	
-	QRectF rect{0, 0,
-		(right - pos.x()) * zoom_factor,
-		static_cast<qreal>(met.height())
-	};
-	DrawUnScaledText(painter, pos, [painter, &rect, &met, &member]
-	{
-		painter->setPen(Qt::NoPen);
-		
-		QColor background{Qt::GlobalColor::white};
-		background.setAlphaF(0.5);
-		painter->setBrush(background);
-		painter->drawRect(rect);
-		
-		painter->setPen(Qt::SolidLine);
-		painter->drawText(
-			rect,
-			Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
-			met.elidedText(
-				QString::fromStdString(member.UML()),
-				Qt::ElideRight,
-				static_cast<int>(rect.width())
-			)
-		);
-	});
-	return QPointF{pos.x(), pos.y() + met.height() / zoom_factor + vspace};
 }
 
 template <typename DrawFunc>
