@@ -22,11 +22,12 @@ namespace classgf {
 
 const auto arrow_width = 15.0;
 
-Edge::Edge(const BaseItem *from, const BaseItem *to) :
+Edge::Edge(BaseItem *from, BaseItem *to) :
 	m_from{from}, m_to{to}
 {
 	assert(m_from);
 	assert(m_to);
+	assert(m_from != m_to);
 	
 	UpdatePosition();
 }
@@ -192,6 +193,13 @@ const BaseItem *Edge::Other(const BaseItem *one) const
 	);
 }
 
+BaseItem *Edge::Other(BaseItem *one)
+{
+	return m_from == one ? m_to : (
+		m_to == one ? m_from : nullptr
+	);
+}
+
 void Edge::DrawArrowHead(QPainter *painter) const
 {
 	assert(painter);
@@ -222,5 +230,5 @@ const QGraphicsItem *Edge::GraphicsItem() const
 {
 	return this;
 }
-	
+
 }} // end of namespace

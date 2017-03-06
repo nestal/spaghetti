@@ -29,7 +29,7 @@ namespace classgf {
 class Edge : public BaseItem, public QGraphicsItem
 {
 public:
-	Edge(const BaseItem *from, const BaseItem *to);
+	Edge(BaseItem *from, BaseItem *to);
 	
 	QGraphicsItem *GraphicsItem() override;
 	const QGraphicsItem *GraphicsItem() const override;
@@ -45,7 +45,8 @@ public:
 	
 	bool IsChanged() const override;
 	const BaseItem *Other(const BaseItem *one) const;
-
+	BaseItem *Other(BaseItem *one);
+	
 private:
 	QLineF Dia() const;
 	
@@ -58,8 +59,8 @@ private:
 	void DrawArrowHead(QPainter *painter) const;
 
 private:
-	const BaseItem *m_from;
-	const BaseItem *m_to;
+	BaseItem *m_from;
+	BaseItem *m_to;
 	
 	// cached for performance
 	QRectF m_bounding;

@@ -20,6 +20,29 @@
 namespace gui {
 namespace classgf {
 
+BaseItem::~BaseItem()
+{
+	for (auto& edge : m_edges)
+	{
+		auto other = edge->Other(this);
+		assert(other);
+		
+		other->RemoveEdgeWith(this);
+		delete edge;
+	}
+}
+
+void BaseItem::RemoveEdgeWith(const BaseItem *other)
+{
+	auto mid = std::partition(
+		m_edges.begin(), m_edges.end(), [other, this](auto edge)
+		{
+			return edge->Other(this) != other;
+		}
+	);
+	m_edges.erase(mid, m_edges.end());
+}
+
 void BaseItem::AddEdge(Edge *edge)
 {
 	m_edges.push_back(edge);
