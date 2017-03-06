@@ -34,6 +34,10 @@ class Viewport;
 class BaseItem
 {
 public:
+	using EdgePtr = std::shared_ptr<Edge>;
+	using edge_iterator = std::vector<EdgePtr>::const_iterator;
+
+public:
 	virtual ~BaseItem();
 	
 	virtual QGraphicsItem *GraphicsItem() = 0;
@@ -47,10 +51,8 @@ public:
 	// helper
 	static const Viewport& CurrentViewport(QWidget *viewport) ;
 	
-	using edge_iterator = std::vector<Edge *>::const_iterator;
-	
 	// edge operations
-	void AddEdge(Edge *edge);
+	void AddEdge(const EdgePtr& edge);
 	bool HasEdgeWith(const BaseItem *item) const;
 	boost::iterator_range<edge_iterator> Edges() const;
 	void ClearEdges();
@@ -59,8 +61,7 @@ private:
 	void RemoveEdgeWith(const BaseItem *other);
 
 private:
-//	using EdgePtr = std::shared_ptr<Edge>;
-	std::vector<Edge*> m_edges;
+	std::vector<EdgePtr> m_edges;
 };
 	
 }} // end of namespace

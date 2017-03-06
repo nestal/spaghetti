@@ -125,10 +125,10 @@ void ClassModel::DetectEdges(ClassItem *item)
 
 void ClassModel::AddLine(ClassItem *from, ClassItem *to)
 {
-	auto edge = std::make_unique<Edge>(from, to);
-	from->AddEdge(edge.get());
-	to->AddEdge(edge.get());
-	m_scene->addItem(edge.release());
+	auto edge = std::make_shared<Edge>(from, to);
+	from->AddEdge(edge);
+	to->AddEdge(edge);
+	m_scene->addItem(edge.get());
 }
 
 void ClassModel::Load(const QJsonObject& obj)

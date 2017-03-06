@@ -47,6 +47,8 @@ public:
 	const BaseItem *Other(const BaseItem *one) const;
 	BaseItem *Other(BaseItem *one);
 	
+	void Disconnect(BaseItem *one);
+	
 private:
 	QLineF Dia() const;
 	

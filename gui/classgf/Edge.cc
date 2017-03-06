@@ -231,4 +231,22 @@ const QGraphicsItem *Edge::GraphicsItem() const
 	return this;
 }
 
+/**
+ * \brief Disconnect an item from the edge.
+ *
+ * This function is called when one of the BaseItem the edge is going to be destroyed.
+ * Therefore we need to disconnect the edge from the dying item.
+ * Actually, the edge will be destroyed very soon. There is technically no need to
+ * disconnect. This function is called to eliminate the tiny chance between destroying
+ * the dying item and destroying the edge, i.e. in the destructor of the edge, where
+ * one of the item may be dangled.
+ *
+ * \param one
+ */
+void Edge::Disconnect(BaseItem *one)
+{
+	if (m_from == one) m_from = nullptr;
+	else if (m_to == one) m_to = nullptr;
+}
+	
 }} // end of namespace
