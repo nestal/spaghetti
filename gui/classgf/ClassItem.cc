@@ -161,24 +161,6 @@ void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
 
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
 {
-	painter->save();
-	auto t = painter->transform();
-	std::cout << "t = " << t.m11() << " " << t.m12() << " " << t.m13() << "\n"
-	          << "    " << t.m21() << " " << t.m22() << " " << t.m23() << "\n"
-	          << "    " << t.m31() << " " << t.m32() << " " << t.m33() << std::endl;
-	t = painter->worldTransform();
-	std::cout << "w = " << t.m11() << " " << t.m12() << " " << t.m13() << "\n"
-	          << "    " << t.m21() << " " << t.m22() << " " << t.m23() << "\n"
-	          << "    " << t.m31() << " " << t.m32() << " " << t.m33() << std::endl;
-	
-	auto vprect = painter->viewport();
-	auto wdrect = painter->window();
-	std::cout << "viewport: " << vprect.top() << " " << vprect.left() << " " << vprect.bottom() << " " << vprect.right() << std::endl;
-	std::cout << "window:   " << wdrect.top() << " " << wdrect.left() << " " << wdrect.bottom() << " " << wdrect.right() << std::endl;
-	auto pyrect = viewport->rect();
-	std::cout << "widget:   " << pyrect.top() << " " << pyrect.left() << " " << pyrect.bottom() << " " << pyrect.right() << std::endl;
-	painter->restore();
-
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
 	auto& view = CurrentViewport(viewport);
@@ -189,7 +171,6 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// normalize font size
 	auto name_font = setting.class_name_font;
 	auto mem_font  = setting.class_member_font;
-//	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
 	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
 	
 	// normalize margin
@@ -209,9 +190,6 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto name_rect_item = vp_transform.inverted().mapRect(vp_name);
 	auto name_size_item = name_rect_item.size();
 	
-	painter->setPen(Qt::GlobalColor::green);
-	painter->drawRect(name_rect_item);
-	
 	ComputeSize(content, name_size_item, QFontMetrics{mem_font});
 	
 	// don't let the member gets bigger than the name
@@ -229,31 +207,11 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(name_font);
 	
-//	auto screen_top_left  = vp_transform.map(QPointF{content.left(),  content.top() + name_yoffset});
-	
 	// reset transform to make the text size unaffected by zoom factor
 	painter->save();
-/*	painter->resetTransform();
-	painter->setViewport(viewport->rect());
-	painter->setWindow(viewport->rect());*/
 	painter->translate(content.left(),  content.top() + name_yoffset);
 	painter->scale(1/view.ZoomFactor(), 1/view.ZoomFactor());
-	/*
-	auto t = painter->transform();
-	std::cout << "t = " << t.m11() << " " << t.m12() << " " << t.m13() << "\n"
-	          << "    " << t.m21() << " " << t.m22() << " " << t.m23() << "\n"
-	          << "    " << t.m31() << " " << t.m32() << " " << t.m33() << std::endl;
-	
-	auto vprect = painter->viewport();
-	auto wdrect = painter->window();
-	std::cout << "viewport: " << vprect.top() << " " << vprect.left() << " " << vprect.bottom() << " " << vprect.right() << std::endl;
-	std::cout << "window:   " << wdrect.top() << " " << wdrect.left() << " " << wdrect.bottom() << " " << wdrect.right() << std::endl;
-	auto pyrect = viewport->rect();
-	std::cout << "widget:   " << pyrect.top() << " " << pyrect.left() << " " << pyrect.bottom() << " " << pyrect.right() << std::endl;
-	*/
-	name.prepare(painter->transform(), name_font);
-	painter->drawStaticText(QPointF{}, name);
-
+	painter->drawStaticText(0, 0, name);
 	painter->restore();
 	
 	// line between class name and function
