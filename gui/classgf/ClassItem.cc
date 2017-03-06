@@ -195,10 +195,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// calculate by scaling back
 	auto name_isize = name.size() / zoom_factor;
 	
-	ComputeSize(content.height(), name_isize.height(), QFontMetrics{mem_font}.height() / zoom_factor);
-	
 	// don't let the member gets bigger than the name
 	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
+	
+	ComputeSize(content.height(), name_isize.height(), QFontMetrics{mem_font}.height() / zoom_factor);
 	
 	// adjust vertical margin
 	QFontMetrics member_font_met{mem_font};
@@ -268,7 +268,14 @@ QPointF ClassItem::DrawMember(QPainter *painter, const Member& member, const QPo
 	};
 	DrawUnScaledText(painter, pos, [painter, &rect, &met, &member]
 	{
+		painter->setPen(Qt::NoPen);
+		
+		QColor background{Qt::GlobalColor::white};
+		background.setAlphaF(0.5);
+		painter->setBrush(background);
 		painter->drawRect(rect);
+		
+		painter->setPen(Qt::SolidLine);
 		painter->drawText(
 			rect,
 			Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
