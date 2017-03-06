@@ -14,6 +14,8 @@
 
 #include <QtCore/QtGlobal>
 
+class QTransform;
+
 namespace gui {
 namespace classgf {
 
@@ -37,6 +39,7 @@ protected:
 public:
 	virtual const classgf::ItemRenderingOptions& Setting() const = 0;
 	virtual qreal ZoomFactor() const = 0;
+	virtual QTransform Transform() const = 0;
 };
 
 }} // end of namespace
