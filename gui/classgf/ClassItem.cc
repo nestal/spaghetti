@@ -189,7 +189,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// calculate by scaling back
 	auto name_isize = name.size() / view.ZoomFactor();
 	
-	ComputeSize(content, name_isize, QFontMetrics{mem_font});
+	ComputeSize(content.height(), name_isize.height(), QFontMetrics{mem_font}.height());
 	
 	// don't let the member gets bigger than the name
 	mem_font.setPointSizeF(std::min(name_font.pointSizeF()/view.ZoomFactor(), mem_font.pointSizeF()));
@@ -394,13 +394,13 @@ void ClassItem::Update(const codebase::EntityMap *map)
  * \param name_font     the metric of the font to render the class name
  * \param field_font    the metric of the font to render the functions and fields
  */
-void ClassItem::ComputeSize(const QRectF& content, const QSizeF& name, const QFontMetrics& field_font)
+void ClassItem::ComputeSize(qreal content_height, qreal name_height, qreal field_height)
 {
 	// total number of function and fields that can be rendered
-	auto total_rows = static_cast<std::size_t>((content.height() - name.height())/field_font.height());
+	auto total_rows = static_cast<std::size_t>((content_height - name_height)/field_height);
 	
 	// determine how to distribute the space between function and fields
-	if (content.height() > name.height() && total_rows > 0)
+	if (content_height > name_height && total_rows > 0)
 	{
 		m_show_function = std::min(m_class->Functions().size(), total_rows);
 		m_show_field    = std::min(m_class->Fields().size(),    total_rows);

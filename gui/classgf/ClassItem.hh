@@ -77,7 +77,7 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	void ComputeSize(const QRectF& content, const QSizeF& name, const QFontMetrics& field_font);
+	void ComputeSize(qreal content_height, qreal name_height, qreal field_height);
 	void OnPositionChanged();
 	void OnSelectedChange(bool selected);
 	void Normalize();
