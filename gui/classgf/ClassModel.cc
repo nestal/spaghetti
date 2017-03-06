@@ -125,10 +125,10 @@ void ClassModel::DetectEdges(ClassItem *item)
 
 void ClassModel::AddLine(ClassItem *from, ClassItem *to)
 {
-	auto edge = std::make_unique<Edge>(from, to);
-	from->AddEdge(edge.get());
-	to->AddEdge(edge.get());
-	m_scene->addItem(edge.release());
+	auto edge = std::make_shared<Edge>(from, to);
+	from->AddEdge(edge);
+	to->AddEdge(edge);
+	m_scene->addItem(edge.get());
 }
 
 void ClassModel::Load(const QJsonObject& obj)
@@ -177,36 +177,18 @@ QJsonObject ClassModel::Save() const
 
 void ClassModel::DeleteSelectedItem()
 {
-	// save the pointers to be deleted instead of deleting them inside the
-	// loop, because they may still be referenced in the loop
-	std::vector<Edge*> dangled;
-	std::vector<BaseItem*> removed;
-	
-	ForEachItem<BaseItem>(m_scene->selectedItems(), [this, &dangled, &removed](auto dead_item)
+	ForEachItem<ClassItem>(m_scene->selectedItems(), [this](auto dead_item)
 	{
-		this->SetChanged(true);
-
-		// gather all edges which will be dangled after deleting this item
-		ForEachItem<BaseItem>(m_scene->items(), [&dangled, dead_item](auto other)
-		{
-			if (other != dead_item)
-				other->RemoveEdgeWith(dead_item, [&dangled](auto edge){dangled.push_back(edge);});
-		});
-		
-		m_scene->removeItem(dead_item->GraphicsItem());
-		removed.push_back(dead_item);
+		this->DeleteItem(dead_item);
 	});
-	
-	// the edge pointers may be duplicated, need to unique before deleting
-	std::sort(dangled.begin(), dangled.end());
-	dangled.erase(std::unique(dangled.begin(), dangled.end()), dangled.end());
-	std::for_each(dangled.begin(), dangled.end(), std::default_delete<Edge>());
-	std::for_each(removed.begin(), removed.end(), std::default_delete<BaseItem>());
 }
 
-void ClassModel::DeleteItem(ClassItem *)
+void ClassModel::DeleteItem(ClassItem *dead_item)
 {
-	// TODO: implement this
+	this->SetChanged(true);
+	
+	m_scene->removeItem(dead_item->GraphicsItem());
+	delete dead_item;
 }
 
 bool ClassModel::IsChanged() const

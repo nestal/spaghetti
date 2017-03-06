@@ -17,6 +17,7 @@
 #include <boost/range/iterator_range.hpp>
 
 #include <vector>
+#include <memory>
 
 class QGraphicsItem;
 
@@ -33,7 +34,11 @@ class Viewport;
 class BaseItem
 {
 public:
-	virtual ~BaseItem() = default;
+	using EdgePtr = std::shared_ptr<Edge>;
+	using edge_iterator = std::vector<EdgePtr>::const_iterator;
+
+public:
+	virtual ~BaseItem();
 	
 	virtual QGraphicsItem *GraphicsItem() = 0;
 	virtual const QGraphicsItem *GraphicsItem() const = 0;
@@ -46,29 +51,17 @@ public:
 	// helper
 	static const Viewport& CurrentViewport(QWidget *viewport) ;
 	
-	using edge_iterator = std::vector<Edge *>::const_iterator;
-	
 	// edge operations
-	void AddEdge(Edge *edge);
+	void AddEdge(const EdgePtr& edge);
 	bool HasEdgeWith(const BaseItem *item) const;
 	boost::iterator_range<edge_iterator> Edges() const;
 	void ClearEdges();
 	
-	template<typename Func>
-	void RemoveEdgeWith(const BaseItem *other, Func func)
-	{
-		auto mid = std::partition(
-			m_edges.begin(), m_edges.end(), [other, this](auto edge)
-			{
-				return edge->Other(this) != other;
-			}
-		);
-		std::for_each(mid, m_edges.end(), func);
-		m_edges.erase(mid, m_edges.end());
-	}
+private:
+	void RemoveEdgeWith(const BaseItem *other);
 
 private:
-	std::vector<Edge *> m_edges;
+	std::vector<EdgePtr> m_edges;
 };
 	
 }} // end of namespace

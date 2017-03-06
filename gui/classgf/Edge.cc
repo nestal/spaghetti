@@ -22,11 +22,12 @@ namespace classgf {
 
 const auto arrow_width = 15.0;
 
-Edge::Edge(const BaseItem *from, const BaseItem *to) :
+Edge::Edge(BaseItem *from, BaseItem *to) :
 	m_from{from}, m_to{to}
 {
 	assert(m_from);
 	assert(m_to);
+	assert(m_from != m_to);
 	
 	UpdatePosition();
 }
@@ -192,6 +193,13 @@ const BaseItem *Edge::Other(const BaseItem *one) const
 	);
 }
 
+BaseItem *Edge::Other(BaseItem *one)
+{
+	return m_from == one ? m_to : (
+		m_to == one ? m_from : nullptr
+	);
+}
+
 void Edge::DrawArrowHead(QPainter *painter) const
 {
 	assert(painter);
@@ -221,6 +229,24 @@ QGraphicsItem *Edge::GraphicsItem()
 const QGraphicsItem *Edge::GraphicsItem() const
 {
 	return this;
+}
+
+/**
+ * \brief Disconnect an item from the edge.
+ *
+ * This function is called when one of the BaseItem the edge is going to be destroyed.
+ * Therefore we need to disconnect the edge from the dying item.
+ * Actually, the edge will be destroyed very soon. There is technically no need to
+ * disconnect. This function is called to eliminate the tiny chance between destroying
+ * the dying item and destroying the edge, i.e. in the destructor of the edge, where
+ * one of the item may be dangled.
+ *
+ * \param one
+ */
+void Edge::Disconnect(BaseItem *one)
+{
+	if (m_from == one) m_from = nullptr;
+	else if (m_to == one) m_to = nullptr;
 }
 	
 }} // end of namespace

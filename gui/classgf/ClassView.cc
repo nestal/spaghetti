@@ -254,26 +254,24 @@ void ClassView::keyReleaseEvent(QKeyEvent *event)
 
 void ClassView::contextMenuEvent(QContextMenuEvent *event)
 {
-	std::cout << "menu" << std::endl;
-	
-	QMenu menu;
-	auto del_action = menu.addAction("Delete");
-	
-	auto pos = event->pos();
-	connect(del_action, &QAction::triggered, [pos, this]
+	// try to fill the clicked item in the whole viewport
+	for (auto&& anitem : items(event->pos()))
 	{
-		// try to fill the clicked item in the whole viewport
-		for (auto&& anitem : items(pos))
+		if (auto item = dynamic_cast<ClassItem *>(anitem))
 		{
-			if (auto item = dynamic_cast<ClassItem *>(anitem))
+			QMenu menu;
+			auto del_action = menu.addAction("Delete");
+			
+			connect(del_action, &QAction::triggered, [item, this]
 			{
 				m_model->DeleteItem(item);
-				break;
-			}
+			});
+			menu.exec(event->globalPos());
+			event->accept();
+			break;
 		}
-	});
-	menu.exec(event->globalPos());
-	event->accept();
+	}
+	
 }
 
 QTransform ClassView::Transform() const

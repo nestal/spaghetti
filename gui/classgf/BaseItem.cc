@@ -20,8 +20,35 @@
 namespace gui {
 namespace classgf {
 
-void BaseItem::AddEdge(Edge *edge)
+BaseItem::~BaseItem()
 {
+	// notify all peers to remove all edges with ourselves
+	for (auto& edge : m_edges)
+	{
+		auto other = edge->Other(this);
+		assert(other);
+		
+		other->RemoveEdgeWith(this);
+		edge.reset();
+	}
+}
+
+void BaseItem::RemoveEdgeWith(const BaseItem *other)
+{
+	auto mid = std::partition(
+		m_edges.begin(), m_edges.end(), [other, this](auto edge)
+		{
+			assert(edge->Other(this));
+			return edge->Other(this) != other;
+		}
+	);
+	std::for_each(mid, m_edges.end(), [this](auto edge){edge->Disconnect(this);});
+	m_edges.erase(mid, m_edges.end());
+}
+
+void BaseItem::AddEdge(const EdgePtr& edge)
+{
+	assert(edge->Other(this));
 	m_edges.push_back(edge);
 }
 

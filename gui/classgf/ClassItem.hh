@@ -86,7 +86,7 @@ private:
 	qreal Margin(const QFontMetrics& name_font, qreal factor) const;
 	
 	template <typename Member>
-	QPointF DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met);
+	auto DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetrics& met);
 	
 	template <typename DrawFunc>
 	void DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc func);
