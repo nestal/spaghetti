@@ -161,6 +161,24 @@ void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
 
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
 {
+	painter->save();
+	auto t = painter->transform();
+	std::cout << "t = " << t.m11() << " " << t.m12() << " " << t.m13() << "\n"
+	          << "    " << t.m21() << " " << t.m22() << " " << t.m23() << "\n"
+	          << "    " << t.m31() << " " << t.m32() << " " << t.m33() << std::endl;
+	t = painter->worldTransform();
+	std::cout << "w = " << t.m11() << " " << t.m12() << " " << t.m13() << "\n"
+	          << "    " << t.m21() << " " << t.m22() << " " << t.m23() << "\n"
+	          << "    " << t.m31() << " " << t.m32() << " " << t.m33() << std::endl;
+	
+	auto vprect = painter->viewport();
+	auto wdrect = painter->window();
+	std::cout << "viewport: " << vprect.top() << " " << vprect.left() << " " << vprect.bottom() << " " << vprect.right() << std::endl;
+	std::cout << "window:   " << wdrect.top() << " " << wdrect.left() << " " << wdrect.bottom() << " " << wdrect.right() << std::endl;
+	auto pyrect = viewport->rect();
+	std::cout << "widget:   " << pyrect.top() << " " << pyrect.left() << " " << pyrect.bottom() << " " << pyrect.right() << std::endl;
+	painter->restore();
+
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
 	auto& view = CurrentViewport(viewport);
@@ -193,8 +211,6 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	painter->setPen(Qt::GlobalColor::green);
 	painter->drawRect(name_rect_item);
-
-	std::cout << "name size in item-space: " << name_rect_item.width() << " " << name_rect_item.height() << std::endl;
 	
 	ComputeSize(content, name_size_item, QFontMetrics{mem_font});
 	
@@ -203,12 +219,9 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// adjust vertical margin
 	QFontMetrics member_font_met{mem_font};
-	std::cout << "member size in item-space: " << member_font_met.height() << std::endl;
 	auto total_height = name_size_item.height() + (m_show_field + m_show_function) * member_font_met.height();
 	auto vspace_between_fields =
 		(content.height() - total_height) / (m_show_field + m_show_function); // include space between name
-	
-	std::cout << "total height/space: " << total_height << " " << vspace_between_fields << std::endl;
 	
 	// draw class name in the middle of the box if there's no other member
 	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ?
@@ -216,14 +229,30 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(name_font);
 	
-	auto screen_top_left  = vp_transform.map(QPointF{content.left(),  content.top() + name_yoffset});
-
+//	auto screen_top_left  = vp_transform.map(QPointF{content.left(),  content.top() + name_yoffset});
+	
 	// reset transform to make the text size unaffected by zoom factor
 	painter->save();
-	painter->resetTransform();
+/*	painter->resetTransform();
+	painter->setViewport(viewport->rect());
+	painter->setWindow(viewport->rect());*/
+	painter->translate(content.left(),  content.top() + name_yoffset);
+	painter->scale(1/view.ZoomFactor(), 1/view.ZoomFactor());
+	/*
+	auto t = painter->transform();
+	std::cout << "t = " << t.m11() << " " << t.m12() << " " << t.m13() << "\n"
+	          << "    " << t.m21() << " " << t.m22() << " " << t.m23() << "\n"
+	          << "    " << t.m31() << " " << t.m32() << " " << t.m33() << std::endl;
 	
+	auto vprect = painter->viewport();
+	auto wdrect = painter->window();
+	std::cout << "viewport: " << vprect.top() << " " << vprect.left() << " " << vprect.bottom() << " " << vprect.right() << std::endl;
+	std::cout << "window:   " << wdrect.top() << " " << wdrect.left() << " " << wdrect.bottom() << " " << wdrect.right() << std::endl;
+	auto pyrect = viewport->rect();
+	std::cout << "widget:   " << pyrect.top() << " " << pyrect.left() << " " << pyrect.bottom() << " " << pyrect.right() << std::endl;
+	*/
 	name.prepare(painter->transform(), name_font);
-	painter->drawStaticText(screen_top_left, name);
+	painter->drawStaticText(QPointF{}, name);
 
 	painter->restore();
 	
