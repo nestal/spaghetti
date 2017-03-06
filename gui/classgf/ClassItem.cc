@@ -177,7 +177,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// normalize font size
 	auto name_font = setting.class_name_font;
 	auto mem_font  = setting.class_member_font;
-	mem_font.setPointSizeF(setting.class_member_font.pointSize() / zoom_factor);
+//	mem_font.setPointSizeF(setting.class_member_font.pointSize() / zoom_factor);
 	
 	// normalize margin
 	auto margin  = Margin(QFontMetrics{name_font}, zoom_factor);
@@ -195,14 +195,14 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// calculate by scaling back
 	auto name_isize = name.size() / zoom_factor;
 	
-	ComputeSize(content.height(), name_isize.height(), QFontMetrics{mem_font}.height());
+	ComputeSize(content.height(), name_isize.height(), QFontMetrics{mem_font}.height() / zoom_factor);
 	
 	// don't let the member gets bigger than the name
-	mem_font.setPointSizeF(std::min(name_font.pointSizeF()/zoom_factor, mem_font.pointSizeF()));
+	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
 	
 	// adjust vertical margin
 	QFontMetrics member_font_met{mem_font};
-	auto total_height = name_isize.height() + (m_show_field + m_show_function) * member_font_met.height();
+	auto total_height = name_isize.height() + (m_show_field + m_show_function) * member_font_met.height()/zoom_factor;
 	auto vspace_between_fields =
 		(content.height() - total_height) / (m_show_field + m_show_function); // include space between name
 	
@@ -260,18 +260,26 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 template <typename Member>
 QPointF ClassItem::DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met)
 {
-	QRectF out;
-	painter->drawText(
-		QRectF{pos, QPointF{right, pos.y()+met.height()}},
-		Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
-		met.elidedText(
-			QString::fromStdString(member.UML()),
-			Qt::ElideRight,
-			static_cast<int>(right - pos.x())
-		),
-		&out
-	);
-	return QPointF{pos.x(), out.bottom() + vspace};
+	auto zoom_factor = painter->transform().m11();
+	
+	QRectF rect{0, 0,
+		(right - pos.x()) * zoom_factor,
+		static_cast<qreal>(met.height())
+	};
+	DrawUnScaledText(painter, pos, [painter, &rect, &met, &member]
+	{
+		painter->drawRect(rect);
+		painter->drawText(
+			rect,
+			Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
+			met.elidedText(
+				QString::fromStdString(member.UML()),
+				Qt::ElideRight,
+				static_cast<int>(rect.width())
+			)
+		);
+	});
+	return QPointF{pos.x(), pos.y() + met.height() / zoom_factor + vspace};
 }
 
 template <typename DrawFunc>
