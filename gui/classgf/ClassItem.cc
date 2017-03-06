@@ -208,23 +208,12 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// reset transform to make the text size unaffected by zoom factor
 	painter->save();
-	std::cout << "p = " << content.left() << " " << (content.top() + name_yoffset) << std::endl;
-
+	
 	auto t = painter->transform();
-	std::cout << "t = " << t.m11() << " " << t.m12() << " " << t.m13() << "\n"
-	          << "    " << t.m21() << " " << t.m22() << " " << t.m23() << "\n"
-	          << "    " << t.m31() << " " << t.m32() << " " << t.m33() << std::endl;
+	assert(t.isAffine());
 	
-//	painter->translate(content.left(),  content.top() + name_yoffset);
-//	painter->scale(1/view.ZoomFactor(), 1/view.ZoomFactor());
-	
-	auto w = painter->transform();
-	std::cout << "w = " << w.m11() << " " << w.m12() << " " << w.m13() << "\n"
-	          << "    " << w.m21() << " " << w.m22() << " " << w.m23() << "\n"
-	          << "    " << w.m31() << " " << w.m32() << " " << w.m33() << std::endl;
-	
-	auto dx = content.left() * view.ZoomFactor();
-	auto dy = (content.top() + name_yoffset) * view.ZoomFactor();
+	auto dx = content.left() * t.m11();
+	auto dy = (content.top() + name_yoffset) * t.m22();
 	
 	// set the scale to 1 but keep the translation
 	painter->setTransform({
@@ -232,13 +221,6 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		0, 1, 0,
 		t.m31() + dx, t.m32() + dy, 1
 	});
-	
-	auto vprect = painter->viewport();
-	auto wdrect = painter->window();
-	std::cout << "viewport: " << vprect.top() << " " << vprect.left() << " " << vprect.bottom() << " " << vprect.right() << std::endl;
-	std::cout << "window:   " << wdrect.top() << " " << wdrect.left() << " " << wdrect.bottom() << " " << wdrect.right() << std::endl;
-	auto pyrect = viewport->rect();
-	std::cout << "widget:   " << pyrect.top() << " " << pyrect.left() << " " << pyrect.bottom() << " " << pyrect.right() << std::endl;
 	
 	painter->drawStaticText(0, 0, name);
 	painter->restore();
