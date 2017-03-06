@@ -35,7 +35,7 @@ namespace gui {
 namespace classgf {
 
 class Edge;
-class ItemRenderingOptions;
+struct ItemRenderingOptions;
 
 class ClassItem : public QGraphicsObject, public BaseItem
 {
