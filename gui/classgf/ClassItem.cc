@@ -14,7 +14,6 @@
 #include "Edge.hh"
 #include "Viewport.hh"
 #include "ItemRenderingOptions.hh"
-#include "ClassView.hh"
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
@@ -197,17 +196,16 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ?
 		(content.height() - name.size().height()) / 2 : 0.0;
 	painter->setPen(Qt::GlobalColor::black);
-	painter->setFont(name_font);
-//	painter->drawStaticText(QPointF{content.left(), content.top() + name_yoffset}, name);
+	painter->setFont(setting.class_name_font);
 	
-	auto name_font2 = setting.class_name_font;
-	painter->setFont(name_font2);
-	auto v = dynamic_cast<const ClassView*>(&view);
-	auto screen_pos = deviceTransform(v->viewportTransform()).map(QPointF{ content.left(), content.top() + name_yoffset });
+	auto vp_transform     = deviceTransform(view.Transform());
+	auto screen_top_left  = vp_transform.map(QPointF{content.left(),  content.top() + name_yoffset});
+	auto screen_btm_right = vp_transform.map(QPointF{content.right(), content.top() + name_yoffset + name.size().height()});
 
+	// reset transform to make the text size unaffected by zoom factor
 	auto mat = painter->transform();
 	painter->resetTransform();
-	painter->drawText(screen_pos, QString::fromStdString(m_class->Name()));
+	painter->drawText(QRectF{ screen_top_left, screen_btm_right }, Qt::AlignCenter, QString::fromStdString(m_class->Name()));
 	painter->setTransform(mat);
 	
 	// line between class name and function

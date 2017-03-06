@@ -52,6 +52,7 @@ const Viewport& BaseItem::CurrentViewport(QWidget *viewport)
 	public:
 		const ItemRenderingOptions& Setting() const override {return m_setting;}
 		qreal ZoomFactor() const override {return 1.0;}
+		QTransform Transform() const override { return{}; }
 	
 	private:
 		ItemRenderingOptions m_setting;
