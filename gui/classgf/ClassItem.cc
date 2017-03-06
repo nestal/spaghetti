@@ -200,7 +200,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	ComputeSize(content.height(), name_isize.height(), QFontMetrics{mem_font}.height() / zoom_factor);
 	
-	// adjust vertical margin
+	// adjust vertical space between text
 	QFontMetrics member_font_met{mem_font};
 	auto total_height = name_isize.height() + (m_show_field + m_show_function) * member_font_met.height()/zoom_factor;
 	auto vspace_between_fields =
@@ -305,7 +305,6 @@ void ClassItem::DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc
 		t.m31() + dx, t.m32() + dy, 1
 	});
 	
-//	painter->drawStaticText(0, 0, text);
 	func();
 	painter->restore();
 }
