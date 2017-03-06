@@ -87,7 +87,7 @@ qreal ClassItem::Margin(const QFontMetrics& name_font, qreal factor) const
 	return remain_height > name_height ? m_margin/factor : std::max(remain_height/2, 0.0);
 }
 
-QStaticText ClassItem::NameText(const QTransform& transform, const QSizeF& content, QFont& font)
+QStaticText ClassItem::NameText(const QSizeF& content, QFont& font)
 {
 	assert(content.width() > 0);
 	assert(content.height() > 0);
@@ -102,7 +102,7 @@ QStaticText ClassItem::NameText(const QTransform& transform, const QSizeF& conte
 	
 		text.setTextFormat(Qt::PlainText);
 		text.setTextWidth(content.width());
-		text.prepare(transform, font);
+		text.prepare({}, font);
 
 		// try to fit in box
 		auto size = text.size();
@@ -184,11 +184,8 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto vp_transform = deviceTransform(view.Transform());
 	auto vp_content = vp_transform.mapRect(content);
 
-	auto name = NameText({}, vp_content.size(), name_font);
-	auto vp_name = QRectF{ vp_content.left(), vp_content.top(), name.size().width(), name.size().height() };
-	
-	auto name_rect_item = vp_transform.inverted().mapRect(vp_name);
-	auto name_size_item = name_rect_item.size();
+	auto name = NameText(vp_content.size(), name_font);
+	auto name_size_item = QSizeF{name.size().width() / view.ZoomFactor(), name.size().height() / view.ZoomFactor()};
 	
 	ComputeSize(content, name_size_item, QFontMetrics{mem_font});
 	
