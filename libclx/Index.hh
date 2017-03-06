@@ -24,6 +24,11 @@
 #include <iosfwd>
 #include <vector>
 
+/**
+ * \brief A thin wrapper around libclang-c
+ *
+ * libclx is a thin wrapper around libclang-c. Its purpose is to simplify the usage.
+ */
 namespace libclx {
 
 // forward declarations

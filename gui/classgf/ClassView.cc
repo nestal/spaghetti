@@ -275,5 +275,10 @@ void ClassView::contextMenuEvent(QContextMenuEvent *event)
 	menu.exec(event->globalPos());
 	event->accept();
 }
-	
+
+QTransform ClassView::Transform() const
+{
+	return viewportTransform();
+}
+
 }} // end of namespace

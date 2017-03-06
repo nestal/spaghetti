@@ -35,7 +35,7 @@ namespace gui {
 namespace classgf {
 
 class Edge;
-class ItemRenderingOptions;
+struct ItemRenderingOptions;
 
 class ClassItem : public QGraphicsObject, public BaseItem
 {
@@ -77,16 +77,19 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	void ComputeSize(const QRectF& content, const QSizeF& name, const QFontMetrics& field_font);
+	void ComputeSize(qreal content_height, qreal name_height, qreal field_height);
 	void OnPositionChanged();
 	void OnSelectedChange(bool selected);
 	void Normalize();
 	void DrawBox(QPainter *painter, const ItemRenderingOptions& setting);
-	QStaticText NameText(const QTransform& transform, const QRectF& content, QFont& font);
+	QStaticText NameText(const QSizeF& content, QFont& font);
 	qreal Margin(const QFontMetrics& name_font, qreal factor) const;
 	
 	template <typename Member>
 	QPointF DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met);
+	
+	template <typename DrawFunc>
+	void DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc func);
 	
 private:
 	class Resizer;

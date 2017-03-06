@@ -50,6 +50,8 @@ public:
 	const classgf::ItemRenderingOptions& Setting() const override;
 	qreal ZoomFactor() const override;
 	void ResetZoom() override;
+
+	QTransform Transform() const override;
 	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);

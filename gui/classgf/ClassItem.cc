@@ -80,12 +80,14 @@ QRectF ClassItem::boundingRect() const
 
 qreal ClassItem::Margin(const QFontMetrics& name_font, qreal factor) const
 {
+	auto name_height = name_font.height()/factor;
+	
 	// assume content has 1 line
-	auto remain_height = m_bounding.height() - name_font.height();
-	return remain_height > name_font.height() ? m_margin/factor : std::max(remain_height/2, 0.0);
+	auto remain_height = m_bounding.height() - name_height;
+	return remain_height > name_height ? m_margin/factor : std::max(remain_height/2, 0.0);
 }
 
-QStaticText ClassItem::NameText(const QTransform& transform, const QRectF& content, QFont& font)
+QStaticText ClassItem::NameText(const QSizeF& content, QFont& font)
 {
 	assert(content.width() > 0);
 	assert(content.height() > 0);
@@ -100,7 +102,7 @@ QStaticText ClassItem::NameText(const QTransform& transform, const QRectF& conte
 	
 		text.setTextFormat(Qt::PlainText);
 		text.setTextWidth(content.width());
-		text.prepare(transform, font);
+		text.prepare({}, font);
 
 		// try to fit in box
 		auto size = text.size();
@@ -159,50 +161,66 @@ void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
 
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
 {
+	auto t = painter->transform();
+	assert(t.isAffine());
+	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
 	auto& view = CurrentViewport(viewport);
 	auto& setting = view.Setting();
+	
+	assert(t.m11() == t.m22());
+	auto zoom_factor = t.m11();
 	
 	DrawBox(painter, setting);
 	
 	// normalize font size
 	auto name_font = setting.class_name_font;
 	auto mem_font  = setting.class_member_font;
-	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
-	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
+//	mem_font.setPointSizeF(setting.class_member_font.pointSize() / zoom_factor);
 	
 	// normalize margin
-	auto margin  = Margin(QFontMetrics{name_font}, view.ZoomFactor());
+	auto margin  = Margin(QFontMetrics{name_font}, zoom_factor);
 	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
 
 	// fix bug found by Isis
 	if (content.isEmpty())
 		return;
 
-	auto name = NameText(painter->transform(), content, name_font);
-	ComputeSize(content, name.size(), QFontMetrics{mem_font});
+	// do not scale the font, scale the content size inversely instead
+	// we want to keep the text size constant regardless of zoom level
+	auto name = NameText(content.size() * zoom_factor, name_font);
+	
+	// size of the class name in item-space
+	// calculate by scaling back
+	auto name_isize = name.size() / zoom_factor;
 	
 	// don't let the member gets bigger than the name
 	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
 	
+	ComputeSize(content.height(), name_isize.height(), QFontMetrics{mem_font}.height() / zoom_factor);
+	
 	// adjust vertical margin
 	QFontMetrics member_font_met{mem_font};
-	auto total_height = name.size().height() + (m_show_field + m_show_function) * member_font_met.height();
+	auto total_height = name_isize.height() + (m_show_field + m_show_function) * member_font_met.height()/zoom_factor;
 	auto vspace_between_fields =
 		(content.height() - total_height) / (m_show_field + m_show_function); // include space between name
 	
 	// draw class name in the middle of the box if there's no other member
 	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ?
-		(content.height() - name.size().height()) / 2 : 0.0;
+		(content.height() - name_isize.height()) / 2 : 0.0;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(name_font);
-	painter->drawStaticText(QPointF{content.left(), content.top() + name_yoffset}, name);
+	
+	// reset transform to make the text size unaffected by zoom factor
+	DrawUnScaledText(painter, QPointF{content.left(), content.top() + name_yoffset}, [&name, painter]{
+		painter->drawStaticText(0, 0, name);
+	});
 	
 	// line between class name and function
-	auto name_line = content.top() + name.size().height() + vspace_between_fields / 2;
+	auto name_line = content.top() + name_isize.height() + vspace_between_fields / 2;
 	
-	QPointF text_pt{content.left(), content.top() + name.size().height() + vspace_between_fields};
+	QPointF text_pt{content.left(), content.top() + name_isize.height() + vspace_between_fields};
 	
 	painter->setFont(mem_font);
 	
@@ -242,18 +260,54 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 template <typename Member>
 QPointF ClassItem::DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal right, qreal vspace, const QFontMetrics& met)
 {
-	QRectF out;
-	painter->drawText(
-		QRectF{pos, QPointF{right, pos.y()+met.height()}},
-		Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
-		met.elidedText(
-			QString::fromStdString(member.UML()),
-			Qt::ElideRight,
-			static_cast<int>(right - pos.x())
-		),
-		&out
-	);
-	return QPointF{pos.x(), out.bottom() + vspace};
+	auto zoom_factor = painter->transform().m11();
+	
+	QRectF rect{0, 0,
+		(right - pos.x()) * zoom_factor,
+		static_cast<qreal>(met.height())
+	};
+	DrawUnScaledText(painter, pos, [painter, &rect, &met, &member]
+	{
+		painter->setPen(Qt::NoPen);
+		
+		QColor background{Qt::GlobalColor::white};
+		background.setAlphaF(0.5);
+		painter->setBrush(background);
+		painter->drawRect(rect);
+		
+		painter->setPen(Qt::SolidLine);
+		painter->drawText(
+			rect,
+			Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
+			met.elidedText(
+				QString::fromStdString(member.UML()),
+				Qt::ElideRight,
+				static_cast<int>(rect.width())
+			)
+		);
+	});
+	return QPointF{pos.x(), pos.y() + met.height() / zoom_factor + vspace};
+}
+
+template <typename DrawFunc>
+void ClassItem::DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc func)
+{
+	painter->save();
+	auto t = painter->transform();
+	
+	auto dx = pos.x() * t.m11();
+	auto dy = pos.y() * t.m22();
+	
+	// set the scale to 1 but keep the translation
+	painter->setTransform({
+		1, 0, 0,
+		0, 1, 0,
+		t.m31() + dx, t.m32() + dy, 1
+	});
+	
+//	painter->drawStaticText(0, 0, text);
+	func();
+	painter->restore();
 }
 
 const std::string& ClassItem::ID() const
@@ -380,13 +434,13 @@ void ClassItem::Update(const codebase::EntityMap *map)
  * \param name_font     the metric of the font to render the class name
  * \param field_font    the metric of the font to render the functions and fields
  */
-void ClassItem::ComputeSize(const QRectF& content, const QSizeF& name, const QFontMetrics& field_font)
+void ClassItem::ComputeSize(qreal content_height, qreal name_height, qreal field_height)
 {
 	// total number of function and fields that can be rendered
-	auto total_rows = static_cast<std::size_t>((content.height() - name.height())/field_font.height());
+	auto total_rows = static_cast<std::size_t>((content_height - name_height)/field_height);
 	
 	// determine how to distribute the space between function and fields
-	if (content.height() > name.height() && total_rows > 0)
+	if (content_height > name_height && total_rows > 0)
 	{
 		m_show_function = std::min(m_class->Functions().size(), total_rows);
 		m_show_field    = std::min(m_class->Fields().size(),    total_rows);
