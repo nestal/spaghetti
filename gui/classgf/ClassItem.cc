@@ -85,7 +85,7 @@ qreal ClassItem::Margin(const QFontMetrics& name_font, qreal factor) const
 	return remain_height > name_font.height() ? m_margin/factor : std::max(remain_height/2, 0.0);
 }
 
-QStaticText ClassItem::NameText(const QTransform& transform, const QRectF& content, QFont& font)
+QStaticText ClassItem::NameText(const QTransform& transform, const QSizeF& content, QFont& font)
 {
 	assert(content.width() > 0);
 	assert(content.height() > 0);
@@ -169,7 +169,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	// normalize font size
 	auto name_font = setting.class_name_font;
 	auto mem_font  = setting.class_member_font;
-	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
+//	name_font.setPointSizeF(setting.class_name_font.pointSize() / view.ZoomFactor());
 	mem_font.setPointSizeF(setting.class_member_font.pointSize() / view.ZoomFactor());
 	
 	// normalize margin
@@ -180,38 +180,49 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	if (content.isEmpty())
 		return;
 
-	auto name = NameText(painter->transform(), content, name_font);
-	ComputeSize(content, name.size(), QFontMetrics{mem_font});
+	auto vp_transform = deviceTransform(view.Transform());
+	auto vp_content = vp_transform.mapRect(content);
+
+	auto name = NameText({}, vp_content.size(), name_font);
+	auto vp_name = QRectF{ vp_content.left(), vp_content.top(), name.size().width(), name.size().height() };
+	
+	auto name_rect_item = vp_transform.inverted().mapRect(vp_name);
+	auto name_size_item = name_rect_item.size();
+	painter->drawRect(name_rect_item);
+
+	ComputeSize(content, name_size_item, QFontMetrics{mem_font});
 	
 	// don't let the member gets bigger than the name
-	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
+//	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
 	
 	// adjust vertical margin
 	QFontMetrics member_font_met{mem_font};
-	auto total_height = name.size().height() + (m_show_field + m_show_function) * member_font_met.height();
+	auto total_height = name_size_item.height() + (m_show_field + m_show_function) * member_font_met.height();
 	auto vspace_between_fields =
 		(content.height() - total_height) / (m_show_field + m_show_function); // include space between name
 	
 	// draw class name in the middle of the box if there's no other member
-	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ?
-		(content.height() - name.size().height()) / 2 : 0.0;
+	auto name_yoffset = /*(m_show_field == 0 && m_show_function == 0) ?
+		(content.height() - name_size_item.height()) / 2 :*/ 0.0;
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(setting.class_name_font);
 	
-	auto vp_transform     = deviceTransform(view.Transform());
 	auto screen_top_left  = vp_transform.map(QPointF{content.left(),  content.top() + name_yoffset});
-	auto screen_btm_right = vp_transform.map(QPointF{content.right(), content.top() + name_yoffset + name.size().height()});
 
 	// reset transform to make the text size unaffected by zoom factor
-	auto mat = painter->transform();
+	painter->save();
 	painter->resetTransform();
-	painter->drawText(QRectF{ screen_top_left, screen_btm_right }, Qt::AlignCenter, QString::fromStdString(m_class->Name()));
-	painter->setTransform(mat);
+	
+	name.prepare(painter->transform(), setting.class_name_font);
+//	painter->drawRect(screen_top_left.x(), screen_top_left.y(), name.size().width(), name.size().height());
+	painter->drawStaticText(screen_top_left, name);
+
+	painter->restore();
 	
 	// line between class name and function
-	auto name_line = content.top() + name.size().height() + vspace_between_fields / 2;
+	auto name_line = content.top() + name_size_item.height() + vspace_between_fields / 2;
 	
-	QPointF text_pt{content.left(), content.top() + name.size().height() + vspace_between_fields};
+	QPointF text_pt{content.left(), content.top() + name_size_item.height() + vspace_between_fields};
 	
 	painter->setFont(mem_font);
 	
