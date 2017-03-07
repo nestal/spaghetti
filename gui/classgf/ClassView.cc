@@ -279,4 +279,21 @@ QTransform ClassView::Transform() const
 	return viewportTransform();
 }
 
+bool ClassView::event(QEvent *e)
+{
+	if (e->type() == QEvent::ToolTip)
+	{
+		if (auto help = dynamic_cast<QHelpEvent*>(e))
+		{
+			if (auto item = dynamic_cast<ClassItem*>(itemAt(help->pos())))
+			{
+				item->ShowTooltip(item->mapFromScene(mapToScene(help->pos())));
+				return true;
+			}
+		}
+	}
+	
+	return QGraphicsView::event(e);
+}
+	
 }} // end of namespace

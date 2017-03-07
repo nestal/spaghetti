@@ -67,6 +67,7 @@ public:
 	void MarkUnchanged();
 
 	void Resize(const QRectF& rect);
+	void ShowTooltip(const QPointF& pos);
 	
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

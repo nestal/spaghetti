@@ -16,7 +16,6 @@
 #include <QObject>
 
 #include <memory>
-#include <codebase/Entity.hh>
 
 class QGraphicsScene;
 class QPointF;
@@ -24,6 +23,7 @@ class QPointF;
 namespace codebase {
 class DataType;
 class EntityMap;
+class Entity;
 }
 
 namespace gui {
@@ -84,7 +84,7 @@ private:
 	mutable bool m_changed{false};
 	
 	std::unique_ptr<QGraphicsScene> m_scene;
-	const codebase::EntityMap *m_codebase{};
+	const codebase::EntityMap       *m_codebase{};
 };
 	
 }} // end of namespace

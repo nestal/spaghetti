@@ -585,5 +585,10 @@ QString ClassItem::NameWithNamespace() const
 		result.prepend(QString::fromStdString(i->Name()) + "::");
 	return result;
 }
+
+void ClassItem::ShowTooltip(const QPointF& pos)
+{
+	std::cout << m_class->Name() << " help at " << pos.x() << " " << pos.y() << std::endl;
+}
 	
 }} // end of namespace
