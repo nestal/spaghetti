@@ -303,4 +303,17 @@ ClassItem *ClassView::ClassAt(const QPoint& pos)
 	return nullptr;
 }
 
+void ClassView::CopySelection()
+{
+	// Create the image with the exact size of the shrunk scene
+	QImage image{scene()->itemsBoundingRect().size().toSize(), QImage::Format_ARGB32};
+	image.fill(Qt::transparent);
+
+	QPainter painter(&image);
+	scene()->render(&painter);
+
+	auto clipboard = QGuiApplication::clipboard();
+	clipboard->setImage(image);
+}
+
 }} // end of namespace

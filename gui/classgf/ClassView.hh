@@ -52,6 +52,8 @@ public:
 	void ResetZoom() override;
 
 	QTransform Transform() const override;
+
+	void CopySelection();
 	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);
