@@ -305,8 +305,13 @@ ClassItem *ClassView::ClassAt(const QPoint& pos)
 
 void ClassView::CopySelection()
 {
+	static const auto pixel_ratio = 2;
+
 	// Create the image with the exact size of the shrunk scene
-	QImage image{scene()->itemsBoundingRect().size().toSize(), QImage::Format_ARGB32};
+	auto size = scene()->itemsBoundingRect().size().toSize();
+
+	QImage image{size * pixel_ratio, QImage::Format_ARGB32};
+	image.setDevicePixelRatio(pixel_ratio);
 	image.fill(Qt::transparent);
 
 	QPainter painter(&image);
