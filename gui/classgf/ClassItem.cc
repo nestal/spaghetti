@@ -91,8 +91,18 @@ QStaticText ClassItem::NameText(const QSizeF& content, QFont& font)
 {
 	assert(content.width() > 0);
 	assert(content.height() > 0);
-	
+
 	QStaticText text{QString::fromStdString(m_class->Name())};
+	
+	// if there is enough space, show the namespace as well
+	if (content.width() > text.size().width() * 2)
+		text = QStaticText{
+			QFontMetricsF{font}.elidedText(
+				NameWithNamespace(),
+				Qt::ElideLeft,
+				content.width()
+			)
+		};
 	
 	for (auto trial = 0 ; trial < 5 ; trial++)
 	{
@@ -566,6 +576,14 @@ void ClassItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	
 	// prevent default handling
 	event->accept();
+}
+
+QString ClassItem::NameWithNamespace() const
+{
+	auto result = QString::fromStdString(m_class->Name());
+	for (const codebase::Entity *i = m_class->Parent(); i->Parent() != nullptr; i = i->Parent())
+		result.prepend(QString::fromStdString(i->Name()) + "::");
+	return result;
 }
 	
 }} // end of namespace

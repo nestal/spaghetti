@@ -91,6 +91,8 @@ private:
 	template <typename DrawFunc>
 	void DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc func);
 	
+	QString NameWithNamespace() const;
+	
 private:
 	class Resizer;
 	
