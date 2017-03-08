@@ -209,8 +209,6 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	auto t = painter->transform();
 	assert(t.isAffine());
 	
-	std::cout << "on paint: " << t << std::endl;
-	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
 	auto& view = CurrentViewport(viewport);
