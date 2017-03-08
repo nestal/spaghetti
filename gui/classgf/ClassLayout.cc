@@ -48,9 +48,6 @@ ClassLayout::ClassLayout(
 	if (m_content.isEmpty())
 		return;
 	
-	std::cout << "bounding = " << m_bounding << std::endl;
-	std::cout << "content  = " << m_content << std::endl;
-	
 	InitializeNameText(m_content.size() * m_zoom_factor, name_with_namespace);
 		
 	// size of the class name in item-space
@@ -71,8 +68,6 @@ ClassLayout::ClassLayout(
 		(m_content.height() - name_isize.height()) / 2 : 0.0;
 	m_name_rect.setTopLeft({m_content.left(), m_content.top() + name_yoffset});
 	m_name_rect.setSize(name_isize);
-	
-	std::cout << "name  = " << m_name_rect << std::endl;
 	
 	if (m_field_count + m_function_count > 0)
 	{

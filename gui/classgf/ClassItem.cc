@@ -40,8 +40,6 @@
 namespace gui {
 namespace classgf {
 
-const qreal ClassItem::m_margin{10.0};
-
 class ClassItem::Resizer : public SizeGripItem::Resizer
 {
 public:
@@ -78,83 +76,6 @@ ClassItem::~ClassItem() = default;
 QRectF ClassItem::boundingRect() const
 {
 	return m_bounding;
-}
-
-qreal ClassItem::Margin(const QFontMetrics& name_font, qreal factor) const
-{
-	auto name_height = name_font.height()/factor;
-	
-	// assume content has 1 line
-	auto remain_height = m_bounding.height() - name_height;
-	return remain_height > name_height ? m_margin/factor : std::max(remain_height/2, 0.0);
-}
-
-QStaticText ClassItem::NameText(const QSizeF& content, QFont& font)
-{
-	assert(content.width() > 0);
-	assert(content.height() > 0);
-
-	QStaticText text{QString::fromStdString(m_class->Name())};
-	
-	// if there is enough space, show the namespace as well
-	if (content.width() > text.size().width() * 2)
-		text = QStaticText{
-			QFontMetricsF{font}.elidedText(
-				NameWithNamespace(),
-				Qt::ElideLeft,
-				content.width()
-			)
-		};
-	
-	for (auto trial = 0 ; trial < 5 ; trial++)
-	{
-		QTextOption ops{Qt::AlignCenter};
-		ops.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-		text.setTextOption(ops);
-	
-		text.setTextFormat(Qt::PlainText);
-		text.setTextWidth(content.width());
-		text.prepare({}, font);
-
-		// try to fit in box
-		auto size = text.size();
-		if (size.width() <= content.width() && size.height() <= content.height())
-			break;
-		
-		// reduce font and retry
-		auto font_factor = 0.0;
-		
-		// width OK, but height is not enough
-		if (size.width() <= content.width() && size.height() > content.height())
-			font_factor = content.height() / size.height();
-		
-		// height OK, but width not enough
-		else if (size.height() <= content.height() && size.width() > content.width())
-			font_factor = content.width() / size.width();
-		
-		else
-		{
-			assert(!std::isnan(size.width()));
-			assert(!std::isnan(size.height()));
-			
-			assert(size.height() >= content.height());
-			assert(size.width() >= content.width());
-			font_factor = std::min(
-				std::max(0.0, content.height() / size.height()),
-				std::max(0.0, content.width() / size.width())
-			);
-		}
-				
-		assert(font_factor <= 1.0);
-		auto new_size = font.pointSizeF() * font_factor;
-		
-		if (font_factor < 1.0 && new_size > 0)
-			font.setPointSizeF(font.pointSizeF() * font_factor);
-		else
-			break;
-	}
-	
-	return text;
 }
 
 void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
@@ -229,41 +150,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		m_class->Functions().size(),
 		m_class->Fields().size()
 	};
-	
-/*	auto name_font = setting.class_name_font;
-	auto mem_font  = setting.class_member_font;
-	
-	// normalize margin
-	auto margin  = Margin(QFontMetrics{name_font}, zoom_factor);
-	auto content = m_bounding.adjusted(margin, margin, -margin, -margin);
 
-	// fix bug found by Isis
-	if (content.isEmpty())
-		return;
-
-	// do not scale the font, scale the content size inversely instead
-	// we want to keep the text size constant regardless of zoom level
-	auto name = NameText(content.size() * zoom_factor, name_font);
-	
-	// size of the class name in item-space
-	// calculate by scaling back
-	auto name_isize = name.size() / zoom_factor;
-	
-	// don't let the member gets bigger than the name
-	mem_font.setPointSizeF(std::min(name_font.pointSizeF(), mem_font.pointSizeF()));
-	
-	QFontMetrics member_font_met{mem_font};
-	auto member_height = member_font_met.height() / zoom_factor;
-	ComputeSize(content.height(), name_isize.height(), member_height);
-	
-	// adjust vertical space between text
-	auto total_height = name_isize.height() + (m_show_field + m_show_function) * member_height;
-	auto vspace_between_fields =
-		(content.height() - total_height) / (m_show_field + m_show_function); // include space between name
-	
-	// draw class name in the middle of the box if there's no other member
-	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ?
-		(content.height() - name_isize.height()) / 2 : 0.0;*/
 	painter->setPen(Qt::GlobalColor::black);
 	painter->setFont(layout.NameFont());
 	
@@ -310,12 +197,12 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	QPen line_pen{setting.line_color};
 	line_pen.setCosmetic(true);
 	painter->setPen(line_pen);
-	if (m_show_field > 0 || m_show_function > 0)
+	if (layout.FieldCount() > 0 || layout.FunctionCount() > 0)
 		painter->drawLine(
 			QPointF{m_bounding.right(), name_line},
 			QPointF{m_bounding.left(),  name_line}
 		);
-	if (m_show_field > 0)
+	if (layout.FieldCount() > 0)
 		painter->drawLine(
 			QPointF{m_bounding.right(), func_line},
 			QPointF{m_bounding.left(),  func_line}
@@ -458,43 +345,6 @@ void ClassItem::Update(const codebase::EntityMap *map)
 	
 	// remove all edges, the model will re-add them later
 	ClearEdges();
-}
-
-/**
- * \brief Determine how many member functions and variables (fields) that can be fitted in the box
- * \param content       the size of the box to fit in
- * \param name_font     the metric of the font to render the class name
- * \param field_font    the metric of the font to render the functions and fields
- */
-void ClassItem::ComputeSize(qreal content_height, qreal name_height, qreal field_height)
-{
-	// total number of function and fields that can be rendered
-	auto total_rows = static_cast<std::size_t>((content_height - name_height)/field_height);
-	
-	// determine how to distribute the space between function and fields
-	if (content_height > name_height && total_rows > 0)
-	{
-		m_show_function = std::min(m_class->Functions().size(), total_rows);
-		m_show_field    = std::min(m_class->Fields().size(),    total_rows);
-		
-		if (m_show_field <= total_rows / 2 && m_show_function > total_rows / 2)
-			m_show_function = std::min(total_rows - m_show_field, m_show_function);
-		else if (m_show_function <= total_rows / 2 && m_show_field > total_rows / 2)
-			m_show_field = std::min(total_rows - m_show_function, m_show_field);
-		else if (m_show_field > total_rows / 2 && m_show_function > total_rows / 2)
-		{
-			m_show_field    = total_rows / 2;
-			m_show_function = total_rows - m_show_field;
-		}
-		
-		assert(m_show_function <= total_rows);
-		assert(m_show_field <= total_rows);
-		assert(m_show_function + m_show_field <= total_rows);
-	}
-		
-	// no space to render any function or fields
-	else
-		m_show_field = m_show_function = 0;
 }
 
 void ClassItem::Resize(const QRectF& rect)
