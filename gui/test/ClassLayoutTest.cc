@@ -76,6 +76,11 @@ TEST_F(ClassLayoutTest, Show_no_member_if_no_member)
 {
 	ASSERT_EQ(0, no_member.FieldCount());
 	ASSERT_EQ(0, no_member.FunctionCount());
-	ASSERT_TRUE(no_member.ContentRect().contains(no_member.NamePos()));
-	ASSERT_EQ(no_member.ContentRect(), no_member.Header());
+	ASSERT_TRUE(no_member.ContentRect().contains(no_member.NameRect()));
+	ASSERT_EQ(no_member.Bounding(), no_member.Header());
+}
+
+TEST_F(ClassLayoutTest, Name_is_always_inside_content)
+{
+	ASSERT_TRUE(enough_space.ContentRect().contains(enough_space.NameRect()));
 }

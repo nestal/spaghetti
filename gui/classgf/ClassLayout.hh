@@ -39,8 +39,9 @@ public:
 		std::size_t function_count,
 		std::size_t field_count
 	);
-	
-	QPointF NamePos() const;
+
+	QRectF Bounding() const;
+	QRectF NameRect() const;
 	QRectF Header() const;
 	QRectF ContentRect() const;
 
@@ -69,12 +70,12 @@ private:
 	QFont   m_member_font;
 	
 	QStaticText m_name;
-	QPointF     m_name_pos;
+	QRectF      m_name_rect;
 	
 	std::size_t m_function_count;
 	std::size_t m_field_count;
 
-	qreal m_header_bottom{-1};
+	qreal m_member_padding{-1};
 	
 	static const qreal m_default_margin;
 };
