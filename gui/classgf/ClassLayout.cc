@@ -60,15 +60,20 @@ ClassLayout::ClassLayout(
 	DetermineFunctionFieldCount(name_isize.height(), member_height);
 	
 	// adjust vertical space between text
-//	auto total_height = name_isize.height() + (m_field_count + m_function_count) * member_height;
-//	auto vspace_between_fields =
-//		(m_content.height() - total_height) / (m_field_count + m_function_count); // include space between name
+	auto total_height = name_isize.height() + (m_field_count + m_function_count) * member_height;
 	
 	// draw class name in the middle of the box if there's no other member
 	auto name_yoffset = (m_field_count == 0 && m_function_count == 0) ?
 		(m_content.height() - name_isize.height()) / 2 : 0.0;
 	m_name_pos.setX(m_content.right());
 	m_name_pos.setY(m_content.top() + name_yoffset);
+
+	if (m_field_count + m_function_count > 0)
+	{
+		auto vspace_between_fields =
+			(m_content.height() - total_height) / (m_field_count + m_function_count); // include space between name
+		m_header_bottom = m_content.top() + name_isize.height() + vspace_between_fields / 2;
+	}
 }
 
 qreal ClassLayout::ComputeMargin(const QFontMetricsF& name_font, qreal factor, const QRectF& bounding)
@@ -203,6 +208,14 @@ QPointF ClassLayout::NamePos() const
 const QStaticText& ClassLayout::Name() const
 {
 	return m_name;
+}
+
+QRectF ClassLayout::Header() const
+{
+	return m_header_bottom == -1 ? m_content : QRectF{
+		m_content.topLeft(),
+		QPointF{m_content.right(), m_header_bottom}
+	};
 }
 	
 }} // end of namespace

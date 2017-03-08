@@ -73,6 +73,8 @@ private:
 	
 	std::size_t m_function_count;
 	std::size_t m_field_count;
+
+	qreal m_header_bottom{-1};
 	
 	static const qreal m_default_margin;
 };
