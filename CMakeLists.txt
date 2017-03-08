@@ -69,18 +69,42 @@ add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES} ${UTIL_F
 # the classes in "project" namespace needs QtCore to serialize models to/from JSON files
 target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES} Qt5::Core)
 
-file(GLOB GUI_FILES gui/*.hh gui/*.cc gui/*/*.cc gui/*/*.hh gui/common/*.cpp gui/common/*.h gui/spaghetti.qrc)
+file(GLOB GUI_LIB_FILES
+	gui/classgf/*.cc gui/classgf/*.hh
+	gui/logicalvw/*.cc gui/logicalvw/*.hh
+	gui/sourcevw/*.cc gui/sourcevw/*.hh
+	gui/common/*.cc gui/common/*.hh gui/common/*.cpp gui/common/*.h
+)
+add_library(spag-gui ${GUI_LIB_FILES})
+target_link_libraries(spag-gui spag Qt5::Widgets)
+
+file(GLOB GUI_FILES
+	gui/*.hh gui/*.cc
+	gui/spaghetti.qrc
+)
 add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES} ${RC_FILE})
-target_link_libraries(spaghetti-gui spag Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(spaghetti-gui spag spag-gui Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
+
 install(TARGETS spaghetti-gui RUNTIME DESTINATION bin)
 
 if (GTEST_FOUND)
 	include_directories(${GTEST_INCLUDE_DIRS})
 	add_definitions(-DSRC_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
-	file(GLOB TEST_FILES */test/*.hh */test/*.cc)
+	file(GLOB TEST_FILES
+		codebase/test/*.cc codebase/test/*.hh
+		project/test/*.cc project/test/*.hh
+	)
 	add_executable(unittest ${TEST_FILES})
 	target_link_libraries(unittest ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} spag)
+
+	file(GLOB GUI_TEST_FILES
+		gui/test/*.cc gui/test/*.hh
+	)
+	add_executable(gui_unittest ${GUI_TEST_FILES})
+	target_link_libraries(gui_unittest spag-gui ${GTEST_LIBRARIES})
+
+
 endif(GTEST_FOUND)
 
 if(WIN32)

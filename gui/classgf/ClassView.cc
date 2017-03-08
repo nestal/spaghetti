@@ -14,6 +14,7 @@
 
 #include "ClassItem.hh"
 #include "gui/common/MimeType.hh"
+#include "gui/common/CommonIO.hh"
 
 #include <QtGui/QtGui>
 #include <QtGui/QDragEnterEvent>
@@ -279,4 +280,22 @@ QTransform ClassView::Transform() const
 	return viewportTransform();
 }
 
+bool ClassView::event(QEvent *e)
+{
+	if (e->type() == QEvent::ToolTip)
+	{
+		if (auto help = dynamic_cast<QHelpEvent*>(e))
+		{
+			if (auto item = dynamic_cast<ClassItem*>(itemAt(help->pos())))
+			{
+				item->ShowTooltip(item->mapFromScene(mapToScene(help->pos())));
+				std::cout << "on help: " << transform() << std::endl;
+				return true;
+			}
+		}
+	}
+	
+	return QGraphicsView::event(e);
+}
+	
 }} // end of namespace

@@ -22,6 +22,7 @@
 class QGraphicsSimpleTextItem;
 class QSizeF;
 class QStaticText;
+class QFontMetricsF;
 
 class SizeGripItem;
 
@@ -36,6 +37,7 @@ namespace classgf {
 
 class Edge;
 struct ItemRenderingOptions;
+class ClassLayout;
 
 class ClassItem : public QGraphicsObject, public BaseItem
 {
@@ -67,6 +69,7 @@ public:
 	void MarkUnchanged();
 
 	void Resize(const QRectF& rect);
+	void ShowTooltip(const QPointF& pos);
 	
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -77,19 +80,18 @@ signals:
 	void OnJustChanged(ClassItem *self);
 	
 private:
-	void ComputeSize(qreal content_height, qreal name_height, qreal field_height);
 	void OnPositionChanged();
 	void OnSelectedChange(bool selected);
 	void Normalize();
 	void DrawBox(QPainter *painter, const ItemRenderingOptions& setting);
-	QStaticText NameText(const QSizeF& content, QFont& font);
-	qreal Margin(const QFontMetrics& name_font, qreal factor) const;
 	
 	template <typename Member>
-	auto DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetrics& met);
+	void DrawMember(QPainter *painter, const Member& member, const ClassLayout& layout, std::size_t index);
 	
 	template <typename DrawFunc>
-	void DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc func);
+	void DrawUnScaled(QPainter *painter, const QPointF& pos, DrawFunc func);
+	
+	QString NameWithNamespace() const;
 	
 private:
 	class Resizer;
@@ -98,15 +100,12 @@ private:
 	std::string        m_class_id;
 	QRectF             m_bounding;
 
-	std::size_t        m_show_function{0}, m_show_field{0};
 	mutable bool       m_changed{false};
 	
 	std::unique_ptr<SizeGripItem> m_grip;
 	
 	enum class MouseActionWhenRelease {select, deselect, grip, none} ;
 	MouseActionWhenRelease m_release_action{MouseActionWhenRelease::none};
-		
-	static const qreal m_margin;
 };
 	
 }} // end of namespace
