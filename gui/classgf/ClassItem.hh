@@ -22,6 +22,7 @@
 class QGraphicsSimpleTextItem;
 class QSizeF;
 class QStaticText;
+class QFontMetricsF;
 
 class SizeGripItem;
 
@@ -87,7 +88,7 @@ private:
 	qreal Margin(const QFontMetrics& name_font, qreal factor) const;
 	
 	template <typename Member>
-	auto DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetrics& met);
+	auto DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetricsF& met);
 	
 	template <typename DrawFunc>
 	void DrawUnScaled(QPainter *painter, const QPointF& pos, DrawFunc func);

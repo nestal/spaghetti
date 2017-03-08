@@ -11,6 +11,7 @@
 //
 
 #include "ClassItem.hh"
+#include "ClassLayout.hh"
 #include "Edge.hh"
 #include "Viewport.hh"
 #include "ItemRenderingOptions.hh"
@@ -171,7 +172,7 @@ void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
 }
 
 template <typename Member>
-auto ClassItem::DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetrics& met)
+auto ClassItem::DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetricsF& met)
 {
 	auto zoom_factor = painter->transform().m11();
 	
@@ -219,7 +220,17 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	DrawBox(painter, setting);
 	
-	auto name_font = setting.class_name_font;
+	ClassLayout layout{
+		QString::fromStdString(m_class->Name()),
+		NameWithNamespace(),
+		m_bounding,
+		zoom_factor,
+		setting,
+		m_class->Functions().size(),
+		m_class->Fields().size()
+	};
+	
+/*	auto name_font = setting.class_name_font;
 	auto mem_font  = setting.class_member_font;
 	
 	// normalize margin
@@ -252,30 +263,35 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	// draw class name in the middle of the box if there's no other member
 	auto name_yoffset = (m_show_field == 0 && m_show_function == 0) ?
-		(content.height() - name_isize.height()) / 2 : 0.0;
+		(content.height() - name_isize.height()) / 2 : 0.0;*/
 	painter->setPen(Qt::GlobalColor::black);
-	painter->setFont(name_font);
+	painter->setFont(layout.NameFont());
 	
 	// reset transform to make the text size unaffected by zoom factor
 	DrawUnScaled(
-		painter, QPointF{content.left(), content.top() + name_yoffset}, [&name, painter]
+		painter, layout.NameRect().topLeft(), [&layout, painter]
 		{
-			painter->drawStaticText(0, 0, name);
+			painter->drawStaticText(0, 0, layout.Name());
 		}
 	);
 	
 	// line between class name and function
-	auto name_line = content.top() + name_isize.height() + vspace_between_fields / 2;
+	auto name_line = layout.Header().bottom();
 	
-	QPointF text_pt{content.left(), content.top() + name_isize.height() + vspace_between_fields};
+	auto content = layout.ContentRect();
+	auto vspace_between_fields = layout.MemberPadding();
 	
-	painter->setFont(mem_font);
+	QPointF text_pt{content.left(), layout.Header().bottom() + vspace_between_fields/2};
+	
+	painter->setFont(layout.MemberFont());
+	
+	QFontMetricsF member_font_met{layout.MemberFont()};
 	
 	// functions
 	std::size_t index = 0;
 	for (auto&& func : m_class->Functions())
 	{
-		if (++index > m_show_function) break;
+		if (++index > layout.FunctionCount()) break;
 		text_pt = DrawMember(painter, func, text_pt, content.width(), member_font_met);
 		text_pt.ry() += vspace_between_fields;
 	}
@@ -286,7 +302,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	index = 0;
 	for (auto&& field : m_class->Fields())
 	{
-		if (++index > m_show_field) break;
+		if (++index > layout.FieldCount()) break;
 		text_pt = DrawMember(painter, field, text_pt, content.width(), member_font_met);
 		text_pt.ry() += vspace_between_fields;
 	}

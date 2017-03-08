@@ -45,6 +45,8 @@ public:
 	QRectF Header() const;
 	QRectF ContentRect() const;
 
+	qreal MemberPadding() const;
+	
 	QRectF Separator() const;
 	
 	std::size_t FunctionCount() const;
@@ -53,11 +55,12 @@ public:
 	QRectF FieldRect(std::size_t index) const;
 
 	const QFont& NameFont() const;
+	const QFont& MemberFont() const;
 	const QStaticText& Name() const;
 	
 private:
 	static qreal ComputeMargin(const QFontMetricsF& name_font, qreal factor, const QRectF& bounding);
-	void InitializeNameText(const QString& name_with_namespace);
+	void InitializeNameText(const QSizeF& content, const QString& name_with_namespace);
 	void DetermineFunctionFieldCount(qreal name_height, qreal member_height);
 	
 private:

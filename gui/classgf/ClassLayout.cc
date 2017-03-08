@@ -13,12 +13,13 @@
 #include "ClassLayout.hh"
 #include "ItemRenderingOptions.hh"
 
-#include <QFontMetricsF>
-#include <QTransform>
+#include "gui/common/CommonIO.hh"
+
+#include <QtGui/QFontMetricsF>
 
 #include <cassert>
 #include <cmath>
-#include <QtGui/QFontMetricsF>
+#include <iostream>
 
 namespace gui {
 namespace classgf {
@@ -36,7 +37,7 @@ ClassLayout::ClassLayout(
 ) :
 	m_zoom_factor{zoom_factor},
 	m_bounding{bounding},
-	m_margin{ComputeMargin(QFontMetricsF{opt.class_name_font}, m_zoom_factor, bounding)},
+	m_margin{ComputeMargin(QFontMetricsF{opt.class_name_font}, m_zoom_factor, m_bounding)},
 	m_content{m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin)},
 	m_name_font{opt.class_name_font},
 	m_member_font{opt.class_member_font},
@@ -47,8 +48,11 @@ ClassLayout::ClassLayout(
 	if (m_content.isEmpty())
 		return;
 	
-	InitializeNameText(name_with_namespace);
+	std::cout << "bounding = " << m_bounding << std::endl;
+	std::cout << "content  = " << m_content << std::endl;
 	
+	InitializeNameText(m_content.size() * m_zoom_factor, name_with_namespace);
+		
 	// size of the class name in item-space
 	// calculate by scaling back
 	auto name_isize = m_name.size() / zoom_factor;
@@ -67,7 +71,9 @@ ClassLayout::ClassLayout(
 		(m_content.height() - name_isize.height()) / 2 : 0.0;
 	m_name_rect.setTopLeft({m_content.left(), m_content.top() + name_yoffset});
 	m_name_rect.setSize(name_isize);
-
+	
+	std::cout << "name  = " << m_name_rect << std::endl;
+	
 	if (m_field_count + m_function_count > 0)
 	{
 		m_member_padding =
@@ -89,18 +95,18 @@ QRectF ClassLayout::ContentRect() const
 	return m_content;
 }
 
-void ClassLayout::InitializeNameText(const QString& name_with_namespace)
+void ClassLayout::InitializeNameText(const QSizeF& content, const QString& name_with_namespace)
 {
-	assert(m_content.width() > 0);
-	assert(m_content.height() > 0);
+	assert(content.width() > 0);
+	assert(content.height() > 0);
 	
 	// if there is enough space, show the namespace as well
-	if (m_content.width() > m_name.size().width() * 2)
+	if (content.width() > m_name.size().width() * 2)
 		m_name = QStaticText{
 			QFontMetricsF{m_name_font}.elidedText(
 				name_with_namespace,
 				Qt::ElideLeft,
-				m_content.width()
+				content.width()
 			)
 		};
 	
@@ -111,35 +117,35 @@ void ClassLayout::InitializeNameText(const QString& name_with_namespace)
 		m_name.setTextOption(ops);
 		
 		m_name.setTextFormat(Qt::PlainText);
-		m_name.setTextWidth(m_content.width());
+		m_name.setTextWidth(content.width());
 		m_name.prepare({}, m_name_font);
 		
 		// try to fit in box
 		auto size = m_name.size();
-		if (size.width() <= m_content.width() && size.height() <= m_content.height())
+		if (size.width() <= content.width() && size.height() <= content.height())
 			break;
 		
 		// reduce font and retry
 		auto font_factor = 0.0;
 		
 		// width OK, but height is not enough
-		if (size.width() <= m_content.width() && size.height() > m_content.height())
-			font_factor = m_content.height() / size.height();
+		if (size.width() <= content.width() && size.height() > content.height())
+			font_factor = content.height() / size.height();
 			
 			// height OK, but width not enough
-		else if (size.height() <= m_content.height() && size.width() > m_content.width())
-			font_factor = m_content.width() / size.width();
+		else if (size.height() <= content.height() && size.width() > content.width())
+			font_factor = content.width() / size.width();
 		
 		else
 		{
 			assert(!std::isnan(size.width()));
 			assert(!std::isnan(size.height()));
 			
-			assert(size.height() >= m_content.height());
-			assert(size.width() >= m_content.width());
+			assert(size.height() >= content.height());
+			assert(size.width() >= content.width());
 			font_factor = std::min(
-				std::max(0.0, m_content.height() / size.height()),
-				std::max(0.0, m_content.width() / size.width())
+				std::max(0.0, content.height() / size.height()),
+				std::max(0.0, content.width() / size.width())
 			);
 		}
 		
@@ -151,11 +157,6 @@ void ClassLayout::InitializeNameText(const QString& name_with_namespace)
 		else
 			break;
 	}
-}
-
-const QFont& ClassLayout::NameFont() const
-{
-	return m_name_font;
 }
 
 void ClassLayout::DetermineFunctionFieldCount(qreal name_height, qreal member_height)
@@ -221,5 +222,20 @@ QRectF ClassLayout::Bounding() const
 {
 	return m_bounding;
 }
-	
+
+qreal ClassLayout::MemberPadding() const
+{
+	return m_member_padding;
+}
+
+const QFont& ClassLayout::NameFont() const
+{
+	return m_name_font;
+}
+
+const QFont& ClassLayout::MemberFont() const
+{
+	return m_member_font;
+}
+
 }} // end of namespace
