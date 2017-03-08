@@ -108,13 +108,6 @@ void ClassItem::DrawMember(QPainter *painter, const Member& member, const ClassL
 	DrawUnScaled(
 		painter, pos, [painter, &rect, &met, &member]
 		{
-			painter->setPen(Qt::NoPen);
-			
-			QColor background{Qt::GlobalColor::white};
-			background.setAlphaF(0.5);
-			painter->setBrush(background);
-			painter->drawRect(rect);
-			
 			painter->setPen(Qt::SolidLine);
 			painter->drawText(
 				rect,

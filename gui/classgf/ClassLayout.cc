@@ -157,11 +157,11 @@ void ClassLayout::InitializeNameText(const QSizeF& content, const QString& name_
 
 QRectF ClassLayout::MemberRect(std::size_t index) const
 {
-	auto member_height = m_member_met.height()/m_zoom_factor;
+	auto member_height = m_member_padding + m_member_met.height()/m_zoom_factor;
 	
 	return QRectF{
 		m_content.left(),
-		m_name_rect.bottom() + m_member_padding + index * (m_member_padding + member_height),
+		m_name_rect.bottom() + m_member_padding/2 + index * member_height,
 		m_content.width(),
 		member_height
 	};
@@ -169,10 +169,10 @@ QRectF ClassLayout::MemberRect(std::size_t index) const
 
 QLineF ClassLayout::Separator() const
 {
-	auto first_field = MemberRect(m_function_count);
+	auto first_field = MemberRect(m_function_count).top();
 	return QLineF{
-		QPointF{m_bounding.left(), first_field.top() - m_member_padding/2},
-		QPointF{m_bounding.right(), first_field.top() - m_member_padding/2}
+		QPointF{m_bounding.left(), first_field},
+		QPointF{m_bounding.right(), first_field}
 	};
 }
 
