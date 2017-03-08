@@ -126,14 +126,12 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 {
 	auto t = painter->transform();
 	assert(t.isAffine());
+	assert(t.m11() == t.m22());
 	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
 	auto& view = CurrentViewport(viewport);
 	auto& setting = view.Setting();
-	
-	assert(t.m11() == t.m22());
-	auto zoom_factor = t.m11();
 	
 	DrawBox(painter, setting);
 	
@@ -141,7 +139,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		QString::fromStdString(m_class->Name()),
 		NameWithNamespace(),
 		m_bounding,
-		zoom_factor,
+		t.m11(),
 		setting,
 		m_class->Functions().size(),
 		m_class->Fields().size()

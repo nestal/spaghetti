@@ -15,8 +15,6 @@
 
 #include "gui/common/CommonIO.hh"
 
-#include <QtGui/QFontMetricsF>
-
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -202,7 +200,7 @@ void ClassLayout::DetermineFunctionFieldCount(qreal name_height, qreal member_he
 		assert(m_function_count + m_field_count <= total_rows);
 	}
 		
-		// no space to render any function or fields
+	// no space to render any function or fields
 	else
 		m_field_count = m_function_count = 0;
 }
@@ -238,11 +236,6 @@ QRectF ClassLayout::Header() const
 QRectF ClassLayout::Bounding() const
 {
 	return m_bounding;
-}
-
-qreal ClassLayout::MemberPadding() const
-{
-	return m_member_padding;
 }
 
 const QFont& ClassLayout::NameFont() const

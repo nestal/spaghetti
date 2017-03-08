@@ -47,8 +47,6 @@ public:
 	QRectF ContentRect() const;
 	QLineF Separator() const;
 
-	qreal MemberPadding() const;
-	
 	std::size_t FunctionCount() const;
 	std::size_t FieldCount() const;
 	QRectF MemberRect(std::size_t index) const;
