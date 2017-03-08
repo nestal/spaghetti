@@ -18,6 +18,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <QtGui/QFontMetricsF>
 
 namespace gui {
 namespace classgf {
@@ -30,8 +31,8 @@ ClassLayout::ClassLayout(
 	const QRectF& bounding,
 	qreal zoom_factor,
 	const ItemRenderingOptions& opt,
-	int function_count,
-	int field_count
+	std::size_t function_count,
+	std::size_t field_count
 ) :
 	m_zoom_factor{zoom_factor},
 	m_bounding{bounding},
@@ -47,6 +48,17 @@ ClassLayout::ClassLayout(
 		return;
 	
 	InitializeNameText(name_with_namespace);
+	
+	// size of the class name in item-space
+	// calculate by scaling back
+	auto name_isize = m_name.size() / zoom_factor;
+	
+	m_member_font.setPointSizeF(std::min(m_name_font.pointSizeF(), m_member_font.pointSizeF()));
+	
+	QFontMetrics member_font_met{m_member_font};
+	auto member_height = member_font_met.height() / zoom_factor;
+	DetermineFunctionFieldCount(name_isize.height(), member_height);
+	
 }
 
 qreal ClassLayout::ComputeMargin(const QFontMetricsF& name_font, qreal factor, const QRectF& bounding)
@@ -130,6 +142,47 @@ void ClassLayout::InitializeNameText(const QString& name_with_namespace)
 const QFont& ClassLayout::NameFont() const
 {
 	return m_name_font;
+}
+
+void ClassLayout::DetermineFunctionFieldCount(qreal name_height, qreal member_height)
+{
+	// total number of function and fields that can be rendered
+	auto total_rows = static_cast<std::size_t>((m_content.height() - name_height) / member_height);
+	
+	// determine how to distribute the space between function and fields
+	if (m_content.height() > name_height && total_rows > 0)
+	{
+		m_function_count = std::min(m_function_count, total_rows);
+		m_field_count    = std::min(m_field_count,    total_rows);
+		
+		if (m_field_count <= total_rows / 2 && m_function_count > total_rows / 2)
+			m_function_count = std::min(total_rows - m_field_count, m_function_count);
+		else if (m_function_count <= total_rows / 2 && m_field_count > total_rows / 2)
+			m_field_count = std::min(total_rows - m_function_count, m_field_count);
+		else if (m_field_count > total_rows / 2 && m_function_count > total_rows / 2)
+		{
+			m_field_count    = total_rows / 2;
+			m_function_count = total_rows - m_field_count;
+		}
+		
+		assert(m_function_count <= total_rows);
+		assert(m_field_count <= total_rows);
+		assert(m_function_count + m_field_count <= total_rows);
+	}
+		
+		// no space to render any function or fields
+	else
+		m_field_count = m_function_count = 0;
+}
+
+std::size_t ClassLayout::FunctionCount() const
+{
+	return m_function_count;
+}
+
+std::size_t ClassLayout::FieldCount() const
+{
+	return m_field_count;
 }
 	
 }} // end of namespace

@@ -43,16 +43,37 @@ protected:
 		2,
 		2
 	};
+	
+	ClassLayout no_member{
+		"ClassName",
+		"the_namespace::ClassName",
+		{-200, -200, 400, 400},
+		1.0,
+		default_rendering_options,
+		0,
+		0
+	};
 };
 
 TEST_F(ClassLayoutTest, Use_default_margin_if_there_is_enough_space)
 {
 	ASSERT_EQ(QRectF(-90, -90, 180, 180), enough_space.ContentRect());
 }
+
 TEST_F(ClassLayoutTest, Use_font_size_if_there_is_enough_space)
 {
 	ASSERT_EQ(
 		default_rendering_options.class_name_font.pointSizeF(),
 		enough_space.NameFont().pointSizeF()
 	);
+	ASSERT_EQ(
+		default_rendering_options.class_member_font.pointSizeF(),
+		enough_space.NameFont().pointSizeF()
+	);
+}
+
+TEST_F(ClassLayoutTest, Show_no_member_if_no_member)
+{
+	ASSERT_EQ(0, no_member.FieldCount());
+	ASSERT_EQ(0, no_member.FunctionCount());
 }
