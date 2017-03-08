@@ -86,7 +86,7 @@ private:
 	void DrawBox(QPainter *painter, const ItemRenderingOptions& setting);
 	
 	template <typename Member>
-	auto DrawMember(QPainter *painter, const Member& member, const ClassLayout& layout, std::size_t index);
+	void DrawMember(QPainter *painter, const Member& member, const ClassLayout& layout, std::size_t index);
 	
 	template <typename DrawFunc>
 	void DrawUnScaled(QPainter *painter, const QPointF& pos, DrawFunc func);

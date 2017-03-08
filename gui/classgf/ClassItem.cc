@@ -93,16 +93,16 @@ void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
 }
 
 template <typename Member>
-auto ClassItem::DrawMember(QPainter *painter, const Member& member, const ClassLayout& layout, std::size_t index)
+void ClassItem::DrawMember(QPainter *painter, const Member& member, const ClassLayout& layout, std::size_t index)
 {
 	auto zoom_factor = painter->transform().m11();
 	
-	auto mem_rect = layout.FunctionRect(index);
+	auto mem_rect = layout.MemberRect(index);
 	auto met = layout.MemberMetrics();
 	auto pos = mem_rect.topLeft();
 	
 	QRectF rect{0, 0,
-		layout.ContentRect().width() * zoom_factor,
+		mem_rect.width() * zoom_factor,
 		mem_rect.height() * zoom_factor
 	};
 	DrawUnScaled(
@@ -127,7 +127,6 @@ auto ClassItem::DrawMember(QPainter *painter, const Member& member, const ClassL
 			);
 		}
 	);
-	return QPointF{pos.x(), pos.y() + met.height() / zoom_factor};
 }
 
 void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *viewport)
@@ -166,37 +165,22 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		}
 	);
 	
-	// line between class name and function
-	auto name_line = layout.Header().bottom();
-	
-	auto content = layout.ContentRect();
-	auto vspace_between_fields = layout.MemberPadding();
-	
-	QPointF text_pt{content.left(), layout.Header().bottom() + vspace_between_fields/2};
-	
 	painter->setFont(layout.MemberFont());
-	
-	QFontMetricsF member_font_met{layout.MemberFont()};
-	
+
 	// functions
 	std::size_t index = 0;
 	for (auto&& func : m_class->Functions())
 	{
 		if (index >= layout.FunctionCount()) break;
-		text_pt = DrawMember(painter, func, layout, index);
-		text_pt.ry() += vspace_between_fields;
+		DrawMember(painter, func, layout, index);
 		index++;
 	}
-	
-	// line between class name and function
-	auto func_line = text_pt.y() - vspace_between_fields / 2;
 	
 	index = 0;
 	for (auto&& field : m_class->Fields())
 	{
 		if (index >= layout.FieldCount()) break;
-		text_pt = DrawMember(painter, field, layout, layout.FunctionCount() + index);
-		text_pt.ry() += vspace_between_fields;
+		DrawMember(painter, field, layout, layout.FunctionCount() + index);
 		index++;
 	}
 	
@@ -204,15 +188,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	line_pen.setCosmetic(true);
 	painter->setPen(line_pen);
 	if (layout.FieldCount() > 0 || layout.FunctionCount() > 0)
-		painter->drawLine(
-			QPointF{m_bounding.right(), name_line},
-			QPointF{m_bounding.left(),  name_line}
-		);
+		painter->drawLine(layout.Header().bottomLeft(), layout.Header().bottomRight());
+	
 	if (layout.FieldCount() > 0)
-		painter->drawLine(
-			QPointF{m_bounding.right(), func_line},
-			QPointF{m_bounding.left(),  func_line}
-		);
+		painter->drawLine(layout.Separator());
 }
 
 template <typename DrawFunc>
