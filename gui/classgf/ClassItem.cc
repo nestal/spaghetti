@@ -20,6 +20,7 @@
 #include "codebase/Function.hh"
 
 #include "gui/common/SizeGripItem.h"
+#include "gui/common/CommonIO.hh"
 
 #include <QtGui/QFont>
 #include <QtGui/QPainter>
@@ -178,26 +179,28 @@ auto ClassItem::DrawMember(QPainter *painter, const Member& member, const QPoint
 		width * zoom_factor,
 		static_cast<qreal>(met.height())
 	};
-	DrawUnScaledText(painter, pos, [painter, &rect, &met, &member]
-	{
-		painter->setPen(Qt::NoPen);
-		
-		QColor background{Qt::GlobalColor::white};
-		background.setAlphaF(0.5);
-		painter->setBrush(background);
-		painter->drawRect(rect);
-		
-		painter->setPen(Qt::SolidLine);
-		painter->drawText(
-			rect,
-			Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
-			met.elidedText(
-				QString::fromStdString(member.UML()),
-				Qt::ElideRight,
-				static_cast<int>(rect.width())
-			)
-		);
-	});
+	DrawUnScaled(
+		painter, pos, [painter, &rect, &met, &member]
+		{
+			painter->setPen(Qt::NoPen);
+			
+			QColor background{Qt::GlobalColor::white};
+			background.setAlphaF(0.5);
+			painter->setBrush(background);
+			painter->drawRect(rect);
+			
+			painter->setPen(Qt::SolidLine);
+			painter->drawText(
+				rect,
+				Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine | Qt::TextDontClip,
+				met.elidedText(
+					QString::fromStdString(member.UML()),
+					Qt::ElideRight,
+					static_cast<int>(rect.width())
+				)
+			);
+		}
+	);
 	return QPointF{pos.x(), pos.y() + met.height() / zoom_factor};
 }
 
@@ -205,6 +208,8 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 {
 	auto t = painter->transform();
 	assert(t.isAffine());
+	
+	std::cout << "on paint: " << t << std::endl;
 	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
@@ -254,9 +259,12 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	painter->setFont(name_font);
 	
 	// reset transform to make the text size unaffected by zoom factor
-	DrawUnScaledText(painter, QPointF{content.left(), content.top() + name_yoffset}, [&name, painter]{
-		painter->drawStaticText(0, 0, name);
-	});
+	DrawUnScaled(
+		painter, QPointF{content.left(), content.top() + name_yoffset}, [&name, painter]
+		{
+			painter->drawStaticText(0, 0, name);
+		}
+	);
 	
 	// line between class name and function
 	auto name_line = content.top() + name_isize.height() + vspace_between_fields / 2;
@@ -301,7 +309,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 }
 
 template <typename DrawFunc>
-void ClassItem::DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc func)
+void ClassItem::DrawUnScaled(QPainter *painter, const QPointF& pos, DrawFunc func)
 {
 	painter->save();
 	auto t = painter->transform();

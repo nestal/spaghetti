@@ -14,6 +14,7 @@
 
 #include "ClassItem.hh"
 #include "gui/common/MimeType.hh"
+#include "gui/common/CommonIO.hh"
 
 #include <QtGui/QtGui>
 #include <QtGui/QDragEnterEvent>
@@ -288,6 +289,7 @@ bool ClassView::event(QEvent *e)
 			if (auto item = dynamic_cast<ClassItem*>(itemAt(help->pos())))
 			{
 				item->ShowTooltip(item->mapFromScene(mapToScene(help->pos())));
+				std::cout << "on help: " << transform() << std::endl;
 				return true;
 			}
 		}

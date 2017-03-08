@@ -90,7 +90,7 @@ private:
 	auto DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetrics& met);
 	
 	template <typename DrawFunc>
-	void DrawUnScaledText(QPainter *painter, const QPointF& pos, DrawFunc func);
+	void DrawUnScaled(QPainter *painter, const QPointF& pos, DrawFunc func);
 	
 	QString NameWithNamespace() const;
 	
