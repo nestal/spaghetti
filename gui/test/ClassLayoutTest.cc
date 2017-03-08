@@ -38,7 +38,7 @@ protected:
 		"ClassName",
 		"the_namespace::ClassName",
 		{-100, -100, 200, 200},
-		{},
+		1.0,
 		default_rendering_options,
 		2,
 		2

@@ -32,15 +32,15 @@ public:
 		const QString& name,
 		const QString& name_with_namespace,
 		const QRectF& bounding,
-		const QTransform& transform,
+		qreal zoom_factor,
 		const ItemRenderingOptions& opt,
 		int function_count,
 		int field_count
 	);
 	
-	QRectF NameRect() const;
+	QRectF Header() const;
 	QRectF ContentRect() const;
-	QLineF NameLine() const;
+
 	QRectF Separator() const;
 	QRectF FunctionRect(int index) const;
 	QRectF FieldRect(int index) const;
@@ -52,10 +52,13 @@ private:
 	void InitializeNameText(const QString& name_with_namespace);
 	
 private:
+	qreal   m_zoom_factor;
 	QRectF  m_bounding;
 	qreal   m_margin;
 	QRectF  m_content;
+	
 	QFont   m_name_font;
+	QFont   m_member_font;
 	
 	QStaticText m_name;
 	

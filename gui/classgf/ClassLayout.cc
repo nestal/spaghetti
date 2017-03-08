@@ -28,15 +28,17 @@ ClassLayout::ClassLayout(
 	const QString& name,
 	const QString& name_with_namespace,
 	const QRectF& bounding,
-	const QTransform& transform,
+	qreal zoom_factor,
 	const ItemRenderingOptions& opt,
 	int function_count,
 	int field_count
 ) :
+	m_zoom_factor{zoom_factor},
 	m_bounding{bounding},
-	m_margin{ComputeMargin(QFontMetricsF{opt.class_name_font}, transform.m11(), bounding)},
+	m_margin{ComputeMargin(QFontMetricsF{opt.class_name_font}, m_zoom_factor, bounding)},
 	m_content{m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin)},
 	m_name_font{opt.class_name_font},
+	m_member_font{opt.class_member_font},
 	m_name{name},
 	m_function_count{function_count},
 	m_field_count{field_count}
