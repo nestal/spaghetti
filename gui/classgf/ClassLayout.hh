@@ -13,6 +13,7 @@
 #pragma once
 
 #include <QtCore/QRectF>
+#include <QtGui/QStaticText>
 
 class QRectF;
 class QTransform;
@@ -28,6 +29,8 @@ class ClassLayout
 {
 public:
 	ClassLayout(
+		const QString& name,
+		const QString& name_with_namespace,
 		const QRectF& bounding,
 		const QTransform& transform,
 		const ItemRenderingOptions& opt,
@@ -41,14 +44,20 @@ public:
 	QRectF Separator() const;
 	QRectF FunctionRect(int index) const;
 	QRectF FieldRect(int index) const;
-			
+
+	const QFont& NameFont() const;
+	
 private:
 	static qreal ComputeMargin(const QFontMetricsF& name_font, qreal factor, const QRectF& bounding);
+	void InitializeNameText(const QString& name_with_namespace);
 	
 private:
 	QRectF  m_bounding;
 	qreal   m_margin;
 	QRectF  m_content;
+	QFont   m_name_font;
+	
+	QStaticText m_name;
 	
 	int m_function_count;
 	int m_field_count;

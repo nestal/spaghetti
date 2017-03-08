@@ -23,15 +23,36 @@
 
 using namespace gui::classgf;
 
-TEST(ClassLayoutTest, Use_default_margin_if_there_is_enough_space)
+class ClassLayoutTest : public ::testing::Test
 {
-	ClassLayout subject{
+protected:
+	void SetUp()
+	{
+		
+	}
+	
+protected:
+	ItemRenderingOptions default_rendering_options;
+	
+	ClassLayout enough_space{
+		"ClassName",
+		"the_namespace::ClassName",
 		{-100, -100, 200, 200},
 		{},
-		{},
+		default_rendering_options,
 		2,
 		2
 	};
-	
-	ASSERT_EQ(QRectF(-90, -90, 180, 180), subject.ContentRect());
+};
+
+TEST_F(ClassLayoutTest, Use_default_margin_if_there_is_enough_space)
+{
+	ASSERT_EQ(QRectF(-90, -90, 180, 180), enough_space.ContentRect());
+}
+TEST_F(ClassLayoutTest, Use_font_size_if_there_is_enough_space)
+{
+	ASSERT_EQ(
+		default_rendering_options.class_name_font.pointSizeF(),
+		enough_space.NameFont().pointSizeF()
+	);
 }
