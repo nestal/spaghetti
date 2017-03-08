@@ -37,6 +37,7 @@ namespace classgf {
 
 class Edge;
 struct ItemRenderingOptions;
+class ClassLayout;
 
 class ClassItem : public QGraphicsObject, public BaseItem
 {
@@ -85,7 +86,7 @@ private:
 	void DrawBox(QPainter *painter, const ItemRenderingOptions& setting);
 	
 	template <typename Member>
-	auto DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetricsF& met);
+	auto DrawMember(QPainter *painter, const Member& member, const ClassLayout& layout, std::size_t index);
 	
 	template <typename DrawFunc>
 	void DrawUnScaled(QPainter *painter, const QPointF& pos, DrawFunc func);

@@ -41,6 +41,7 @@ ClassLayout::ClassLayout(
 	m_content{m_bounding.adjusted(m_margin, m_margin, -m_margin, -m_margin)},
 	m_name_font{opt.class_name_font},
 	m_member_font{opt.class_member_font},
+	m_member_met{m_member_font},
 	m_name{name},
 	m_function_count{function_count},
 	m_field_count{field_count}
@@ -55,9 +56,9 @@ ClassLayout::ClassLayout(
 	auto name_isize = m_name.size() / zoom_factor;
 	
 	m_member_font.setPointSizeF(std::min(m_name_font.pointSizeF(), m_member_font.pointSizeF()));
+	m_member_met = QFontMetricsF{m_member_font};
 	
-	QFontMetrics member_font_met{m_member_font};
-	auto member_height = member_font_met.height() / zoom_factor;
+	auto member_height = m_member_met.height() / zoom_factor;
 	DetermineFunctionFieldCount(name_isize.height(), member_height);
 	
 	// adjust vertical space between text
@@ -154,6 +155,18 @@ void ClassLayout::InitializeNameText(const QSizeF& content, const QString& name_
 	}
 }
 
+QRectF ClassLayout::FunctionRect(std::size_t index) const
+{
+	auto member_height = m_member_met.height()/m_zoom_factor;
+	
+	return QRectF{
+		m_content.left(),
+		m_name_rect.bottom() + m_member_padding + index * (m_member_padding + member_height),
+		m_content.width(),
+		member_height
+	};
+}
+
 void ClassLayout::DetermineFunctionFieldCount(qreal name_height, qreal member_height)
 {
 	// total number of function and fields that can be rendered
@@ -233,4 +246,9 @@ const QFont& ClassLayout::MemberFont() const
 	return m_member_font;
 }
 
+const QFontMetricsF& ClassLayout::MemberMetrics() const
+{
+	return m_member_met;
+}
+	
 }} // end of namespace

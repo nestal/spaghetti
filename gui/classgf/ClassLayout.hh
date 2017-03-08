@@ -14,6 +14,7 @@
 
 #include <QtCore/QRectF>
 #include <QtGui/QStaticText>
+#include <QtGui/QFontMetricsF>
 
 #include <cstddef>
 
@@ -47,8 +48,6 @@ public:
 
 	qreal MemberPadding() const;
 	
-	QRectF Separator() const;
-	
 	std::size_t FunctionCount() const;
 	std::size_t FieldCount() const;
 	QRectF FunctionRect(std::size_t index) const;
@@ -56,6 +55,7 @@ public:
 
 	const QFont& NameFont() const;
 	const QFont& MemberFont() const;
+	const QFontMetricsF& MemberMetrics() const;
 	const QStaticText& Name() const;
 	
 private:
@@ -71,6 +71,7 @@ private:
 	
 	QFont   m_name_font;
 	QFont   m_member_font;
+	QFontMetricsF m_member_met;
 	
 	QStaticText m_name;
 	QRectF      m_name_rect;

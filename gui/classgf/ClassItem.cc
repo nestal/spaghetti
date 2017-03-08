@@ -93,13 +93,17 @@ void ClassItem::DrawBox(QPainter *painter, const ItemRenderingOptions& setting)
 }
 
 template <typename Member>
-auto ClassItem::DrawMember(QPainter *painter, const Member& member, const QPointF& pos, qreal width, const QFontMetricsF& met)
+auto ClassItem::DrawMember(QPainter *painter, const Member& member, const ClassLayout& layout, std::size_t index)
 {
 	auto zoom_factor = painter->transform().m11();
 	
+	auto mem_rect = layout.FunctionRect(index);
+	auto met = layout.MemberMetrics();
+	auto pos = mem_rect.topLeft();
+	
 	QRectF rect{0, 0,
-		width * zoom_factor,
-		static_cast<qreal>(met.height())
+		layout.ContentRect().width() * zoom_factor,
+		mem_rect.height() * zoom_factor
 	};
 	DrawUnScaled(
 		painter, pos, [painter, &rect, &met, &member]
@@ -178,9 +182,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	std::size_t index = 0;
 	for (auto&& func : m_class->Functions())
 	{
-		if (++index > layout.FunctionCount()) break;
-		text_pt = DrawMember(painter, func, text_pt, content.width(), member_font_met);
+		if (index >= layout.FunctionCount()) break;
+		text_pt = DrawMember(painter, func, layout, index);
 		text_pt.ry() += vspace_between_fields;
+		index++;
 	}
 	
 	// line between class name and function
@@ -189,9 +194,10 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	index = 0;
 	for (auto&& field : m_class->Fields())
 	{
-		if (++index > layout.FieldCount()) break;
-		text_pt = DrawMember(painter, field, text_pt, content.width(), member_font_met);
+		if (index >= layout.FieldCount()) break;
+		text_pt = DrawMember(painter, field, layout, layout.FunctionCount() + index);
 		text_pt.ry() += vspace_between_fields;
+		index++;
 	}
 	
 	QPen line_pen{setting.line_color};
