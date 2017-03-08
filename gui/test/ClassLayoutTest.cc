@@ -76,4 +76,5 @@ TEST_F(ClassLayoutTest, Show_no_member_if_no_member)
 {
 	ASSERT_EQ(0, no_member.FieldCount());
 	ASSERT_EQ(0, no_member.FunctionCount());
+	ASSERT_TRUE(no_member.ContentRect().contains(no_member.NamePos()));
 }

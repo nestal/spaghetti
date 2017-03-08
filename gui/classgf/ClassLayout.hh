@@ -40,6 +40,7 @@ public:
 		std::size_t field_count
 	);
 	
+	QPointF NamePos() const;
 	QRectF Header() const;
 	QRectF ContentRect() const;
 
@@ -51,6 +52,7 @@ public:
 	QRectF FieldRect(std::size_t index) const;
 
 	const QFont& NameFont() const;
+	const QStaticText& Name() const;
 	
 private:
 	static qreal ComputeMargin(const QFontMetricsF& name_font, qreal factor, const QRectF& bounding);
@@ -67,6 +69,7 @@ private:
 	QFont   m_member_font;
 	
 	QStaticText m_name;
+	QPointF     m_name_pos;
 	
 	std::size_t m_function_count;
 	std::size_t m_field_count;
