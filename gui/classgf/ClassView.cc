@@ -20,13 +20,13 @@
 #include <QtGui/QDragEnterEvent>
 #include <QtCore/QMimeData>
 #include <QtGui/QGuiApplication>
-#include <QtWidgets/QAbstractItemView>
 
 #include <QDebug>
 
 #include <sstream>
 #include <iostream>
 #include <QtWidgets/QMenu>
+#include <QtWidgets/QToolTip>
 
 namespace gui {
 namespace classgf {
@@ -288,8 +288,9 @@ bool ClassView::event(QEvent *e)
 		{
 			if (auto item = dynamic_cast<ClassItem*>(itemAt(help->pos())))
 			{
-				item->ShowTooltip(item->mapFromScene(mapToScene(help->pos())));
-				std::cout << "on help: " << transform() << std::endl;
+				auto tooltip = item->Tooltip(m_setting, m_zoom, item->mapFromScene(mapToScene(help->pos())));
+				std::cout << "on help: " << tooltip.toStdString() << std::endl;
+				QToolTip::showText(help->globalPos(), tooltip);
 				return true;
 			}
 		}

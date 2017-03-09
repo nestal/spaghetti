@@ -252,5 +252,5 @@ const QFontMetricsF& ClassLayout::MemberMetrics() const
 {
 	return m_member_met;
 }
-	
+
 }} // end of namespace

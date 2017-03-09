@@ -71,6 +71,8 @@ public:
 	void Resize(const QRectF& rect);
 	void ShowTooltip(const QPointF& pos);
 	
+	QString Tooltip(const ItemRenderingOptions& setting, qreal zoom_factor, const QPointF& pos) const;
+
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;

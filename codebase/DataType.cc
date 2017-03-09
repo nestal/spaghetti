@@ -164,4 +164,14 @@ void DataType::VisitFunction(libclx::Cursor func)
 		(*it)->Visit(func);
 }
 
+const codebase::Function& DataType::Function(std::size_t idx) const
+{
+	return *m_functions.at(idx);
+}
+
+const codebase::Variable& DataType::Field(std::size_t idx) const
+{
+	return *m_fields.at(idx);
+}
+	
 } // end of namespace
