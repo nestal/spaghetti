@@ -256,23 +256,18 @@ void ClassView::keyReleaseEvent(QKeyEvent *event)
 void ClassView::contextMenuEvent(QContextMenuEvent *event)
 {
 	// try to fill the clicked item in the whole viewport
-	for (auto&& anitem : items(event->pos()))
+	if (auto item = ClassAt(event->pos()))
 	{
-		if (auto item = dynamic_cast<ClassItem *>(anitem))
+		QMenu menu;
+		auto del_action = menu.addAction("Delete");
+		
+		connect(del_action, &QAction::triggered, [item, this]
 		{
-			QMenu menu;
-			auto del_action = menu.addAction("Delete");
-			
-			connect(del_action, &QAction::triggered, [item, this]
-			{
-				m_model->DeleteItem(item);
-			});
-			menu.exec(event->globalPos());
-			event->accept();
-			break;
-		}
+			m_model->DeleteItem(item);
+		});
+		menu.exec(event->globalPos());
+		event->accept();
 	}
-	
 }
 
 QTransform ClassView::Transform() const
@@ -286,22 +281,26 @@ bool ClassView::event(QEvent *e)
 	{
 		if (auto help = dynamic_cast<QHelpEvent*>(e))
 		{
-			std::cout << "on help: " << help->pos() << std::endl;
-			
-			for (auto&& anitem : items(help->pos()))
+			if (auto item = ClassAt(help->pos()))
 			{
-				if (auto item = dynamic_cast<ClassItem *>(anitem))
-				{
-					auto tooltip = item->Tooltip(m_setting, m_zoom, item->mapFromScene(mapToScene(help->pos())));
-					std::cout << "tooltip: " << tooltip.toStdString() << std::endl;
-					QToolTip::showText(help->globalPos(), tooltip);
-					return true;
-				}
+				auto tooltip = item->Tooltip(m_setting, m_zoom, item->mapFromScene(mapToScene(help->pos())));
+				QToolTip::showText(help->globalPos(), tooltip);
+				return true;
 			}
 		}
 	}
 	
 	return QGraphicsView::event(e);
 }
-	
+
+ClassItem *ClassView::ClassAt(const QPoint& pos)
+{
+	for (auto&& anitem : items(pos))
+	{
+		if (auto item = dynamic_cast<ClassItem *>(anitem))
+			return item;
+	}
+	return nullptr;
+}
+
 }} // end of namespace

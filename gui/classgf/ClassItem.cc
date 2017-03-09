@@ -462,12 +462,12 @@ QString ClassItem::Tooltip(const ItemRenderingOptions& setting, qreal zoom_facto
 		{
 			if (i < layout.FunctionCount())
 				return QString::fromStdString(m_class->Function(i).UML());
-			else if (i+layout.FunctionCount() < layout.FieldCount())
+			else if (i-layout.FunctionCount() < layout.FieldCount())
 				return QString::fromStdString(m_class->Field(i-layout.FunctionCount()).UML());
 		}
 	}
 	
 	return name;
 }
-
+	
 }} // end of namespace
