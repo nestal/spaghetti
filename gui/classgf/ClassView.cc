@@ -286,12 +286,17 @@ bool ClassView::event(QEvent *e)
 	{
 		if (auto help = dynamic_cast<QHelpEvent*>(e))
 		{
-			if (auto item = dynamic_cast<ClassItem*>(itemAt(help->pos())))
+			std::cout << "on help: " << help->pos() << std::endl;
+			
+			for (auto&& anitem : items(help->pos()))
 			{
-				auto tooltip = item->Tooltip(m_setting, m_zoom, item->mapFromScene(mapToScene(help->pos())));
-				std::cout << "on help: " << tooltip.toStdString() << std::endl;
-				QToolTip::showText(help->globalPos(), tooltip);
-				return true;
+				if (auto item = dynamic_cast<ClassItem *>(anitem))
+				{
+					auto tooltip = item->Tooltip(m_setting, m_zoom, item->mapFromScene(mapToScene(help->pos())));
+					std::cout << "tooltip: " << tooltip.toStdString() << std::endl;
+					QToolTip::showText(help->globalPos(), tooltip);
+					return true;
+				}
 			}
 		}
 	}
