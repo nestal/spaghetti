@@ -76,7 +76,8 @@ protected:
 	
 private:
 	void Pan(QPointF delta);
-	
+	ClassItem* ClassAt(const QPoint& pos);
+
 private:
 	ClassModel *m_model{};
 	

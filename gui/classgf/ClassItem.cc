@@ -126,14 +126,12 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 {
 	auto t = painter->transform();
 	assert(t.isAffine());
+	assert(t.m11() == t.m22());
 	
 	// assume the parent widget of the viewport is our ClassView
 	// query the properties to get rendering parameters
 	auto& view = CurrentViewport(viewport);
 	auto& setting = view.Setting();
-	
-	assert(t.m11() == t.m22());
-	auto zoom_factor = t.m11();
 	
 	DrawBox(painter, setting);
 	
@@ -141,7 +139,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		QString::fromStdString(m_class->Name()),
 		NameWithNamespace(),
 		m_bounding,
-		zoom_factor,
+		t.m11(),
 		setting,
 		m_class->Functions().size(),
 		m_class->Fields().size()
@@ -439,6 +437,37 @@ QString ClassItem::NameWithNamespace() const
 void ClassItem::ShowTooltip(const QPointF& pos)
 {
 	std::cout << m_class->Name() << " help at " << pos.x() << " " << pos.y() << std::endl;
+}
+
+QString ClassItem::Tooltip(const ItemRenderingOptions& setting, qreal zoom_factor, const QPointF& pos) const
+{
+	auto name_with_ns = NameWithNamespace();
+	auto name = QString::fromStdString(m_class->Name());
+	ClassLayout layout{
+		name,
+		name_with_ns,
+		m_bounding,
+		zoom_factor,
+		setting,
+		m_class->Functions().size(),
+		m_class->Fields().size()
+	};
+
+	if (layout.NameRect().contains(pos))
+		return name_with_ns;
+	
+	for (auto i = 0ULL; i < layout.FieldCount() + layout.FunctionCount(); ++i)
+	{
+		if (layout.MemberRect(i).contains(pos))
+		{
+			if (i < layout.FunctionCount())
+				return QString::fromStdString(m_class->Function(i).UML());
+			else if (i-layout.FunctionCount() < layout.FieldCount())
+				return QString::fromStdString(m_class->Field(i-layout.FunctionCount()).UML());
+		}
+	}
+	
+	return name;
 }
 	
 }} // end of namespace

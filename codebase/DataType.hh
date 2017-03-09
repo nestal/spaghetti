@@ -41,8 +41,8 @@ class Variable;
 class DataType : public EntityVec
 {
 public:
-	using field_iterator    = boost::indirect_iterator<std::vector<Variable*>::const_iterator>;
-	using function_iterator = boost::indirect_iterator<std::vector<Function*>::const_iterator>;
+	using field_iterator    = boost::indirect_iterator<std::vector<codebase::Variable*>::const_iterator>;
+	using function_iterator = boost::indirect_iterator<std::vector<codebase::Function*>::const_iterator>;
 	using idvec_iterator    = std::vector<std::string>::const_iterator;
 	
 public:
@@ -63,6 +63,9 @@ public:
 	boost::iterator_range<function_iterator> Functions() const;
 	boost::iterator_range<idvec_iterator> BaseClasses() const;
 
+	const codebase::Function& Function(std::size_t idx) const;
+	const codebase::Variable& Field(std::size_t idx) const;
+	
 	bool IsBaseOf(const DataType& other) const;
 	bool IsUsedInMember(const DataType& other) const;
 	
@@ -77,8 +80,8 @@ private:
 private:
 	libclx::SourceLocation   m_definition;
 	std::vector<std::string> m_base_classes;
-	std::vector<Variable*>   m_fields;
-	std::vector<Function*>   m_functions;
+	std::vector<codebase::Variable*>   m_fields;
+	std::vector<codebase::Function*>   m_functions;
 	
 	bool m_used{false};
 };
