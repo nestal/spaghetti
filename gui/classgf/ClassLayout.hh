@@ -26,7 +26,7 @@ class QFontMetricsF;
 namespace gui {
 namespace classgf {
 
-class ItemRenderingOptions;
+struct ItemRenderingOptions;
 
 class ClassLayout
 {

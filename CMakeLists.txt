@@ -14,6 +14,7 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(Boost COMPONENTS filesystem serialization REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
+find_package(Qt5Svg REQUIRED)
 find_package(GTest)
 find_package(Doxygen)
 find_package(Threads)
@@ -83,7 +84,7 @@ file(GLOB GUI_FILES
 	gui/spaghetti.qrc
 )
 add_executable(spaghetti-gui ${GUI_TYPE} ${GUI_FILES} ${RC_FILE})
-target_link_libraries(spaghetti-gui spag spag-gui Qt5::Widgets ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(spaghetti-gui spag spag-gui Qt5::Widgets Qt5::Svg ${CMAKE_THREAD_LIBS_INIT})
 
 install(TARGETS spaghetti-gui RUNTIME DESTINATION bin)
 
@@ -126,6 +127,7 @@ if(WIN32)
 		${QT_BINARY_DIR}/Qt5Core.dll
 		${QT_BINARY_DIR}/Qt5Widgets.dll
 		${QT_BINARY_DIR}/Qt5Gui.dll
+		${QT_BINARY_DIR}/Qt5Svg.dll
 		${QT_BINARY_DIR}/d3dcompiler_47.dll
 		${QT_BINARY_DIR}/libEGL.dll
 		${QT_BINARY_DIR}/libGLESV2.dll

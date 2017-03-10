@@ -19,6 +19,7 @@
 #include <QtGui/QtGui>
 #include <QtGui/QDragEnterEvent>
 #include <QtCore/QMimeData>
+#include <QtSvg/QSvgGenerator>
 #include <QtGui/QGuiApplication>
 
 #include <QDebug>
@@ -259,11 +260,13 @@ void ClassView::contextMenuEvent(QContextMenuEvent *event)
 	if (auto item = ClassAt(event->pos()))
 	{
 		QMenu menu;
-		auto del_action = menu.addAction("Delete");
-		
-		connect(del_action, &QAction::triggered, [item, this]
+		connect(menu.addAction("Delete"), &QAction::triggered, [item, this]
 		{
 			m_model->DeleteItem(item);
+		});
+		connect(menu.addAction("Copy"), &QAction::triggered, [this]
+		{
+			CopySelection();
 		});
 		menu.exec(event->globalPos());
 		event->accept();
@@ -301,6 +304,43 @@ ClassItem *ClassView::ClassAt(const QPoint& pos)
 			return item;
 	}
 	return nullptr;
+}
+
+void ClassView::CopySelection()
+{
+	// Create the image with the exact size of the shrunk scene
+	auto size = scene()->itemsBoundingRect().size().toSize();
+
+	auto mime = new QMimeData();
+	
+	// render image
+	{
+		QImage image{size, QImage::Format_ARGB32};
+		image.fill(Qt::transparent);
+		
+		QPainter painter(&image);
+		scene()->render(&painter);
+		
+		mime->setImageData(image);
+	}
+
+	// render SVG
+	{
+		QBuffer b;
+		QSvgGenerator p;
+		p.setOutputDevice(&b);
+		p.setSize(size);
+		p.setViewBox(QRect{0, 0, size.width(), size.height()});
+		
+		QPainter painter;
+		painter.begin(&p);
+		scene()->render(&painter);
+		painter.end();
+		
+		mime->setData("image/svg+xml", b.buffer());
+	}
+	
+	QGuiApplication::clipboard()->setMimeData(mime, QClipboard::Clipboard);
 }
 
 }} // end of namespace
