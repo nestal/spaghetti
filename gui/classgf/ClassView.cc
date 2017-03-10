@@ -259,11 +259,13 @@ void ClassView::contextMenuEvent(QContextMenuEvent *event)
 	if (auto item = ClassAt(event->pos()))
 	{
 		QMenu menu;
-		auto del_action = menu.addAction("Delete");
-		
-		connect(del_action, &QAction::triggered, [item, this]
+		connect(menu.addAction("Delete"), &QAction::triggered, [item, this]
 		{
 			m_model->DeleteItem(item);
+		});
+		connect(menu.addAction("Copy"), &QAction::triggered, [this]
+		{
+			CopySelection();
 		});
 		menu.exec(event->globalPos());
 		event->accept();
@@ -305,13 +307,10 @@ ClassItem *ClassView::ClassAt(const QPoint& pos)
 
 void ClassView::CopySelection()
 {
-	static const auto pixel_ratio = 2;
-
 	// Create the image with the exact size of the shrunk scene
 	auto size = scene()->itemsBoundingRect().size().toSize();
 
-	QImage image{size * pixel_ratio, QImage::Format_ARGB32};
-	image.setDevicePixelRatio(pixel_ratio);
+	QImage image{size, QImage::Format_ARGB32};
 	image.fill(Qt::transparent);
 
 	QPainter painter(&image);
