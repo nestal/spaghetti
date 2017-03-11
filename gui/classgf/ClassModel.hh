@@ -13,7 +13,9 @@
 #pragma once
 
 #include "project/ModelBase.hh"
-#include <QObject>
+
+#include <QtCore/QObject>
+#include <QtCore/QRectF>
 
 #include <memory>
 
@@ -71,8 +73,9 @@ public:
 	bool IsChanged() const override;
 	void UpdateCodeBase(const codebase::EntityMap *codebase) override;
 	
-	std::unique_ptr<QMimeData> CopySelection();
-	QImage CopyAsImage();
+	std::unique_ptr<QMimeData> CopySelection() const;
+	QImage RenderImage(const QRectF& rect = {}) const;
+	QByteArray RenderSVG(const QRectF& rect = {}) const;
 	
 signals:
 	void OnChanged(bool changed) const;

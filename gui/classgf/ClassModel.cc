@@ -27,6 +27,8 @@
 #include <QDebug>
 
 #include <cassert>
+#include <iostream>
+#include "gui/common/CommonIO.hh"
 
 namespace gui {
 namespace classgf {
@@ -228,41 +230,50 @@ void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
 	});
 }
 
-std::unique_ptr<QMimeData> ClassModel::CopySelection()
+QImage ClassModel::RenderImage(const QRectF& rect) const
 {
 	// Create the image with the exact size of the shrunk scene
-	auto size = m_scene->itemsBoundingRect().size().toSize();
-	auto rect = m_scene->selectionArea().boundingRect();
+	auto size = rect.isNull() ? m_scene->itemsBoundingRect().size().toSize() : rect.size().toSize();
+	
+	std::cout << "rect = " << rect << std::endl;
+	
+	QImage image{size, QImage::Format_ARGB32};
+	image.fill(Qt::transparent);
+	
+	QPainter painter(&image);
+	m_scene->render(&painter, {}, rect);
+	return image;
+}
+
+std::unique_ptr<QMimeData> ClassModel::CopySelection() const
+{
+	QRectF selected;
+	for (auto&& item : m_scene->selectedItems())
+		selected = selected.united(item->sceneBoundingRect());
 	
 	auto mime = std::make_unique<QMimeData>();
+	mime->setImageData(RenderImage(selected));
+	mime->setData("image/svg+xml", RenderSVG(selected));
 	
-	// render image
-	{
-		QImage image{size, QImage::Format_ARGB32};
-		image.fill(Qt::transparent);
-		
-		QPainter painter(&image);
-		m_scene->render(&painter, {}, rect);
-		
-		mime->setImageData(image);
-	}
-	
-	// render SVG
-	{
-		QBuffer b;
-		QSvgGenerator p;
-		p.setOutputDevice(&b);
-		p.setSize(size);
-		p.setViewBox(QRect{0, 0, size.width(), size.height()});
-		
-		QPainter painter;
-		painter.begin(&p);
-		m_scene->render(&painter, {}, rect);
-		painter.end();
-		
-		mime->setData("image/svg+xml", b.buffer());
-	}
 	return mime;
+}
+
+QByteArray ClassModel::RenderSVG(const QRectF& rect) const
+{
+	auto size = rect.isNull() ? m_scene->itemsBoundingRect().size().toSize() : rect.size().toSize();
+	
+	QBuffer b;
+	QSvgGenerator p;
+	p.setOutputDevice(&b);
+	p.setSize(size);
+	p.setViewBox(QRect{0, 0, size.width(), size.height()});
+	
+	{
+		QPainter painter(&p);
+		m_scene->render(&painter, {}, rect);
+	}
+	
+	return b.buffer();
 }
 	
 }} // end of namespace

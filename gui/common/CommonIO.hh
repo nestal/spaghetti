@@ -15,9 +15,11 @@
 class QTransform;
 class QPointF;
 class QRectF;
+class QSizeF;
 
 #include <iosfwd>
 
 std::ostream& operator<<(std::ostream& os, const QTransform& mat);
 std::ostream& operator<<(std::ostream& os, const QPointF& pt);
 std::ostream& operator<<(std::ostream& os, const QRectF& rect);
+std::ostream& operator<<(std::ostream& os, const QSizeF& rect);
