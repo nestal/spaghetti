@@ -17,6 +17,7 @@
 
 #include "libclx/Cursor.hh"
 #include <ostream>
+#include <iostream>
 
 namespace codebase {
 
@@ -51,6 +52,7 @@ void DataType::Visit(libclx::Cursor self)
 //			if (child.GetDefinition().Kind() == CXCursor_TypedefDecl)
 //				child = child.Referenced();
 //		std::cout << "base = " << child.GetDefinition().Spelling() << " " << child.GetDefinition().Kind() << std::endl;
+			std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" " << child.Kind() << std::endl;
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
 	
@@ -59,8 +61,8 @@ void DataType::Visit(libclx::Cursor self)
 			break;
 			
 		default:
-//			if (!child.Location().IsFromSystemHeader())
-//				std::cout << Name() << " " <<  child.Spelling() << ' ' << child.Kind() << std::endl;
+			if (!child.Location().IsFromSystemHeader())
+				std::cout << Name() << " has child: \"" <<  child.Spelling() << "\" " << child.Kind() << std::endl;
 			break;
 		}
 	});

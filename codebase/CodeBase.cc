@@ -23,6 +23,8 @@
 
 namespace codebase {
 
+namespace mi = boost::multi_index;
+
 class CodeBase::EntityTree : public EntityMap
 {
 public:
@@ -41,6 +43,12 @@ public:
 	{
 		auto it = m_index.get<ByID>().find(id);
 		return it != m_index.get<ByID>().end() ? *it : nullptr;
+	}
+	
+	const Entity* FindByName(const std::string& name) const override
+	{
+		auto it = m_index.get<ByName>().find(name);
+		return it != m_index.get<ByName>().end() ? *it : nullptr;
 	}
 	
 	Entity* Root()
@@ -80,19 +88,29 @@ public:
 
 private:
 	struct ByID {};
+	struct ByName {};
 	
 	using EntityIndex = boost::multi_index_container<
 		Entity*,
-		boost::multi_index::indexed_by<
+		mi::indexed_by<
 			
 			// hash by ID
-			boost::multi_index::hashed_unique<
-				boost::multi_index::tag<ByID>,
-				boost::multi_index::const_mem_fun<
+			mi::hashed_unique<
+				mi::tag<ByID>,
+				mi::const_mem_fun<
 					Entity,
 					const std::string&,
 					&Entity::ID
 				>
+			>,
+			
+			mi::hashed_non_unique<
+			    mi::tag<ByName>,
+			    mi::const_mem_fun<
+			        Entity,
+				    const std::string&,
+				    &Entity::Name
+			    >
 			>
 		>
 	>;

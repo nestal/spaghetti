@@ -32,6 +32,8 @@ public:
 	virtual const Entity* Find(const std::string& id) const = 0;
 	virtual Entity* Find(const std::string& id) = 0;
 	
+	virtual const Entity* FindByName(const std::string& name) const = 0;
+	
 	template <typename EntityType>
 	EntityType* TypedFind(const std::string& id)
 	{
