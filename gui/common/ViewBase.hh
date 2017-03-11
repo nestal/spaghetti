@@ -31,6 +31,7 @@ public:
 	virtual QWidget* Widget() = 0;
 	virtual void ResetZoom() = 0;
 	virtual void Copy() = 0;
+	virtual void Paste() = 0;
 };
 	
 } // end of namespace

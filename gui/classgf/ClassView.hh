@@ -54,6 +54,7 @@ public:
 	QTransform Transform() const override;
 
 	void Copy() override;
+	void Paste() override;
 	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);

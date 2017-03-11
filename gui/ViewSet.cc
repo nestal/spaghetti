@@ -217,5 +217,11 @@ void ViewSet::Copy()
 	if (auto view = dynamic_cast<ViewBase*>(currentWidget()))
 		view->Copy();
 }
+
+void ViewSet::Paste()
+{
+	if (auto view = dynamic_cast<ViewBase*>(currentWidget()))
+		view->Paste();
+}
 	
 } // end of namespace

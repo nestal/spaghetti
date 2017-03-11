@@ -171,5 +171,10 @@ void SourceView::ResetZoom()
 void SourceView::Copy()
 {
 }
+
+void SourceView::Paste()
+{
+	
+}
 	
 }} // end of namespace

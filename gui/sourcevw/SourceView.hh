@@ -38,6 +38,7 @@ public:
 	
 	void ResetZoom() override ;
 	void Copy() override ;
+	void Paste() override ;
 
 private:
 	void Parse(unsigned line, unsigned column);

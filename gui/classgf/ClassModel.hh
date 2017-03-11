@@ -55,7 +55,6 @@ public:
 	
 	// ModelBase overrides
 	void AddEntity(const std::string& id, const QPointF& pos) override;
-	void AddEntityWithSize(const std::string& id, const QPointF& pos, const QSizeF& size);
 	void SetRect(const QRectF& rect) override;
 	bool CanRename() const override;
 	std::string Name() const override;
@@ -76,6 +75,8 @@ public:
 	std::unique_ptr<QMimeData> CopySelection() const;
 	QImage RenderImage(const QRectF& rect = {}) const;
 	QByteArray RenderSVG(const QRectF& rect = {}) const;
+	
+	void Paste(const QMimeData* data);
 	
 signals:
 	void OnChanged(bool changed) const;

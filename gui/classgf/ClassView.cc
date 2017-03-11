@@ -314,4 +314,11 @@ void ClassView::Copy()
 	);
 }
 
+void ClassView::Paste()
+{
+	auto data = QGuiApplication::clipboard()->mimeData(QClipboard::Clipboard);
+	if (data)
+		m_model->Paste(data);
+}
+	
 }} // end of namespace

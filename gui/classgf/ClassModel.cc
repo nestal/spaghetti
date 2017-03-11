@@ -19,6 +19,7 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
 #include <QtCore/QMimeData>
 #include <QtGui/QPainter>
 #include <QtCore/QBuffer>
@@ -71,23 +72,29 @@ void ClassModel::Clear()
 
 void ClassModel::AddEntity(const std::string& id, const QPointF& pos)
 {
-	//AddEntityWithSize(id, pos, {default_item_width, default_item_height});
 	AddItem(id, m_codebase, pos);
 }
 
 template <typename... Args>
 void ClassModel::AddItem(Args&&... args)
 {
-	auto item = std::make_unique<ClassItem>(std::forward<Args>(args)...);
-	connect(item.get(), &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);
-	
-	// draw arrows
-	DetectEdges(item.get());
-	
-	m_scene->addItem(item.release());
-	
-	// the model is changed because it has one more entity
-	SetChanged(true);
+	try
+	{
+		auto item = std::make_unique<ClassItem>(std::forward<Args>(args)...);
+		connect(item.get(), &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);
+		
+		// draw arrows
+		DetectEdges(item.get());
+		
+		m_scene->addItem(item.release());
+		
+		// the model is changed because it has one more entity
+		SetChanged(true);
+	}
+	catch (std::exception& e)
+	{
+		// TODO: print log
+	}
 }
 
 QGraphicsScene *ClassModel::Scene()
@@ -139,8 +146,8 @@ void ClassModel::Load(const QJsonObject& obj)
 	// prevent AddEntity() to emit OnChange()
 	m_changed = true;
 	
-	for (auto&& item_jval : obj["classes"].toArray())
-		AddItem(item_jval.toObject(), m_codebase);
+	for (auto&& item : obj["classes"].toArray())
+		AddItem(item.toObject(), m_codebase);
 	
 	m_changed = false;
 }
@@ -231,7 +238,29 @@ std::unique_ptr<QMimeData> ClassModel::CopySelection() const
 	mime->setImageData(RenderImage(selected));
 	mime->setData("image/svg+xml", RenderSVG(selected));
 	
+	QJsonArray jarr;
+	ForEachItem<ClassItem>(m_scene->items(), [this, &jarr](auto citem)
+	{
+		jarr.append(citem->Save());
+	});
+	mime->setData("application/json", QJsonDocument{jarr}.toJson());
+	
 	return mime;
+}
+
+void ClassModel::Paste(const QMimeData* data)
+{
+	assert(data);
+		
+	if (data->hasFormat("application/json"))
+	{
+		auto json = QJsonDocument::fromJson(data->data("application/json"));
+		for (auto&& item : json.array())
+		{
+			AddItem(item.toObject(), m_codebase);
+			m_changed = true;
+		}
+	}
 }
 
 QByteArray ClassModel::RenderSVG(const QRectF& rect) const
