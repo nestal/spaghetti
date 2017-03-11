@@ -98,7 +98,7 @@ void ViewSet::Setup(Document& doc)
 void ViewSet::NewClassDiagramView(classgf::ClassModel *model)
 {
 	auto view   = new classgf::ClassView{model, this};
-	connect(view, &classgf::ClassView::DropEntity, model, &classgf::ClassModel::AddEntity);
+//	connect(view, &classgf::ClassView::DropEntity, model, &classgf::ClassModel::AddEntity);
 	
 	// don't capture "view". instead, capture model and find for its view instead
 	// we can depend on the model because when the model is destroyed, this connection

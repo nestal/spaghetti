@@ -33,8 +33,6 @@
 namespace gui {
 namespace classgf {
 
-const qreal default_item_width{225.0}, default_item_height{175.0};
-
 template <typename ItemType, typename Container, typename Func>
 auto ForEachItem(Container&& cont, Func func)
 {
@@ -73,24 +71,23 @@ void ClassModel::Clear()
 
 void ClassModel::AddEntity(const std::string& id, const QPointF& pos)
 {
-	AddEntityWithSize(id, pos, {default_item_width, default_item_height});
+	//AddEntityWithSize(id, pos, {default_item_width, default_item_height});
+	AddItem(id, m_codebase, pos);
 }
 
-void ClassModel::AddEntityWithSize(const std::string& id, const QPointF& pos, const QSizeF& size)
+template <typename... Args>
+void ClassModel::AddItem(Args&&... args)
 {
-	if (auto data_type = m_codebase->TypedFind<codebase::DataType>(id))
-	{
-		auto item = new ClassItem{*data_type, this, pos, size};
-		connect(item, &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);
-		
-		// draw arrows
-		DetectEdges(item);
-		
-		m_scene->addItem(item);
-		
-		// the model is changed because it has one more entity
-		SetChanged(true);
-	}
+	auto item = std::make_unique<ClassItem>(std::forward<Args>(args)...);
+	connect(item.get(), &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);
+	
+	// draw arrows
+	DetectEdges(item.get());
+	
+	m_scene->addItem(item.release());
+	
+	// the model is changed because it has one more entity
+	SetChanged(true);
 }
 
 QGraphicsScene *ClassModel::Scene()
@@ -143,20 +140,8 @@ void ClassModel::Load(const QJsonObject& obj)
 	m_changed = true;
 	
 	for (auto&& item_jval : obj["classes"].toArray())
-	{
-		auto json = item_jval.toObject();
-		AddEntityWithSize(
-			json["id"].toString().toStdString(),
-			QPointF{
-				json["x"].toDouble(),
-				json["y"].toDouble()
-			},
-			QSizeF{
-				json["width"].toDouble(default_item_width),
-				json["height"].toDouble(default_item_height)
-			}
-		);
-	}
+		AddItem(item_jval.toObject(), m_codebase);
+	
 	m_changed = false;
 }
 
@@ -165,14 +150,7 @@ QJsonObject ClassModel::Save() const
 	QJsonArray items;
 	ForEachItem<ClassItem>(m_scene->items(), [this, &items](auto citem)
 	{
-		auto size = citem->boundingRect().size();
-		items.append(QJsonObject{
-			{"id", QString::fromStdString(citem->DataType().ID())},
-			{"x", citem->x()},
-			{"y", citem->y()},
-			{"width", size.width()},
-			{"height", size.height()}
-		});
+		items.append(citem->Save());
 		citem->MarkUnchanged();
 	});
 	
@@ -234,8 +212,6 @@ QImage ClassModel::RenderImage(const QRectF& rect) const
 {
 	// Create the image with the exact size of the shrunk scene
 	auto size = rect.isNull() ? m_scene->itemsBoundingRect().size().toSize() : rect.size().toSize();
-	
-	std::cout << "rect = " << rect << std::endl;
 	
 	QImage image{size, QImage::Format_ARGB32};
 	image.fill(Qt::transparent);

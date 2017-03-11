@@ -23,6 +23,7 @@ class QGraphicsSimpleTextItem;
 class QSizeF;
 class QStaticText;
 class QFontMetricsF;
+class QJsonObject;
 
 class SizeGripItem;
 
@@ -44,7 +45,8 @@ class ClassItem : public QGraphicsObject, public BaseItem
 	Q_OBJECT
 	
 public:
-	ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size = {225.0, 175.0});
+	ClassItem(const std::string& id, const codebase::EntityMap *map, const QPointF& pos, const QSizeF& size = {225.0, 175.0});
+	ClassItem(const QJsonObject& json, const codebase::EntityMap *map);
 	~ClassItem();
 	
 	QGraphicsItem* GraphicsItem() override;
@@ -69,9 +71,9 @@ public:
 	void MarkUnchanged();
 
 	void Resize(const QRectF& rect);
-	void ShowTooltip(const QPointF& pos);
 	
 	QString Tooltip(const ItemRenderingOptions& setting, qreal zoom_factor, const QPointF& pos) const;
+	QJsonObject Save() const;
 
 protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

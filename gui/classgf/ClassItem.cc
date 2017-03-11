@@ -23,9 +23,8 @@
 #include "gui/common/SizeGripItem.h"
 #include "gui/common/CommonIO.hh"
 
-#include <QtGui/QFont>
+#include <QtCore/QJsonObject>
 #include <QtGui/QPainter>
-#include <QtGui/QStaticText>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
@@ -53,12 +52,10 @@ public:
 	}
 };
 
-ClassItem::ClassItem(const codebase::DataType& class_, QObject *model, const QPointF& pos, const QSizeF& size) :
-	m_class{&class_},
-	m_class_id{class_.ID()}
+ClassItem::ClassItem(const std::string& id, const codebase::EntityMap *map, const QPointF& pos, const QSizeF& size) :
+	m_class{map->TypedFind<codebase::DataType>(id)},
+	m_class_id{id}
 {
-	setParent(model);
-	
 	m_bounding.setCoords(
 		-size.width()/2, -size.height()/2,
 		+size.width()/2, +size.height()/2
@@ -71,7 +68,35 @@ ClassItem::ClassItem(const codebase::DataType& class_, QObject *model, const QPo
 	setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
 }
 
+ClassItem::ClassItem(const QJsonObject& json, const codebase::EntityMap *map) :
+	ClassItem{
+		json["id"].toString().toStdString(),
+		map,
+		QPointF{
+			json["x"].toDouble(),
+			json["y"].toDouble()
+		},
+		QSizeF{
+			json["width"].toDouble(225.0),
+			json["height"].toDouble(175.0)
+		}
+	}
+{
+}
+
 ClassItem::~ClassItem() = default;
+
+QJsonObject ClassItem::Save() const
+{
+	auto size = boundingRect().size();
+	return {
+		{"id", QString::fromStdString(m_class_id)},
+		{"x", x()},
+		{"y", y()},
+		{"width", size.width()},
+		{"height", size.height()}
+	};
+}
 
 QRectF ClassItem::boundingRect() const
 {
@@ -432,11 +457,6 @@ QString ClassItem::NameWithNamespace() const
 	for (const codebase::Entity *i = m_class->Parent(); i->Parent() != nullptr; i = i->Parent())
 		result.prepend(QString::fromStdString(i->Name()) + "::");
 	return result;
-}
-
-void ClassItem::ShowTooltip(const QPointF& pos)
-{
-	std::cout << m_class->Name() << " help at " << pos.x() << " " << pos.y() << std::endl;
 }
 
 QString ClassItem::Tooltip(const ItemRenderingOptions& setting, qreal zoom_factor, const QPointF& pos) const

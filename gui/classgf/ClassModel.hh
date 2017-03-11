@@ -81,6 +81,8 @@ signals:
 	void OnChanged(bool changed) const;
 
 private:
+	template <typename... Args>
+	void AddItem(Args&&... args);
 	void DetectEdges(ClassItem *item);
 	void AddLine(ClassItem *from, ClassItem *to);
 	void OnChildChanged(BaseItem *child);

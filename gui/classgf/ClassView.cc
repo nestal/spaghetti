@@ -58,7 +58,7 @@ void ClassView::dropEvent(QDropEvent *event)
 	
 	std::string usr;
 	while (usrs >> usr)
-		emit DropEntity(usr, scene_pos);
+		m_model->AddEntity(usr, scene_pos);
 	
 	event->acceptProposedAction();
 }
