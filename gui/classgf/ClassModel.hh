@@ -72,6 +72,7 @@ public:
 	void UpdateCodeBase(const codebase::EntityMap *codebase) override;
 	
 	std::unique_ptr<QMimeData> CopySelection();
+	QImage CopyAsImage();
 	
 signals:
 	void OnChanged(bool changed) const;
