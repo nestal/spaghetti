@@ -1,5 +1,7 @@
 # Change Log
 
+## Version 0.4 (Upcoming)
+
 ## [Version 0.3](https://github.com/nestal/spaghetti/releases/tag/v0.3) (11 March 2017)
 
 - Double click on a class in class diagram to view only that class in the
