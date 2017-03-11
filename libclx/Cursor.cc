@@ -10,6 +10,7 @@
 // Created by nestal on 2/23/17.
 //
 
+#include <clang-c/Index.h>
 #include "Cursor.hh"
 
 #include "SourceRange.hh"
@@ -70,7 +71,7 @@ libclx::Type Cursor::Type() const
 
 bool Cursor::IsReference() const
 {
-	return ::clang_isCursorDefinition(m_cursor) != 0;
+	return ::clang_isReference(Kind()) != 0;
 }
 
 bool Cursor::IsDefinition() const

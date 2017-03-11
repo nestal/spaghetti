@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 
 #include <boost/filesystem/path.hpp>
+#include <vector>
 
 int global_var = 0;
 
@@ -47,11 +48,8 @@ class Derived : public RecursiveBase<Base>, public Base2
 {
 public:
 	Derived() = default;
-	
-	void Func() override
-	{
-		SomeFunc();
-	}
+
+	void Func() override {}
 };
 
 using namespace codebase;
