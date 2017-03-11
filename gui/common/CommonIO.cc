@@ -31,3 +31,8 @@ std::ostream& operator<<(std::ostream& os, const QRectF& rect)
 {
 	return os << '{' << rect.topLeft() << ',' << rect.bottomRight() << '}';
 }
+
+std::ostream& operator<<(std::ostream& os, const QSizeF& rect)
+{
+	return os << '{' << rect.width() << ',' << rect.height() << '}';
+}

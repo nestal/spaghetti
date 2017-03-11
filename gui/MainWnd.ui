@@ -89,6 +89,7 @@
     </property>
     <addaction name="m_action_delete"/>
     <addaction name="m_action_copy"/>
+    <addaction name="m_action_paste"/>
    </widget>
    <widget class="QMenu" name="menu_Windows">
     <property name="title">
@@ -270,6 +271,9 @@
    <property name="text">
     <string>&amp;Copy</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
   </action>
   <action name="m_action_cflags">
    <property name="text">
@@ -329,15 +333,23 @@
   </action>
   <action name="m_action_preference">
    <property name="text">
-    <string>Preference...</string>
+    <string>P&amp;reference...</string>
    </property>
   </action>
   <action name="m_action_save">
    <property name="text">
-    <string>Save</string>
+    <string>&amp;Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="m_action_paste">
+   <property name="text">
+    <string>&amp;Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>

@@ -13,12 +13,15 @@
 #pragma once
 
 #include "project/ModelBase.hh"
-#include <QObject>
+
+#include <QtCore/QObject>
+#include <QtCore/QRectF>
 
 #include <memory>
 
 class QGraphicsScene;
 class QPointF;
+class QMimeData;
 
 namespace codebase {
 class DataType;
@@ -52,7 +55,6 @@ public:
 	
 	// ModelBase overrides
 	void AddEntity(const std::string& id, const QPointF& pos) override;
-	void AddEntityWithSize(const std::string& id, const QPointF& pos, const QSizeF& size);
 	void SetRect(const QRectF& rect) override;
 	bool CanRename() const override;
 	std::string Name() const override;
@@ -69,11 +71,19 @@ public:
 	
 	bool IsChanged() const override;
 	void UpdateCodeBase(const codebase::EntityMap *codebase) override;
-
+	
+	std::unique_ptr<QMimeData> CopySelection() const;
+	QImage RenderImage(const QRectF& rect = {}) const;
+	QByteArray RenderSVG(const QRectF& rect = {}) const;
+	
+	void Paste(const QMimeData* data);
+	
 signals:
 	void OnChanged(bool changed) const;
 
 private:
+	template <typename... Args>
+	void AddItem(Args&&... args);
 	void DetectEdges(ClassItem *item);
 	void AddLine(ClassItem *from, ClassItem *to);
 	void OnChildChanged(BaseItem *child);

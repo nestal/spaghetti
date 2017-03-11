@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 0.3 (Upcoming)
+## [Version 0.3](https://github.com/nestal/spaghetti/releases/tag/v0.3) (11 March 2017)
 
 - Double click on a class in class diagram to view only that class in the
   whole screen
@@ -12,6 +12,9 @@
 - Make the grip boxes fixed-size regardless of zoom level
 - Support loading file from command line argument
 - Minor bug fixes for zooming
+- Added tooltips for class names and members
+- Show namespace name in class diagram if there is enough space
+- Support copying to other other applications as images or SVG
 
 ## [Version 0.2](https://github.com/nestal/spaghetti/releases/tag/v0.2) (4 March 2017)
 

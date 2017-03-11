@@ -19,15 +19,20 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QMimeData>
+#include <QtGui/QPainter>
+#include <QtCore/QBuffer>
+#include <QtSvg/QSvgGenerator>
 
 #include <QDebug>
 
 #include <cassert>
+#include <iostream>
+#include "gui/common/CommonIO.hh"
 
 namespace gui {
 namespace classgf {
-
-const qreal default_item_width{225.0}, default_item_height{175.0};
 
 template <typename ItemType, typename Container, typename Func>
 auto ForEachItem(Container&& cont, Func func)
@@ -67,23 +72,28 @@ void ClassModel::Clear()
 
 void ClassModel::AddEntity(const std::string& id, const QPointF& pos)
 {
-	AddEntityWithSize(id, pos, {default_item_width, default_item_height});
+	AddItem(id, m_codebase, pos);
 }
 
-void ClassModel::AddEntityWithSize(const std::string& id, const QPointF& pos, const QSizeF& size)
+template <typename... Args>
+void ClassModel::AddItem(Args&&... args)
 {
-	if (auto data_type = m_codebase->TypedFind<codebase::DataType>(id))
+	try
 	{
-		auto item = new ClassItem{*data_type, this, pos, size};
-		connect(item, &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);
+		auto item = std::make_unique<ClassItem>(std::forward<Args>(args)...);
+		connect(item.get(), &ClassItem::OnJustChanged, this, &ClassModel::OnChildChanged);
 		
 		// draw arrows
-		DetectEdges(item);
+		DetectEdges(item.get());
 		
-		m_scene->addItem(item);
+		m_scene->addItem(item.release());
 		
 		// the model is changed because it has one more entity
 		SetChanged(true);
+	}
+	catch (std::exception& e)
+	{
+		// TODO: print log
 	}
 }
 
@@ -136,21 +146,9 @@ void ClassModel::Load(const QJsonObject& obj)
 	// prevent AddEntity() to emit OnChange()
 	m_changed = true;
 	
-	for (auto&& item_jval : obj["classes"].toArray())
-	{
-		auto json = item_jval.toObject();
-		AddEntityWithSize(
-			json["id"].toString().toStdString(),
-			QPointF{
-				json["x"].toDouble(),
-				json["y"].toDouble()
-			},
-			QSizeF{
-				json["width"].toDouble(default_item_width),
-				json["height"].toDouble(default_item_height)
-			}
-		);
-	}
+	for (auto&& item : obj["classes"].toArray())
+		AddItem(item.toObject(), m_codebase);
+	
 	m_changed = false;
 }
 
@@ -159,14 +157,7 @@ QJsonObject ClassModel::Save() const
 	QJsonArray items;
 	ForEachItem<ClassItem>(m_scene->items(), [this, &items](auto citem)
 	{
-		auto size = citem->boundingRect().size();
-		items.append(QJsonObject{
-			{"id", QString::fromStdString(citem->DataType().ID())},
-			{"x", citem->x()},
-			{"y", citem->y()},
-			{"width", size.width()},
-			{"height", size.height()}
-		});
+		items.append(citem->Save());
 		citem->MarkUnchanged();
 	});
 	
@@ -222,6 +213,72 @@ void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
 	{
 		this->DetectEdges(item);
 	});
+}
+
+QImage ClassModel::RenderImage(const QRectF& rect) const
+{
+	// Create the image with the exact size of the shrunk scene
+	auto size = rect.isNull() ? m_scene->itemsBoundingRect().size().toSize() : rect.size().toSize();
+	
+	QImage image{size, QImage::Format_ARGB32};
+	image.fill(Qt::transparent);
+	
+	QPainter painter(&image);
+	m_scene->render(&painter, {}, rect);
+	return image;
+}
+
+std::unique_ptr<QMimeData> ClassModel::CopySelection() const
+{
+	QRectF selected;
+	for (auto&& item : m_scene->selectedItems())
+		selected = selected.united(item->sceneBoundingRect());
+	
+	auto mime = std::make_unique<QMimeData>();
+	mime->setImageData(RenderImage(selected));
+	mime->setData("image/svg+xml", RenderSVG(selected));
+	
+	QJsonArray jarr;
+	ForEachItem<ClassItem>(m_scene->items(), [this, &jarr](auto citem)
+	{
+		jarr.append(citem->Save());
+	});
+	mime->setData("application/json", QJsonDocument{jarr}.toJson());
+	
+	return mime;
+}
+
+void ClassModel::Paste(const QMimeData* data)
+{
+	assert(data);
+		
+	if (data->hasFormat("application/json"))
+	{
+		auto json = QJsonDocument::fromJson(data->data("application/json"));
+		for (auto&& item : json.array())
+		{
+			AddItem(item.toObject(), m_codebase);
+			m_changed = true;
+		}
+	}
+}
+
+QByteArray ClassModel::RenderSVG(const QRectF& rect) const
+{
+	auto size = rect.isNull() ? m_scene->itemsBoundingRect().size().toSize() : rect.size().toSize();
+	
+	QBuffer b;
+	QSvgGenerator p;
+	p.setOutputDevice(&b);
+	p.setSize(size);
+	p.setViewBox(QRect{0, 0, size.width(), size.height()});
+	
+	{
+		QPainter painter(&p);
+		m_scene->render(&painter, {}, rect);
+	}
+	
+	return b.buffer();
 }
 	
 }} // end of namespace
