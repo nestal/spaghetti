@@ -70,6 +70,7 @@ public:
 	
 	void ViewCode(const std::string& filename, unsigned line, unsigned column);
 	void ResetZoom();
+	void Copy();
 
 private:
 	void NewClassDiagramView(classgf::ClassModel *model);

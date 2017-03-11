@@ -37,6 +37,7 @@ public:
 	QWidget* Widget() override;
 	
 	void ResetZoom() override ;
+	void Copy() override ;
 
 private:
 	void Parse(unsigned line, unsigned column);

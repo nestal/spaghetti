@@ -53,7 +53,7 @@ public:
 
 	QTransform Transform() const override;
 
-	void CopySelection();
+	void Copy() override;
 	
 signals:
 	void DropEntity(const std::string& id, const QPointF& pos);

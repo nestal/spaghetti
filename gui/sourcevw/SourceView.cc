@@ -167,5 +167,9 @@ QWidget *SourceView::Widget()
 void SourceView::ResetZoom()
 {
 }
+
+void SourceView::Copy()
+{
+}
 	
 }} // end of namespace

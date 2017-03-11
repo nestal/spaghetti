@@ -30,6 +30,7 @@ public:
 	virtual ModelBase* Model() = 0;
 	virtual QWidget* Widget() = 0;
 	virtual void ResetZoom() = 0;
+	virtual void Copy() = 0;
 };
 	
 } // end of namespace

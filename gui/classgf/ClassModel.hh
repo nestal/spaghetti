@@ -19,6 +19,7 @@
 
 class QGraphicsScene;
 class QPointF;
+class QMimeData;
 
 namespace codebase {
 class DataType;
@@ -69,7 +70,9 @@ public:
 	
 	bool IsChanged() const override;
 	void UpdateCodeBase(const codebase::EntityMap *codebase) override;
-
+	
+	std::unique_ptr<QMimeData> CopySelection();
+	
 signals:
 	void OnChanged(bool changed) const;
 

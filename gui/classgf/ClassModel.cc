@@ -19,6 +19,10 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
+#include <QtCore/QMimeData>
+#include <QtGui/QPainter>
+#include <QtCore/QBuffer>
+#include <QtSvg/QSvgGenerator>
 
 #include <QDebug>
 
@@ -222,6 +226,43 @@ void ClassModel::UpdateCodeBase(const codebase::EntityMap *codebase)
 	{
 		this->DetectEdges(item);
 	});
+}
+
+std::unique_ptr<QMimeData> ClassModel::CopySelection()
+{
+	// Create the image with the exact size of the shrunk scene
+	auto size = m_scene->itemsBoundingRect().size().toSize();
+	auto rect = m_scene->selectionArea().boundingRect();
+	
+	auto mime = std::make_unique<QMimeData>();
+	
+	// render image
+	{
+		QImage image{size, QImage::Format_ARGB32};
+		image.fill(Qt::transparent);
+		
+		QPainter painter(&image);
+		m_scene->render(&painter, {}, rect);
+		
+		mime->setImageData(image);
+	}
+	
+	// render SVG
+	{
+		QBuffer b;
+		QSvgGenerator p;
+		p.setOutputDevice(&b);
+		p.setSize(size);
+		p.setViewBox(QRect{0, 0, size.width(), size.height()});
+		
+		QPainter painter;
+		painter.begin(&p);
+		m_scene->render(&painter, {}, rect);
+		painter.end();
+		
+		mime->setData("image/svg+xml", b.buffer());
+	}
+	return mime;
 }
 	
 }} // end of namespace

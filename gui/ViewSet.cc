@@ -211,5 +211,11 @@ void ViewSet::ResetZoom()
 	if (auto view = dynamic_cast<ViewBase*>(currentWidget()))
 		view->ResetZoom();
 }
+
+void ViewSet::Copy()
+{
+	if (auto view = dynamic_cast<ViewBase*>(currentWidget()))
+		view->Copy();
+}
 	
 } // end of namespace

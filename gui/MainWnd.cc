@@ -116,6 +116,9 @@ void MainWnd::ConnectSignals()
 			m_doc->AddSource(file);
 		}
 	});
+	
+	connect(m_ui->m_action_copy,   &QAction::triggered, m_ui->m_tab, &ViewSet::Copy);
+	
 	connect(m_ui->m_action_cflags, &QAction::triggered, [this]
 	{
 		ProjectSetting dlg{*m_doc, this};
