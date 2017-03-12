@@ -49,7 +49,14 @@ void DataType::Visit(libclx::Cursor self)
 			AddUnique(m_fields, child.USR(), child, this);
 //			std::cout << Name() << " has field: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << std::endl;
 			break;
-			
+		
+		// nested classes
+		case CXCursor_ClassDecl:
+		case CXCursor_StructDecl:
+		case CXCursor_ClassTemplate:
+			AddUnique(m_nested_types, child.USR(), child, this)->Visit(child);
+			break;
+		
 		case CXCursor_CXXBaseSpecifier:
 		{
 			// normally we don't have hundreds of base classes so sequential searches should be faster

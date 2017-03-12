@@ -41,21 +41,30 @@ protected:
 			for (auto&& diag : tu.Diagnostics())
 				std::cerr << tu.Spelling() << ": " << diag.Str() << std::endl;
 		}
+		
+		m_viewset = dynamic_cast<const DataType*>(m_subject.Map().FindByName("ViewSet"));
 	}
 	
 	CodeBase m_subject;
+	const DataType *m_viewset;
 };
 
 TEST_F(ViewSetBaseClassTest, Test_ViewSet_Base)
 {
-	auto viewset = dynamic_cast<const DataType*>(m_subject.Map().FindByName("ViewSet"));
-	ASSERT_TRUE(viewset);
-	ASSERT_EQ(1, viewset->BaseClasses().size());
+	ASSERT_TRUE(m_viewset);
+	ASSERT_EQ(1, m_viewset->BaseClasses().size());
 	
-	auto base_id = viewset->BaseClasses().front();
+	auto base_id = m_viewset->BaseClasses().front();
 	ASSERT_EQ("c:@S@QTabWidget", base_id);
 	
 	auto base = m_subject.Map().Find(base_id);
 	ASSERT_TRUE(base);
 	ASSERT_EQ("QTabWidget", base->Name());
+}
+
+TEST_F(ViewSetBaseClassTest, Test_Nested_iterator_Classes)
+{
+	auto it = std::find_if(m_viewset->begin(), m_viewset->end(), [](auto&& entity){return entity.Name() == "iterator";});
+	ASSERT_NE(m_viewset->end(), it);
+	ASSERT_EQ(m_viewset, it->Parent());
 }

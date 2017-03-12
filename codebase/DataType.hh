@@ -82,6 +82,7 @@ private:
 	std::vector<std::string> m_base_classes;
 	std::vector<codebase::Variable*>   m_fields;
 	std::vector<codebase::Function*>   m_functions;
+	std::vector<codebase::DataType*>   m_nested_types;
 	
 	bool m_used{false};
 };
