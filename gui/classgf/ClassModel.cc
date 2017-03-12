@@ -17,6 +17,7 @@
 #include "gui/common/MimeType.hh"
 #include "codebase/DataType.hh"
 
+#include <QtWidgets/QMessageBox>
 #include <QtWidgets/QGraphicsScene>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
@@ -95,6 +96,7 @@ void ClassModel::AddItem(Args&&... args)
 	catch (std::exception& e)
 	{
 		// TODO: print log
+		QMessageBox::warning(nullptr, "Exception when adding item", e.what());
 	}
 }
 
@@ -284,9 +286,14 @@ QByteArray ClassModel::RenderSVG(const QRectF& rect) const
 
 void ClassModel::AddParentClass(ClassItem *item, const QPointF& pos)
 {
-	assert(item);
-	for (auto&& bases : item->DataType().BaseClasses())
-		AddEntity(bases, pos);
+	if (!item && !m_scene->selectedItems().isEmpty())
+		item = dynamic_cast<ClassItem*>(m_scene->selectedItems().front());
+	
+	if (item)
+	{
+		for (auto&& bases : item->DataType().BaseClasses())
+			AddEntity(bases, pos);
+	}
 }
 	
 }} // end of namespace
