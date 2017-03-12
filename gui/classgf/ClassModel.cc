@@ -281,5 +281,12 @@ QByteArray ClassModel::RenderSVG(const QRectF& rect) const
 	
 	return b.buffer();
 }
+
+void ClassModel::AddParentClass(ClassItem *item, const QPointF& pos)
+{
+	assert(item);
+	for (auto&& bases : item->DataType().BaseClasses())
+		AddEntity(bases, pos);
+}
 	
 }} // end of namespace

@@ -79,7 +79,6 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 {
 	auto derived = dynamic_cast<const DataType*>(m_subject.Map().FindByName("Derived"));
 	ASSERT_EQ("Derived", derived->Name());
-//	ASSERT_EQ(1, derived->BaseClasses().size());
 	
 	std::vector<std::string> base{"c:@S@RecursiveBase>#$@S@Base", "c:@S@Base2", "c:@S@Base3"};
 	ASSERT_EQ(base, derived->BaseClasses());

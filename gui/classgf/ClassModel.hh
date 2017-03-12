@@ -66,6 +66,7 @@ public:
 	
 	void DeleteSelectedItem();
 	void DeleteItem(ClassItem *item);
+	void AddParentClass(ClassItem *item, const QPointF& pos);
 	
 	ModelType Type() const override { return ModelType::class_diagram; }
 	

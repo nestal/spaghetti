@@ -265,6 +265,10 @@ void ClassView::contextMenuEvent(QContextMenuEvent *event)
 		{
 			m_model->DeleteItem(item);
 		});
+		connect(menu.addAction("Add parent class"), &QAction::triggered, [item, this, event]
+		{
+			m_model->AddParentClass(item, this->mapToScene(event->pos()));
+		});
 	}
 	connect(menu.addAction("Copy"), &QAction::triggered, this, &ClassView::Copy);
 	connect(menu.addAction("Paste"), &QAction::triggered, this, &ClassView::Paste);
