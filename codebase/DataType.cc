@@ -180,7 +180,7 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 			auto base_entity = dynamic_cast<DataType*>(map->Find(base));
 			
 			// TODO: support typedef base classes
-			if (base_entity)
+			if (base_entity && !base_entity->IsUsed())
 			{
 				base_entity->MarkUsed();
 				base_entity->MarkBaseClassUsed(map);
