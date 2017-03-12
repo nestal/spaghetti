@@ -51,11 +51,15 @@ void DataType::Visit(libclx::Cursor self)
 			break;
 			
 		case CXCursor_CXXBaseSpecifier:
-			// TODO: remove duplicate
+		{
+			// normally we don't have hundreds of base classes so sequential searches should be faster
+			// the order of the base classes is important, so we don't want to switch to set
 //			std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << std::endl;
-			m_base_classes.push_back(child.GetDefinition().USR());
+			auto&& base = child.GetDefinition().USR();
+			if (std::find(m_base_classes.begin(), m_base_classes.end(), base) == m_base_classes.end())
+				m_base_classes.push_back(base);
 			break;
-	
+		}
 		case CXCursor_CXXMethod:
 //			std::cout << Name() << " has method: \"" <<  child.Spelling() << "\" \"" << child.KindSpelling() << "\" " << p.USR() << std::endl;
 			AddUnique(m_functions, child.USR(), child, this);

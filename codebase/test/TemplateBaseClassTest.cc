@@ -61,16 +61,30 @@ public:
 using namespace codebase;
 namespace fs = boost::filesystem;
 
-TEST(TemplateBaseClassTest, Test_base_class)
+class TemplateBaseClassTest : public testing::Test
 {
-	CodeBase subject;
-	subject.Parse(__FILE__, {
+protected:
+	void SetUp() override
+	{
+		m_subject.Parse(__FILE__, {
+			"-std=c++14",
+			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
+			"-I", "."
+		});
+	}
+	
+	CodeBase m_subject;
+};
+
+TEST_F(TemplateBaseClassTest, Test_base_class)
+{
+	m_subject.Parse(__FILE__, {
 		"-std=c++14",
 		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
 		"-I", "."
 	});
 	
-	auto derived = dynamic_cast<const DataType*>(subject.Map().FindByName("Derived"));
+	auto derived = dynamic_cast<const DataType*>(m_subject.Map().FindByName("Derived"));
 	ASSERT_EQ("Derived", derived->Name());
 //	ASSERT_EQ(1, derived->BaseClasses().size());
 	
