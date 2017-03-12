@@ -40,11 +40,14 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	auto derived = dynamic_cast<const DataType*>(m_subject.Map().FindByName("Derived"));
 	ASSERT_EQ("Derived", derived->Name());
 	
-	std::vector<std::string> base{"c:@S@RecursiveBase>#$@S@Base", "c:@S@Base2", "c:@S@Base3"};
+	// base should be c:@S@RecursiveBase>#$@S@Base, but we need to fix it by
+	// differentiating between a template and its instantiation
+	std::vector<std::string> base{"c:@ST>1#T@RecursiveBase", "c:@S@Base2", "c:@S@Base3"};
 	ASSERT_EQ(base, derived->BaseClasses());
 	
-	auto temp_base = m_subject.Map().Find("c:@S@RecursiveBase>#$@S@Base");
+	auto temp_base = m_subject.Map().Find("c:@ST>1#T@RecursiveBase");
 	
 	// TODO: fix it!
-	ASSERT_FALSE(temp_base);
+	ASSERT_TRUE(temp_base);
+	ASSERT_EQ("RecursiveBase", temp_base->Name());
 }

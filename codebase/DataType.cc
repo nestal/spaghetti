@@ -64,13 +64,14 @@ void DataType::Visit(libclx::Cursor self)
 			
 		case CXCursor_CXXBaseSpecifier:
 		{
-			auto&& base = child.GetDefinition();
+			auto base = child.GetDefinition();
 			
 			if (base.Type().NumTemplateArguments() > 0)
 			{
 //				std::cout << base.Spelling() << " is a template instanciation " << base.Type().NumTemplateArguments() << std::endl;
 				
-//				auto base_temp = base.SpecializedCursorTemplate();
+				// this is just a workaround
+				base = base.SpecializedCursorTemplate();
 //				std::cout << base_temp.USR() << std::endl;
 			}
 			
