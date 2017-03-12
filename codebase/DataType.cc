@@ -54,6 +54,7 @@ void DataType::Visit(libclx::Cursor self)
 		{
 			// normally we don't have hundreds of base classes so sequential searches should be faster
 			// the order of the base classes is important, so we don't want to switch to set
+			if (Name() == "ViewSet")
 			std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << std::endl;
 			auto&& base = child.GetDefinition().USR();
 			if (std::find(m_base_classes.begin(), m_base_classes.end(), base) == m_base_classes.end())
@@ -74,7 +75,7 @@ void DataType::Visit(libclx::Cursor self)
 //				std::cout << Name() << " has child: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Location() << " " << child.Type() <<  std::endl;
 			break;
 		}
-	}, true);
+	});
 
 	// mark self and all children as used, after creating the children
 	if (IsUsed() || (self.IsDefinition() && self.Location().IsFromMainFile()))
