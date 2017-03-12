@@ -18,5 +18,7 @@ namespace gui {
 namespace mime {
 
 const QString usr{"application/vnd.spag.usr"};
+const QString json{"application/json"};
+const QString svg{"image/svg+xml"};
 	
 }} // end of namespace

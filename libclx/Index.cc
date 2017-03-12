@@ -41,6 +41,11 @@ TranslationUnit Index::Parse(const std::string& filename, const std::vector<std:
 	)};
 }
 
+std::string Index::Version()
+{
+	return XStr{::clang_getClangVersion()}.Str();
+}
+
 TranslationUnit::TranslationUnit(CXTranslationUnit tu) :
 	m_unit{tu}
 {

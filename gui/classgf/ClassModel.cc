@@ -14,6 +14,7 @@
 
 #include "ClassItem.hh"
 #include "Edge.hh"
+#include "gui/common/MimeType.hh"
 #include "codebase/DataType.hh"
 
 #include <QtWidgets/QGraphicsScene>
@@ -236,14 +237,14 @@ std::unique_ptr<QMimeData> ClassModel::CopySelection() const
 	
 	auto mime = std::make_unique<QMimeData>();
 	mime->setImageData(RenderImage(selected));
-	mime->setData("image/svg+xml", RenderSVG(selected));
+	mime->setData(mime::svg, RenderSVG(selected));
 	
 	QJsonArray jarr;
 	ForEachItem<ClassItem>(m_scene->items(), [this, &jarr](auto citem)
 	{
 		jarr.append(citem->Save());
 	});
-	mime->setData("application/json", QJsonDocument{jarr}.toJson());
+	mime->setData(mime::json, QJsonDocument{jarr}.toJson());
 	
 	return mime;
 }
@@ -252,9 +253,9 @@ void ClassModel::Paste(const QMimeData* data)
 {
 	assert(data);
 		
-	if (data->hasFormat("application/json"))
+	if (data->hasFormat(mime::json))
 	{
-		auto json = QJsonDocument::fromJson(data->data("application/json"));
+		auto json = QJsonDocument::fromJson(data->data(mime::json));
 		for (auto&& item : json.array())
 		{
 			AddItem(item.toObject(), m_codebase);

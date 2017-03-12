@@ -18,6 +18,7 @@
 #include "ui_MainWnd.h"
 #include "ui_AboutBox.h"
 
+#include "libclx/Index.hh"
 #include "libclx/SourceRange.hh"
 
 #include <QtWidgets/QFileDialog>
@@ -46,7 +47,7 @@ public:
 		m_ui->m_version->setText(m_ui->m_version->text().arg(
 			GIT_COMMIT_HASH,
 			QT_VERSION_STR,
-			CINDEX_VERSION_STRING,
+			QString::fromStdString(libclx::Index::Version()),
 			QString{"%1.%2.%3"}.arg(BOOST_VERSION/100000).arg(BOOST_VERSION/100%1000).arg(BOOST_VERSION%100),
 			VERSION
 		));

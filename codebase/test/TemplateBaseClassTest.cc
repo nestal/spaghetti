@@ -16,7 +16,6 @@
 #include <gtest/gtest.h>
 
 #include <boost/filesystem/path.hpp>
-#include <vector>
 
 int global_var = 0;
 
@@ -66,7 +65,7 @@ class TemplateBaseClassTest : public testing::Test
 protected:
 	void SetUp() override
 	{
-		m_subject.Parse(__FILE__, {
+		m_subject.Parse((fs::path{__FILE__}.parent_path()/"testdata/test.cc").string(), {
 			"-std=c++14",
 			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
 			"-I", "."
@@ -78,16 +77,10 @@ protected:
 
 TEST_F(TemplateBaseClassTest, Test_base_class)
 {
-	m_subject.Parse(__FILE__, {
-		"-std=c++14",
-		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-		"-I", "."
-	});
-	
 	auto derived = dynamic_cast<const DataType*>(m_subject.Map().FindByName("Derived"));
 	ASSERT_EQ("Derived", derived->Name());
 //	ASSERT_EQ(1, derived->BaseClasses().size());
 	
-	std::vector<std::string> base{"c:@S@Base2", "c:@S@Base3"};
+	std::vector<std::string> base{"c:@S@RecursiveBase>#$@S@Base", "c:@S@Base2", "c:@S@Base3"};
 	ASSERT_EQ(base, derived->BaseClasses());
 }
