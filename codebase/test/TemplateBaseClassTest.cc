@@ -44,7 +44,13 @@ public:
 	Base2() = default;
 };
 
-class Derived : public RecursiveBase<Base>, public Base2
+class Base3
+{
+public:
+	Base3() = default;
+};
+
+class Derived : public RecursiveBase<Base>, public Base2, public Base3
 {
 public:
 	Derived() = default;
@@ -68,11 +74,6 @@ TEST(TemplateBaseClassTest, Test_base_class)
 	ASSERT_EQ("Derived", derived->Name());
 //	ASSERT_EQ(1, derived->BaseClasses().size());
 	
-	for (auto&& base_id : derived->BaseClasses())
-	{
-		auto base_entity = subject.Map().Find(base_id);
-		ASSERT_TRUE(base_entity);
-		
-		ASSERT_EQ("RecursiveBase", base_entity->Name());
-	}
+	std::vector<std::string> base{"c:@S@Base2", "c:@S@Base3"};
+	ASSERT_EQ(base, derived->BaseClasses());
 }

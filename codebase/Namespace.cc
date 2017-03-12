@@ -62,7 +62,7 @@ void Namespace::Visit(libclx::Cursor self)
 		
 		default:
 			if (!cursor.Location().IsFromSystemHeader())
-				std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.Kind() << std::endl;
+				std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << std::endl;
 			break;
 		}
 	});

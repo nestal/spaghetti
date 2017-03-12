@@ -38,6 +38,7 @@ public:
 	bool operator!=(const Cursor& rhs) const;
 	
 	CXCursorKind Kind() const;
+	std::string KindSpelling() const;
 	
 	explicit operator bool() const;
 	

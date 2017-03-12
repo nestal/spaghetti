@@ -34,6 +34,11 @@ CXCursorKind Cursor::Kind() const
 	return ::clang_getCursorKind(m_cursor);
 }
 
+std::string Cursor::KindSpelling() const
+{
+	return XStr{::clang_getCursorKindSpelling(Kind())}.Str();
+}
+
 std::string Cursor::DisplayName() const
 {
 	return XStr{::clang_getCursorDisplayName(m_cursor)}.Str();

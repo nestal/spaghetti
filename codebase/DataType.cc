@@ -39,7 +39,7 @@ void DataType::Visit(libclx::Cursor self)
 	if (self.IsDefinition() || m_definition == libclx::SourceLocation{})
 		m_definition = self.Location();
 	
-	std::cout << "class: " << Name() << " " << self.Kind() << " " << Location() << std::endl;
+//	std::cout << "class: " << Name() << " " << self.Kind() << " " << Location() << std::endl;
 	
 	self.Visit([this](libclx::Cursor child, libclx::Cursor)
 	{
@@ -47,27 +47,27 @@ void DataType::Visit(libclx::Cursor self)
 		{
 		case CXCursor_FieldDecl:
 			AddUnique(m_fields, child.USR(), child, this);
-			std::cout << Name() << " has field: \"" <<  child.Spelling() << "\" " << child.Kind() << std::endl;
+//			std::cout << Name() << " has field: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << std::endl;
 			break;
 			
 		case CXCursor_CXXBaseSpecifier:
 			// TODO: remove duplicate
-			std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" " << child.Kind() << std::endl;
+//			std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << std::endl;
 			m_base_classes.push_back(child.GetDefinition().USR());
 			break;
 	
 		case CXCursor_CXXMethod:
-			std::cout << Name() << " has method: \"" <<  child.Spelling() << "\" " << child.Kind() << std::endl;
+//			std::cout << Name() << " has method: \"" <<  child.Spelling() << "\" \"" << child.KindSpelling() << "\" " << p.USR() << std::endl;
 			AddUnique(m_functions, child.USR(), child, this);
 			break;
 			
 		case CXCursor_TypeRef:
-			std::cout << Name() << " has type ref: \"" <<  child.Spelling() << "\" " << child.Kind() << " " << child.Referenced().Spelling() << " " << child.Location() << std::endl;
+//			std::cout << Name() << " has type ref: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Referenced().Spelling() << " " << child.Location() << std::endl;
 			break;
 		
 		default:
 //			if (!child.Location().IsFromSystemHeader())
-				std::cout << Name() << " has child: \"" <<  child.Spelling() << "\" " << child.Kind() << " " << child.Location() << " " << child.Type() <<  std::endl;
+//				std::cout << Name() << " has child: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Location() << " " << child.Type() <<  std::endl;
 			break;
 		}
 	}, true);
