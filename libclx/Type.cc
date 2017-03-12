@@ -49,4 +49,9 @@ Type Type::ClassType() const
 	return {::clang_Type_getClassType(m_type)};
 }
 
+int Type::NumTemplateArguments() const
+{
+	return ::clang_Type_getNumTemplateArguments(m_type);
+}
+	
 } // end of namespace

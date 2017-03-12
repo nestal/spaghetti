@@ -50,6 +50,7 @@ public:
 	Cursor SemanticParent() const;
 	Cursor LexicalParent() const;
 	Cursor Referenced() const;
+	Cursor SpecializedCursorTemplate() const;
 	
 	std::string Spelling() const ;
 	std::string DisplayName() const;

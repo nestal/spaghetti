@@ -42,4 +42,7 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	
 	std::vector<std::string> base{"c:@S@RecursiveBase>#$@S@Base", "c:@S@Base2", "c:@S@Base3"};
 	ASSERT_EQ(base, derived->BaseClasses());
+	
+	auto temp_base = m_subject.Map().Find("c:@S@RecursiveBase>#$@S@Base");
+	ASSERT_TRUE(temp_base);
 }

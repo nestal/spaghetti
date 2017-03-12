@@ -30,6 +30,7 @@ public:
 	
 	std::string Kind() const;
 	Type ClassType() const;
+	int NumTemplateArguments() const;
 	
 	friend std::ostream& operator<<(std::ostream& os, const Type& t);
 

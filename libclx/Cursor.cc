@@ -129,6 +129,11 @@ Cursor Cursor::Referenced() const
 	return {::clang_getCursorReferenced(m_cursor)};
 }
 
+Cursor Cursor::SpecializedCursorTemplate() const
+{
+	return {::clang_getSpecializedCursorTemplate(m_cursor)};
+}
+
 unsigned Cursor::Hash::operator()(Cursor c) const
 {
 	return ::clang_hashCursor(c.m_cursor);
