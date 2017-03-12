@@ -79,7 +79,7 @@ QWidget *ClassView::Widget()
 	return this;
 }
 
-void ClassView::DeleteSelectedItem()
+void ClassView::Delete()
 {
 	m_model->DeleteSelectedItem();
 }

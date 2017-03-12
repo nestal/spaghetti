@@ -47,7 +47,7 @@ public:
 			GIT_COMMIT_HASH,
 			QT_VERSION_STR,
 			CINDEX_VERSION_STRING,
-			BOOST_LIB_VERSION,
+			QString{"%1.%2.%3"}.arg(BOOST_VERSION/100000).arg(BOOST_VERSION/100%1000).arg(BOOST_VERSION%100),
 			VERSION
 		));
 	}
@@ -83,6 +83,7 @@ MainWnd::~MainWnd() = default;
 
 void MainWnd::ConnectSignals()
 {
+	connect(m_ui->m_action_about_Qt, &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
 	connect(m_ui->m_action_about,    &QAction::triggered, [this]
 	{
 		AboutDialog dlg{this};
@@ -102,9 +103,7 @@ void MainWnd::ConnectSignals()
 		else
 			m_doc->Save();
 	});
-	connect(m_ui->m_action_save_as,    &QAction::triggered, this,        &MainWnd::OnSaveAs);
-	connect(m_ui->m_action_delete,     &QAction::triggered, m_ui->m_tab, &ViewSet::OnDelete );
-	connect(m_ui->m_action_about_Qt,   &QAction::triggered, [this]{QMessageBox::aboutQt(this);});
+	connect(m_ui->m_action_save_as,    &QAction::triggered, this,  &MainWnd::OnSaveAs);
 	connect(m_ui->m_action_add_source, &QAction::triggered, [this]
 	{
 		assert(m_doc);
@@ -117,8 +116,9 @@ void MainWnd::ConnectSignals()
 		}
 	});
 	
-	connect(m_ui->m_action_copy,   &QAction::triggered, m_ui->m_tab, &ViewSet::Copy);
-	connect(m_ui->m_action_paste,  &QAction::triggered, m_ui->m_tab, &ViewSet::Paste);
+	connect(m_ui->m_action_copy,   &QAction::triggered, [this]{m_ui->m_tab->Current()->Copy();});
+	connect(m_ui->m_action_paste,  &QAction::triggered, [this]{m_ui->m_tab->Current()->Paste();});
+	connect(m_ui->m_action_delete, &QAction::triggered, [this]{m_ui->m_tab->Current()->Delete();});
 	
 	connect(m_ui->m_action_cflags, &QAction::triggered, [this]
 	{
@@ -168,7 +168,7 @@ void MainWnd::ConnectSignals()
 		m_doc->SetShowAllClasses(checked);
 		m_ui->m_action_show_all_classes->setChecked(checked);
 	});
-	connect(m_ui->m_action_reset_zoom, &QAction::triggered, m_ui->m_tab, &ViewSet::ResetZoom);
+	connect(m_ui->m_action_reset_zoom, &QAction::triggered, [this]{m_ui->m_tab->Current()->ResetZoom();});
 	
 	m_ui->m_logical_view->insertAction(nullptr, m_ui->m_action_show_all_classes);
 }
