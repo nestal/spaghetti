@@ -19,6 +19,8 @@
 #include "ClassModel.hh"
 #include "ItemRenderingOptions.hh"
 
+#include <QtWidgets/QAction>
+
 namespace gui {
 namespace classgf {
 
