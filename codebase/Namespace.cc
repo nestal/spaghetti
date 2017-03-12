@@ -12,7 +12,14 @@
 
 #include "Namespace.hh"
 
+#include "Function.hh"
+#include "DataType.hh"
+#include "Variable.hh"
+#include "ClassTemplate.hh"
+
 #include "libclx/Cursor.hh"
+
+
 #include <iostream>
 
 namespace codebase {
@@ -44,9 +51,13 @@ void Namespace::Visit(libclx::Cursor self)
 		{
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
-		case CXCursor_ClassTemplate:
-			std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << ' ' << cursor.USR() << std::endl;
+//			std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << ' ' << cursor.USR() << std::endl;
 			AddUnique(m_types, id, cursor, this)->Visit(cursor);
+			break;
+			
+		case CXCursor_ClassTemplate:
+//			std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << ' ' << cursor.USR() << std::endl;
+			AddUnique(m_temps, id, cursor, this)->Visit(cursor);
 			break;
 		
 		case CXCursor_Namespace:
@@ -62,8 +73,8 @@ void Namespace::Visit(libclx::Cursor self)
 			break;
 		
 		default:
-			if (!cursor.Location().IsFromSystemHeader())
-				std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << std::endl;
+//			if (!cursor.Location().IsFromSystemHeader())
+//				std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << std::endl;
 			break;
 		}
 	});

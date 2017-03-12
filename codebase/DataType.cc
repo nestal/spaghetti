@@ -14,8 +14,10 @@
 
 #include "Function.hh"
 #include "Variable.hh"
+#include "ClassTemplate.hh"
 
 #include "libclx/Cursor.hh"
+
 #include <ostream>
 #include <iostream>
 
@@ -53,26 +55,29 @@ void DataType::Visit(libclx::Cursor self)
 		// nested classes
 		case CXCursor_ClassDecl:
 		case CXCursor_StructDecl:
-		case CXCursor_ClassTemplate:
 			AddUnique(m_nested_types, child.USR(), child, this)->Visit(child);
 			break;
 		
+		case CXCursor_ClassTemplate:
+			AddUnique(m_temps, child.USR(), child, this)->Visit(child);
+			break;
+			
 		case CXCursor_CXXBaseSpecifier:
 		{
 			auto&& base = child.GetDefinition();
 			
 			if (base.Type().NumTemplateArguments() > 0)
 			{
-				std::cout << base.Spelling() << " is a template instanciation " << base.Type().NumTemplateArguments() << std::endl;
+//				std::cout << base.Spelling() << " is a template instanciation " << base.Type().NumTemplateArguments() << std::endl;
 				
-				auto base_temp = base.SpecializedCursorTemplate();
-				std::cout << base_temp.USR() << std::endl;
+//				auto base_temp = base.SpecializedCursorTemplate();
+//				std::cout << base_temp.USR() << std::endl;
 			}
 			
 			// normally we don't have hundreds of base classes so sequential searches should be faster
 			// the order of the base classes is important, so we don't want to switch to set
 //			if (Name() == "ViewSet")
-				std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" \"" << child.GetDefinition().Spelling() << " " << child.GetDefinition().KindSpelling() << "\" \"" << base.USR() << "\"" << std::endl;
+//				std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" \"" << child.GetDefinition().Spelling() << " " << child.GetDefinition().KindSpelling() << "\" \"" << base.USR() << "\"" << std::endl;
 			if (std::find(m_base_classes.begin(), m_base_classes.end(), base.USR()) == m_base_classes.end())
 				m_base_classes.push_back(base.USR());
 			break;
