@@ -44,6 +44,8 @@ private:
 	void OnDoubleClickItem(const QModelIndex& idx);
 	bool ConfirmDiscard();
 	
+	void closeEvent(QCloseEvent *event);
+
 private:
 	std::unique_ptr<Ui::MainWnd>    m_ui;
 	std::unique_ptr<Document>       m_doc;
