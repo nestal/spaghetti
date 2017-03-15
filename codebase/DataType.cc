@@ -43,7 +43,7 @@ void DataType::Visit(libclx::Cursor self)
 	
 //	std::cout << "class: " << Name() << " " << self.Kind() << " " << Location() << std::endl;
 	
-	self.Visit([this](libclx::Cursor child, libclx::Cursor)
+	self.Visit([this, self](libclx::Cursor child, libclx::Cursor)
 	{
 		switch (child.Kind())
 		{
@@ -68,7 +68,9 @@ void DataType::Visit(libclx::Cursor self)
 			
 			if (base.Type().NumTemplateArguments() > 0)
 			{
-//				std::cout << base.Spelling() << " is a template instanciation " << base.Type().NumTemplateArguments() << std::endl;
+				std::cout << base.Spelling() << " is a template instantiation: " << base.Type().Spelling() << std::endl;
+				
+				std::cout << Name() << " type = " << base.Type() << std::endl;
 				
 				// this is just a workaround
 				base = base.SpecializedCursorTemplate();
@@ -77,8 +79,8 @@ void DataType::Visit(libclx::Cursor self)
 			
 			// normally we don't have hundreds of base classes so sequential searches should be faster
 			// the order of the base classes is important, so we don't want to switch to set
-//			if (Name() == "ViewSet")
-//				std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" \"" << child.GetDefinition().Spelling() << " " << child.GetDefinition().KindSpelling() << "\" \"" << base.USR() << "\"" << std::endl;
+			if (Name() == "RecursiveBase")
+				std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" spelling = \"" << base.Spelling() << "\" kind = \"" << base.KindSpelling() << "\" \"" << base.USR() << "\"" << std::endl;
 			if (std::find(m_base_classes.begin(), m_base_classes.end(), base.USR()) == m_base_classes.end())
 				m_base_classes.push_back(base.USR());
 			break;

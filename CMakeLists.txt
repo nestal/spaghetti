@@ -20,7 +20,28 @@ find_package(Doxygen)
 find_package(Threads)
 
 # find libclang
-find_library(LIBCLANG_LIBRARY NAMES clang libclang HINTS ${LIBCLANG_PREFIX})
+#find_library(LIBCLANG_C_LIBRARY   			NAMES clang libclang HINTS ${LIBCLANG_PREFIX})
+set(LIBCLANG_LIBRARY
+	-Wl,--start-group
+	-lLLVM-3.9
+	-lclangAnalysis
+	-lclangAST
+	-lclangBasic
+	-lclangDriver
+	-lclangEdit
+	-lclangFormat
+	-lclangFrontend
+	-lclangLex
+	-lclangParse
+	-lclangRewriteFrontend
+	-lclangRewrite
+	-lclangSema
+	-lclangSerialization
+	-lclang
+	-lclangTooling
+	-Wl,--end-group
+)
+
 find_path(LIBCLANG_HEADER clang-c/Index.h HINTS ${LIBCLANG_PREFIX})
 
 if (NOT LIBCLANG_LIBRARY OR NOT LIBCLANG_HEADER)
