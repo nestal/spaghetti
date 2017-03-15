@@ -19,7 +19,7 @@ namespace codebase {
  * \param args  template arguments, i.e. the actual types that will replace the template parameters
  * \return the instantiated class
  */
-std::unique_ptr<DataType> ClassTemplate::Instantiate(const std::vector<DataType>& args)
+std::unique_ptr<DataType> ClassTemplate::Instantiate(const std::vector<DataType>&)
 {
 	return std::unique_ptr<DataType>();
 }

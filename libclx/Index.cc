@@ -40,32 +40,32 @@ TranslationUnit Index::Parse(const std::string& filename, const std::vector<std:
 		vargs.push_back(arg.c_str());
 	
 	IndexerCallbacks cb{};
-	cb.indexEntityReference = [](CXClientData, const CXIdxEntityRefInfo *ref)
-	{
-		std::cout << "ref = " << ref->referencedEntity->name << " " << ref->parentEntity->name << " " << ref->kind << " " << Cursor{ref->container->cursor}.Type() << std::endl;
-		std::cout << "ref = " << ref->referencedEntity->name << " " << ref->referencedEntity->templateKind << std::endl;
-	};
-	cb.indexDeclaration = [](CXClientData, const CXIdxDeclInfo *decl)
-	{
-		std::cout << "decl: " << decl->entityInfo->name << " " << decl->entityInfo->kind << std::endl;
-		
-		if (auto class_ = ::clang_index_getCXXClassDeclInfo(decl))
-		{
-			std::cout << "has " << class_->numBases << " base classes" << std::endl;
-			for (auto i = 0U ; i < class_->numBases ; i++)
-			{
-				auto base = class_->bases[i]->base;
-				if (base)
-				{
-					assert(base->name);
-					std::cout << "\t\"" << base->name << "\" " << base->kind << " " << Cursor{base->cursor}.Type()
-					          << std::endl;
-				}
-//				else
-//					std::cout << "base is null for " << decl->entityInfo->name << std::endl;
-			}
-		}
-	};
+//	cb.indexEntityReference = [](CXClientData, const CXIdxEntityRefInfo *ref)
+//	{
+//		std::cout << "ref = " << ref->referencedEntity->name << " " << ref->parentEntity->name << " " << ref->kind << " " << Cursor{ref->container->cursor}.Type() << std::endl;
+//		std::cout << "ref = " << ref->referencedEntity->name << " " << ref->referencedEntity->templateKind << std::endl;
+//	};
+//	cb.indexDeclaration = [](CXClientData, const CXIdxDeclInfo *decl)
+//	{
+//		std::cout << "decl: " << decl->entityInfo->name << " " << decl->entityInfo->kind << std::endl;
+//
+//		if (auto class_ = ::clang_index_getCXXClassDeclInfo(decl))
+//		{
+//			std::cout << "has " << class_->numBases << " base classes" << std::endl;
+//			for (auto i = 0U ; i < class_->numBases ; i++)
+//			{
+//				auto base = class_->bases[i]->base;
+//				if (base)
+//				{
+//					assert(base->name);
+//					std::cout << "\t\"" << base->name << "\" " << base->kind << " " << Cursor{base->cursor}.Type()
+//					          << std::endl;
+//				}
+////				else
+////					std::cout << "base is null for " << decl->entityInfo->name << std::endl;
+//			}
+//		}
+//	};
 	
 	CXTranslationUnit tu;
 	auto r = ::clang_indexSourceFile(
