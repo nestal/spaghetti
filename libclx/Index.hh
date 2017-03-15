@@ -56,6 +56,11 @@ private:
 		void,
 		&::clang_disposeIndex
 	> m_index;
+	util::DeleteWith<
+		std::remove_pointer_t<CXIndexAction>,
+		void,
+		&::clang_IndexAction_dispose
+	> m_action;
 };
 
 class Diagnostic

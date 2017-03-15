@@ -25,7 +25,8 @@
 namespace libclx {
 
 Index::Index() :
-	m_index{::clang_createIndex(0, 0)}
+	m_index{::clang_createIndex(0, 0)},
+	m_action{::clang_IndexAction_create(m_index.get())}
 {
 	
 }
@@ -36,9 +37,30 @@ TranslationUnit Index::Parse(const std::string& filename, const std::vector<std:
 	for (auto&& arg : args)
 		vargs.push_back(arg.c_str());
 	
-	return {::clang_parseTranslationUnit(
-		m_index.get(), filename.c_str(), &vargs[0], static_cast<int>(vargs.size()), 0, 0, options
-	)};
+	IndexerCallbacks cb{};
+	
+	CXTranslationUnit tu;
+	auto r = ::clang_indexSourceFile(
+		m_action.get(),
+		
+		nullptr,
+		&cb,
+		sizeof(cb),
+		
+		CXIndexOpt_IndexImplicitTemplateInstantiations | CXIndexOpt_SuppressWarnings,
+		filename.c_str(),
+		&vargs[0],
+		static_cast<int>(vargs.size()),
+		0,
+		0,
+		&tu,
+		options
+	);
+	
+	if (r == 0)
+		return {tu};
+	else
+		throw std::runtime_error("can't parse file " + filename);
 }
 
 std::string Index::Version()
