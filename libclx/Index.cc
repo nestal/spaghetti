@@ -15,12 +15,14 @@
 #include "Cursor.hh"
 #include "SourceRange.hh"
 #include "Token.hh"
+#include "Type.hh"
 #include "XStr.hh"
 
 #include <boost/functional/hash.hpp>
 
 #include <vector>
 #include <ostream>
+#include <clang-c/Index.h>
 
 namespace libclx {
 
@@ -38,6 +40,32 @@ TranslationUnit Index::Parse(const std::string& filename, const std::vector<std:
 		vargs.push_back(arg.c_str());
 	
 	IndexerCallbacks cb{};
+	cb.indexEntityReference = [](CXClientData, const CXIdxEntityRefInfo *ref)
+	{
+		std::cout << "ref = " << ref->referencedEntity->name << " " << ref->parentEntity->name << " " << ref->kind << " " << Cursor{ref->container->cursor}.Type() << std::endl;
+		std::cout << "ref = " << ref->referencedEntity->name << " " << ref->referencedEntity->templateKind << std::endl;
+	};
+	cb.indexDeclaration = [](CXClientData, const CXIdxDeclInfo *decl)
+	{
+		std::cout << "decl: " << decl->entityInfo->name << " " << decl->entityInfo->kind << std::endl;
+		
+		if (auto class_ = ::clang_index_getCXXClassDeclInfo(decl))
+		{
+			std::cout << "has " << class_->numBases << " base classes" << std::endl;
+			for (auto i = 0U ; i < class_->numBases ; i++)
+			{
+				auto base = class_->bases[i]->base;
+				if (base)
+				{
+					assert(base->name);
+					std::cout << "\t\"" << base->name << "\" " << base->kind << " " << Cursor{base->cursor}.Type()
+					          << std::endl;
+				}
+//				else
+//					std::cout << "base is null for " << decl->entityInfo->name << std::endl;
+			}
+		}
+	};
 	
 	CXTranslationUnit tu;
 	auto r = ::clang_indexSourceFile(
@@ -47,7 +75,7 @@ TranslationUnit Index::Parse(const std::string& filename, const std::vector<std:
 		&cb,
 		sizeof(cb),
 		
-		CXIndexOpt_IndexImplicitTemplateInstantiations | CXIndexOpt_SuppressWarnings,
+		CXIndexOpt_IndexImplicitTemplateInstantiations | CXIndexOpt_SuppressWarnings | CXIndexOpt_SkipParsedBodiesInSession ,
 		filename.c_str(),
 		&vargs[0],
 		static_cast<int>(vargs.size()),

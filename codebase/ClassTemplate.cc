@@ -11,3 +11,17 @@
 //
 
 #include "ClassTemplate.hh"
+
+namespace codebase {
+
+/**
+ * \brief Instantiate a template by replacing all its template parameters with the arguments
+ * \param args  template arguments, i.e. the actual types that will replace the template parameters
+ * \return the instantiated class
+ */
+std::unique_ptr<DataType> ClassTemplate::Instantiate(const std::vector<DataType>& args)
+{
+	return std::unique_ptr<DataType>();
+}
+	
+} // end of namespace

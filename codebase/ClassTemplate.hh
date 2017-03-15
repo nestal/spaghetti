@@ -20,6 +20,8 @@ class ClassTemplate : public DataType
 {
 public:
 	using DataType::DataType;
+	
+	std::unique_ptr<DataType> Instantiate(const std::vector<DataType>& args);
 };
 	
 } // end of namespace
