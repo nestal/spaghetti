@@ -56,6 +56,9 @@ ClassItem::ClassItem(const std::string& id, const codebase::EntityMap *map, cons
 	m_class{map->TypedFind<codebase::DataType>(id)},
 	m_class_id{id}
 {
+	if (!m_class)
+		throw std::runtime_error(id + " is not a valid class");
+	
 	m_bounding.setCoords(
 		-size.width()/2, -size.height()/2,
 		+size.width()/2, +size.height()/2

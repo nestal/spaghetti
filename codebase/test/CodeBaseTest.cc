@@ -34,7 +34,4 @@ TEST(CodeBaseTest, TestInheritance)
 	
 	for (auto&& base : datatype_class->BaseClasses())
 		ASSERT_EQ(entity_class->ID(), base);
-
-	
 }
-

@@ -14,13 +14,17 @@
 
 #include "DataType.hh"
 #include "EntityVec.hh"
-#include "Variable.hh"
 
 namespace libclx {
 class Cursor;
 }
 
 namespace codebase {
+
+class Variable;
+class Function;
+class ClassTemplate;
+class DataType;
 
 class Namespace : public EntityVec
 {
@@ -44,9 +48,10 @@ private:
 	void VisitMemberFunction(libclx::Cursor cursor);
 	
 private:
-	std::vector<DataType*>  m_types;
-	std::vector<Namespace*> m_ns;
-	std::vector<Variable*>  m_vars;
+	std::vector<DataType*>      m_types;
+	std::vector<ClassTemplate*> m_temps;
+	std::vector<Namespace*>     m_ns;
+	std::vector<Variable*>      m_vars;
 };
 	
 } // end of namespace

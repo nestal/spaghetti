@@ -64,14 +64,12 @@ public:
 	iterator begin();
 	iterator end();
 
-	void OnDelete();
 	void CloseAllTabs();
 	void CloseTab(int tab);
 	
+	ViewBase* Current();
+	
 	void ViewCode(const std::string& filename, unsigned line, unsigned column);
-	void ResetZoom();
-	void Copy();
-	void Paste();
 
 private:
 	void NewClassDiagramView(classgf::ClassModel *model);

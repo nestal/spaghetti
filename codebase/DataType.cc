@@ -14,9 +14,12 @@
 
 #include "Function.hh"
 #include "Variable.hh"
+#include "ClassTemplate.hh"
 
 #include "libclx/Cursor.hh"
+
 #include <ostream>
+#include <iostream>
 
 namespace codebase {
 
@@ -38,29 +41,62 @@ void DataType::Visit(libclx::Cursor self)
 	if (self.IsDefinition() || m_definition == libclx::SourceLocation{})
 		m_definition = self.Location();
 	
-	self.Visit([this](libclx::Cursor child, libclx::Cursor)
+//	std::cout << "class: " << Name() << " " << self.Kind() << " " << Location() << std::endl;
+	
+	self.Visit([this, self](libclx::Cursor child, libclx::Cursor)
 	{
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
 			AddUnique(m_fields, child.USR(), child, this);
+//			std::cout << Name() << " has field: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << std::endl;
+			break;
+		
+		// nested classes
+		case CXCursor_ClassDecl:
+		case CXCursor_StructDecl:
+			AddUnique(m_nested_types, child.USR(), child, this)->Visit(child);
+			break;
+		
+		case CXCursor_ClassTemplate:
+			AddUnique(m_temps, child.USR(), child, this)->Visit(child);
 			break;
 			
 		case CXCursor_CXXBaseSpecifier:
-			// TODO: remove duplicate
-//			if (child.GetDefinition().Kind() == CXCursor_TypedefDecl)
-//				child = child.Referenced();
-//		std::cout << "base = " << child.GetDefinition().Spelling() << " " << child.GetDefinition().Kind() << std::endl;
-			m_base_classes.push_back(child.GetDefinition().USR());
+		{
+			auto base = child.GetDefinition();
+			
+			if (base.Type().NumTemplateArguments() > 0)
+			{
+				std::cout << base.Spelling() << " is a template instantiation: " << base.Type().Spelling() << std::endl;
+				
+				std::cout << Name() << " type = " << base.Type() << std::endl;
+				
+				// this is just a workaround
+				base = base.SpecializedCursorTemplate();
+//				std::cout << base_temp.USR() << std::endl;
+			}
+			
+			// normally we don't have hundreds of base classes so sequential searches should be faster
+			// the order of the base classes is important, so we don't want to switch to set
+			if (Name() == "RecursiveBase")
+				std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" spelling = \"" << base.Spelling() << "\" kind = \"" << base.KindSpelling() << "\" \"" << base.USR() << "\"" << std::endl;
+			if (std::find(m_base_classes.begin(), m_base_classes.end(), base.USR()) == m_base_classes.end())
+				m_base_classes.push_back(base.USR());
 			break;
-	
+		}
 		case CXCursor_CXXMethod:
+//			std::cout << Name() << " has method: \"" <<  child.Spelling() << "\" \"" << child.KindSpelling() << "\" " << p.USR() << std::endl;
 			AddUnique(m_functions, child.USR(), child, this);
 			break;
 			
+		case CXCursor_TypeRef:
+//			std::cout << Name() << " has type ref: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Referenced().Spelling() << " " << child.Location() << std::endl;
+			break;
+		
 		default:
 //			if (!child.Location().IsFromSystemHeader())
-//				std::cout << Name() << " " <<  child.Spelling() << ' ' << child.Kind() << std::endl;
+//				std::cout << Name() << " has child: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Location() << " " << child.Type() <<  std::endl;
 			break;
 		}
 	});
@@ -146,7 +182,7 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 			auto base_entity = dynamic_cast<DataType*>(map->Find(base));
 			
 			// TODO: support typedef base classes
-			if (base_entity)
+			if (base_entity && !base_entity->IsUsed())
 			{
 				base_entity->MarkUsed();
 				base_entity->MarkBaseClassUsed(map);

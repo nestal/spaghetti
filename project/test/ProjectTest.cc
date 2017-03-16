@@ -29,7 +29,7 @@ TEST(PROJECT_TEST, Test_Open_Project)
 TEST(PROJECT_TEST, Test_Open_Save)
 {
 	Project p;
-	p.AddSource(SRC_DIR + std::string{"project/Project.cc"});
+	p.AddSource((fs::path{SRC_DIR} /"project"/"Project.cc").string());
 	p.Save(fs::absolute("test_project"));
 	
 	Project p2;

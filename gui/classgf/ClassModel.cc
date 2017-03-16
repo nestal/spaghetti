@@ -14,8 +14,10 @@
 
 #include "ClassItem.hh"
 #include "Edge.hh"
+#include "gui/common/MimeType.hh"
 #include "codebase/DataType.hh"
 
+#include <QtWidgets/QMessageBox>
 #include <QtWidgets/QGraphicsScene>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
@@ -94,6 +96,7 @@ void ClassModel::AddItem(Args&&... args)
 	catch (std::exception& e)
 	{
 		// TODO: print log
+		QMessageBox::warning(nullptr, "Exception when adding item", e.what());
 	}
 }
 
@@ -236,14 +239,14 @@ std::unique_ptr<QMimeData> ClassModel::CopySelection() const
 	
 	auto mime = std::make_unique<QMimeData>();
 	mime->setImageData(RenderImage(selected));
-	mime->setData("image/svg+xml", RenderSVG(selected));
+	mime->setData(mime::svg, RenderSVG(selected));
 	
 	QJsonArray jarr;
 	ForEachItem<ClassItem>(m_scene->items(), [this, &jarr](auto citem)
 	{
 		jarr.append(citem->Save());
 	});
-	mime->setData("application/json", QJsonDocument{jarr}.toJson());
+	mime->setData(mime::json, QJsonDocument{jarr}.toJson());
 	
 	return mime;
 }
@@ -252,9 +255,9 @@ void ClassModel::Paste(const QMimeData* data)
 {
 	assert(data);
 		
-	if (data->hasFormat("application/json"))
+	if (data->hasFormat(mime::json))
 	{
-		auto json = QJsonDocument::fromJson(data->data("application/json"));
+		auto json = QJsonDocument::fromJson(data->data(mime::json));
 		for (auto&& item : json.array())
 		{
 			AddItem(item.toObject(), m_codebase);
@@ -279,6 +282,18 @@ QByteArray ClassModel::RenderSVG(const QRectF& rect) const
 	}
 	
 	return b.buffer();
+}
+
+void ClassModel::AddParentClass(ClassItem *item, const QPointF& pos)
+{
+	if (!item && !m_scene->selectedItems().isEmpty())
+		item = dynamic_cast<ClassItem*>(m_scene->selectedItems().front());
+	
+	if (item)
+	{
+		for (auto&& bases : item->DataType().BaseClasses())
+			AddEntity(bases, pos);
+	}
 }
 	
 }} // end of namespace

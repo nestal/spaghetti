@@ -15,6 +15,9 @@
 #include <clang-c/Index.h>
 #include <string>
 
+#include <cassert>
+#include <iostream>
+
 namespace libclx {
 
 class SourceLocation;
@@ -35,6 +38,7 @@ public:
 	bool operator!=(const Cursor& rhs) const;
 	
 	CXCursorKind Kind() const;
+	std::string KindSpelling() const;
 	
 	explicit operator bool() const;
 	
@@ -46,6 +50,7 @@ public:
 	Cursor SemanticParent() const;
 	Cursor LexicalParent() const;
 	Cursor Referenced() const;
+	Cursor SpecializedCursorTemplate() const;
 	
 	std::string Spelling() const ;
 	std::string DisplayName() const;
@@ -63,19 +68,26 @@ public:
 	};
 	
 	template <typename Visitor>
-	void Visit(Visitor visitor)
+	void Visit(Visitor visitor, bool recurse = false)
 	{
+		struct ClientData
+		{
+			Visitor *visitor;
+			bool recurse;
+		} data {&visitor, recurse};
+		
 		auto functor = [](CXCursor cursor, CXCursor parent, CXClientData client_data) -> CXChildVisitResult
 		{
-			Visitor *pv = reinterpret_cast<Visitor*>(client_data);
+			Visitor *pv  = reinterpret_cast<ClientData*>(client_data)->visitor;
+			bool recurse = reinterpret_cast<ClientData*>(client_data)->recurse;
 			
 			assert(pv);
 			(*pv)(Cursor{cursor}, Cursor{parent});
 			
-			return CXChildVisit_Continue;
+			return recurse ? CXChildVisit_Recurse : CXChildVisit_Continue;
 		};
-		
-		::clang_visitChildren(m_cursor, functor, &visitor);
+
+		::clang_visitChildren(m_cursor, functor, &data);
 	}
 
 private:

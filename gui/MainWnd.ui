@@ -62,6 +62,7 @@
     <addaction name="m_action_open"/>
     <addaction name="m_action_save"/>
     <addaction name="m_action_save_as"/>
+    <addaction name="m_action_export"/>
     <addaction name="separator"/>
     <addaction name="m_action_exit"/>
    </widget>
@@ -350,6 +351,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="m_action_export">
+   <property name="text">
+    <string>Export...</string>
    </property>
   </action>
  </widget>

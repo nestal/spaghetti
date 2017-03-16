@@ -176,5 +176,9 @@ void SourceView::Paste()
 {
 	
 }
+
+void SourceView::Delete()
+{
+}
 	
 }} // end of namespace

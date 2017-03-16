@@ -45,6 +45,8 @@ public:
 	Index();
 	Index(Index&&) = default;
 	
+	static std::string Version();
+	
 	TranslationUnit Parse(const std::string& filename, const std::vector<std::string>& args, unsigned options);
 	void Reparse(TranslationUnit& tu);
 	
@@ -54,6 +56,11 @@ private:
 		void,
 		&::clang_disposeIndex
 	> m_index;
+	util::DeleteWith<
+		std::remove_pointer_t<CXIndexAction>,
+		void,
+		&::clang_IndexAction_dispose
+	> m_action;
 };
 
 class Diagnostic

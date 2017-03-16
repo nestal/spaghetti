@@ -19,6 +19,8 @@
 #include "ClassModel.hh"
 #include "ItemRenderingOptions.hh"
 
+#include <QtWidgets/QAction>
+
 namespace gui {
 namespace classgf {
 
@@ -36,7 +38,7 @@ public:
 	ClassModel *Model() override;
 	QWidget *Widget() override;
 	
-	void DeleteSelectedItem();
+	void Delete() override;
 	
 	QColor GetLineColor() const;
 	QColor GetClassBoxColor() const;

@@ -31,6 +31,7 @@ namespace codebase {
 
 class Function;
 class Variable;
+class ClassTemplate;
 
 /**
  * \brief Represent a C++ class/struct in the CodeBase.
@@ -78,10 +79,13 @@ private:
 	void MarkBaseClassUsed(EntityMap *map);
 	
 private:
-	libclx::SourceLocation   m_definition;
-	std::vector<std::string> m_base_classes;
-	std::vector<codebase::Variable*>   m_fields;
-	std::vector<codebase::Function*>   m_functions;
+	libclx::SourceLocation              m_definition;
+	std::vector<std::string>            m_base_classes;
+	
+	std::vector<codebase::Variable*>    m_fields;
+	std::vector<codebase::Function*>    m_functions;
+	std::vector<codebase::DataType*>    m_nested_types;
+	std::vector<ClassTemplate*>         m_temps;
 	
 	bool m_used{false};
 };

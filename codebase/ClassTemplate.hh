@@ -7,18 +7,21 @@
 */
 
 //
-// Created by nestal on 3/4/17.
+// Created by nestal on 3/13/17.
 //
 
 #pragma once
 
-#include <QString>
+#include "DataType.hh"
 
-namespace gui {
-namespace mime {
+namespace codebase {
 
-const QString usr{"application/vnd.spag.usr"};
-const QString json{"application/json"};
-const QString svg{"image/svg+xml"};
+class ClassTemplate : public DataType
+{
+public:
+	using DataType::DataType;
 	
-}} // end of namespace
+	std::unique_ptr<DataType> Instantiate(const std::vector<DataType>& args);
+};
+	
+} // end of namespace

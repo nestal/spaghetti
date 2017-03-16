@@ -32,6 +32,7 @@ public:
 	virtual void ResetZoom() = 0;
 	virtual void Copy() = 0;
 	virtual void Paste() = 0;
+	virtual void Delete() = 0;
 };
 	
 } // end of namespace

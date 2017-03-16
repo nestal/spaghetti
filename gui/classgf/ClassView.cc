@@ -79,7 +79,7 @@ QWidget *ClassView::Widget()
 	return this;
 }
 
-void ClassView::DeleteSelectedItem()
+void ClassView::Delete()
 {
 	m_model->DeleteSelectedItem();
 }
@@ -256,21 +256,25 @@ void ClassView::keyReleaseEvent(QKeyEvent *event)
 
 void ClassView::contextMenuEvent(QContextMenuEvent *event)
 {
+	QMenu menu;
+	
 	// try to fill the clicked item in the whole viewport
-	if (auto item = ClassAt(event->pos()))
+	auto item = ClassAt(event->pos());
+	if (item)
 	{
-		QMenu menu;
 		connect(menu.addAction("Delete"), &QAction::triggered, [item, this]
 		{
 			m_model->DeleteItem(item);
 		});
-		connect(menu.addAction("Copy"), &QAction::triggered, [this]
-		{
-			Copy();
-		});
-		menu.exec(event->globalPos());
-		event->accept();
 	}
+	connect(menu.addAction("Add parent class"), &QAction::triggered, [item, this, event]
+	{
+		m_model->AddParentClass(item, this->mapToScene(event->pos()));
+	});
+	connect(menu.addAction("Copy"), &QAction::triggered, this, &ClassView::Copy);
+	connect(menu.addAction("Paste"), &QAction::triggered, this, &ClassView::Paste);
+	menu.exec(event->globalPos());
+	event->accept();
 }
 
 QTransform ClassView::Transform() const

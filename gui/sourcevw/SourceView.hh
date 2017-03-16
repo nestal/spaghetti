@@ -36,9 +36,10 @@ public:
 	SourceModel* Model() override;
 	QWidget* Widget() override;
 	
-	void ResetZoom() override ;
-	void Copy() override ;
-	void Paste() override ;
+	void ResetZoom() override;
+	void Copy() override;
+	void Paste() override;
+	void Delete() override;
 
 private:
 	void Parse(unsigned line, unsigned column);

@@ -10,6 +10,7 @@
 // Created by nestal on 2/23/17.
 //
 
+#include <clang-c/Index.h>
 #include "Cursor.hh"
 
 #include "SourceRange.hh"
@@ -31,6 +32,11 @@ Cursor::Cursor(CXCursor cursor) :
 CXCursorKind Cursor::Kind() const
 {
 	return ::clang_getCursorKind(m_cursor);
+}
+
+std::string Cursor::KindSpelling() const
+{
+	return XStr{::clang_getCursorKindSpelling(Kind())}.Str();
 }
 
 std::string Cursor::DisplayName() const
@@ -70,7 +76,7 @@ libclx::Type Cursor::Type() const
 
 bool Cursor::IsReference() const
 {
-	return ::clang_isCursorDefinition(m_cursor) != 0;
+	return ::clang_isReference(Kind()) != 0;
 }
 
 bool Cursor::IsDefinition() const
@@ -121,6 +127,11 @@ libclx::Type Cursor::ResultType() const
 Cursor Cursor::Referenced() const
 {
 	return {::clang_getCursorReferenced(m_cursor)};
+}
+
+Cursor Cursor::SpecializedCursorTemplate() const
+{
+	return {::clang_getSpecializedCursorTemplate(m_cursor)};
 }
 
 unsigned Cursor::Hash::operator()(Cursor c) const
