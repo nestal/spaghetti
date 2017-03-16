@@ -52,6 +52,8 @@ public:
 	Cursor Referenced() const;
 	Cursor SpecializedCursorTemplate() const;
 	
+	int NumTemplateArguments() const;
+		
 	std::string Spelling() const ;
 	std::string DisplayName() const;
 	std::string USR() const;

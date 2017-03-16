@@ -21,12 +21,36 @@ void ClassTemplate::Visit(libclx::Cursor self)
 {
 	DataType::Visit(self);
 	
-	std::cout << self.Spelling() << " = " << self.GetDefinition().Type().Kind() << std::endl;
-	
-	for (auto&& arg : self.GetDefinition().Type().TemplateArguments())
+	self.Visit([this, self](libclx::Cursor child, libclx::Cursor)
 	{
-		std::cout << arg << " " << arg.Declaration().USR() << std::endl;
-	}
+		switch (child.Kind())
+		{
+		case CXCursor_TemplateTypeParameter:
+		{
+			std::cout << Name() << " has template parameter: " << child.Spelling() << " " << child.USR() << " " << child.Type() << std::endl;
+			m_args.insert({child.Spelling(), child.USR()});
+			break;
+		}
+		
+		case CXCursor_CXXBaseSpecifier:
+		{
+			auto base_id = child.GetDefinition().USR();
+			
+			// if the base ID is empty, it may be a template parameter
+			if (base_id.empty())
+			{
+				auto it = m_args.find(child.Spelling());
+				if (it != m_args.end())
+					base_id = it->second;
+			}
+				
+			std::cout << Name() << " template inherit from " << child.Spelling() << " \"" << base_id << "\" " << std::endl;
+			
+		}
+		
+		default: break;
+		}
+	});
 }
 
 /**

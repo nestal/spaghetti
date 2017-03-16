@@ -74,13 +74,17 @@ void DataType::Visit(libclx::Cursor self)
 				
 				// this is just a workaround
 				base = base.SpecializedCursorTemplate();
-//				std::cout << base_temp.USR() << std::endl;
+				std::cout << "base template ID: " << base.USR() << " " << base.NumTemplateArguments() << std::endl;
+				
+				for (auto&& arg : base.Type().TemplateArguments())
+				{
+					std::cout << arg << " " << arg.Declaration().USR() << std::endl;
+				}
 			}
 			
 			// normally we don't have hundreds of base classes so sequential searches should be faster
 			// the order of the base classes is important, so we don't want to switch to set
-			if (Name() == "RecursiveBase")
-				std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" spelling = \"" << base.Spelling() << "\" kind = \"" << base.KindSpelling() << "\" \"" << base.USR() << "\"" << std::endl;
+			std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" spelling = \"" << base.Spelling() << "\" kind = \"" << base.KindSpelling() << "\" \"" << base.USR() << "\"" << std::endl;
 			if (std::find(m_base_classes.begin(), m_base_classes.end(), base.USR()) == m_base_classes.end())
 				m_base_classes.push_back(base.USR());
 			break;

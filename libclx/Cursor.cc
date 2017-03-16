@@ -134,6 +134,11 @@ Cursor Cursor::SpecializedCursorTemplate() const
 	return {::clang_getSpecializedCursorTemplate(m_cursor)};
 }
 
+int Cursor::NumTemplateArguments() const
+{
+	return ::clang_Cursor_getNumTemplateArguments(m_cursor);
+}
+
 unsigned Cursor::Hash::operator()(Cursor c) const
 {
 	return ::clang_hashCursor(c.m_cursor);

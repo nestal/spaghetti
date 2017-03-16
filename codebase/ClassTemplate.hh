@@ -17,6 +17,8 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/iterator_range_core.hpp>
 
+#include <map>
+
 namespace codebase {
 
 class ClassTemplate : public DataType
@@ -27,6 +29,9 @@ public:
 	void Visit(libclx::Cursor self) override;
 	
 	std::unique_ptr<DataType> Instantiate(const std::vector<DataType>& args);
+	
+private:
+	std::map<std::string, std::string> m_args;
 };
 	
 } // end of namespace
