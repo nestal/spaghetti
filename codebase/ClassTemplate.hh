@@ -14,12 +14,17 @@
 
 #include "DataType.hh"
 
+#include <boost/iterator/iterator_facade.hpp>
+#include <boost/range/iterator_range_core.hpp>
+
 namespace codebase {
 
 class ClassTemplate : public DataType
 {
 public:
 	using DataType::DataType;
+	
+	void Visit(libclx::Cursor self) override;
 	
 	std::unique_ptr<DataType> Instantiate(const std::vector<DataType>& args);
 };

@@ -53,5 +53,52 @@ int Type::NumTemplateArguments() const
 {
 	return ::clang_Type_getNumTemplateArguments(m_type);
 }
+
+Type Type::TemplateArgument(int idx) const
+{
+	return {::clang_Type_getTemplateArgumentAsType(m_type, idx)};
+}
+
+boost::iterator_range<Type::template_argument_iterator> Type::TemplateArguments() const
+{
+	auto end_idx = ::clang_Type_getNumTemplateArguments(m_type);
+	
+	template_argument_iterator
+		begin{0, &m_type},
+		end{end_idx == -1 ? 0U : static_cast<unsigned>(end_idx), &m_type};
+	
+	return {begin, end};
+}
+
+void Type::template_argument_iterator::increment()
+{
+	m_idx++;
+}
+
+bool Type::template_argument_iterator::equal(const Type::template_argument_iterator& other) const
+{
+	return m_parent == other.m_parent && m_idx == other.m_idx;
+}
+
+Type Type::template_argument_iterator::dereference() const
+{
+	assert(m_parent);
+	return {::clang_Type_getTemplateArgumentAsType(*m_parent, m_idx)};
+}
+
+void Type::template_argument_iterator::decrement()
+{
+	m_idx--;
+}
+
+void Type::template_argument_iterator::advance(std::ptrdiff_t n)
+{
+	m_idx += n;
+}
+
+std::ptrdiff_t Type::template_argument_iterator::distance_to(const Type::template_argument_iterator& other) const
+{
+	return other.m_idx - m_idx;
+}
 	
 } // end of namespace

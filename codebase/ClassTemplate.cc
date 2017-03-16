@@ -12,7 +12,22 @@
 
 #include "ClassTemplate.hh"
 
+#include "libclx/Cursor.hh"
+#include "libclx/Type.hh"
+
 namespace codebase {
+
+void ClassTemplate::Visit(libclx::Cursor self)
+{
+	DataType::Visit(self);
+	
+	std::cout << self.Spelling() << " = " << self.GetDefinition().Type().Kind() << std::endl;
+	
+	for (auto&& arg : self.GetDefinition().Type().TemplateArguments())
+	{
+		std::cout << arg << " " << arg.Declaration().USR() << std::endl;
+	}
+}
 
 /**
  * \brief Instantiate a template by replacing all its template parameters with the arguments

@@ -57,7 +57,7 @@ public:
 	
 	libclx::SourceLocation Location() const override;
 	
-	void Visit(libclx::Cursor self);
+	virtual void Visit(libclx::Cursor self);
 	void VisitFunction(libclx::Cursor func);
 	
 	boost::iterator_range<field_iterator> Fields() const;
