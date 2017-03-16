@@ -64,29 +64,40 @@ void DataType::Visit(libclx::Cursor self)
 			
 		case CXCursor_CXXBaseSpecifier:
 		{
-			auto base = child.GetDefinition();
-			
-			if (base.Type().NumTemplateArguments() > 0)
+			// Iterating the TypeRef under the specifier.
+			// It works for both template or non-template base classes.
+			child.Visit([this](libclx::Cursor dec, libclx::Cursor)
 			{
-				std::cout << base.Spelling() << " is a template instantiation: " << base.Type().Spelling() << std::endl;
-				
-				std::cout << Name() << " type = " << base.Type() << std::endl;
-				
-				// this is just a workaround
-				base = base.SpecializedCursorTemplate();
-				std::cout << "base template ID: " << base.USR() << " " << base.NumTemplateArguments() << std::endl;
-				
-				for (auto&& arg : base.Type().TemplateArguments())
+				switch (dec.Kind())
 				{
-					std::cout << arg << " " << arg.Declaration().USR() << std::endl;
+				case CXCursor_TypeRef:
+				{
+					auto base = dec.Referenced();
+					std::cout << "Typeref: " << dec.Spelling() << " " << base.USR() << std::endl;
+					
+					// normally we don't have hundreds of base classes so sequential searches should be faster
+					// the order of the base classes is important, so we don't want to switch to set
+					std::cout << Name() << " inherits from: \"" << base.Spelling() << "\""
+					          << base.USR() << "\"" << std::endl;
+					if (std::find(m_base_classes.begin(), m_base_classes.end(), base.USR()) == m_base_classes.end())
+						m_base_classes.push_back(base.USR());
+					break;
 				}
-			}
+				case CXCursor_TemplateRef:
+				{
+					std::cout << "temp ref: " << dec.Spelling() << " " << dec.KindSpelling() << std::endl;
+					dec.Visit([](libclx::Cursor tref, libclx::Cursor)
+					{
+						std::cout << "tref: " << tref.Spelling() << " " << tref.KindSpelling() << std::endl;
+					});
+					break;
+				}
+				default:
+				std::cout << "BaseSpec: " << Name() << " " << dec.KindSpelling() << " " << dec.Spelling() << std::endl;
+					break;
+				}
+			});
 			
-			// normally we don't have hundreds of base classes so sequential searches should be faster
-			// the order of the base classes is important, so we don't want to switch to set
-			std::cout << Name() << " inherits from: \"" <<  child.Spelling() << "\" spelling = \"" << base.Spelling() << "\" kind = \"" << base.KindSpelling() << "\" \"" << base.USR() << "\"" << std::endl;
-			if (std::find(m_base_classes.begin(), m_base_classes.end(), base.USR()) == m_base_classes.end())
-				m_base_classes.push_back(base.USR());
 			break;
 		}
 		case CXCursor_CXXMethod:
@@ -98,12 +109,21 @@ void DataType::Visit(libclx::Cursor self)
 //			std::cout << Name() << " has type ref: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Referenced().Spelling() << " " << child.Location() << std::endl;
 			break;
 		
+		case CXCursor_TemplateRef:
+		{
+			child.Visit([](libclx::Cursor tref, libclx::Cursor)
+			{
+				std::cout << "tref: " << tref.Spelling() << " " << tref.Kind() << std::endl;
+			});
+			break;
+		}
+		
 		default:
 //			if (!child.Location().IsFromSystemHeader())
 //				std::cout << Name() << " has child: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Location() << " " << child.Type() <<  std::endl;
 			break;
 		}
-	});
+	}, true);
 
 	// mark self and all children as used, after creating the children
 	if (IsUsed() || (self.IsDefinition() && self.Location().IsFromMainFile()))

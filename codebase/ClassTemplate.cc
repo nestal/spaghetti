@@ -45,10 +45,21 @@ void ClassTemplate::Visit(libclx::Cursor self)
 			}
 				
 			std::cout << Name() << " template inherit from " << child.Spelling() << " \"" << base_id << "\" " << std::endl;
-			
+			break;
 		}
 		
-		default: break;
+		case CXCursor_TemplateRef:
+		{
+			child.Visit([](libclx::Cursor tref, libclx::Cursor)
+			{
+				std::cout << "tref: " << tref.Spelling() << " " << tref.KindSpelling() << std::endl;
+			});
+			break;
+		}
+		
+		default:
+		std::cout << "temp: " << Name() << " " << child.KindSpelling() << " " << child.Spelling() << std::endl;
+			break;
 		}
 	});
 }
