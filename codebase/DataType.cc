@@ -70,30 +70,19 @@ void DataType::Visit(libclx::Cursor self)
 			{
 				switch (dec.Kind())
 				{
+				case CXCursor_TemplateRef:
 				case CXCursor_TypeRef:
 				{
 					auto base = dec.Referenced();
-					std::cout << "Typeref: " << dec.Spelling() << " " << base.USR() << std::endl;
 					
 					// normally we don't have hundreds of base classes so sequential searches should be faster
 					// the order of the base classes is important, so we don't want to switch to set
-					std::cout << Name() << " inherits from: \"" << base.Spelling() << "\""
-					          << base.USR() << "\"" << std::endl;
 					if (std::find(m_base_classes.begin(), m_base_classes.end(), base.USR()) == m_base_classes.end())
 						m_base_classes.push_back(base.USR());
-					break;
-				}
-				case CXCursor_TemplateRef:
-				{
-					std::cout << "temp ref: " << dec.Spelling() << " " << dec.KindSpelling() << std::endl;
-					dec.Visit([](libclx::Cursor tref, libclx::Cursor)
-					{
-						std::cout << "tref: " << tref.Spelling() << " " << tref.KindSpelling() << std::endl;
-					});
+					
 					break;
 				}
 				default:
-				std::cout << "BaseSpec: " << Name() << " " << dec.KindSpelling() << " " << dec.Spelling() << std::endl;
 					break;
 				}
 			});

@@ -44,7 +44,7 @@ void ClassTemplate::Visit(libclx::Cursor self)
 					base_id = it->second;
 			}
 				
-			std::cout << Name() << " template inherit from " << child.Spelling() << " \"" << base_id << "\" " << std::endl;
+//			std::cout << Name() << " template inherit from " << child.Spelling() << " \"" << base_id << "\" " << std::endl;
 			break;
 		}
 		
