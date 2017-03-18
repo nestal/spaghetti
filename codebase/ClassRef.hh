@@ -24,24 +24,39 @@ public:
 	ClassRef() = default;
 	
 	template <typename String>
-	ClassRef(String&& base, std::initializer_list<std::string> args = {}) :
+	explicit ClassRef(String&& base) :
+		m_base_id{std::forward<String>(base)}
+	{
+	}
+	
+	template <typename String>
+	ClassRef(String&& base, String&& temp, std::initializer_list<std::string> args) :
 		m_base_id{std::forward<String>(base)},
+		m_temp_id{std::forward<String>(temp)},
 		m_temp_args{args}
 	{
 	}
 	
-	const std::string& BaseID() const;
-	void SetBaseID(std::string&& base_id);
+	const std::string& ID() const;
+	void SetID(std::string&& base_id);
+	
+	const std::string& TemplateID() const;
+	void SetTemplateID(const std::string&& id);
 	
 	const std::vector<std::string>& TempArgs() const;
 	void AddTempArgs(std::string&& arg);
+	
+	bool IsTemplate() const;
 	
 	bool operator==(const ClassRef& ref) const;
 	bool operator!=(const ClassRef& ref) const;
 	
 private:
-	//! USR of the class or class template
+	//! USR of the class or template instantiation
 	std::string m_base_id;
+	
+	//! USR of the class template that instantiate the class, or empty if non-template
+	std::string m_temp_id;
 	
 	//! USR of template arguments, empty if non-template
 	std::vector<std::string> m_temp_args;

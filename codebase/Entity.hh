@@ -23,6 +23,8 @@ template <typename Parent, typename Child>
 class EntityIterator;
 
 class Entity;
+class DataType;
+class ClassRef;
 
 class EntityMap
 {
@@ -33,6 +35,9 @@ public:
 	virtual Entity* Find(const std::string& id) = 0;
 	
 	virtual const Entity* FindByName(const std::string& name) const = 0;
+	
+	virtual const DataType* Find(const ClassRef& ref) const = 0;
+	virtual DataType* Find(const ClassRef& ref) = 0;
 	
 	template <typename EntityType>
 	EntityType* TypedFind(const std::string& id)

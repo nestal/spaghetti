@@ -65,23 +65,23 @@ void DataType::Visit(libclx::Cursor self)
 		case CXCursor_CXXBaseSpecifier:
 		{
 			ClassRef base_ref;
-			auto is_template = false;
 			
 			// Iterating the TypeRef under the specifier.
 			// It works for both template or non-template base classes.
-			child.Visit([this, &base_ref, &is_template](libclx::Cursor dec, libclx::Cursor)
+			child.Visit([this, &base_ref, child](libclx::Cursor dec, libclx::Cursor)
 			{
 				switch (dec.Kind())
 				{
-				case CXCursor_TemplateRef: is_template = true;
-					base_ref.SetBaseID(dec.Referenced().USR());
+				case CXCursor_TemplateRef:
+					base_ref.SetID(child.Referenced().USR());
+					base_ref.SetTemplateID(dec.Referenced().USR());
 					break;
 				
 				case CXCursor_TypeRef:
-					if (is_template)
+					if (base_ref.IsTemplate())
 						base_ref.AddTempArgs(dec.Referenced().USR());
 					else
-						base_ref.SetBaseID(dec.Referenced().USR());
+						base_ref.SetID(dec.Referenced().USR());
 					break;
 				
 				default:
@@ -156,7 +156,7 @@ bool DataType::IsBaseOf(const DataType& other) const
 	return std::find_if(
 		other.m_base_classes.begin(),
 		other.m_base_classes.end(),
-		[this](auto&& ref){return ref.BaseID() == this->ID();}
+		[this](auto&& ref){return ref.ID() == this->ID();}
 	) != other.m_base_classes.end();
 }
 
@@ -203,7 +203,7 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 	{
 		for (auto& base : m_base_classes)
 		{
-			auto base_entity = dynamic_cast<DataType*>(map->Find(base.BaseID()));
+			auto base_entity = dynamic_cast<DataType*>(map->Find(base.ID()));
 			
 			// TODO: support typedef base classes
 			if (base_entity && !base_entity->IsUsed())

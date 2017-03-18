@@ -292,7 +292,7 @@ void ClassModel::AddParentClass(ClassItem *item, const QPointF& pos)
 	if (item)
 	{
 		for (auto&& bases : item->DataType().BaseClasses())
-			AddEntity(bases, pos);
+			AddEntity(bases.ID(), pos);
 	}
 }
 	

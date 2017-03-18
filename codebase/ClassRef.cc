@@ -12,11 +12,12 @@
 
 #include "ClassRef.hh"
 #include <ostream>
+#include <cassert>
 
 namespace codebase {
 
 
-const std::string& ClassRef::BaseID() const
+const std::string& ClassRef::ID() const
 {
 	return m_base_id;
 }
@@ -26,7 +27,7 @@ const std::vector<std::string>& ClassRef::TempArgs() const
 	return m_temp_args;
 }
 
-void ClassRef::SetBaseID(std::string&& base_id)
+void ClassRef::SetID(std::string&& base_id)
 {
 	m_base_id = std::move(base_id);
 }
@@ -38,7 +39,7 @@ void ClassRef::AddTempArgs(std::string&& arg)
 
 bool ClassRef::operator==(const ClassRef& ref) const
 {
-	return m_base_id == ref.m_base_id && m_temp_args == ref.m_temp_args;
+	return m_base_id == ref.m_base_id && m_temp_id == ref.m_temp_id && m_temp_args == ref.m_temp_args;
 }
 
 bool ClassRef::operator!=(const ClassRef& ref) const
@@ -46,19 +47,24 @@ bool ClassRef::operator!=(const ClassRef& ref) const
 	return !operator==(ref);
 }
 
+bool ClassRef::IsTemplate() const
+{
+	return !m_temp_id.empty();
+}
+
+const std::string& ClassRef::TemplateID() const
+{
+	return m_temp_id;
+}
+
+void ClassRef::SetTemplateID(const std::string&& id)
+{
+	m_temp_id = std::move(id);
+}
+
 std::ostream& operator<<(std::ostream& os, const ClassRef& ref)
 {
-	os << ref.BaseID();
-	
-	auto&& args = ref.TempArgs();
-	if (!args.empty())
-	{
-		os << '(';
-		for (auto&& arg : ref.TempArgs())
-			os << arg << ',';
-		os << ')';
-	}
-	return os;
+	return os << ref.ID();
 }
 
 } // end of namespace

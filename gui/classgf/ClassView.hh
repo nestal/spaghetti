@@ -77,7 +77,7 @@ protected:
 	void keyPressEvent(QKeyEvent *event) override;
 	void keyReleaseEvent(QKeyEvent *event) override;
 	
-	bool event(QEvent *e);
+	bool event(QEvent *e) override;
 	
 private:
 	void Pan(QPointF delta);

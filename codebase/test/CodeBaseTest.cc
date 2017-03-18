@@ -33,5 +33,5 @@ TEST(CodeBaseTest, TestInheritance)
 	ASSERT_TRUE(entity_class);
 	
 	for (auto&& base : datatype_class->BaseClasses())
-		ASSERT_EQ(entity_class->ID(), base.BaseID());
+		ASSERT_EQ(entity_class->ID(), base.ID());
 }

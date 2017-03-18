@@ -65,7 +65,7 @@ public:
 	
 	ItemRelation RelationOf(const BaseItem *other) const override;
 	classgf::ItemType ItemType() const override;
-	void Update(const codebase::EntityMap *map);
+	void Update(const codebase::EntityMap *map) override;
 	
 	bool IsChanged() const override;
 	void MarkUnchanged();

@@ -53,10 +53,10 @@ TEST_F(ViewSetBaseClassTest, Test_ViewSet_Base)
 {
 	ASSERT_TRUE(m_viewset);
 	ASSERT_EQ(std::vector<ClassRef>{
-		{"c:@S@QTabWidget"}
+		ClassRef{"c:@S@QTabWidget"}
 	}, m_viewset->BaseClasses());
 	
-	auto base = m_subject.Map().Find(m_viewset->BaseClasses().front().BaseID());
+	auto base = m_subject.Map().Find(m_viewset->BaseClasses().front().ID());
 	ASSERT_TRUE(base);
 	ASSERT_EQ("QTabWidget", base->Name());
 }

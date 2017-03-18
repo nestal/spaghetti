@@ -51,6 +51,16 @@ public:
 		return it != m_index.get<ByName>().end() ? *it : nullptr;
 	}
 	
+	const DataType* Find(const ClassRef& ref) const override
+	{
+		return dynamic_cast<const DataType*>(Find(ref.ID()));
+	}
+	
+	DataType* Find(const ClassRef& ref) override
+	{
+		return dynamic_cast<DataType*>(Find(ref.ID()));
+	}
+	
 	Entity* Root()
 	{
 		return &m_root;
