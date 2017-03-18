@@ -36,7 +36,7 @@ ParentScope::ParentScope(const std::string& name, const std::string& usr, const 
 void ParentScope::Visit(const libclx::Cursor& self)
 {
 	OnVisit(self);
-	self.Visit([this](auto child, auto parent){VisitChild(child, parent);});
+	self.Visit([this](auto child, auto parent){this->VisitChild(child, parent);});
 	AfterVisitingChild(self);
 }
 
