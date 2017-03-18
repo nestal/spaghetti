@@ -40,7 +40,7 @@ void ParentScope::Visit(const libclx::Cursor& self)
 	AfterVisitingChild(self);
 }
 
-void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
+void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 {
 	switch (child.Kind())
 	{
