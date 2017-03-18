@@ -28,11 +28,11 @@ class Variable;
 class Function : public EntityVec
 {
 public:
-	Function(libclx::Cursor first_seen, const Entity *parent);
+	Function(const libclx::Cursor& first_seen, const Entity *parent);
 	
-	void Visit(libclx::Cursor self);
+	void Visit(const libclx::Cursor& self);
 	
-	std::string Type() const override;
+	EntityType Type() const override;
 	libclx::SourceLocation Location() const override;
 	libclx::Type ReturnType() const;
 	

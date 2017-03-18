@@ -11,7 +11,9 @@
 //
 
 #include "codebase/CodeBase.hh"
+
 #include "codebase/DataType.hh"
+#include "codebase/EntityMap.hh"
 
 #include <gtest/gtest.h>
 

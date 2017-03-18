@@ -13,6 +13,7 @@
 #include "Namespace.hh"
 
 #include "DataType.hh"
+#include "EntityType.hh"
 
 #include "libclx/Cursor.hh"
 
@@ -28,9 +29,9 @@ Namespace::Namespace(const libclx::Cursor& cursor, const Entity* parent) :
 {
 }
 
-std::string Namespace::Type() const
+EntityType Namespace::Type() const
 {
-	return "Namespace";
+	return EntityType::namespace_;
 }
 
 void Namespace::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)

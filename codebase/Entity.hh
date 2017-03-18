@@ -23,6 +23,7 @@ template <typename Parent, typename Child>
 class EntityIterator;
 
 class EntityMap;
+enum class EntityType;
 
 /**
  * \brief Represent an entity in the code base.
@@ -64,7 +65,8 @@ public:
 	 * is the class. For non-member functions, the parent entity will be a namespace.
 	 */
 	virtual const Entity* Parent() const = 0;
-	virtual std::string Type() const = 0;
+	virtual EntityType Type() const = 0;
+	virtual std::string DisplayType() const;
 	
 	virtual std::size_t ChildCount() const = 0;
 	virtual const Entity* Child(std::size_t idx) const = 0;

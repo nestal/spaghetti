@@ -16,6 +16,7 @@
 #include "Function.hh"
 #include "Variable.hh"
 #include "ClassTemplate.hh"
+#include "EntityType.hh"
 
 #include "libclx/Cursor.hh"
 
@@ -84,9 +85,9 @@ void DataType::AfterVisitingChild(const libclx::Cursor& self)
 		MarkUsed();
 }
 
-std::string DataType::Type() const
+EntityType DataType::Type() const
 {
-	return "Class";
+	return EntityType::data_type;
 }
 
 libclx::SourceLocation DataType::Location() const

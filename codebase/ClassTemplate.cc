@@ -12,10 +12,32 @@
 
 #include "ClassTemplate.hh"
 
+#include "EntityType.hh"
+
 #include "libclx/Cursor.hh"
 #include "libclx/Type.hh"
 
 namespace codebase {
+
+class ClassTemplate::Instance : public DataType
+{
+public:
+	Instance(const ClassRef& ref, const ClassTemplate *temp) :
+		DataType{ref.Name(), ref.ID(), temp->Location(), temp->Parent()},
+		m_temp(temp)
+	{
+	}
+	
+	EntityType Type() const override
+	{
+		return EntityType::instantiated_type;
+	}
+	
+	using DataType::AddBase;
+
+private:
+	const ClassTemplate *m_temp;
+};
 
 void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
 {
@@ -61,4 +83,9 @@ std::size_t ClassTemplate::Match(const std::string& usr) const
 	return static_cast<std::size_t>(it-m_param.begin());
 }
 
+EntityType ClassTemplate::Type() const
+{
+	return EntityType::class_template;
+}
+	
 } // end of namespace

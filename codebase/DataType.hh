@@ -50,7 +50,7 @@ public:
 	DataType& operator=(DataType&&) = default;
 	DataType& operator=(const DataType&) = delete;
 	
-	std::string Type() const override;
+	EntityType Type() const override;
 	
 	libclx::SourceLocation Location() const override;
 	

@@ -34,10 +34,11 @@ public:
 	
 	std::unique_ptr<DataType> Instantiate(const ClassRef& ref) const;
 	
-	class Instance;
+	EntityType Type() const override;
 
 private:
 	std::size_t Match(const std::string& usr) const;
+	class Instance;
 	
 private:
 	struct Param
@@ -46,21 +47,6 @@ private:
 		std::string     usr;
 	};
 	std::vector<Param> m_param;
-};
-
-class ClassTemplate::Instance : public DataType
-{
-public:
-	Instance(const ClassRef& ref, const ClassTemplate *temp) :
-		DataType{ref.Name(), ref.ID(), temp->Location(), temp->Parent()},
-		m_temp(temp)
-	{
-	}
-	
-	using DataType::AddBase;
-
-private:
-	const ClassTemplate *m_temp;
 };
 
 } // end of namespace

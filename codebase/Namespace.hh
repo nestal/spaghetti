@@ -37,7 +37,7 @@ public:
 	Namespace& operator=(Namespace&&) = default;
 	Namespace& operator=(const Namespace&) = delete;
 	
-	std::string Type() const override;
+	EntityType Type() const override;
 	
 	void CrossReference(EntityMap *map) override;
 	void MarkUsed() override;

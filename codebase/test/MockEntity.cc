@@ -11,6 +11,7 @@
 //
 
 #include "MockEntity.hh"
+#include "codebase/EntityType.hh"
 
 namespace codebase {
 namespace ut {
@@ -26,9 +27,9 @@ std::size_t MockEntity::Index() const
 	return m_index;
 }
 
-std::string MockEntity::Type() const
+EntityType MockEntity::Type() const
 {
-	return "Mock";
+	return EntityType::none;
 }
 
 bool MockEntity::IsUsed() const
@@ -44,5 +45,5 @@ void MockEntity::CrossReference(EntityMap *map)
 {
 	LeafEntity::CrossReference(map);
 }
-
+	
 }} // end of namespace

@@ -26,9 +26,10 @@ namespace codebase {
 class Variable : public LeafEntity
 {
 public:
-	Variable(libclx::Cursor field, const Entity *parent);
+	Variable(const libclx::Cursor& field, const Entity *parent);
 	
-	std::string Type() const override;
+	EntityType Type() const override;
+	std::string DisplayType() const override;
 	libclx::SourceLocation Location() const override;
 	
 	std::string UML() const override;

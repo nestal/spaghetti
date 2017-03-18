@@ -13,6 +13,7 @@
 #include "LogicalModel.hh"
 
 #include "codebase/Entity.hh"
+#include "codebase/EntityType.hh"
 #include "codebase/DataType.hh"
 #include "codebase/Namespace.hh"
 #include "codebase/Function.hh"
@@ -57,23 +58,25 @@ QVariant LogicalModel::data(const QModelIndex& index, int role) const
 	auto entity = At(index);
 	assert(entity);
 	
-	static const std::map<std::type_index, QIcon> icons = {
-		{typeid(const codebase::DataType&), QIcon{":/images/class.png"}},
-		{typeid(const codebase::Namespace&), QIcon{":/images/namespace.png"}},
-		{typeid(const codebase::Function&), QIcon{":/images/function.png"}},
-		{typeid(const codebase::Variable&), QIcon{":/images/variable.png"}},
-		{typeid(const codebase::ClassTemplate&), QIcon{":/images/template.png"}},
-		{typeid(const codebase::ClassTemplate::Instance&), QIcon{":/images/template2.png"}},
+	using codebase::EntityType;
+	
+	static const std::map<EntityType, QIcon> icons = {
+		{EntityType::data_type,         QIcon{":/images/class.png"}},
+		{EntityType::namespace_,        QIcon{":/images/namespace.png"}},
+		{EntityType::function,          QIcon{":/images/function.png"}},
+		{EntityType::variable,          QIcon{":/images/variable.png"}},
+		{EntityType::class_template,    QIcon{":/images/template.png"}},
+		{EntityType::instantiated_type, QIcon{":/images/template2.png"}},
 	};
 	
 	switch (role)
 	{
-	case Qt::DisplayRole: return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->Type());
+	case Qt::DisplayRole: return QString::fromStdString(index.column() == 0 ? entity->Name() : entity->DisplayType());
 	case Qt::DecorationRole:
 	{
 		if (index.column() == 0)
 		{
-			auto iit = icons.find(typeid(*entity));
+			auto iit = icons.find(entity->Type());
 			if (iit != icons.end())
 				return iit->second;
 		}
