@@ -49,7 +49,6 @@ void DataType::OnVisit(const libclx::Cursor& self)
 	assert(self.Kind() == CXCursor_StructDecl
 		|| self.Kind() == CXCursor_ClassDecl
 		|| self.Kind() == CXCursor_ClassTemplate);
-	assert(Name() == self.Spelling());
 	assert(!ID().empty() && ID() == self.USR());
 	
 	if (self.IsDefinition() || m_definition == libclx::SourceLocation{})
@@ -137,7 +136,7 @@ void DataType::CrossReference(EntityMap *map)
 	// instantiate base class, if any
 	for (auto&& base : m_bases)
 	{
-		if (base.IsTemplate())
+		if (base.IsTemplate() && !base.ID().empty() && base.ID() != base.TemplateID())
 			map->Instantiate(base);
 	}
 	

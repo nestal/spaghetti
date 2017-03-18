@@ -57,28 +57,27 @@ public:
 		return dynamic_cast<const DataType*>(Find(ref.ID()));
 	}
 	
-	InstantiatedDataType* Instantiate(const ClassRef& ref) override
+	DataType* Instantiate(const ClassRef& ref) override
 	{
 		assert(ref.IsTemplate());
+		assert(!ref.ID().empty());
 		
-		auto result = dynamic_cast<InstantiatedDataType*>(Find(ref.ID()));
-				
+		auto result = dynamic_cast<DataType*>(Find(ref.ID()));
 		if (!result)
 		{
-			if (auto temp = dynamic_cast<ClassTemplate *>(Find(ref.TemplateID())))
+			if (auto temp = dynamic_cast<ClassTemplate*>(Find(ref.TemplateID())))
 			{
+				// instantiate template and add to the index immediately
 				auto inst = temp->Instantiate(ref);
+				AddToIndex(inst.get());
+				
 				auto parent = dynamic_cast<ParentScope *>(Find(temp->Parent()->ID()));
 				
 				assert(parent);
 				assert(inst);
 				
 				result = inst.get();
-				parent->AddChild(std::move(inst));
-			}
-			else
-			{
-				std::cout << "template not found: " << ref << std::endl;
+				parent->Add(std::move(inst));
 			}
 		}
 		

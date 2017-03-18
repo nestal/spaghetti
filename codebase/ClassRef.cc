@@ -78,8 +78,7 @@ void ClassRef::FromBaseCursor(const libclx::Cursor& cursor)
 {
 	assert(cursor.IsReference());
 	
-	m_name = cursor.Spelling();
-	std::cout << "base name: " << cursor.Spelling() << std::endl;
+	m_name = cursor.DisplayName();
 	
 	// Iterating the TypeRef under the specifier.
 	// It works for both template or non-template base classes.
@@ -88,8 +87,13 @@ void ClassRef::FromBaseCursor(const libclx::Cursor& cursor)
 		switch (dec.Kind())
 		{
 		case CXCursor_TemplateRef:
-			m_base_id = parent.Referenced().USR();
-			m_temp_id = dec.Referenced().USR();
+			// TODO: handle multiple level of templates
+			if (m_temp_id.empty())
+			{
+				assert(m_base_id.empty());
+				m_base_id = parent.Referenced().USR();
+				m_temp_id = dec.Referenced().USR();
+			}
 			break;
 		
 		case CXCursor_TypeRef:

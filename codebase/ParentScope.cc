@@ -24,7 +24,7 @@
 namespace codebase {
 
 ParentScope::ParentScope(const libclx::Cursor& cursor, const Entity* parent) :
-	EntityVec{cursor.Spelling(), cursor.USR(), parent}
+	EntityVec{cursor.DisplayName(), cursor.USR(), parent}
 {
 }
 
@@ -112,7 +112,7 @@ std::vector<DataType *>& ParentScope::Types()
 void ParentScope::Add(std::unique_ptr<DataType>&& type)
 {
 	m_types.push_back(type.get());
-	
+	AddChild(std::move(type));
 }
 	
 } // end of namespace
