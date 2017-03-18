@@ -14,6 +14,7 @@
 #pragma once
 
 #include "EntityVec.hh"
+#include "ClassRef.hh"
 #include "libclx/SourceRange.hh"
 
 #include <boost/iterator/indirect_iterator.hpp>
@@ -44,7 +45,7 @@ class DataType : public EntityVec
 public:
 	using field_iterator    = boost::indirect_iterator<std::vector<codebase::Variable*>::const_iterator>;
 	using function_iterator = boost::indirect_iterator<std::vector<codebase::Function*>::const_iterator>;
-	using idvec_iterator    = std::vector<std::string>::const_iterator;
+	using idvec_iterator    = std::vector<ClassRef>::const_iterator;
 	
 public:
 	DataType(libclx::Cursor cursor, const Entity* parent);
@@ -80,7 +81,7 @@ private:
 	
 private:
 	libclx::SourceLocation              m_definition;
-	std::vector<std::string>            m_base_classes;
+	std::vector<ClassRef>               m_base_classes;
 	
 	std::vector<codebase::Variable*>    m_fields;
 	std::vector<codebase::Function*>    m_functions;

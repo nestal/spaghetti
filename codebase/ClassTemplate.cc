@@ -27,7 +27,7 @@ void ClassTemplate::Visit(libclx::Cursor self)
 		{
 		case CXCursor_TemplateTypeParameter:
 		{
-			std::cout << Name() << " has template parameter: " << child.Spelling() << " " << child.USR() << " " << child.Type() << std::endl;
+//			std::cout << Name() << " has template parameter: " << child.Spelling() << " " << child.USR() << " " << child.Type() << std::endl;
 			m_args.insert({child.Spelling(), child.USR()});
 			break;
 		}
@@ -50,15 +50,11 @@ void ClassTemplate::Visit(libclx::Cursor self)
 		
 		case CXCursor_TemplateRef:
 		{
-			child.Visit([](libclx::Cursor tref, libclx::Cursor)
-			{
-				std::cout << "tref: " << tref.Spelling() << " " << tref.KindSpelling() << std::endl;
-			});
 			break;
 		}
 		
 		default:
-		std::cout << "temp: " << Name() << " " << child.KindSpelling() << " " << child.Spelling() << std::endl;
+//		std::cout << "temp: " << Name() << " " << child.KindSpelling() << " " << child.Spelling() << std::endl;
 			break;
 		}
 	});

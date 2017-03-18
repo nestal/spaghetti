@@ -55,9 +55,9 @@ TEST_F(ViewSetBaseClassTest, Test_ViewSet_Base)
 	ASSERT_EQ(1, m_viewset->BaseClasses().size());
 	
 	auto base_id = m_viewset->BaseClasses().front();
-	ASSERT_EQ("c:@S@QTabWidget", base_id);
+	ASSERT_EQ("c:@S@QTabWidget", base_id.BaseID());
 	
-	auto base = m_subject.Map().Find(base_id);
+	auto base = m_subject.Map().Find(base_id.BaseID());
 	ASSERT_TRUE(base);
 	ASSERT_EQ("QTabWidget", base->Name());
 }

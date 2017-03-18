@@ -42,7 +42,11 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	
 	// base should be c:@S@RecursiveBase>#$@S@Base, but we need to fix it by
 	// differentiating between a template and its instantiation
-	std::vector<std::string> base{"c:@ST>1#T@RecursiveBase", "c:@S@Base2", "c:@S@Base3"};
+	std::vector<ClassRef> base{
+		ClassRef{"c:@ST>1#T@RecursiveBase", {"c:@S@Base"}},
+		ClassRef{"c:@S@Base2"},
+		ClassRef{"c:@S@Base3"}
+	};
 	ASSERT_EQ(base, derived->BaseClasses());
 	
 	auto temp_base = m_subject.Map().Find("c:@ST>1#T@RecursiveBase");

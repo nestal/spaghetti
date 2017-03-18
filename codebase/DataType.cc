@@ -64,28 +64,36 @@ void DataType::Visit(libclx::Cursor self)
 			
 		case CXCursor_CXXBaseSpecifier:
 		{
+			ClassRef base_ref;
+			auto is_template = false;
+			
 			// Iterating the TypeRef under the specifier.
 			// It works for both template or non-template base classes.
-			child.Visit([this](libclx::Cursor dec, libclx::Cursor)
+			child.Visit([this, &base_ref, &is_template](libclx::Cursor dec, libclx::Cursor)
 			{
 				switch (dec.Kind())
 				{
-				case CXCursor_TemplateRef:
-				case CXCursor_TypeRef:
-				{
-					auto base = dec.Referenced();
-					
-					// normally we don't have hundreds of base classes so sequential searches should be faster
-					// the order of the base classes is important, so we don't want to switch to set
-					if (std::find(m_base_classes.begin(), m_base_classes.end(), base.USR()) == m_base_classes.end())
-						m_base_classes.push_back(base.USR());
-					
+				case CXCursor_TemplateRef: is_template = true;
+					base_ref.SetBaseID(dec.Referenced().USR());
 					break;
-				}
+				
+				case CXCursor_TypeRef:
+					if (is_template)
+						base_ref.AddTempArgs(dec.Referenced().USR());
+					else
+						base_ref.SetBaseID(dec.Referenced().USR());
+					break;
+				
 				default:
 					break;
 				}
+			
 			});
+			
+			// normally we don't have hundreds of base classes so sequential searches should be faster
+			// the order of the base classes is important, so we don't want to switch to set
+			if (std::find(m_base_classes.begin(), m_base_classes.end(), base_ref) == m_base_classes.end())
+				m_base_classes.push_back(base_ref);
 			
 			break;
 		}
@@ -145,8 +153,11 @@ boost::iterator_range<DataType::idvec_iterator> DataType::BaseClasses() const
 
 bool DataType::IsBaseOf(const DataType& other) const
 {
-	return std::find(other.m_base_classes.begin(), other.m_base_classes.end(), ID()) !=
-		other.m_base_classes.end();
+	return std::find_if(
+		other.m_base_classes.begin(),
+		other.m_base_classes.end(),
+		[this](auto&& ref){return ref.BaseID() == this->ID();}
+	) != other.m_base_classes.end();
 }
 
 bool DataType::IsUsedInMember(const DataType& other) const
@@ -192,7 +203,7 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 	{
 		for (auto& base : m_base_classes)
 		{
-			auto base_entity = dynamic_cast<DataType*>(map->Find(base));
+			auto base_entity = dynamic_cast<DataType*>(map->Find(base.BaseID()));
 			
 			// TODO: support typedef base classes
 			if (base_entity && !base_entity->IsUsed())
