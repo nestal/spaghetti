@@ -63,9 +63,9 @@ public:
 		
 		InstantiatedDataType* result = nullptr;
 		
-		if (auto temp = dynamic_cast<ClassTemplate*>(Find(ref.ID())))
+		if (auto temp = dynamic_cast<ClassTemplate*>(Find(ref.TemplateID())))
 		{
-			auto inst = temp->Instantiate(ref.TempArgs());
+			auto inst = temp->Instantiate(ref);
 			auto parent = dynamic_cast<ParentScope*>(Find(temp->Parent()->ID()));
 			
 			assert(parent);
@@ -73,6 +73,10 @@ public:
 
 			result = inst.get();
 			parent->AddChild(std::move(inst));
+		}
+		else
+		{
+			std::cout << "template not found: " << ref << std::endl;
 		}
 		
 		return result;

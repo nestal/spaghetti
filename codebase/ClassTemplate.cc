@@ -23,7 +23,7 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
 	{
 	case CXCursor_TemplateTypeParameter:
 	{
-		m_args.insert({child.Spelling(), child.USR()});
+		m_param.push_back({child.Spelling(), child.USR()});
 		break;
 	}
 	
@@ -38,23 +38,33 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
  * \param args  template arguments, i.e. the actual types that will replace the template parameters
  * \return the instantiated class
  */
-std::unique_ptr<InstantiatedDataType> ClassTemplate::Instantiate(const std::vector<std::string>& args) const
+std::unique_ptr<InstantiatedDataType> ClassTemplate::Instantiate(const ClassRef& ref) const
 {
-	auto inst = std::make_unique<InstantiatedDataType>(*this);
+	auto inst = std::make_unique<InstantiatedDataType>(ref, this);
 	
 	for (auto&& base : BaseClasses())
 	{
-		auto at = m_args.find(base.ID());
-		if (at != m_args.end())
-			std::cout << at->second << std::endl;
+		auto arg_idx = Match(base.ID());
+		inst->AddBase(
+			arg_idx != m_param.size() ? ClassRef{ref.TempArgs().at(arg_idx)} : base
+		);
 	}
 	return inst;
 }
 
-InstantiatedDataType::InstantiatedDataType(const ClassTemplate& temp) :
-	DataType{temp.Name(), temp.ID(), temp.Location(), temp.Parent()},
-	m_temp(&temp)
+std::size_t ClassTemplate::Match(const std::string& usr) const
 {
+	auto it = std::find_if(m_param.begin(), m_param.end(), [&usr](auto&& param)
+	{
+		return param.usr == usr;
+	});
+	return static_cast<std::size_t>(it-m_param.begin());
 }
 
+InstantiatedDataType::InstantiatedDataType(const ClassRef& ref, const ClassTemplate *temp) :
+	DataType{ref.Name(), ref.ID(), temp->Location(), temp->Parent()},
+	m_temp(temp)
+{
+}
+		
 } // end of namespace

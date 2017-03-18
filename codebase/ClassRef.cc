@@ -76,6 +76,8 @@ ClassRef::ClassRef(const libclx::Cursor& cursor)
 
 void ClassRef::FromBaseCursor(const libclx::Cursor& cursor)
 {
+	m_name = cursor.Spelling();
+	
 	// Iterating the TypeRef under the specifier.
 	// It works for both template or non-template base classes.
 	cursor.Visit([this](libclx::Cursor dec, libclx::Cursor parent)
@@ -103,6 +105,16 @@ void ClassRef::FromBaseCursor(const libclx::Cursor& cursor)
 ClassRef::ClassRef(const std::string& base) :
 	m_base_id{base}
 {
+}
+
+const std::string& ClassRef::Name() const
+{
+	return m_name;
+}
+
+void ClassRef::SetName(std::string&& name)
+{
+	m_name = std::move(name);
 }
 
 std::ostream& operator<<(std::ostream& os, const ClassRef& ref)

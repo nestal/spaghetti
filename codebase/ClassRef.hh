@@ -35,6 +35,9 @@ public:
 	const std::string& ID() const;
 	void SetID(std::string&& base_id);
 	
+	const std::string& Name() const;
+	void SetName(std::string&& name);
+	
 	const std::string& TemplateID() const;
 	ClassRef& SetTemplateID(const std::string&& id);
 	
@@ -55,6 +58,9 @@ private:
 	
 	//! USR of the class template that instantiate the class, or empty if non-template
 	std::string m_temp_id;
+	
+	//! Name of the class, without namespace (i.e. Cursor::Spelling())
+	std::string m_name;
 	
 	//! USR of template arguments, empty if non-template
 	std::vector<std::string> m_temp_args;

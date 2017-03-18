@@ -21,6 +21,7 @@
 
 namespace codebase {
 
+class ClassRef;
 class ClassTemplate;
 class InstantiatedDataType;
 
@@ -31,16 +32,24 @@ public:
 	
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
 	
-	std::unique_ptr<InstantiatedDataType> Instantiate(const std::vector<std::string>& args) const;
+	std::unique_ptr<InstantiatedDataType> Instantiate(const ClassRef& ref) const;
 
 private:
-	std::map<std::string, std::string> m_args;
+	std::size_t Match(const std::string& usr) const;
+	
+private:
+	struct Param
+	{
+		std::string     name;
+		std::string     usr;
+	};
+	std::vector<Param> m_param;
 };
 
 class InstantiatedDataType : public DataType
 {
 public:
-	InstantiatedDataType(const ClassTemplate& temp);
+	InstantiatedDataType(const ClassRef& ref, const ClassTemplate *temp);
 
 	using DataType::AddBase;
 	

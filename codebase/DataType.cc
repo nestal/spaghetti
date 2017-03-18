@@ -137,6 +137,8 @@ void DataType::CrossReference(EntityMap *map)
 	// instantiate base class, if any
 	for (auto&& base : m_bases)
 	{
+		if (base.IsTemplate())
+			map->Instantiate(base);
 	}
 	
 	MarkBaseClassUsed(map);
