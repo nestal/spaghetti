@@ -11,8 +11,9 @@
 //
 
 #include "Variable.hh"
-#include "DataType.hh"
 
+#include "DataType.hh"
+#include "EntityMap.hh"
 #include "libclx/Cursor.hh"
 
 #include <iostream>

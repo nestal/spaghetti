@@ -11,12 +11,14 @@
 //
 
 #include "ClassItem.hh"
+
 #include "ClassLayout.hh"
 #include "Edge.hh"
 #include "Viewport.hh"
 #include "ItemRenderingOptions.hh"
 
 #include "codebase/DataType.hh"
+#include "codebase/EntityMap.hh"
 #include "codebase/Variable.hh"
 #include "codebase/Function.hh"
 

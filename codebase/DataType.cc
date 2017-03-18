@@ -12,6 +12,7 @@
 
 #include "DataType.hh"
 
+#include "EntityMap.hh"
 #include "Function.hh"
 #include "Variable.hh"
 #include "ClassTemplate.hh"

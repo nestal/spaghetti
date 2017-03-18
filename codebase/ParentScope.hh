@@ -30,7 +30,9 @@ namespace codebase {
 
 class Function;
 class Variable;
+class DataType;
 class ClassTemplate;
+class ClassRef;
 
 /**
  * \brief Base class of Namespace, Class, Structure and Union

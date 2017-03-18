@@ -12,6 +12,7 @@
 
 #include "CodeBase.hh"
 
+#include "EntityMap.hh"
 #include "Namespace.hh"
 #include "ClassTemplate.hh"
 
