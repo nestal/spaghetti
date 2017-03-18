@@ -61,22 +61,25 @@ public:
 	{
 		assert(ref.IsTemplate());
 		
-		InstantiatedDataType* result = nullptr;
-		
-		if (auto temp = dynamic_cast<ClassTemplate*>(Find(ref.TemplateID())))
+		auto result = dynamic_cast<InstantiatedDataType*>(Find(ref.ID()));
+				
+		if (!result)
 		{
-			auto inst = temp->Instantiate(ref);
-			auto parent = dynamic_cast<ParentScope*>(Find(temp->Parent()->ID()));
-			
-			assert(parent);
-			assert(inst);
-
-			result = inst.get();
-			parent->AddChild(std::move(inst));
-		}
-		else
-		{
-			std::cout << "template not found: " << ref << std::endl;
+			if (auto temp = dynamic_cast<ClassTemplate *>(Find(ref.TemplateID())))
+			{
+				auto inst = temp->Instantiate(ref);
+				auto parent = dynamic_cast<ParentScope *>(Find(temp->Parent()->ID()));
+				
+				assert(parent);
+				assert(inst);
+				
+				result = inst.get();
+				parent->AddChild(std::move(inst));
+			}
+			else
+			{
+				std::cout << "template not found: " << ref << std::endl;
+			}
 		}
 		
 		return result;

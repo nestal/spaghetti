@@ -76,7 +76,10 @@ ClassRef::ClassRef(const libclx::Cursor& cursor)
 
 void ClassRef::FromBaseCursor(const libclx::Cursor& cursor)
 {
+	assert(cursor.IsReference());
+	
 	m_name = cursor.Spelling();
+	std::cout << "base name: " << cursor.Spelling() << std::endl;
 	
 	// Iterating the TypeRef under the specifier.
 	// It works for both template or non-template base classes.

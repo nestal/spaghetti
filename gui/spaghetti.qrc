@@ -1,5 +1,7 @@
 <RCC>
   <qresource>
+    <file>images/template2.png</file>
+    <file>images/template.png</file>
     <file>images/fork2.svg</file>
     <file>images/fork.svg</file>
     <file>images/spaghetti.svg</file>

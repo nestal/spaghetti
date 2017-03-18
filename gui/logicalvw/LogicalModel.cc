@@ -17,6 +17,7 @@
 #include "codebase/Namespace.hh"
 #include "codebase/Function.hh"
 #include "codebase/Variable.hh"
+#include "codebase/ClassTemplate.hh"
 
 #include "gui/common/MimeType.hh"
 
@@ -61,6 +62,8 @@ QVariant LogicalModel::data(const QModelIndex& index, int role) const
 		{typeid(const codebase::Namespace&), QIcon{":/images/namespace.png"}},
 		{typeid(const codebase::Function&), QIcon{":/images/function.png"}},
 		{typeid(const codebase::Variable&), QIcon{":/images/variable.png"}},
+		{typeid(const codebase::ClassTemplate&), QIcon{":/images/template.png"}},
+		{typeid(const codebase::InstantiatedDataType&), QIcon{":/images/template2.png"}},
 	};
 	
 	switch (role)

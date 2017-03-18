@@ -355,7 +355,7 @@
   </action>
   <action name="m_action_export">
    <property name="text">
-    <string>Export...</string>
+    <string>&amp;Export...</string>
    </property>
   </action>
  </widget>
