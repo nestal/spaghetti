@@ -43,7 +43,7 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	// base should be c:@S@RecursiveBase>#$@S@Base, but we need to fix it by
 	// differentiating between a template and its instantiation
 	std::vector<ClassRef> base{
-		ClassRef{std::string{"c:@S@RecursiveBase>#$@S@Base"}, std::string{"c:@ST>1#T@RecursiveBase"}, {"c:@S@Base"}},
+		ClassRef{"c:@S@RecursiveBase>#$@S@Base"}.SetTemplateID("c:@ST>1#T@RecursiveBase").AddTempArgs("c:@S@Base"),
 		ClassRef{"c:@S@Base2"},
 		ClassRef{"c:@S@Base3"}
 	};

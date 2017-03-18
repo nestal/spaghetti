@@ -32,7 +32,7 @@ DataType::DataType(libclx::Cursor cursor, const Entity* parent) :
 }
 
 
-void DataType::Visit(libclx::Cursor self)
+void DataType::Visit(const libclx::Cursor& self)
 {
 	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl || self.Kind() == CXCursor_ClassTemplate);
 	assert(Name() == self.Spelling());
@@ -43,13 +43,12 @@ void DataType::Visit(libclx::Cursor self)
 	
 //	std::cout << "class: " << Name() << " " << self.Kind() << " " << Location() << std::endl;
 	
-	self.Visit([this, self](libclx::Cursor child, libclx::Cursor)
+	self.Visit([this](libclx::Cursor child, libclx::Cursor)
 	{
 		switch (child.Kind())
 		{
 		case CXCursor_FieldDecl:
 			AddUnique(m_fields, child.USR(), child, this);
-//			std::cout << Name() << " has field: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << std::endl;
 			break;
 		
 		// nested classes
@@ -64,60 +63,20 @@ void DataType::Visit(libclx::Cursor self)
 			
 		case CXCursor_CXXBaseSpecifier:
 		{
-			ClassRef base_ref;
-			
-			// Iterating the TypeRef under the specifier.
-			// It works for both template or non-template base classes.
-			child.Visit([this, &base_ref, child](libclx::Cursor dec, libclx::Cursor)
-			{
-				switch (dec.Kind())
-				{
-				case CXCursor_TemplateRef:
-					base_ref.SetID(child.Referenced().USR());
-					base_ref.SetTemplateID(dec.Referenced().USR());
-					break;
-				
-				case CXCursor_TypeRef:
-					if (base_ref.IsTemplate())
-						base_ref.AddTempArgs(dec.Referenced().USR());
-					else
-						base_ref.SetID(dec.Referenced().USR());
-					break;
-				
-				default:
-					break;
-				}
-			
-			});
+			ClassRef base{child};
 			
 			// normally we don't have hundreds of base classes so sequential searches should be faster
 			// the order of the base classes is important, so we don't want to switch to set
-			if (std::find(m_base_classes.begin(), m_base_classes.end(), base_ref) == m_base_classes.end())
-				m_base_classes.push_back(base_ref);
+			if (std::find(m_base_classes.begin(), m_base_classes.end(), base) == m_base_classes.end())
+				m_base_classes.push_back(base);
 			
 			break;
 		}
 		case CXCursor_CXXMethod:
-//			std::cout << Name() << " has method: \"" <<  child.Spelling() << "\" \"" << child.KindSpelling() << "\" " << p.USR() << std::endl;
 			AddUnique(m_functions, child.USR(), child, this);
 			break;
-			
-		case CXCursor_TypeRef:
-//			std::cout << Name() << " has type ref: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Referenced().Spelling() << " " << child.Location() << std::endl;
-			break;
-		
-		case CXCursor_TemplateRef:
-		{
-			child.Visit([](libclx::Cursor tref, libclx::Cursor)
-			{
-				std::cout << "tref: " << tref.Spelling() << " " << tref.Kind() << std::endl;
-			});
-			break;
-		}
 		
 		default:
-//			if (!child.Location().IsFromSystemHeader())
-//				std::cout << Name() << " has child: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Location() << " " << child.Type() <<  std::endl;
 			break;
 		}
 	});
@@ -163,10 +122,9 @@ bool DataType::IsBaseOf(const DataType& other) const
 bool DataType::IsUsedInMember(const DataType& other) const
 {
 	auto fields = other.Fields();
-	auto& id = ID();
-	return std::find_if(fields.begin(), fields.end(), [&id](auto field)
+	return std::find_if(fields.begin(), fields.end(), [myid = ID()](auto field)
 	{
-		return field.TypeID() == id;
+		return field.TypeID() == myid;
 	}) != fields.end();
 }
 
@@ -215,7 +173,7 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 	}
 }
 
-void DataType::VisitFunction(libclx::Cursor func)
+void DataType::VisitFunction(const libclx::Cursor& func)
 {
 	auto it = FindByID(m_functions, func.USR());
 	
@@ -233,5 +191,5 @@ const codebase::Variable& DataType::Field(std::size_t idx) const
 {
 	return *m_fields.at(idx);
 }
-	
+
 } // end of namespace

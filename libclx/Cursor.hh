@@ -70,7 +70,7 @@ public:
 	};
 	
 	template <typename Visitor>
-	void Visit(Visitor visitor, bool recurse = false)
+	void Visit(Visitor visitor, bool recurse = false) const
 	{
 		struct ClientData
 		{

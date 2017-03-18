@@ -17,7 +17,7 @@
 
 namespace codebase {
 
-void ClassTemplate::Visit(libclx::Cursor self)
+void ClassTemplate::Visit(const libclx::Cursor& self)
 {
 	DataType::Visit(self);
 	
@@ -32,29 +32,7 @@ void ClassTemplate::Visit(libclx::Cursor self)
 			break;
 		}
 		
-		case CXCursor_CXXBaseSpecifier:
-		{
-			auto base_id = child.GetDefinition().USR();
-			
-			// if the base ID is empty, it may be a template parameter
-			if (base_id.empty())
-			{
-				auto it = m_args.find(child.Spelling());
-				if (it != m_args.end())
-					base_id = it->second;
-			}
-				
-//			std::cout << Name() << " template inherit from " << child.Spelling() << " \"" << base_id << "\" " << std::endl;
-			break;
-		}
-		
-		case CXCursor_TemplateRef:
-		{
-			break;
-		}
-		
 		default:
-//		std::cout << "temp: " << Name() << " " << child.KindSpelling() << " " << child.Spelling() << std::endl;
 			break;
 		}
 	});
@@ -65,7 +43,7 @@ void ClassTemplate::Visit(libclx::Cursor self)
  * \param args  template arguments, i.e. the actual types that will replace the template parameters
  * \return the instantiated class
  */
-std::unique_ptr<DataType> ClassTemplate::Instantiate(const std::vector<DataType>&)
+std::unique_ptr<DataType> ClassTemplate::Instantiate(const std::vector<std::string>& args) const
 {
 	return std::unique_ptr<DataType>();
 }

@@ -30,7 +30,7 @@ class Namespace : public EntityVec
 {
 public:
 	Namespace();
-	Namespace(libclx::Cursor cursor, const Entity* parent);
+	Namespace(const libclx::Cursor& cursor, const Entity* parent);
 	Namespace(Namespace&&) = default;
 	Namespace(const Namespace&) = delete;
 	
@@ -39,13 +39,13 @@ public:
 	
 	std::string Type() const override;
 	
-	void Visit(libclx::Cursor cursor);
+	void Visit(const libclx::Cursor& cursor);
 	
 	void CrossReference(EntityMap *map) override;
 	void MarkUsed() override;
 	
 private:
-	void VisitMemberFunction(libclx::Cursor cursor);
+	void VisitMemberFunction(const libclx::Cursor& cursor);
 	
 private:
 	std::vector<DataType*>      m_types;

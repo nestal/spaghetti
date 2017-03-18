@@ -26,9 +26,9 @@ class ClassTemplate : public DataType
 public:
 	using DataType::DataType;
 	
-	void Visit(libclx::Cursor self) override;
+	void Visit(const libclx::Cursor& self) override;
 	
-	std::unique_ptr<DataType> Instantiate(const std::vector<DataType>& args);
+	std::unique_ptr<DataType> Instantiate(const std::vector<std::string>& args) const;
 	
 private:
 	std::map<std::string, std::string> m_args;

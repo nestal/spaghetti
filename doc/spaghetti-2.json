@@ -21,52 +21,10 @@
             "classes": [
                 {
                     "height": 175,
-                    "id": "c:@N@libclx@S@Type",
+                    "id": "c:@N@libclx@S@SourceLocation",
                     "width": 225,
-                    "x": -959,
-                    "y": 468
-                },
-                {
-                    "height": 249,
-                    "id": "c:@N@codebase@S@Namespace",
-                    "width": 315,
-                    "x": -1072,
-                    "y": 150
-                },
-                {
-                    "height": 179,
-                    "id": "c:@N@codebase@S@EntityVec",
-                    "width": 416,
-                    "x": -857.5,
-                    "y": -128
-                },
-                {
-                    "height": 198,
-                    "id": "c:@N@codebase@S@Entity",
-                    "width": 441,
-                    "x": -332,
-                    "y": -274
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@codebase@S@LeafEntity",
-                    "width": 225,
-                    "x": -113,
-                    "y": 9
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@codebase@S@DataType",
-                    "width": 225,
-                    "x": -466,
-                    "y": 10
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@codebase@S@Variable",
-                    "width": 225,
-                    "x": -418,
-                    "y": 473
+                    "x": -124,
+                    "y": 335
                 },
                 {
                     "height": 230,
@@ -77,10 +35,52 @@
                 },
                 {
                     "height": 175,
-                    "id": "c:@N@libclx@S@SourceLocation",
+                    "id": "c:@N@codebase@S@Variable",
                     "width": 225,
-                    "x": -124,
-                    "y": 335
+                    "x": -418,
+                    "y": 473
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@DataType",
+                    "width": 225,
+                    "x": -466,
+                    "y": 10
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@LeafEntity",
+                    "width": 225,
+                    "x": -113,
+                    "y": 9
+                },
+                {
+                    "height": 198,
+                    "id": "c:@N@codebase@S@Entity",
+                    "width": 441,
+                    "x": -332,
+                    "y": -274
+                },
+                {
+                    "height": 179,
+                    "id": "c:@N@codebase@S@EntityVec",
+                    "width": 416,
+                    "x": -857.5,
+                    "y": -128
+                },
+                {
+                    "height": 249,
+                    "id": "c:@N@codebase@S@Namespace",
+                    "width": 315,
+                    "x": -1072,
+                    "y": 150
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@libclx@S@Type",
+                    "width": 225,
+                    "x": -959,
+                    "y": 468
                 }
             ],
             "name": "Entity Classes",
@@ -90,115 +90,10 @@
             "classes": [
                 {
                     "height": 175,
-                    "id": "c:@S@SizeGripItem",
-                    "width": 225,
-                    "x": -1862,
-                    "y": 459
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsObject",
-                    "width": 225,
-                    "x": -1572,
-                    "y": 440
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@N@classgf@S@ClassView",
-                    "width": 225,
-                    "x": -722,
-                    "y": 570
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@N@classgf@S@BaseItem",
-                    "width": 225,
-                    "x": -1164,
-                    "y": 146
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@N@classgf@S@ClassItem",
-                    "width": 225,
-                    "x": -1443,
-                    "y": 752
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@N@classgf@S@Edge",
-                    "width": 225,
-                    "x": -1112,
-                    "y": 743
-                },
-                {
-                    "height": 263,
-                    "id": "c:@S@QGraphicsView",
-                    "width": 339,
-                    "x": -730,
-                    "y": 208
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsItem",
-                    "width": 321.9528329706484,
-                    "x": -1602.476416485324,
-                    "y": 147
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsLineItem",
-                    "width": 225,
-                    "x": -1019,
-                    "y": 464
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsItemGroup",
-                    "width": 314,
-                    "x": -2233.5,
-                    "y": 179
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsEllipseItem",
-                    "width": 225,
-                    "x": -2909,
-                    "y": 442
-                },
-                {
-                    "height": 175,
                     "id": "c:@S@QGraphicsSimpleTextItem",
                     "width": 225,
-                    "x": -2194,
-                    "y": 856
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsTextItem",
-                    "width": 225,
-                    "x": -1766,
-                    "y": 873
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsPathItem",
-                    "width": 225,
-                    "x": -2467.852832653936,
-                    "y": 700.3429805001294
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsPolygonItem",
-                    "width": 225,
-                    "x": -2061.97105849961,
-                    "y": 648.1471673460643
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsRectItem",
-                    "width": 225,
-                    "x": -2757,
-                    "y": 701
+                    "x": -2695,
+                    "y": 918
                 },
                 {
                     "height": 175,
@@ -209,10 +104,115 @@
                 },
                 {
                     "height": 175,
+                    "id": "c:@S@QGraphicsRectItem",
+                    "width": 225,
+                    "x": -2757,
+                    "y": 701
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsPolygonItem",
+                    "width": 225,
+                    "x": -2061.97105849961,
+                    "y": 648.1471673460643
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsPathItem",
+                    "width": 225,
+                    "x": -2467.852832653936,
+                    "y": 700.3429805001294
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsTextItem",
+                    "width": 225,
+                    "x": -1766,
+                    "y": 873
+                },
+                {
+                    "height": 175,
                     "id": "c:@S@QGraphicsSimpleTextItem",
                     "width": 225,
-                    "x": -2695,
-                    "y": 918
+                    "x": -2194,
+                    "y": 856
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsEllipseItem",
+                    "width": 225,
+                    "x": -2909,
+                    "y": 442
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsItemGroup",
+                    "width": 314,
+                    "x": -2233.5,
+                    "y": 179
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsLineItem",
+                    "width": 225,
+                    "x": -1019,
+                    "y": 464
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsItem",
+                    "width": 321.9528329706484,
+                    "x": -1602.476416485324,
+                    "y": 147
+                },
+                {
+                    "height": 263,
+                    "id": "c:@S@QGraphicsView",
+                    "width": 339,
+                    "x": -730,
+                    "y": 208
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@Edge",
+                    "width": 225,
+                    "x": -1112,
+                    "y": 743
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@ClassItem",
+                    "width": 225,
+                    "x": -1443,
+                    "y": 752
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@BaseItem",
+                    "width": 225,
+                    "x": -1164,
+                    "y": 146
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@ClassView",
+                    "width": 225,
+                    "x": -722,
+                    "y": 570
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsObject",
+                    "width": 225,
+                    "x": -1572,
+                    "y": 440
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@SizeGripItem",
+                    "width": 225,
+                    "x": -1862,
+                    "y": 459
                 }
             ],
             "name": "Class Diagram2",
@@ -222,38 +222,24 @@
             "classes": [
                 {
                     "height": 175,
-                    "id": "c:@N@gui@S@MainWnd",
+                    "id": "c:@S@QWidget",
                     "width": 225,
-                    "x": 89,
-                    "y": 191
+                    "x": 15,
+                    "y": -298
                 },
                 {
                     "height": 175,
-                    "id": "c:@N@Ui@S@MainWnd",
+                    "id": "c:@S@QMainWindow",
                     "width": 225,
-                    "x": -450,
-                    "y": 227
+                    "x": 101,
+                    "y": -10
                 },
                 {
                     "height": 175,
-                    "id": "c:@S@Ui_MainWnd",
+                    "id": "c:@N@gui@S@ViewSet",
                     "width": 225,
-                    "x": -450,
-                    "y": -168
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@S@ViewBase",
-                    "width": 225,
-                    "x": -189,
-                    "y": -157
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@S@ViewSet@S@iterator",
-                    "width": 225,
-                    "x": -169,
-                    "y": 65
+                    "x": 364,
+                    "y": 44
                 },
                 {
                     "height": 175,
@@ -264,10 +250,38 @@
                 },
                 {
                     "height": 175,
-                    "id": "c:@N@gui@S@ViewSet",
+                    "id": "c:@N@gui@S@ViewSet@S@iterator",
                     "width": 225,
-                    "x": 364,
-                    "y": 44
+                    "x": -169,
+                    "y": 65
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@S@ViewBase",
+                    "width": 225,
+                    "x": -302,
+                    "y": -185
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@Ui_MainWnd",
+                    "width": 225,
+                    "x": -564,
+                    "y": -145
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@Ui@S@MainWnd",
+                    "width": 225,
+                    "x": -450,
+                    "y": 227
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@S@MainWnd",
+                    "width": 225,
+                    "x": 135,
+                    "y": 220
                 }
             ],
             "name": "Class Diagram3",

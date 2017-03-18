@@ -16,6 +16,10 @@
 #include <string>
 #include <iosfwd>
 
+namespace libclx {
+class Cursor;
+}
+
 namespace codebase {
 
 class ClassRef
@@ -23,33 +27,25 @@ class ClassRef
 public:
 	ClassRef() = default;
 	
-	template <typename String>
-	explicit ClassRef(String&& base) :
-		m_base_id{std::forward<String>(base)}
-	{
-	}
-	
-	template <typename String>
-	ClassRef(String&& base, String&& temp, std::initializer_list<std::string> args) :
-		m_base_id{std::forward<String>(base)},
-		m_temp_id{std::forward<String>(temp)},
-		m_temp_args{args}
-	{
-	}
+	ClassRef(const std::string& base);
+	explicit ClassRef(const libclx::Cursor& cursor);
 	
 	const std::string& ID() const;
 	void SetID(std::string&& base_id);
 	
 	const std::string& TemplateID() const;
-	void SetTemplateID(const std::string&& id);
+	ClassRef& SetTemplateID(const std::string&& id);
 	
 	const std::vector<std::string>& TempArgs() const;
-	void AddTempArgs(std::string&& arg);
+	ClassRef& AddTempArgs(std::string&& arg);
 	
 	bool IsTemplate() const;
 	
 	bool operator==(const ClassRef& ref) const;
 	bool operator!=(const ClassRef& ref) const;
+
+private:
+	void FromBaseCursor(const libclx::Cursor& cursor);
 	
 private:
 	//! USR of the class or template instantiation

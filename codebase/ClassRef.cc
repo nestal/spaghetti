@@ -11,6 +11,9 @@
 //
 
 #include "ClassRef.hh"
+
+#include "libclx/Cursor.hh"
+
 #include <ostream>
 #include <cassert>
 
@@ -32,9 +35,10 @@ void ClassRef::SetID(std::string&& base_id)
 	m_base_id = std::move(base_id);
 }
 
-void ClassRef::AddTempArgs(std::string&& arg)
+ClassRef& ClassRef::AddTempArgs(std::string&& arg)
 {
 	m_temp_args.push_back(std::move(arg));
+	return *this;
 }
 
 bool ClassRef::operator==(const ClassRef& ref) const
@@ -57,9 +61,47 @@ const std::string& ClassRef::TemplateID() const
 	return m_temp_id;
 }
 
-void ClassRef::SetTemplateID(const std::string&& id)
+ClassRef& ClassRef::SetTemplateID(const std::string&& id)
 {
 	m_temp_id = std::move(id);
+	return *this;
+}
+
+ClassRef::ClassRef(const libclx::Cursor& cursor)
+{
+	if (cursor.Kind() == CXCursor_CXXBaseSpecifier)
+		FromBaseCursor(cursor);
+}
+
+void ClassRef::FromBaseCursor(const libclx::Cursor& cursor)
+{
+	// Iterating the TypeRef under the specifier.
+	// It works for both template or non-template base classes.
+	cursor.Visit([this](libclx::Cursor dec, libclx::Cursor parent)
+	{
+		switch (dec.Kind())
+		{
+		case CXCursor_TemplateRef:
+			m_base_id = parent.Referenced().USR();
+			m_temp_id = dec.Referenced().USR();
+			break;
+		
+		case CXCursor_TypeRef:
+			if (m_temp_id.empty())
+				m_base_id = dec.Referenced().USR();
+			else
+				m_temp_args.push_back(dec.Referenced().USR());
+			break;
+		
+		default:
+			break;
+		}
+	});
+}
+
+ClassRef::ClassRef(const std::string& base) :
+	m_base_id{base}
+{
 }
 
 std::ostream& operator<<(std::ostream& os, const ClassRef& ref)

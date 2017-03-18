@@ -29,7 +29,7 @@ Namespace::Namespace() :
 {
 }
 
-Namespace::Namespace(libclx::Cursor cursor, const Entity* parent) :
+Namespace::Namespace(const libclx::Cursor& cursor, const Entity* parent) :
 	EntityVec{cursor.Spelling(), cursor.USR(), parent}
 {
 }
@@ -39,7 +39,7 @@ std::string Namespace::Type() const
 	return "Namespace";
 }
 
-void Namespace::Visit(libclx::Cursor self)
+void Namespace::Visit(const libclx::Cursor& self)
 {
 	self.Visit([this](libclx::Cursor cursor, libclx::Cursor)
 	{
@@ -84,7 +84,7 @@ void Namespace::CrossReference(EntityMap *)
 {
 }
 
-void Namespace::VisitMemberFunction(libclx::Cursor cursor)
+void Namespace::VisitMemberFunction(const libclx::Cursor& cursor)
 {
 	// class method definition in namespace
 	// the class definition should already be parsed

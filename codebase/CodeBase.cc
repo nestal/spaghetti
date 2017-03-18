@@ -13,6 +13,7 @@
 #include "CodeBase.hh"
 
 #include "Namespace.hh"
+#include "ClassTemplate.hh"
 
 #include "libclx/Cursor.hh"
 
@@ -54,6 +55,23 @@ public:
 	const DataType* Find(const ClassRef& ref) const override
 	{
 		return dynamic_cast<const DataType*>(Find(ref.ID()));
+	}
+	
+	DataType* Instantiate(const ClassRef& ref) override
+	{
+		assert(ref.IsTemplate());
+		
+		if (auto temp = dynamic_cast<ClassTemplate*>(Find(ref.ID())))
+		{
+			auto inst = temp->Instantiate(ref.TempArgs());
+			auto parent = Find(temp->Parent()->ID());
+			
+			assert(parent);
+			assert(inst);
+//			parent->
+		}
+		
+		return nullptr;
 	}
 	
 	DataType* Find(const ClassRef& ref) override

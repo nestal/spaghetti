@@ -58,8 +58,8 @@ public:
 	
 	libclx::SourceLocation Location() const override;
 	
-	virtual void Visit(libclx::Cursor self);
-	void VisitFunction(libclx::Cursor func);
+	virtual void Visit(const libclx::Cursor& self);
+	void VisitFunction(const libclx::Cursor& func);
 	
 	boost::iterator_range<field_iterator> Fields() const;
 	boost::iterator_range<function_iterator> Functions() const;
@@ -78,7 +78,7 @@ public:
 	
 private:
 	void MarkBaseClassUsed(EntityMap *map);
-	
+
 private:
 	libclx::SourceLocation              m_definition;
 	std::vector<ClassRef>               m_base_classes;
