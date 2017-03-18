@@ -56,4 +56,13 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	// TODO: fix it!
 	ASSERT_TRUE(temp_base);
 	ASSERT_EQ("RecursiveBase<BaseType>", temp_base->Name());
+	
+	auto inst_base = dynamic_cast<const DataType*>(m_subject.Map().Find("c:@S@RecursiveBase>#$@S@Base"));
+	ASSERT_TRUE(inst_base);
+	
+	std::vector<ClassRef> bbase{
+		ClassRef{"c:@S@Base"},
+		ClassRef{"c:@S@Base4"}
+	};
+	ASSERT_EQ(bbase, inst_base->BaseClasses());
 }

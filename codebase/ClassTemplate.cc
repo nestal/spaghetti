@@ -50,7 +50,7 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
 	}
 	
 	default:
-		ParentScope::VisitChild(child, self);
+		DataType::VisitChild(child, self);
 		break;
 	}
 }
@@ -63,7 +63,7 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
 std::unique_ptr<DataType> ClassTemplate::Instantiate(const ClassRef& ref) const
 {
 	auto inst = std::make_unique<Instance>(ref, this);
-	
+
 	for (auto&& base : BaseClasses())
 	{
 		auto arg_idx = Match(base.ID());
