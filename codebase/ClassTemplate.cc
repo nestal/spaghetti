@@ -17,25 +17,21 @@
 
 namespace codebase {
 
-void ClassTemplate::Visit(const libclx::Cursor& self)
+void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
 {
-	DataType::Visit(self);
+	DataType::VisitChild(child, self);
 	
-	self.Visit([this, self](libclx::Cursor child, libclx::Cursor)
+	switch (child.Kind())
 	{
-		switch (child.Kind())
-		{
-		case CXCursor_TemplateTypeParameter:
-		{
-//			std::cout << Name() << " has template parameter: " << child.Spelling() << " " << child.USR() << " " << child.Type() << std::endl;
-			m_args.insert({child.Spelling(), child.USR()});
-			break;
-		}
-		
-		default:
-			break;
-		}
-	});
+	case CXCursor_TemplateTypeParameter:
+	{
+		m_args.insert({child.Spelling(), child.USR()});
+		break;
+	}
+	
+	default:
+		break;
+	}
 }
 
 /**

@@ -23,8 +23,8 @@
 
 namespace codebase {
 
-DataType::DataType(libclx::Cursor cursor, const Entity* parent) :
-	EntityVec{cursor.Spelling(), cursor.USR(), parent}
+DataType::DataType(const libclx::Cursor& cursor, const Entity* parent) :
+	ParentScope{cursor, parent}
 {
 	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl || cursor.Kind() == CXCursor_ClassTemplate);
 	if (cursor.IsDefinition())
@@ -32,63 +32,42 @@ DataType::DataType(libclx::Cursor cursor, const Entity* parent) :
 }
 
 
-void DataType::Visit(const libclx::Cursor& self)
+void DataType::OnVisit(const libclx::Cursor& self)
 {
-	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl || self.Kind() == CXCursor_ClassTemplate);
-	assert(Name() == self.Spelling());
-	assert(!ID().empty() && ID() == self.USR());
+	assert(self.Kind() == CXCursor_StructDecl
+		|| self.Kind() == CXCursor_ClassDecl
+		|| self.Kind() == CXCursor_ClassTemplate);
 	
 	if (self.IsDefinition() || m_definition == libclx::SourceLocation{})
 		m_definition = self.Location();
-	
-//	std::cout << "class: " << Name() << " " << self.Kind() << " " << Location() << std::endl;
-	
-	self.Visit([this](libclx::Cursor child, libclx::Cursor)
-	{
-		switch (child.Kind())
-		{
-		case CXCursor_FieldDecl:
-			AddUnique(m_fields, child.USR(), child, this);
-			break;
-		
-		// nested classes
-		case CXCursor_ClassDecl:
-		case CXCursor_StructDecl:
-			AddUnique(m_nested_types, child.USR(), child, this)->Visit(child);
-			break;
-		
-		case CXCursor_ClassTemplate:
-			AddUnique(m_temps, child.USR(), child, this)->Visit(child);
-			break;
-			
-		case CXCursor_CXXBaseSpecifier:
-		{
-			ClassRef base{child};
-			
-			// normally we don't have hundreds of base classes so sequential searches should be faster
-			// the order of the base classes is important, so we don't want to switch to set
-			if (std::find(m_base_classes.begin(), m_base_classes.end(), base) == m_base_classes.end())
-				m_base_classes.push_back(base);
-			
-			break;
-		}
-		case CXCursor_CXXMethod:
-			AddUnique(m_functions, child.USR(), child, this);
-			break;
-		
-		default:
-			break;
-		}
-	});
+}
 
+void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
+{
+	ParentScope::VisitChild(child, self);
+	switch (child.Kind())
+	{
+	case CXCursor_CXXBaseSpecifier:
+	{
+		ClassRef base{child};
+		
+		// normally we don't have hundreds of base classes so sequential searches should be faster
+		// the order of the base classes is important, so we don't want to switch to set
+		if (std::find(m_base_classes.begin(), m_base_classes.end(), base) == m_base_classes.end())
+			m_base_classes.push_back(base);
+		
+		break;
+	}
+	
+	default: break;
+	}
+}
+
+void DataType::AfterVisitingChild(const libclx::Cursor& self)
+{
 	// mark self and all children as used, after creating the children
 	if (IsUsed() || (self.IsDefinition() && self.Location().IsFromMainFile()))
 		MarkUsed();
-}
-
-void DataType::MarkUsed()
-{
-	EntityVec::MarkUsed();
 }
 
 std::string DataType::Type() const
@@ -128,16 +107,6 @@ bool DataType::IsUsedInMember(const DataType& other) const
 	}) != fields.end();
 }
 
-boost::iterator_range<DataType::field_iterator> DataType::Fields() const
-{
-	return {m_fields.begin(), m_fields.end()};
-}
-
-boost::iterator_range<DataType::function_iterator> DataType::Functions() const
-{
-	return {m_functions.begin(), m_functions.end()};
-}
-
 std::ostream& operator<<(std::ostream& os, const DataType& c)
 {
 	os << "class: " << c.Name() << " (" << c.ID() << ")\n";
@@ -151,7 +120,7 @@ void DataType::CrossReference(EntityMap *map)
 	assert(map);
 	MarkBaseClassUsed(map);
 	
-	EntityVec::MarkUsed();
+	MarkUsed();
 }
 
 void DataType::MarkBaseClassUsed(EntityMap *map)
@@ -171,25 +140,6 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 			}
 		}
 	}
-}
-
-void DataType::VisitFunction(const libclx::Cursor& func)
-{
-	auto it = FindByID(m_functions, func.USR());
-	
-	// the definition of a member function should come after its declaration
-	if (it != m_functions.end())
-		(*it)->Visit(func);
-}
-
-const codebase::Function& DataType::Function(std::size_t idx) const
-{
-	return *m_functions.at(idx);
-}
-
-const codebase::Variable& DataType::Field(std::size_t idx) const
-{
-	return *m_fields.at(idx);
 }
 
 } // end of namespace
