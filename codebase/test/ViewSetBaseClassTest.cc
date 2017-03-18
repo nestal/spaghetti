@@ -52,12 +52,11 @@ protected:
 TEST_F(ViewSetBaseClassTest, Test_ViewSet_Base)
 {
 	ASSERT_TRUE(m_viewset);
-	ASSERT_EQ(1, m_viewset->BaseClasses().size());
+	ASSERT_EQ(std::vector<ClassRef>{
+		{"c:@S@QTabWidget"}
+	}, m_viewset->BaseClasses());
 	
-	auto base_id = m_viewset->BaseClasses().front();
-	ASSERT_EQ("c:@S@QTabWidget", base_id.BaseID());
-	
-	auto base = m_subject.Map().Find(base_id.BaseID());
+	auto base = m_subject.Map().Find(m_viewset->BaseClasses().front().BaseID());
 	ASSERT_TRUE(base);
 	ASSERT_EQ("QTabWidget", base->Name());
 }

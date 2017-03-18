@@ -120,7 +120,7 @@ void DataType::Visit(libclx::Cursor self)
 //				std::cout << Name() << " has child: \"" <<  child.Spelling() << "\" " << child.KindSpelling() << " " << child.Location() << " " << child.Type() <<  std::endl;
 			break;
 		}
-	}, true);
+	});
 
 	// mark self and all children as used, after creating the children
 	if (IsUsed() || (self.IsDefinition() && self.Location().IsFromMainFile()))
