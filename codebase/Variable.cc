@@ -11,15 +11,17 @@
 //
 
 #include "Variable.hh"
-#include "DataType.hh"
 
+#include "DataType.hh"
+#include "EntityMap.hh"
 #include "libclx/Cursor.hh"
+#include "EntityType.hh"
 
 #include <iostream>
 
 namespace codebase {
 
-Variable::Variable(libclx::Cursor field, const Entity *parent) :
+Variable::Variable(const libclx::Cursor& field, const Entity *parent) :
 	LeafEntity{field.Spelling(), field.USR(), parent},
 	m_location{field.Location()},
 	m_type{field.Type()}
@@ -27,9 +29,9 @@ Variable::Variable(libclx::Cursor field, const Entity *parent) :
 }
 
 
-std::string Variable::Type() const
+EntityType Variable::Type() const
 {
-	return m_type.Spelling();
+	return EntityType::variable;
 }
 
 std::ostream& operator<<(std::ostream& os, const Variable& c)
@@ -44,7 +46,7 @@ libclx::SourceLocation Variable::Location() const
 
 std::string Variable::UML() const
 {
-	return Name() + " : " + Type();
+	return Name() + " : " + DisplayType();
 }
 
 std::string Variable::TypeID() const
@@ -61,4 +63,9 @@ void Variable::CrossReference(EntityMap *map)
 	}
 }
 
+std::string Variable::DisplayType() const
+{
+	return m_type.Spelling();
+}
+	
 } // end of namespace

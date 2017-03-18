@@ -13,6 +13,7 @@
 #include <gtest/gtest.h>
 
 #include "codebase/EntityVec.hh"
+#include "codebase/EntityType.hh"
 #include "MockEntity.hh"
 
 using namespace codebase;
@@ -22,7 +23,7 @@ class TestEntityVec : public EntityVec
 {
 public:
 	using EntityVec::EntityVec;
-	std::string Type() const override {return {};}
+	EntityType Type() const override {return EntityType::none;}
 	void CrossReference(EntityMap *) override {}
 };
 

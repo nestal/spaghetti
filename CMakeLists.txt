@@ -71,6 +71,10 @@ add_library(spag ${LIBCLANGXX_FILES} ${CODEBASE_FILES} ${PROJECT_FILES} ${UTIL_F
 # the classes in "project" namespace needs QtCore to serialize models to/from JSON files
 target_link_libraries(spag ${LIBCLANG_LIBRARY} ${Boost_LIBRARIES} Qt5::Core)
 
+# debug tool to dump the AST of a source file for analysis
+add_executable(dumpast libclx/DumpAST.cc)
+target_link_libraries(dumpast spag)
+
 file(GLOB GUI_LIB_FILES
 	gui/classgf/*.cc gui/classgf/*.hh
 	gui/logicalvw/*.cc gui/logicalvw/*.hh

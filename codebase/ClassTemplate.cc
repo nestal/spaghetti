@@ -12,16 +12,80 @@
 
 #include "ClassTemplate.hh"
 
+#include "EntityType.hh"
+
+#include "libclx/Cursor.hh"
+#include "libclx/Type.hh"
+
 namespace codebase {
+
+class ClassTemplate::Instance : public DataType
+{
+public:
+	Instance(const ClassRef& ref, const ClassTemplate *temp) :
+		DataType{ref.Name(), ref.ID(), temp->Location(), temp->Parent()},
+		m_temp(temp)
+	{
+	}
+	
+	EntityType Type() const override
+	{
+		return EntityType::instantiated_type;
+	}
+	
+	using DataType::AddBase;
+
+private:
+	const ClassTemplate *m_temp;
+};
+
+void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
+{
+	switch (child.Kind())
+	{
+	case CXCursor_TemplateTypeParameter:
+	{
+		m_param.push_back({child.Spelling(), child.USR()});
+		break;
+	}
+	
+	default:
+		DataType::VisitChild(child, self);
+		break;
+	}
+}
 
 /**
  * \brief Instantiate a template by replacing all its template parameters with the arguments
  * \param args  template arguments, i.e. the actual types that will replace the template parameters
  * \return the instantiated class
  */
-std::unique_ptr<DataType> ClassTemplate::Instantiate(const std::vector<DataType>&)
+std::unique_ptr<DataType> ClassTemplate::Instantiate(const ClassRef& ref) const
 {
-	return std::unique_ptr<DataType>();
+	auto inst = std::make_unique<Instance>(ref, this);
+
+	for (auto&& base : BaseClasses())
+	{
+		auto arg_idx = Match(base.ID());
+		inst->AddBase(
+			arg_idx != m_param.size() ? ClassRef{ref.TempArgs().at(arg_idx)} : base
+		);
+	}
+	return inst;
+}
+
+std::size_t ClassTemplate::Match(const std::string& usr) const
+{
+	auto it = std::find_if(m_param.begin(), m_param.end(), [&usr](auto&& param)
+	{
+		return param.usr == usr;
+	});
+	return static_cast<std::size_t>(it-m_param.begin());
+}
+
+EntityType ClassTemplate::Type() const
+{
+	return EntityType::class_template;
 }
 	
 } // end of namespace

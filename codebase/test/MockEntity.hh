@@ -22,7 +22,7 @@ class MockEntity : public LeafEntity
 public:
 	MockEntity(std::size_t idx = 0, const Entity* parent = {});
 	
-	std::string Type() const override;
+	EntityType Type() const override;
 	
 	std::size_t Index() const;
 	

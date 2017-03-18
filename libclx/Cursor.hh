@@ -52,6 +52,8 @@ public:
 	Cursor Referenced() const;
 	Cursor SpecializedCursorTemplate() const;
 	
+	int NumTemplateArguments() const;
+		
 	std::string Spelling() const ;
 	std::string DisplayName() const;
 	std::string USR() const;
@@ -68,7 +70,7 @@ public:
 	};
 	
 	template <typename Visitor>
-	void Visit(Visitor visitor, bool recurse = false)
+	void Visit(Visitor visitor, bool recurse = false) const
 	{
 		struct ClientData
 		{

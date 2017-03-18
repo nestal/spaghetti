@@ -14,14 +14,39 @@
 
 #include "DataType.hh"
 
+#include <boost/iterator/iterator_facade.hpp>
+#include <boost/range/iterator_range_core.hpp>
+
+#include <map>
+
 namespace codebase {
+
+class ClassRef;
+class ClassTemplate;
+class InstantiatedDataType;
 
 class ClassTemplate : public DataType
 {
 public:
 	using DataType::DataType;
 	
-	std::unique_ptr<DataType> Instantiate(const std::vector<DataType>& args);
-};
+	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
 	
+	std::unique_ptr<DataType> Instantiate(const ClassRef& ref) const;
+	
+	EntityType Type() const override;
+
+private:
+	std::size_t Match(const std::string& usr) const;
+	class Instance;
+	
+private:
+	struct Param
+	{
+		std::string     name;
+		std::string     usr;
+	};
+	std::vector<Param> m_param;
+};
+
 } // end of namespace

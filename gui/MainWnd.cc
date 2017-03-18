@@ -246,4 +246,12 @@ void MainWnd::Log(const QString& message)
 	m_ui->m_log_widget->appendPlainText(message);
 }
 
+void MainWnd::closeEvent(QCloseEvent *event)
+{
+	if (ConfirmDiscard())
+		event->accept();
+	else
+		event->ignore();
+}
+
 } // end of namespace

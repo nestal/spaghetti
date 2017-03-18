@@ -13,7 +13,8 @@
 
 #pragma once
 
-#include "EntityVec.hh"
+#include "ParentScope.hh"
+#include "ClassRef.hh"
 #include "libclx/SourceRange.hh"
 
 #include <boost/iterator/indirect_iterator.hpp>
@@ -31,7 +32,6 @@ namespace codebase {
 
 class Function;
 class Variable;
-class ClassTemplate;
 
 /**
  * \brief Represent a C++ class/struct in the CodeBase.
@@ -39,55 +39,50 @@ class ClassTemplate;
  * This class represent particular data type in the code base. A data type is an
  * entity that can be used to definite data in C++.
  */
-class DataType : public EntityVec
+class DataType : public ParentScope
 {
-public:
-	using field_iterator    = boost::indirect_iterator<std::vector<codebase::Variable*>::const_iterator>;
-	using function_iterator = boost::indirect_iterator<std::vector<codebase::Function*>::const_iterator>;
-	using idvec_iterator    = std::vector<std::string>::const_iterator;
+	using idvec_iterator    = std::vector<ClassRef>::const_iterator;
 	
 public:
-	DataType(libclx::Cursor cursor, const Entity* parent);
+	DataType(const libclx::Cursor& cursor, const Entity* parent);
 	DataType(DataType&&) = default;
 	DataType(const DataType&) = delete;
 	DataType& operator=(DataType&&) = default;
 	DataType& operator=(const DataType&) = delete;
 	
-	std::string Type() const override;
+	EntityType Type() const override;
 	
 	libclx::SourceLocation Location() const override;
 	
-	void Visit(libclx::Cursor self);
-	void VisitFunction(libclx::Cursor func);
-	
-	boost::iterator_range<field_iterator> Fields() const;
-	boost::iterator_range<function_iterator> Functions() const;
 	boost::iterator_range<idvec_iterator> BaseClasses() const;
 
-	const codebase::Function& Function(std::size_t idx) const;
-	const codebase::Variable& Field(std::size_t idx) const;
-	
 	bool IsBaseOf(const DataType& other) const;
 	bool IsUsedInMember(const DataType& other) const;
 	
 	friend std::ostream& operator<<(std::ostream& os, const DataType& c);
 
 	void CrossReference(EntityMap *map) override;
-	void MarkUsed() override;
-	
+
 private:
 	void MarkBaseClassUsed(EntityMap *map);
+
+protected:
+	DataType(
+		const std::string& name,
+		const std::string& usr,
+		const libclx::SourceLocation def,
+		const Entity *parent
+	);
+	
+	void AddBase(const ClassRef& base);
+	
+	void OnVisit(const libclx::Cursor& self) override;
+	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
+	void AfterVisitingChild(const libclx::Cursor& self) override;
 	
 private:
 	libclx::SourceLocation              m_definition;
-	std::vector<std::string>            m_base_classes;
-	
-	std::vector<codebase::Variable*>    m_fields;
-	std::vector<codebase::Function*>    m_functions;
-	std::vector<codebase::DataType*>    m_nested_types;
-	std::vector<ClassTemplate*>         m_temps;
-	
-	bool m_used{false};
+	std::vector<ClassRef>               m_bases;
 };
-	
+
 } // end of namespace

@@ -12,6 +12,7 @@
 
 #include "Function.hh"
 #include "Variable.hh"
+#include "EntityType.hh"
 
 #include "libclx/Cursor.hh"
 #include "libclx/Type.hh"
@@ -21,7 +22,7 @@
 
 namespace codebase {
 
-Function::Function(libclx::Cursor first_seen, const Entity *parent) :
+Function::Function(const libclx::Cursor& first_seen, const Entity *parent) :
 	EntityVec{first_seen.Spelling(), first_seen.USR(), parent},
 	m_definition{first_seen.Location()},
 	m_return_type{first_seen.ResultType()}
@@ -33,12 +34,12 @@ libclx::SourceLocation Function::Location() const
 	return m_definition;
 }
 
-std::string Function::Type() const
+EntityType Function::Type() const
 {
-	return "function";
+	return EntityType::function;
 }
 
-void Function::Visit(libclx::Cursor self)
+void Function::Visit(const libclx::Cursor& self)
 {
 	assert(Parent());
 	m_definition = self.Location();

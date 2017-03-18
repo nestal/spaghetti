@@ -11,6 +11,8 @@
 //
 
 #include "Entity.hh"
+
+#include "EntityType.hh"
 #include "libclx/SourceRange.hh"
 
 #include <cassert>
@@ -53,6 +55,11 @@ libclx::SourceLocation Entity::Location() const
 std::string Entity::UML() const
 {
 	return Name();
+}
+
+std::string Entity::DisplayType() const
+{
+	return to_string(Type());
 }
 
 LeafEntity::LeafEntity(const std::string& name, const std::string& usr, const Entity *parent) :

@@ -23,64 +23,78 @@
                     "height": 175,
                     "id": "c:@N@libclx@S@Type",
                     "width": 225,
-                    "x": -959,
-                    "y": 468
+                    "x": -278,
+                    "y": 268
                 },
                 {
                     "height": 249,
                     "id": "c:@N@codebase@S@Namespace",
-                    "width": 315,
-                    "x": -1072,
-                    "y": 150
+                    "width": 356.5628134472327,
+                    "x": -1127.1782178523604,
+                    "y": 203.0284171568141
                 },
                 {
                     "height": 179,
                     "id": "c:@N@codebase@S@EntityVec",
                     "width": 416,
-                    "x": -857.5,
-                    "y": -128
+                    "x": -807.5687925808371,
+                    "y": -376.59521669311647
                 },
                 {
                     "height": 198,
                     "id": "c:@N@codebase@S@Entity",
                     "width": 441,
-                    "x": -332,
-                    "y": -274
+                    "x": -236.4047833068836,
+                    "y": -561.1944194753027
                 },
                 {
                     "height": 175,
                     "id": "c:@N@codebase@S@LeafEntity",
-                    "width": 225,
-                    "x": -113,
+                    "width": 382.6520510067446,
+                    "x": -37.04037542402307,
                     "y": 9
                 },
                 {
                     "height": 175,
                     "id": "c:@N@codebase@S@DataType",
                     "width": 225,
-                    "x": -466,
-                    "y": 10
+                    "x": -673.4007972178139,
+                    "y": 164.10119582672087
                 },
                 {
                     "height": 175,
                     "id": "c:@N@codebase@S@Variable",
                     "width": 225,
-                    "x": -418,
-                    "y": 473
+                    "x": -86,
+                    "y": 521
                 },
                 {
-                    "height": 230,
+                    "height": 218,
                     "id": "c:@N@codebase@S@Function",
-                    "width": 225,
-                    "x": -686,
-                    "y": 229.5
+                    "width": 320,
+                    "x": -421.2976083465582,
+                    "y": -98.09521669311647
                 },
                 {
                     "height": 175,
                     "id": "c:@N@libclx@S@SourceLocation",
+                    "width": 352.55484126909346,
+                    "x": -494.22257936545327,
+                    "y": 505
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@ParentScope",
                     "width": 225,
-                    "x": -124,
-                    "y": 335
+                    "x": -888.9999999999999,
+                    "y": -89.93120741916283
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@ClassTemplate",
+                    "width": 386.9516523978378,
+                    "x": -952.3617081271082,
+                    "y": 487.2881576572111
                 }
             ],
             "name": "Entity Classes",
@@ -224,29 +238,29 @@
                     "height": 175,
                     "id": "c:@N@gui@S@MainWnd",
                     "width": 225,
-                    "x": 89,
-                    "y": 191
+                    "x": 135,
+                    "y": 220
                 },
                 {
                     "height": 175,
                     "id": "c:@N@Ui@S@MainWnd",
                     "width": 225,
-                    "x": -450,
-                    "y": 227
+                    "x": -527,
+                    "y": 140
                 },
                 {
                     "height": 175,
                     "id": "c:@S@Ui_MainWnd",
                     "width": 225,
-                    "x": -450,
-                    "y": -168
+                    "x": -564,
+                    "y": -145
                 },
                 {
                     "height": 175,
                     "id": "c:@N@gui@S@ViewBase",
                     "width": 225,
-                    "x": -189,
-                    "y": -157
+                    "x": -302,
+                    "y": -185
                 },
                 {
                     "height": 175,
@@ -268,9 +282,50 @@
                     "width": 225,
                     "x": 364,
                     "y": 44
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QMainWindow",
+                    "width": 225,
+                    "x": 101,
+                    "y": -10
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QWidget",
+                    "width": 225,
+                    "x": 15,
+                    "y": -298
                 }
             ],
             "name": "Class Diagram3",
+            "type": "class_diagram"
+        },
+        {
+            "classes": [
+                {
+                    "height": 175,
+                    "id": "c:@N@std@ST>2#T#T@unary_function",
+                    "width": 225,
+                    "x": -944,
+                    "y": 129
+                },
+                {
+                    "height": 375,
+                    "id": "c:@N@codebase@S@ParentScope",
+                    "width": 448,
+                    "x": -491.5,
+                    "y": -142
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@Entity",
+                    "width": 225,
+                    "x": -39,
+                    "y": -90
+                }
+            ],
+            "name": "Class Diagram4",
             "type": "class_diagram"
         }
     ],

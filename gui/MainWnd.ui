@@ -218,6 +218,9 @@
    </widget>
   </widget>
   <action name="m_action_exit">
+   <property name="icon">
+    <iconset theme="application-exit"/>
+   </property>
    <property name="text">
     <string>E&amp;xit</string>
    </property>
@@ -228,6 +231,9 @@
    </property>
   </action>
   <action name="m_action_open">
+   <property name="icon">
+    <iconset theme="document-open"/>
+   </property>
    <property name="text">
     <string>&amp;Open...</string>
    </property>
@@ -241,6 +247,9 @@
    </property>
   </action>
   <action name="m_action_save_as">
+   <property name="icon">
+    <iconset theme="document-save-as"/>
+   </property>
    <property name="text">
     <string>Save &amp;As...</string>
    </property>
@@ -256,11 +265,17 @@
    </property>
   </action>
   <action name="m_action_new">
+   <property name="icon">
+    <iconset theme="document-new"/>
+   </property>
    <property name="text">
     <string>&amp;New</string>
    </property>
   </action>
   <action name="m_action_delete">
+   <property name="icon">
+    <iconset theme="edit-delete"/>
+   </property>
    <property name="text">
     <string>&amp;Delete</string>
    </property>
@@ -269,6 +284,9 @@
    </property>
   </action>
   <action name="m_action_copy">
+   <property name="icon">
+    <iconset theme="edit-copy"/>
+   </property>
    <property name="text">
     <string>&amp;Copy</string>
    </property>
@@ -328,16 +346,25 @@
    </property>
   </action>
   <action name="m_action_reset_zoom">
+   <property name="icon">
+    <iconset theme="view-restore"/>
+   </property>
    <property name="text">
     <string>&amp;Reset zoom</string>
    </property>
   </action>
   <action name="m_action_preference">
+   <property name="icon">
+    <iconset theme="emblem-system"/>
+   </property>
    <property name="text">
     <string>P&amp;reference...</string>
    </property>
   </action>
   <action name="m_action_save">
+   <property name="icon">
+    <iconset theme="document-save"/>
+   </property>
    <property name="text">
     <string>&amp;Save</string>
    </property>
@@ -346,6 +373,9 @@
    </property>
   </action>
   <action name="m_action_paste">
+   <property name="icon">
+    <iconset theme="edit-paste"/>
+   </property>
    <property name="text">
     <string>&amp;Paste</string>
    </property>
@@ -355,7 +385,7 @@
   </action>
   <action name="m_action_export">
    <property name="text">
-    <string>Export...</string>
+    <string>&amp;Export...</string>
    </property>
   </action>
  </widget>

@@ -11,7 +11,9 @@
 //
 
 #include "codebase/CodeBase.hh"
+
 #include "codebase/DataType.hh"
+#include "codebase/EntityMap.hh"
 
 #include <gtest/gtest.h>
 
@@ -42,12 +44,25 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	
 	// base should be c:@S@RecursiveBase>#$@S@Base, but we need to fix it by
 	// differentiating between a template and its instantiation
-	std::vector<std::string> base{"c:@ST>1#T@RecursiveBase", "c:@S@Base2", "c:@S@Base3"};
+	std::vector<ClassRef> base{
+		ClassRef{"c:@S@RecursiveBase>#$@S@Base"}.SetTemplateID("c:@ST>1#T@RecursiveBase").AddTempArgs("c:@S@Base"),
+		ClassRef{"c:@S@Base2"},
+		ClassRef{"c:@S@Base3"}
+	};
 	ASSERT_EQ(base, derived->BaseClasses());
 	
 	auto temp_base = m_subject.Map().Find("c:@ST>1#T@RecursiveBase");
 	
 	// TODO: fix it!
 	ASSERT_TRUE(temp_base);
-	ASSERT_EQ("RecursiveBase", temp_base->Name());
+	ASSERT_EQ("RecursiveBase<BaseType>", temp_base->Name());
+	
+	auto inst_base = dynamic_cast<const DataType*>(m_subject.Map().Find("c:@S@RecursiveBase>#$@S@Base"));
+	ASSERT_TRUE(inst_base);
+	
+	std::vector<ClassRef> bbase{
+		ClassRef{"c:@S@Base"},
+		ClassRef{"c:@S@Base4"}
+	};
+	ASSERT_EQ(bbase, inst_base->BaseClasses());
 }

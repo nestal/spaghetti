@@ -22,30 +22,8 @@ namespace codebase {
 template <typename Parent, typename Child>
 class EntityIterator;
 
-class Entity;
-
-class EntityMap
-{
-public:
-	virtual ~EntityMap() = default;
-	
-	virtual const Entity* Find(const std::string& id) const = 0;
-	virtual Entity* Find(const std::string& id) = 0;
-	
-	virtual const Entity* FindByName(const std::string& name) const = 0;
-	
-	template <typename EntityType>
-	EntityType* TypedFind(const std::string& id)
-	{
-		return dynamic_cast<EntityType*>(Find(id));
-	}
-	
-	template <typename EntityType>
-	const EntityType* TypedFind(const std::string& id) const
-	{
-		return dynamic_cast<const EntityType*>(Find(id));
-	}
-};
+class EntityMap;
+enum class EntityType;
 
 /**
  * \brief Represent an entity in the code base.
@@ -87,7 +65,8 @@ public:
 	 * is the class. For non-member functions, the parent entity will be a namespace.
 	 */
 	virtual const Entity* Parent() const = 0;
-	virtual std::string Type() const = 0;
+	virtual EntityType Type() const = 0;
+	virtual std::string DisplayType() const;
 	
 	virtual std::size_t ChildCount() const = 0;
 	virtual const Entity* Child(std::size_t idx) const = 0;

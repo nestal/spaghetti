@@ -12,7 +12,9 @@
 
 #include "CodeBase.hh"
 
+#include "EntityMap.hh"
 #include "Namespace.hh"
+#include "ClassTemplate.hh"
 
 #include "libclx/Cursor.hh"
 
@@ -49,6 +51,43 @@ public:
 	{
 		auto it = m_index.get<ByName>().find(name);
 		return it != m_index.get<ByName>().end() ? *it : nullptr;
+	}
+	
+	const DataType* Find(const ClassRef& ref) const override
+	{
+		return dynamic_cast<const DataType*>(Find(ref.ID()));
+	}
+	
+	DataType* Instantiate(const ClassRef& ref) override
+	{
+		assert(ref.IsTemplate());
+		assert(!ref.ID().empty());
+		
+		auto result = dynamic_cast<DataType*>(Find(ref.ID()));
+		if (!result)
+		{
+			if (auto temp = dynamic_cast<ClassTemplate*>(Find(ref.TemplateID())))
+			{
+				// instantiate template and add to the index immediately
+				auto inst = temp->Instantiate(ref);
+				AddToIndex(inst.get());
+				
+				auto parent = dynamic_cast<ParentScope *>(Find(temp->Parent()->ID()));
+				
+				assert(parent);
+				assert(inst);
+				
+				result = inst.get();
+				parent->Add(std::move(inst));
+			}
+		}
+		
+		return result;
+	}
+	
+	DataType* Find(const ClassRef& ref) override
+	{
+		return dynamic_cast<DataType*>(Find(ref.ID()));
 	}
 	
 	Entity* Root()

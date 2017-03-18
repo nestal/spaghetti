@@ -1,5 +1,11 @@
 int global_var = 0;
 
+class Base4
+{
+public:
+	Base4() = default;
+};
+
 class Base
 {
 public:
@@ -8,7 +14,7 @@ public:
 };
 
 template <typename BaseType>
-class RecursiveBase : public BaseType
+class RecursiveBase : public BaseType, public Base4
 {
 public:
 	virtual void SomeFunc()

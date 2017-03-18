@@ -12,86 +12,61 @@
 
 #include "Namespace.hh"
 
-#include "Function.hh"
 #include "DataType.hh"
-#include "Variable.hh"
-#include "ClassTemplate.hh"
+#include "EntityType.hh"
 
 #include "libclx/Cursor.hh"
-
-
-#include <iostream>
 
 namespace codebase {
 
 Namespace::Namespace() :
-	EntityVec{"Root", "", nullptr}
+	ParentScope{"Root", "", nullptr}
 {
 }
 
-Namespace::Namespace(libclx::Cursor cursor, const Entity* parent) :
-	EntityVec{cursor.Spelling(), cursor.USR(), parent}
+Namespace::Namespace(const libclx::Cursor& cursor, const Entity* parent) :
+	ParentScope{cursor, parent}
 {
 }
 
-std::string Namespace::Type() const
+EntityType Namespace::Type() const
 {
-	return "Namespace";
+	return EntityType::namespace_;
 }
 
-void Namespace::Visit(libclx::Cursor self)
+void Namespace::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
 {
-	self.Visit([this](libclx::Cursor cursor, libclx::Cursor)
+	switch(child.Kind())
 	{
-		if (cursor.Location().IsFromSystemHeader())
-			return;
+	case CXCursor_CXXMethod:
+	{
+		if (child.SemanticParent() == self)
+			ParentScope::VisitChild(child, self);
 		
-		const std::string& id = cursor.USR();
-		switch (cursor.Kind())
+		else
 		{
-		case CXCursor_ClassDecl:
-		case CXCursor_StructDecl:
-//			std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << ' ' << cursor.USR() << std::endl;
-			AddUnique(m_types, id, cursor, this)->Visit(cursor);
-			break;
+			// class method definition in namespace
+			// the class definition should already be parsed
+			auto parent = FindByID(Types(), child.SemanticParent().USR());
 			
-		case CXCursor_ClassTemplate:
-//			std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << ' ' << cursor.USR() << std::endl;
-			AddUnique(m_temps, id, cursor, this)->Visit(cursor);
-			break;
-		
-		case CXCursor_Namespace:
-			AddUnique(m_ns, id, cursor, this)->Visit(cursor);
-			break;
-		
-		case CXCursor_FieldDecl:
-			AddUnique(m_vars, id, cursor, this);
-			break;
-			
-		case CXCursor_CXXMethod:
-			VisitMemberFunction(cursor);
-			break;
-		
-		default:
-//			if (!cursor.Location().IsFromSystemHeader())
-//				std::cout << "NS: \"" << Name() << "\" " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << std::endl;
-			break;
+			if (parent != Types().end())
+				(*parent)->VisitFunction(child);
 		}
-	});
+		break;
+	}
+	
+	case CXCursor_Namespace:
+		AddUnique(m_ns, child.USR(), child, this)->Visit(child);
+		break;
+	
+	default:
+		ParentScope::VisitChild(child, self);
+		break;
+	}
 }
 
 void Namespace::CrossReference(EntityMap *)
 {
-}
-
-void Namespace::VisitMemberFunction(libclx::Cursor cursor)
-{
-	// class method definition in namespace
-	// the class definition should already be parsed
-	auto parent = FindByID(m_types, cursor.SemanticParent().USR());
-	
-	if (parent != m_types.end())
-		(*parent)->VisitFunction(cursor);
 }
 
 void Namespace::MarkUsed()
