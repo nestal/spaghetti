@@ -11,6 +11,7 @@
 //
 
 #include "ClassRef.hh"
+#include "ClassTemplate.hh"
 
 #include "libclx/Cursor.hh"
 

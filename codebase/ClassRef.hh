@@ -22,6 +22,8 @@ class Cursor;
 
 namespace codebase {
 
+class EntityMap;
+
 class ClassRef
 {
 public:
@@ -43,7 +45,7 @@ public:
 	
 	bool operator==(const ClassRef& ref) const;
 	bool operator!=(const ClassRef& ref) const;
-
+	
 private:
 	void FromBaseCursor(const libclx::Cursor& cursor);
 	

@@ -21,6 +21,9 @@
 
 namespace codebase {
 
+class ClassTemplate;
+class InstantiatedDataType;
+
 class ClassTemplate : public DataType
 {
 public:
@@ -28,10 +31,21 @@ public:
 	
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
 	
-	std::unique_ptr<DataType> Instantiate(const std::vector<std::string>& args) const;
-	
+	std::unique_ptr<InstantiatedDataType> Instantiate(const std::vector<std::string>& args) const;
+
 private:
 	std::map<std::string, std::string> m_args;
 };
+
+class InstantiatedDataType : public DataType
+{
+public:
+	InstantiatedDataType(const ClassTemplate& temp);
+
+	using DataType::AddBase;
 	
+private:
+	const ClassTemplate *m_temp;
+};
+
 } // end of namespace

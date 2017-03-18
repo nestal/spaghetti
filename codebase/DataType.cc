@@ -23,14 +23,26 @@
 
 namespace codebase {
 
-DataType::DataType(const libclx::Cursor& cursor, const Entity* parent) :
+DataType::DataType(const libclx::Cursor& cursor, const Entity *parent) :
 	ParentScope{cursor, parent}
 {
-	assert(cursor.Kind() == CXCursor_StructDecl || cursor.Kind() == CXCursor_ClassDecl || cursor.Kind() == CXCursor_ClassTemplate);
+	assert(cursor.Kind() == CXCursor_StructDecl
+		|| cursor.Kind() == CXCursor_ClassDecl
+		|| cursor.Kind() == CXCursor_ClassTemplate);
 	if (cursor.IsDefinition())
 		m_definition = cursor.Location();
 }
 
+DataType::DataType(
+	const std::string& name,
+	const std::string& usr,
+	const libclx::SourceLocation def,
+	const Entity *parent
+) :
+	ParentScope{name, usr, parent},
+	m_definition{def}
+{
+}
 
 void DataType::OnVisit(const libclx::Cursor& self)
 {
@@ -54,14 +66,13 @@ void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& sel
 		
 		// normally we don't have hundreds of base classes so sequential searches should be faster
 		// the order of the base classes is important, so we don't want to switch to set
-		if (std::find(m_base_classes.begin(), m_base_classes.end(), base) == m_base_classes.end())
-			m_base_classes.push_back(base);
+		if (std::find(m_bases.begin(), m_bases.end(), base) == m_bases.end())
+			m_bases.push_back(base);
 		
 		break;
 	}
 	
-	default:
-		ParentScope::VisitChild(child, self);
+	default: ParentScope::VisitChild(child, self);
 		break;
 	}
 }
@@ -89,22 +100,23 @@ libclx::SourceLocation DataType::Location() const
  */
 boost::iterator_range<DataType::idvec_iterator> DataType::BaseClasses() const
 {
-	return {m_base_classes.begin(), m_base_classes.end()};
+	return {m_bases.begin(), m_bases.end()};
 }
 
 bool DataType::IsBaseOf(const DataType& other) const
 {
 	return std::find_if(
-		other.m_base_classes.begin(),
-		other.m_base_classes.end(),
-		[this](auto&& ref){return ref.ID() == this->ID();}
-	) != other.m_base_classes.end();
+		other.m_bases.begin(),
+		other.m_bases.end(),
+		[this](auto&& ref) { return ref.ID() == this->ID(); }
+	) != other.m_bases.end();
 }
 
 bool DataType::IsUsedInMember(const DataType& other) const
 {
 	auto fields = other.Fields();
-	return std::find_if(fields.begin(), fields.end(), [myid = ID()](auto field)
+	return std::find_if(fields.begin(), fields.end(),[myid = ID()](auto
+	field)
 	{
 		return field.TypeID() == myid;
 	}) != fields.end();
@@ -121,6 +133,12 @@ std::ostream& operator<<(std::ostream& os, const DataType& c)
 void DataType::CrossReference(EntityMap *map)
 {
 	assert(map);
+	
+	// instantiate base class, if any
+	for (auto&& base : m_bases)
+	{
+	}
+	
 	MarkBaseClassUsed(map);
 	
 	MarkUsed();
@@ -131,9 +149,9 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 	// mark base class as used
 	if (IsUsed())
 	{
-		for (auto& base : m_base_classes)
+		for (auto& base : m_bases)
 		{
-			auto base_entity = dynamic_cast<DataType*>(map->Find(base.ID()));
+			auto base_entity = dynamic_cast<DataType *>(map->Find(base.ID()));
 			
 			// TODO: support typedef base classes
 			if (base_entity && !base_entity->IsUsed())
@@ -143,6 +161,11 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 			}
 		}
 	}
+}
+
+void DataType::AddBase(const ClassRef& base)
+{
+	m_bases.push_back(base);
 }
 
 } // end of namespace

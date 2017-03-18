@@ -59,7 +59,9 @@ public:
 	const codebase::Variable& Field(std::size_t idx) const;
 	
 	void VisitFunction(const libclx::Cursor& func);
-
+	
+	void Add(std::unique_ptr<DataType>&& type);
+	
 protected:
 	virtual void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self);
 	virtual void OnVisit(const libclx::Cursor& self);
@@ -73,5 +75,5 @@ private:
 	std::vector<DataType*>      m_types;
 	std::vector<ClassTemplate*> m_temps;
 };
-	
+
 } // end of namespace

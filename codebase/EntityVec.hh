@@ -48,12 +48,14 @@ public:
 	{
 		auto child = std::make_unique<Type>(std::forward<Args>(arg)...);
 		auto ptr   = child.get();
-		m_children.push_back(std::move(child));
+		AddChild(std::move(child));
 		return ptr;
 	}
 	
 	template <typename EntityContainer, typename... Args>
 	auto AddUnique(EntityContainer&& cont, const std::string& id, Args... arg);
+	
+	void AddChild(EntityPtr&& child);
 	
 	void MarkUsed() override;
 	bool IsUsed() const override;

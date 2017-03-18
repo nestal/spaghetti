@@ -19,8 +19,6 @@ namespace codebase {
 
 void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
 {
-	DataType::VisitChild(child, self);
-	
 	switch (child.Kind())
 	{
 	case CXCursor_TemplateTypeParameter:
@@ -30,6 +28,7 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
 	}
 	
 	default:
+		DataType::VisitChild(child, self);
 		break;
 	}
 }
@@ -39,9 +38,23 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
  * \param args  template arguments, i.e. the actual types that will replace the template parameters
  * \return the instantiated class
  */
-std::unique_ptr<DataType> ClassTemplate::Instantiate(const std::vector<std::string>& args) const
+std::unique_ptr<InstantiatedDataType> ClassTemplate::Instantiate(const std::vector<std::string>& args) const
 {
-	return std::unique_ptr<DataType>();
-}
+	auto inst = std::make_unique<InstantiatedDataType>(*this);
 	
+	for (auto&& base : BaseClasses())
+	{
+		auto at = m_args.find(base.ID());
+		if (at != m_args.end())
+			std::cout << at->second << std::endl;
+	}
+	return inst;
+}
+
+InstantiatedDataType::InstantiatedDataType(const ClassTemplate& temp) :
+	DataType{temp.Name(), temp.ID(), temp.Location(), temp.Parent()},
+	m_temp(&temp)
+{
+}
+
 } // end of namespace

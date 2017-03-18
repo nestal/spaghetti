@@ -105,5 +105,10 @@ void EntityVec::Reparent(const Entity *parent)
 {
 	m_parent = parent;
 }
+
+void EntityVec::AddChild(EntityVec::EntityPtr&& child)
+{
+	m_children.push_back(std::move(child));
+}
 	
 } // end of namespace

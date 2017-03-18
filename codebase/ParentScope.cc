@@ -108,5 +108,11 @@ std::vector<DataType *>& ParentScope::Types()
 {
 	return m_types;
 }
+
+void ParentScope::Add(std::unique_ptr<DataType>&& type)
+{
+	m_types.push_back(type.get());
+	
+}
 	
 } // end of namespace

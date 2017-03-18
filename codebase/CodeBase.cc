@@ -57,21 +57,25 @@ public:
 		return dynamic_cast<const DataType*>(Find(ref.ID()));
 	}
 	
-	DataType* Instantiate(const ClassRef& ref) override
+	InstantiatedDataType* Instantiate(const ClassRef& ref) override
 	{
 		assert(ref.IsTemplate());
+		
+		InstantiatedDataType* result = nullptr;
 		
 		if (auto temp = dynamic_cast<ClassTemplate*>(Find(ref.ID())))
 		{
 			auto inst = temp->Instantiate(ref.TempArgs());
-			auto parent = Find(temp->Parent()->ID());
+			auto parent = dynamic_cast<ParentScope*>(Find(temp->Parent()->ID()));
 			
 			assert(parent);
 			assert(inst);
-//			parent->
+
+			result = inst.get();
+			parent->AddChild(std::move(inst));
 		}
 		
-		return nullptr;
+		return result;
 	}
 	
 	DataType* Find(const ClassRef& ref) override
