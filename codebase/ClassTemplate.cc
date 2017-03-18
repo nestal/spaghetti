@@ -28,7 +28,7 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
 	}
 	
 	default:
-		DataType::VisitChild(child, self);
+		ParentScope::VisitChild(child, self);
 		break;
 	}
 }
@@ -38,9 +38,9 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
  * \param args  template arguments, i.e. the actual types that will replace the template parameters
  * \return the instantiated class
  */
-std::unique_ptr<InstantiatedDataType> ClassTemplate::Instantiate(const ClassRef& ref) const
+std::unique_ptr<DataType> ClassTemplate::Instantiate(const ClassRef& ref) const
 {
-	auto inst = std::make_unique<InstantiatedDataType>(ref, this);
+	auto inst = std::make_unique<Instance>(ref, this);
 	
 	for (auto&& base : BaseClasses())
 	{
@@ -61,10 +61,4 @@ std::size_t ClassTemplate::Match(const std::string& usr) const
 	return static_cast<std::size_t>(it-m_param.begin());
 }
 
-InstantiatedDataType::InstantiatedDataType(const ClassRef& ref, const ClassTemplate *temp) :
-	DataType{ref.Name(), ref.ID(), temp->Location(), temp->Parent()},
-	m_temp(temp)
-{
-}
-		
 } // end of namespace

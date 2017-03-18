@@ -32,7 +32,9 @@ public:
 	
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
 	
-	std::unique_ptr<InstantiatedDataType> Instantiate(const ClassRef& ref) const;
+	std::unique_ptr<DataType> Instantiate(const ClassRef& ref) const;
+	
+	class Instance;
 
 private:
 	std::size_t Match(const std::string& usr) const;
@@ -46,13 +48,17 @@ private:
 	std::vector<Param> m_param;
 };
 
-class InstantiatedDataType : public DataType
+class ClassTemplate::Instance : public DataType
 {
 public:
-	InstantiatedDataType(const ClassRef& ref, const ClassTemplate *temp);
-
-	using DataType::AddBase;
+	Instance(const ClassRef& ref, const ClassTemplate *temp) :
+		DataType{ref.Name(), ref.ID(), temp->Location(), temp->Parent()},
+		m_temp(temp)
+	{
+	}
 	
+	using DataType::AddBase;
+
 private:
 	const ClassTemplate *m_temp;
 };

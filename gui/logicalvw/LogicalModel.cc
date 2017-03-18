@@ -63,7 +63,7 @@ QVariant LogicalModel::data(const QModelIndex& index, int role) const
 		{typeid(const codebase::Function&), QIcon{":/images/function.png"}},
 		{typeid(const codebase::Variable&), QIcon{":/images/variable.png"}},
 		{typeid(const codebase::ClassTemplate&), QIcon{":/images/template.png"}},
-		{typeid(const codebase::InstantiatedDataType&), QIcon{":/images/template2.png"}},
+		{typeid(const codebase::ClassTemplate::Instance&), QIcon{":/images/template2.png"}},
 	};
 	
 	switch (role)
