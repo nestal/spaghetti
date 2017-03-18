@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "DataType.hh"
+#include "ParentScope.hh"
 #include "EntityVec.hh"
 
 namespace libclx {
@@ -26,7 +26,7 @@ class Function;
 class ClassTemplate;
 class DataType;
 
-class Namespace : public EntityVec
+class Namespace : public ParentScope
 {
 public:
 	Namespace();
@@ -39,19 +39,14 @@ public:
 	
 	std::string Type() const override;
 	
-	void Visit(const libclx::Cursor& cursor);
-	
 	void CrossReference(EntityMap *map) override;
 	void MarkUsed() override;
 	
 private:
-	void VisitMemberFunction(const libclx::Cursor& cursor);
+	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& parent) override;
 	
 private:
-	std::vector<DataType*>      m_types;
-	std::vector<ClassTemplate*> m_temps;
 	std::vector<Namespace*>     m_ns;
-	std::vector<Variable*>      m_vars;
 };
 	
 } // end of namespace

@@ -44,6 +44,7 @@ public:
 
 public:
 	ParentScope(const libclx::Cursor& cursor, const Entity* parent);
+	ParentScope(const std::string& name, const std::string& usr, const Entity *parent);
 	ParentScope(ParentScope&&) = default;
 	ParentScope(const ParentScope&) = delete;
 	ParentScope& operator=(ParentScope&&) = default;
@@ -64,11 +65,13 @@ protected:
 	virtual void OnVisit(const libclx::Cursor& self);
 	virtual void AfterVisitingChild(const libclx::Cursor& self);
 	
+	std::vector<DataType*>& Types();
+	
 private:
-	std::vector<codebase::Variable*>    m_fields;
-	std::vector<codebase::Function*>    m_functions;
-	std::vector<codebase::DataType*>    m_nested_types;
-	std::vector<ClassTemplate*>         m_temps;
+	std::vector<Variable*>      m_fields;
+	std::vector<codebase::Function*>      m_functions;
+	std::vector<DataType*>      m_types;
+	std::vector<ClassTemplate*> m_temps;
 };
 	
 } // end of namespace

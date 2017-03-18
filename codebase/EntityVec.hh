@@ -27,7 +27,7 @@ public:
 
 public:
 	EntityVec() = default;
-	EntityVec( const std::string& name, const std::string& usr, const Entity *parent);
+	EntityVec(const std::string& name, const std::string& usr, const Entity *parent);
 	
 	EntityVec(EntityVec&& other);
 	EntityVec(const EntityVec&) = delete;

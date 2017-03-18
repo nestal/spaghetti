@@ -28,15 +28,16 @@ ParentScope::ParentScope(const libclx::Cursor& cursor, const Entity* parent) :
 {
 }
 
+ParentScope::ParentScope(const std::string& name, const std::string& usr, const Entity *parent) :
+	EntityVec{name, usr, parent}
+{
+}
 
 void ParentScope::Visit(const libclx::Cursor& self)
 {
-//	assert(self.Kind() == CXCursor_StructDecl || self.Kind() == CXCursor_ClassDecl || self.Kind() == CXCursor_ClassTemplate);
-	assert(Name() == self.Spelling());
-	assert(!ID().empty() && ID() == self.USR());
-	
 	OnVisit(self);
 	self.Visit([this](auto child, auto parent){VisitChild(child, parent);});
+	AfterVisitingChild(self);
 }
 
 void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
@@ -47,10 +48,9 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor& 
 		AddUnique(m_fields, child.USR(), child, this);
 		break;
 		
-		// nested classes
 	case CXCursor_ClassDecl:
 	case CXCursor_StructDecl:
-		AddUnique(m_nested_types, child.USR(), child, this)->Visit(child);
+		AddUnique(m_types, child.USR(), child, this)->Visit(child);
 		break;
 	
 	case CXCursor_ClassTemplate:
@@ -104,5 +104,9 @@ void ParentScope::VisitFunction(const libclx::Cursor& func)
 		(*it)->Visit(func);
 }
 
+std::vector<DataType *>& ParentScope::Types()
+{
+	return m_types;
+}
 	
 } // end of namespace

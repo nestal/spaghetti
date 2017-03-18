@@ -37,6 +37,8 @@ void DataType::OnVisit(const libclx::Cursor& self)
 	assert(self.Kind() == CXCursor_StructDecl
 		|| self.Kind() == CXCursor_ClassDecl
 		|| self.Kind() == CXCursor_ClassTemplate);
+	assert(Name() == self.Spelling());
+	assert(!ID().empty() && ID() == self.USR());
 	
 	if (self.IsDefinition() || m_definition == libclx::SourceLocation{})
 		m_definition = self.Location();
@@ -44,7 +46,6 @@ void DataType::OnVisit(const libclx::Cursor& self)
 
 void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
 {
-	ParentScope::VisitChild(child, self);
 	switch (child.Kind())
 	{
 	case CXCursor_CXXBaseSpecifier:
@@ -59,7 +60,9 @@ void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& sel
 		break;
 	}
 	
-	default: break;
+	default:
+		ParentScope::VisitChild(child, self);
+		break;
 	}
 }
 
