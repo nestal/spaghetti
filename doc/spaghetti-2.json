@@ -21,38 +21,38 @@
             "classes": [
                 {
                     "height": 175,
-                    "id": "c:@N@codebase@S@ClassTemplate",
-                    "width": 386.9516523978378,
-                    "x": -952.3617081271082,
-                    "y": 487.2881576572111
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@codebase@S@ParentScope",
+                    "id": "c:@N@libclx@S@Type",
                     "width": 225,
-                    "x": -888.9999999999999,
-                    "y": -89.93120741916283
+                    "x": -278,
+                    "y": 268
+                },
+                {
+                    "height": 249,
+                    "id": "c:@N@codebase@S@Namespace",
+                    "width": 356.5628134472327,
+                    "x": -1127.1782178523604,
+                    "y": 203.0284171568141
+                },
+                {
+                    "height": 179,
+                    "id": "c:@N@codebase@S@EntityVec",
+                    "width": 416,
+                    "x": -807.5687925808371,
+                    "y": -376.59521669311647
+                },
+                {
+                    "height": 198,
+                    "id": "c:@N@codebase@S@Entity",
+                    "width": 441,
+                    "x": -236.4047833068836,
+                    "y": -561.1944194753027
                 },
                 {
                     "height": 175,
-                    "id": "c:@N@libclx@S@SourceLocation",
-                    "width": 352.55484126909346,
-                    "x": -494.22257936545327,
-                    "y": 505
-                },
-                {
-                    "height": 218,
-                    "id": "c:@N@codebase@S@Function",
-                    "width": 320,
-                    "x": -421.2976083465582,
-                    "y": -98.09521669311647
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@codebase@S@Variable",
-                    "width": 225,
-                    "x": -86,
-                    "y": 521
+                    "id": "c:@N@codebase@S@LeafEntity",
+                    "width": 382.6520510067446,
+                    "x": -37.04037542402307,
+                    "y": 9
                 },
                 {
                     "height": 175,
@@ -63,38 +63,38 @@
                 },
                 {
                     "height": 175,
-                    "id": "c:@N@codebase@S@LeafEntity",
-                    "width": 382.6520510067446,
-                    "x": -37.04037542402307,
-                    "y": 9
+                    "id": "c:@N@codebase@S@Variable",
+                    "width": 225,
+                    "x": -86,
+                    "y": 521
                 },
                 {
-                    "height": 198,
-                    "id": "c:@N@codebase@S@Entity",
-                    "width": 441,
-                    "x": -236.4047833068836,
-                    "y": -561.1944194753027
-                },
-                {
-                    "height": 179,
-                    "id": "c:@N@codebase@S@EntityVec",
-                    "width": 416,
-                    "x": -807.5687925808371,
-                    "y": -376.59521669311647
-                },
-                {
-                    "height": 249,
-                    "id": "c:@N@codebase@S@Namespace",
-                    "width": 356.5628134472327,
-                    "x": -1127.1782178523604,
-                    "y": 203.0284171568141
+                    "height": 218,
+                    "id": "c:@N@codebase@S@Function",
+                    "width": 320,
+                    "x": -421.2976083465582,
+                    "y": -98.09521669311647
                 },
                 {
                     "height": 175,
-                    "id": "c:@N@libclx@S@Type",
+                    "id": "c:@N@libclx@S@SourceLocation",
+                    "width": 352.55484126909346,
+                    "x": -494.22257936545327,
+                    "y": 505
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@ParentScope",
                     "width": 225,
-                    "x": -278,
-                    "y": 268
+                    "x": -888.9999999999999,
+                    "y": -89.93120741916283
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@ClassTemplate",
+                    "width": 386.9516523978378,
+                    "x": -952.3617081271082,
+                    "y": 487.2881576572111
                 }
             ],
             "name": "Entity Classes",
@@ -104,115 +104,10 @@
             "classes": [
                 {
                     "height": 175,
-                    "id": "c:@S@QGraphicsSimpleTextItem",
+                    "id": "c:@S@SizeGripItem",
                     "width": 225,
-                    "x": -2695,
-                    "y": 918
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QAbstractGraphicsShapeItem",
-                    "width": 225,
-                    "x": -2418,
-                    "y": 417
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsRectItem",
-                    "width": 225,
-                    "x": -2757,
-                    "y": 701
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsPolygonItem",
-                    "width": 225,
-                    "x": -2061.97105849961,
-                    "y": 648.1471673460643
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsPathItem",
-                    "width": 225,
-                    "x": -2467.852832653936,
-                    "y": 700.3429805001294
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsTextItem",
-                    "width": 225,
-                    "x": -1766,
-                    "y": 873
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsSimpleTextItem",
-                    "width": 225,
-                    "x": -2194,
-                    "y": 856
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsEllipseItem",
-                    "width": 225,
-                    "x": -2909,
-                    "y": 442
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsItemGroup",
-                    "width": 314,
-                    "x": -2233.5,
-                    "y": 179
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsLineItem",
-                    "width": 225,
-                    "x": -1019,
-                    "y": 464
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QGraphicsItem",
-                    "width": 321.9528329706484,
-                    "x": -1602.476416485324,
-                    "y": 147
-                },
-                {
-                    "height": 263,
-                    "id": "c:@S@QGraphicsView",
-                    "width": 339,
-                    "x": -730,
-                    "y": 208
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@N@classgf@S@Edge",
-                    "width": 225,
-                    "x": -1112,
-                    "y": 743
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@N@classgf@S@ClassItem",
-                    "width": 225,
-                    "x": -1443,
-                    "y": 752
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@N@classgf@S@BaseItem",
-                    "width": 225,
-                    "x": -1164,
-                    "y": 146
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@N@classgf@S@ClassView",
-                    "width": 225,
-                    "x": -722,
-                    "y": 570
+                    "x": -1862,
+                    "y": 459
                 },
                 {
                     "height": 175,
@@ -223,10 +118,115 @@
                 },
                 {
                     "height": 175,
-                    "id": "c:@S@SizeGripItem",
+                    "id": "c:@N@gui@N@classgf@S@ClassView",
                     "width": 225,
-                    "x": -1862,
-                    "y": 459
+                    "x": -722,
+                    "y": 570
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@BaseItem",
+                    "width": 225,
+                    "x": -1164,
+                    "y": 146
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@ClassItem",
+                    "width": 225,
+                    "x": -1443,
+                    "y": 752
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@N@classgf@S@Edge",
+                    "width": 225,
+                    "x": -1112,
+                    "y": 743
+                },
+                {
+                    "height": 263,
+                    "id": "c:@S@QGraphicsView",
+                    "width": 339,
+                    "x": -730,
+                    "y": 208
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsItem",
+                    "width": 321.9528329706484,
+                    "x": -1602.476416485324,
+                    "y": 147
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsLineItem",
+                    "width": 225,
+                    "x": -1019,
+                    "y": 464
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsItemGroup",
+                    "width": 314,
+                    "x": -2233.5,
+                    "y": 179
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsEllipseItem",
+                    "width": 225,
+                    "x": -2909,
+                    "y": 442
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsSimpleTextItem",
+                    "width": 225,
+                    "x": -2194,
+                    "y": 856
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsTextItem",
+                    "width": 225,
+                    "x": -1766,
+                    "y": 873
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsPathItem",
+                    "width": 225,
+                    "x": -2467.852832653936,
+                    "y": 700.3429805001294
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsPolygonItem",
+                    "width": 225,
+                    "x": -2061.97105849961,
+                    "y": 648.1471673460643
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsRectItem",
+                    "width": 225,
+                    "x": -2757,
+                    "y": 701
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QAbstractGraphicsShapeItem",
+                    "width": 225,
+                    "x": -2418,
+                    "y": 417
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QGraphicsSimpleTextItem",
+                    "width": 225,
+                    "x": -2695,
+                    "y": 918
                 }
             ],
             "name": "Class Diagram2",
@@ -236,52 +236,10 @@
             "classes": [
                 {
                     "height": 175,
-                    "id": "c:@S@QWidget",
+                    "id": "c:@N@gui@S@MainWnd",
                     "width": 225,
-                    "x": 15,
-                    "y": -298
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QMainWindow",
-                    "width": 225,
-                    "x": 101,
-                    "y": -10
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@S@ViewSet",
-                    "width": 225,
-                    "x": 364,
-                    "y": 44
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@QTabWidget",
-                    "width": 225,
-                    "x": 295,
-                    "y": -206
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@S@ViewSet@S@iterator",
-                    "width": 225,
-                    "x": -169,
-                    "y": 65
-                },
-                {
-                    "height": 175,
-                    "id": "c:@N@gui@S@ViewBase",
-                    "width": 225,
-                    "x": -302,
-                    "y": -185
-                },
-                {
-                    "height": 175,
-                    "id": "c:@S@Ui_MainWnd",
-                    "width": 225,
-                    "x": -564,
-                    "y": -145
+                    "x": 135,
+                    "y": 220
                 },
                 {
                     "height": 175,
@@ -292,13 +250,82 @@
                 },
                 {
                     "height": 175,
-                    "id": "c:@N@gui@S@MainWnd",
+                    "id": "c:@S@Ui_MainWnd",
                     "width": 225,
-                    "x": 135,
-                    "y": 220
+                    "x": -564,
+                    "y": -145
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@S@ViewBase",
+                    "width": 225,
+                    "x": -302,
+                    "y": -185
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@S@ViewSet@S@iterator",
+                    "width": 225,
+                    "x": -169,
+                    "y": 65
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QTabWidget",
+                    "width": 225,
+                    "x": 295,
+                    "y": -206
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@gui@S@ViewSet",
+                    "width": 225,
+                    "x": 364,
+                    "y": 44
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QMainWindow",
+                    "width": 225,
+                    "x": 101,
+                    "y": -10
+                },
+                {
+                    "height": 175,
+                    "id": "c:@S@QWidget",
+                    "width": 225,
+                    "x": 15,
+                    "y": -298
                 }
             ],
             "name": "Class Diagram3",
+            "type": "class_diagram"
+        },
+        {
+            "classes": [
+                {
+                    "height": 175,
+                    "id": "c:@N@std@ST>2#T#T@unary_function",
+                    "width": 225,
+                    "x": -944,
+                    "y": 129
+                },
+                {
+                    "height": 375,
+                    "id": "c:@N@codebase@S@ParentScope",
+                    "width": 448,
+                    "x": -491.5,
+                    "y": -142
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@Entity",
+                    "width": 225,
+                    "x": -39,
+                    "y": -90
+                }
+            ],
+            "name": "Class Diagram4",
             "type": "class_diagram"
         }
     ],
