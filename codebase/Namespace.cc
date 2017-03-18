@@ -43,9 +43,6 @@ void Namespace::Visit(const libclx::Cursor& self)
 {
 	self.Visit([this](libclx::Cursor cursor, libclx::Cursor)
 	{
-		if (cursor.Location().IsFromSystemHeader())
-			return;
-		
 		const std::string& id = cursor.USR();
 		switch (cursor.Kind())
 		{
