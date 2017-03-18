@@ -55,5 +55,5 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	
 	// TODO: fix it!
 	ASSERT_TRUE(temp_base);
-	ASSERT_EQ("RecursiveBase", temp_base->Name());
+	ASSERT_EQ("RecursiveBase<BaseType>", temp_base->Name());
 }
