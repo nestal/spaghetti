@@ -92,7 +92,7 @@ TranslationUnit Index::Parse(const std::string& filename, const std::vector<std:
 	if (r == 0)
 		return {tu};
 	else
-		throw util::Exception{} << boost::errinfo_file_name(filename) << ErrorCode{r};
+		BOOST_THROW_EXCEPTION(util::Exception{} << boost::errinfo_file_name(filename) << ErrorCode{r});
 }
 
 std::string Index::Version()
