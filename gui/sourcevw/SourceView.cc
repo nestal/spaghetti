@@ -19,6 +19,7 @@
 #include "libclx/Token.hh"
 
 #include <QtCore/QFile>
+#include <iostream>
 
 namespace gui {
 namespace sourcevw {
@@ -58,7 +59,21 @@ void SourceView::Open(const std::string& fname, unsigned line, unsigned column)
 			m_worker.join();
 		
 		// to improve latency, use a separate thread to parse the file
-		m_worker = std::thread([this, line, column]{Parse(line, column);});
+		m_worker = std::thread([this, line, column]
+		{
+			try
+			{
+				Parse(line, column);
+			}
+			catch (std::exception& e)
+			{
+				std::cerr << "Exception!!! " << e.what() << std::endl;
+			}
+			catch (...)
+			{
+				std::cerr << "Unknown exception!!! " << std::endl;
+			}
+		});
 	}
 	else
 		GoTo(line, column);
