@@ -13,8 +13,11 @@
 #pragma once
 
 #include <boost/iterator/iterator_facade.hpp>
+
+#include <memory>
 #include <string>
 #include <type_traits>
+
 #include <libclx/Index.hh>
 
 namespace codebase {
@@ -95,6 +98,8 @@ public:
 public:
 	bool HasChild(const Entity *child) const {return IndexOf(child) < ChildCount();}
 };
+
+using UniqueEntityPtr = std::unique_ptr<Entity>;
 
 template <typename ParentEntity, typename ChildEntity>
 class EntityIterator : public boost::iterator_facade<

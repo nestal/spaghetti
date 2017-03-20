@@ -23,11 +23,9 @@ namespace codebase {
 class EntityVec : public Entity
 {
 public:
-	using EntityPtr = std::unique_ptr<Entity>;
-
-public:
-	EntityVec() = default;
+	EntityVec();
 	EntityVec(const std::string& name, const std::string& usr, const Entity *parent);
+	~EntityVec();
 	
 	EntityVec(EntityVec&& other);
 	EntityVec(const EntityVec&) = delete;
@@ -55,7 +53,7 @@ public:
 	template <typename EntityContainer, typename... Args>
 	auto AddUnique(EntityContainer&& cont, const std::string& id, Args... arg);
 	
-	void AddChild(EntityPtr&& child);
+	void AddChild(UniqueEntityPtr&& child);
 	
 	void MarkUsed() override;
 	bool IsUsed() const override;
@@ -70,7 +68,8 @@ private:
 	const Entity *m_parent{};
 	bool m_used{false};
 
-	std::vector<EntityPtr> m_children;
+	struct Container;
+	std::unique_ptr<Container>   m_db;
 };
 
 template <typename EntityContainer>
