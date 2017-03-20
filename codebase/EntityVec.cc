@@ -192,5 +192,26 @@ void EntityVec::AddChild(UniqueEntityPtr&& child)
 //	m_children.push_back(std::move(child));
 	m_db->db.insert(std::move(child));
 }
-	
+
+const Entity *EntityVec::Find(const std::string& id) const
+{
+	auto&& idx = m_db->db.get<Container::ByID>();
+	auto it = idx.find(id);
+	return it != idx.end() ? it->ptr.get() : nullptr;
+		
+}
+
+bool EntityVec::Modify(const std::string& id, std::function<void(Entity*)> func)
+{
+	auto&& idx = m_db->db.get<Container::ByID>();
+	auto it = idx.find(id);
+	if (it != idx.end())
+	{
+		idx.modify(it, [&func](auto&& ee) { func(ee.ptr.get()); });
+		return true;
+	}
+	else
+		return false;
+}
+
 } // end of namespace

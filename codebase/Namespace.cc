@@ -47,10 +47,12 @@ void Namespace::VisitChild(const libclx::Cursor& child, const libclx::Cursor& se
 		{
 			// class method definition in namespace
 			// the class definition should already be parsed
-			auto parent = FindByID(Types(), child.SemanticParent().USR());
-			
-			if (parent != Types().end())
-				(*parent)->VisitFunction(child);
+			Modify(child.SemanticParent().USR(), [child](Entity *entity)
+			{
+				auto parent = dynamic_cast<DataType*>(entity);
+				if (parent)
+					parent->VisitFunction(child);
+			});
 		}
 		break;
 	}

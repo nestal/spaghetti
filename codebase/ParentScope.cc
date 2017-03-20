@@ -97,11 +97,14 @@ void ParentScope::AfterVisitingChild(const libclx::Cursor&)
 
 void ParentScope::VisitFunction(const libclx::Cursor& func)
 {
-	auto it = FindByID(m_functions, func.USR());
-	
-	// the definition of a member function should come after its declaration
-	if (it != m_functions.end())
-		(*it)->Visit(func);
+	Modify(func.USR(), [&func](Entity *entity)
+	{
+		auto func_entity = dynamic_cast<codebase::Function*>(entity);
+		
+		// the definition of a member function should come after its declaration
+		if (func_entity)
+			func_entity->Visit(func);
+	});
 }
 
 std::vector<DataType *>& ParentScope::Types()

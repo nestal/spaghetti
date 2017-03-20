@@ -59,6 +59,10 @@ public:
 	bool IsUsed() const override;
 	void Reparent(const Entity *parent) override;
 
+	const Entity* Find(const std::string& id) const;
+	
+	bool Modify(const std::string& id, std::function<void(Entity*)> func);
+	
 protected:
 	void MarkSelfUsedOnly();
 
@@ -72,24 +76,18 @@ private:
 	std::unique_ptr<Container>   m_db;
 };
 
-template <typename EntityContainer>
-auto FindByID(EntityContainer&& cont, const std::string& id)
-{
-	return std::find_if(cont.begin(), cont.end(), [id](auto& e){return e->ID() == id;});
-}
-
 template <typename EntityContainer, typename... Args>
 auto EntityVec::AddUnique(EntityContainer&& cont, const std::string& id, Args... arg)
 {
 	using Type = std::remove_pointer_t<typename std::remove_reference_t<EntityContainer>::value_type>;
 
-	auto it = FindByID(cont, id);
-	if (it == cont.end())
+	auto entity = dynamic_cast<Type*>(const_cast<Entity*>(Find(id)));
+	if (!entity)
 	{
-		cont.push_back(Add<Type>(std::forward<Args>(arg)...));
-		it = --cont.end();
+		entity = Add<Type>(std::forward<Args>(arg)...);
+		cont.push_back(entity);
 	}
-	return *it;
+	return entity;
 }
 
 } // end of namespace codebase
