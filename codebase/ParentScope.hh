@@ -40,7 +40,8 @@ class ClassRef;
 class ParentScope : public EntityVec
 {
 public:
-	using field_iterator    = boost::indirect_iterator<std::vector<codebase::Variable*>::const_iterator>;
+//	using field_iterator    = boost::indirect_iterator<std::vector<codebase::Variable*>::const_iterator>;
+	using field_iterator    = EntityTypeIterator<Variable>;
 	using function_iterator = boost::indirect_iterator<std::vector<codebase::Function*>::const_iterator>;
 	using idvec_iterator    = std::vector<ClassRef>::const_iterator;
 

@@ -165,6 +165,9 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	
 	DrawBox(painter, setting);
 	
+	auto fields = m_class->Fields();
+	auto fields_count = std::distance(fields.begin(), fields.end());
+	
 	ClassLayout layout{
 		QString::fromStdString(m_class->Name()),
 		NameWithNamespace(),
@@ -172,7 +175,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 		t.m11(),
 		setting,
 		m_class->Functions().size(),
-		m_class->Fields().size()
+		static_cast<std::size_t>(fields_count)
 	};
 
 	painter->setPen(Qt::GlobalColor::black);
@@ -198,7 +201,7 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 	}
 	
 	index = 0;
-	for (auto&& field : m_class->Fields())
+	for (auto&& field : fields)
 	{
 		if (index >= layout.FieldCount()) break;
 		DrawMember(painter, field, layout, layout.FunctionCount() + index);
@@ -466,6 +469,9 @@ QString ClassItem::NameWithNamespace() const
 
 QString ClassItem::Tooltip(const ItemRenderingOptions& setting, qreal zoom_factor, const QPointF& pos) const
 {
+	auto fields = m_class->Fields();
+	auto fields_count = std::distance(fields.begin(), fields.end());
+	
 	auto name_with_ns = NameWithNamespace();
 	auto name = QString::fromStdString(m_class->Name());
 	ClassLayout layout{
@@ -475,7 +481,7 @@ QString ClassItem::Tooltip(const ItemRenderingOptions& setting, qreal zoom_facto
 		zoom_factor,
 		setting,
 		m_class->Functions().size(),
-		m_class->Fields().size()
+		static_cast<std::size_t>(fields_count)
 	};
 
 	if (layout.NameRect().contains(pos))

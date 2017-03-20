@@ -17,6 +17,7 @@
 #include "ClassTemplate.hh"
 
 #include "libclx/Cursor.hh"
+#include "EntityType.hh"
 
 #include <ostream>
 #include <iostream>
@@ -68,7 +69,9 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 
 boost::iterator_range<ParentScope::field_iterator> ParentScope::Fields() const
 {
-	return {m_fields.begin(), m_fields.end()};
+	auto r = FindByType(EntityType::variable);
+	field_iterator begin{r.begin(), {}}, end{r.end(), {}};
+	return {begin, end};
 }
 
 boost::iterator_range<ParentScope::function_iterator> ParentScope::Functions() const
@@ -117,5 +120,5 @@ void ParentScope::Add(std::unique_ptr<DataType>&& type)
 	m_types.push_back(type.get());
 	AddChild(std::move(type));
 }
-	
+
 } // end of namespace
