@@ -25,7 +25,7 @@
 
 namespace codebase {
 
-DataType::DataType(const libclx::Cursor& cursor, const Entity *parent) :
+DataType::DataType(const libclx::Cursor& cursor, const EntityVec *parent) :
 	ParentScope{cursor, parent}
 {
 	assert(cursor.Kind() == CXCursor_StructDecl
@@ -39,7 +39,7 @@ DataType::DataType(
 	const std::string& name,
 	const std::string& usr,
 	const libclx::SourceLocation def,
-	const Entity *parent
+	const EntityVec *parent
 ) :
 	ParentScope{name, usr, parent},
 	m_definition{def}

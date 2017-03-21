@@ -24,12 +24,12 @@
 
 namespace codebase {
 
-ParentScope::ParentScope(const libclx::Cursor& cursor, const Entity* parent) :
+ParentScope::ParentScope(const libclx::Cursor& cursor, const EntityVec* parent) :
 	EntityVec{cursor.DisplayName(), cursor.USR(), parent}
 {
 }
 
-ParentScope::ParentScope(const std::string& name, const std::string& usr, const Entity *parent) :
+ParentScope::ParentScope(const std::string& name, const std::string& usr, const EntityVec *parent) :
 	EntityVec{name, usr, parent}
 {
 }

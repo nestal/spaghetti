@@ -20,7 +20,7 @@ namespace codebase {
 
 namespace mi = boost::multi_index;
 
-EntityVec::EntityVec( const std::string& name, const std::string& usr, const Entity* parent) :
+EntityVec::EntityVec( const std::string& name, const std::string& usr, const EntityVec* parent) :
 	m_name{name},
 	m_id{usr},
 	m_parent{parent}
@@ -61,7 +61,7 @@ const std::string& EntityVec::ID() const
 	return m_id;
 }
 
-const Entity* EntityVec::Parent() const
+const EntityVec* EntityVec::Parent() const
 {
 	return m_parent;
 }
@@ -75,12 +75,7 @@ const Entity* EntityVec::Child(std::size_t idx) const
 {
 	return m_db.get<ByIndex>().at(idx).Self();
 }
-/*
-Entity* EntityVec::Child(std::size_t idx)
-{
-	return const_cast<Entity*>(m_db.get<ByIndex>().at(idx).Self());
-}
-*/
+
 std::size_t EntityVec::IndexOf(const Entity* child) const
 {
 	auto&& idx = m_db.get<BySelf>();
@@ -108,7 +103,7 @@ void EntityVec::MarkSelfUsedOnly()
 	m_used = true;
 }
 
-void EntityVec::Reparent(const Entity *parent)
+void EntityVec::Reparent(const EntityVec *parent)
 {
 	m_parent = parent;
 }

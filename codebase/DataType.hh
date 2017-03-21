@@ -44,7 +44,7 @@ class DataType : public ParentScope
 	using idvec_iterator    = std::vector<ClassRef>::const_iterator;
 	
 public:
-	DataType(const libclx::Cursor& cursor, const Entity* parent);
+	DataType(const libclx::Cursor& cursor, const EntityVec* parent);
 	DataType(DataType&&) = default;
 	DataType(const DataType&) = delete;
 	DataType& operator=(DataType&&) = default;
@@ -71,7 +71,7 @@ protected:
 		const std::string& name,
 		const std::string& usr,
 		const libclx::SourceLocation def,
-		const Entity *parent
+		const EntityVec *parent
 	);
 	
 	void AddBase(const ClassRef& base);

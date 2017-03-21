@@ -21,7 +21,7 @@
 
 namespace codebase {
 
-Variable::Variable(const libclx::Cursor& field, const Entity *parent) :
+Variable::Variable(const libclx::Cursor& field, const EntityVec *parent) :
 	LeafEntity{field.Spelling(), field.USR(), parent},
 	m_location{field.Location()},
 	m_type{field.Type()}

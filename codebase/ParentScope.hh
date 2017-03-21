@@ -40,14 +40,13 @@ class ClassRef;
 class ParentScope : public EntityVec
 {
 public:
-//	using field_iterator    = boost::indirect_iterator<std::vector<codebase::Variable*>::const_iterator>;
 	using field_iterator    = EntityTypeIterator<Variable>;
 	using function_iterator = boost::indirect_iterator<std::vector<codebase::Function*>::const_iterator>;
 	using idvec_iterator    = std::vector<ClassRef>::const_iterator;
 
 public:
-	ParentScope(const libclx::Cursor& cursor, const Entity* parent);
-	ParentScope(const std::string& name, const std::string& usr, const Entity *parent);
+	ParentScope(const libclx::Cursor& cursor, const EntityVec* parent);
+	ParentScope(const std::string& name, const std::string& usr, const EntityVec *parent);
 	ParentScope(ParentScope&&) = default;
 	ParentScope(const ParentScope&) = delete;
 	ParentScope& operator=(ParentScope&&) = default;

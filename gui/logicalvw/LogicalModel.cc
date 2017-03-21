@@ -140,7 +140,7 @@ QModelIndex LogicalModel::parent(const QModelIndex& child) const
 	auto parent = pchild->Parent();
 	return parent == nullptr || parent == m_root ? QModelIndex{} : createIndex(
 		static_cast<int>(parent->IndexOf(pchild)), 0,
-		const_cast<codebase::Entity *>(parent)
+		const_cast<codebase::EntityVec *>(parent)
 	);
 }
 

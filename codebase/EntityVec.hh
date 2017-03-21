@@ -105,7 +105,7 @@ protected:
 	
 public:
 	EntityVec() = default;
-	EntityVec(const std::string& name, const std::string& usr, const Entity *parent);
+	EntityVec(const std::string& name, const std::string& usr, const EntityVec *parent);
 	
 	EntityVec(EntityVec&& other);
 	EntityVec(const EntityVec&) = delete;
@@ -114,7 +114,7 @@ public:
 
 	const std::string& Name() const override;
 	const std::string& ID() const override;
-	const Entity* Parent() const override;
+	const EntityVec* Parent() const override;
 	
 	std::size_t ChildCount() const override ;
 	const Entity* Child(std::size_t idx) const override;
@@ -137,7 +137,7 @@ public:
 	
 	void MarkUsed() override;
 	bool IsUsed() const override;
-	void Reparent(const Entity *parent) override;
+	void Reparent(const EntityVec *parent) override;
 
 	const Entity* FindByID(const std::string& id) const;
 	
@@ -151,7 +151,7 @@ protected:
 private:
 	std::string m_name;
 	std::string m_id{NullID()};
-	const Entity *m_parent{};
+	const EntityVec *m_parent{};
 	bool m_used{false};
 	
 	EntityIndex m_db;

@@ -24,7 +24,7 @@ Namespace::Namespace() :
 {
 }
 
-Namespace::Namespace(const libclx::Cursor& cursor, const Entity* parent) :
+Namespace::Namespace(const libclx::Cursor& cursor, const EntityVec* parent) :
 	ParentScope{cursor, parent}
 {
 }

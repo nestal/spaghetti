@@ -28,7 +28,7 @@ class Variable;
 class Function : public EntityVec
 {
 public:
-	Function(const libclx::Cursor& first_seen, const Entity *parent);
+	Function(const libclx::Cursor& first_seen, const EntityVec *parent);
 	
 	void Visit(const libclx::Cursor& self);
 	

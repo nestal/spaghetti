@@ -30,7 +30,7 @@ class Namespace : public ParentScope
 {
 public:
 	Namespace();
-	Namespace(const libclx::Cursor& cursor, const Entity* parent);
+	Namespace(const libclx::Cursor& cursor, const EntityVec* parent);
 	Namespace(Namespace&&) = default;
 	Namespace(const Namespace&) = delete;
 	
