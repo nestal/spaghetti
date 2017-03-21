@@ -14,6 +14,8 @@
 
 #include "Entity.hh"
 
+#include <tuple>
+
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/random_access_index.hpp>
@@ -30,20 +32,6 @@ namespace codebase {
 
 template <typename... EntityTypes>
 struct EntitysVec;
-
-template <std::size_t k, typename Type>
-struct NthEntitysVec;
-
-template <typename T, typename... OtherTypes>
-struct NthEntitysVec<0, EntitysVec<T, OtherTypes...>>
-{
-	using Type = EntitysVec<T, OtherTypes...>;
-};
-template <std::size_t k, typename T, typename... OtherTypes>
-struct NthEntitysVec<k, EntitysVec<T, OtherTypes...>>
-{
-	using Type = typename NthEntitysVec<k-1, EntitysVec<OtherTypes...>>::Type ;
-};
 
 template <typename LastType>
 struct EntitysVec<LastType>
@@ -85,26 +73,32 @@ struct EntitysVec<FirstType, OtherTypes...> : public EntitysVec<OtherTypes...>
 	{
 		m_types.push_back(std::move(entity));
 	}
-
+	
 	std::vector<FirstType>      m_types;
 };
 
-template <std::size_t k, typename T, typename... OtherTypes>
-typename std::enable_if<
-	k==0,
-	typename NthEntitysVec<k, EntitysVec<T, OtherTypes...>>::Type&
->::type Get(EntitysVec<T, OtherTypes...>& vecs)
+template <typename T, typename... OtherTypes>
+void Add(EntitysVec<T, OtherTypes...>& vecs, T&& entity)
 {
-	return vecs;
+	vecs.Add(std::forward<T>(entity));
 }
-template <std::size_t k, typename T, typename... OtherTypes>
-typename std::enable_if<
-	k != 0,
-	typename NthEntitysVec<k, EntitysVec<T, OtherTypes...>>::Type&
->::type Get(EntitysVec<T, OtherTypes...>& vecs)
+template <typename T, typename FirstType, typename... OtherTypes>
+void Add(EntitysVec<FirstType, OtherTypes...>& vecs, T&& entity)
 {
-	EntitysVec<OtherTypes...>& super = vecs;
-	return Get<k-1>(super);
+	EntitysVec<OtherTypes...>& pvecs = vecs;
+	Add(pvecs, std::forward<T>(entity));
+}
+
+template <typename T, typename... OtherTypes>
+std::vector<T>& GetHelper(EntitysVec<T, OtherTypes...>& vec)
+{
+	return vec.m_types;
+}
+
+template <typename T, typename... Types>
+std::vector<T>& Get(EntitysVec<Types...>& vec)
+{
+	return GetHelper<T>(vec);
 }
 
 class EntityVec : public Entity
