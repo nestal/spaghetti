@@ -77,7 +77,9 @@ TEST(EntityVecTest, Test_Variadic_Test)
 	//auto& v = vec.EntitysVec<Variable, Function>::m_types;
 	auto& v = Get<Variable>(vec);
 	ASSERT_EQ(1, v.size()) ;
-	
+	ASSERT_EQ(0, vec.IndexOf(vec.At(0)));
+	ASSERT_EQ(1, vec.IndexOf(vec.At(1)));
+	ASSERT_EQ(2, vec.IndexOf(vec.At(2)));
 	
 //	Get<MockDataType>(vec).front();
 //	ASSERT_EQ(&Get<MockDataType>(vec).front(), vec.At(0));

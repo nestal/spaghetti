@@ -48,6 +48,13 @@ struct EntitysVec<LastType>
 	{
 		m_types.push_back(std::move(entity));
 	}
+	virtual std::ptrdiff_t IndexOf(const Entity *entity) const
+	{
+		auto diff = std::distance(static_cast<const LastType*>(&m_types[0]), static_cast<const LastType*>(entity));
+		if (diff >= m_types.size())
+			throw std::out_of_range("oops");
+		return diff;
+	}
 	
 	std::vector<LastType> m_types;
 };
@@ -72,6 +79,16 @@ struct EntitysVec<FirstType, OtherTypes...> : public EntitysVec<OtherTypes...>
 	void Add(FirstType&& entity)
 	{
 		m_types.push_back(std::move(entity));
+	}
+	
+	std::ptrdiff_t IndexOf(const Entity *entity) const override
+	{
+		auto diff = std::distance(static_cast<const FirstType*>(&m_types[0]), static_cast<const FirstType*>(entity));
+		if (diff < m_types.size())
+			return diff;
+		
+		else
+			return m_types.size() + EntitysVec<OtherTypes...>::IndexOf(entity);
 	}
 	
 	std::vector<FirstType>      m_types;
