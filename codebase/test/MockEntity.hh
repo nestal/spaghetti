@@ -13,6 +13,7 @@
 #pragma once
 
 #include "codebase/Entity.hh"
+#include "codebase/DataType.hh"
 
 namespace codebase {
 namespace ut {
@@ -20,7 +21,7 @@ namespace ut {
 class MockEntity : public LeafEntity
 {
 public:
-	MockEntity(std::size_t idx = 0, const Entity* parent = {});
+	MockEntity(std::size_t idx = 0, const EntityVec* parent = {});
 	
 	EntityType Type() const override;
 	
@@ -33,5 +34,12 @@ public:
 private:
 	std::size_t m_index{};
 };
-	
+
+class MockDataType : public DataType
+{
+public:
+	MockDataType(const EntityVec *parent) : DataType{"Name", "ID", {}, parent} {}
+	using DataType::DataType;
+};
+
 }} // end of namespace

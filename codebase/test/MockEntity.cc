@@ -16,7 +16,7 @@
 namespace codebase {
 namespace ut {
 
-MockEntity::MockEntity(size_t idx, const Entity* parent) :
+MockEntity::MockEntity(size_t idx, const EntityVec* parent) :
 	LeafEntity{"mock" + std::to_string(idx), "mock" + std::to_string(idx) + "ID", parent},
 	m_index{idx}
 {

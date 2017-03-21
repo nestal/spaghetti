@@ -107,7 +107,7 @@ public:
 			entity->UpdateChild(&child, [this](Entity *nc) {CrossReference(nc);});
 	}
 
-	void Update(const Entity* entity, const std::function<void(Entity*)>& mod)
+	void Update(const Entity* entity, const std::function<void(Entity*)>& mod) override
 	{
 	}
 	

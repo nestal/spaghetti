@@ -28,6 +28,39 @@
 
 namespace codebase {
 
+template <typename... EntityTypes>
+struct EntitysVec;
+
+template <typename LastType>
+struct EntitysVec<LastType>
+{
+	const Entity* At(std::size_t idx) const
+	{
+		return &m_types.at(idx);
+	}
+	Entity* At(std::size_t idx)
+	{
+		return &m_types.at(idx);
+	}
+	
+	std::vector<LastType> m_types;
+};
+
+template <typename FirstType, typename... OtherTypes>
+struct EntitysVec<FirstType, OtherTypes...>
+{
+	const Entity* At(std::size_t idx) const
+	{
+		if (idx < m_types.size())
+			return &m_types.at(idx);
+		else
+			return m_others.At(idx-m_types.size());
+	}
+		
+	std::vector<FirstType>      m_types;
+	EntitysVec<OtherTypes...>   m_others;
+};
+
 class EntityVec : public Entity
 {
 private:

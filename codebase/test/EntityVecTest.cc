@@ -12,8 +12,15 @@
 
 #include <gtest/gtest.h>
 
+#include "codebase/DataType.hh"
+#include "codebase/Variable.hh"
+#include "codebase/Function.hh"
+
 #include "codebase/EntityVec.hh"
 #include "codebase/EntityType.hh"
+
+#include "libclx/Cursor.hh"
+
 #include "MockEntity.hh"
 
 using namespace codebase;
@@ -55,4 +62,20 @@ TEST(EntityVecTest, Add_Unique_With_a_Vector_Disallow_Duplicates)
 	auto m1 = subject.AddUnique(vec, "mock0ID", 0, &subject);
 	ASSERT_EQ(m0, m1);
 	ASSERT_EQ(1, subject.ChildCount());
+}
+
+TEST(EntityVecTest, Test_Variadic_Test)
+{
+	EntitysVec<MockDataType, Variable, Function> vec;
+	
+	TestEntityVec subject;
+	vec.m_types.push_back(MockDataType{&subject});
+	
+	vec.m_others.m_types.push_back(Variable{libclx::Cursor{}, &subject});
+	
+	vec.m_others.m_others.m_types.push_back(Function{libclx::Cursor{}, &subject});
+	
+	ASSERT_EQ(&vec.m_types.front(), vec.At(0));
+	ASSERT_EQ(&vec.m_others.m_types.front(), vec.At(1));
+	ASSERT_EQ(&vec.m_others.m_others.m_types.front(), vec.At(2));
 }
