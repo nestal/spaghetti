@@ -31,14 +31,28 @@ namespace codebase {
 template <typename... EntityTypes>
 struct EntitysVec;
 
+template <std::size_t k, typename Type>
+struct EntityElementType;
+
+template <typename T, typename... OtherTypes>
+struct EntityElementType<0, EntitysVec<T, OtherTypes...>>
+{
+	using Type = T;
+};
+template <std::size_t k, typename T, typename... OtherTypes>
+struct EntityElementType<k, EntitysVec<T, OtherTypes...>>
+{
+	using Type = typename EntityElementType<k-1, EntitysVec<OtherTypes...>>::Type ;
+};
+
 template <typename LastType>
 struct EntitysVec<LastType>
 {
-	const Entity* At(std::size_t idx) const
+	virtual const Entity* At(std::size_t idx) const
 	{
 		return &m_types.at(idx);
 	}
-	Entity* At(std::size_t idx)
+	virtual Entity* At(std::size_t idx)
 	{
 		return &m_types.at(idx);
 	}
@@ -47,19 +61,43 @@ struct EntitysVec<LastType>
 };
 
 template <typename FirstType, typename... OtherTypes>
-struct EntitysVec<FirstType, OtherTypes...>
+struct EntitysVec<FirstType, OtherTypes...> : public EntitysVec<OtherTypes...>
 {
-	const Entity* At(std::size_t idx) const
+	const Entity* At(std::size_t idx) const override
 	{
 		if (idx < m_types.size())
 			return &m_types.at(idx);
 		else
-			return m_others.At(idx-m_types.size());
+			return EntitysVec<OtherTypes...>::At(idx-m_types.size());
 	}
-		
+	Entity* At(std::size_t idx) override
+	{
+		if (idx < m_types.size())
+			return &m_types.at(idx);
+		else
+			return EntitysVec<OtherTypes...>::At(idx-m_types.size());
+	}
+
 	std::vector<FirstType>      m_types;
-	EntitysVec<OtherTypes...>   m_others;
 };
+
+template <std::size_t k, typename T, typename... OtherTypes>
+typename std::enable_if<
+	k==0,
+	std::vector<typename EntityElementType<k, EntitysVec<T, OtherTypes...>>::Type>&
+>::type Get(EntitysVec<T, OtherTypes...>& vecs)
+{
+	return vecs.m_types;
+}
+template <std::size_t k, typename T, typename... OtherTypes>
+typename std::enable_if<
+	k != 0,
+	std::vector<typename EntityElementType<k, EntitysVec<T, OtherTypes...>>::Type>&
+>::type Get(EntitysVec<T, OtherTypes...>& vecs)
+{
+	EntitysVec<OtherTypes...>& super = vecs;
+	return Get<k-1>(super);
+}
 
 class EntityVec : public Entity
 {
