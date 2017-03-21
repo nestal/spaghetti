@@ -78,18 +78,6 @@ struct EntitysVec<FirstType, OtherTypes...> : public EntitysVec<OtherTypes...>
 };
 
 template <typename T, typename... OtherTypes>
-void Add(EntitysVec<T, OtherTypes...>& vecs, T&& entity)
-{
-	vecs.Add(std::forward<T>(entity));
-}
-template <typename T, typename FirstType, typename... OtherTypes>
-void Add(EntitysVec<FirstType, OtherTypes...>& vecs, T&& entity)
-{
-	EntitysVec<OtherTypes...>& pvecs = vecs;
-	Add(pvecs, std::forward<T>(entity));
-}
-
-template <typename T, typename... OtherTypes>
 std::vector<T>& GetHelper(EntitysVec<T, OtherTypes...>& vec)
 {
 	return vec.m_types;
@@ -99,6 +87,12 @@ template <typename T, typename... Types>
 std::vector<T>& Get(EntitysVec<Types...>& vec)
 {
 	return GetHelper<T>(vec);
+}
+
+template <typename T, typename... Types>
+void Add(EntitysVec<Types...>& vec, T&& entity)
+{
+	GetHelper<T>(vec).push_back(std::forward<T>(entity));
 }
 
 class EntityVec : public Entity
