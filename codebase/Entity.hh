@@ -14,6 +14,7 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -76,6 +77,7 @@ public:
 	virtual std::size_t ChildCount() const = 0;
 	virtual const Entity* Child(std::size_t idx) const = 0;
 	virtual std::size_t IndexOf(const Entity* child) const = 0;
+	virtual void UpdateChild(const Entity* child, const std::function<void(Entity*)>& mod) = 0;
 	
 	virtual void MarkUsed() = 0;
 	virtual bool IsUsed() const = 0;
@@ -160,6 +162,7 @@ public:
 	std::size_t ChildCount() const override;
 	const Entity* Child(std::size_t idx) const override;
 	std::size_t IndexOf(const Entity* child) const override;
+	void UpdateChild(const Entity* child, const std::function<void(Entity*)>& mod) override;
 
 	const std::string& Name() const override;
 	const EntityVec* Parent() const override;

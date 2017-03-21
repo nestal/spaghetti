@@ -176,5 +176,5 @@ void LogicalModel::Reset(const codebase::Entity *root, const codebase::EntityMap
 	m_index = index;
 	endResetModel();
 }
-	
+
 }} // end of namespace

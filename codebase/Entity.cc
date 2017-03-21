@@ -75,6 +75,10 @@ std::size_t LeafEntity::IndexOf(const Entity*) const
 	return npos;
 }
 
+void LeafEntity::UpdateChild(const Entity*, const std::function<void(Entity*)>&)
+{
+}
+
 const std::string& LeafEntity::Name() const
 {
 	return m_name;

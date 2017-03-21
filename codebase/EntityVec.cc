@@ -85,6 +85,11 @@ std::size_t EntityVec::IndexOf(const Entity* child) const
 		: Entity::npos;
 }
 
+void EntityVec::UpdateChild(const Entity* child, const std::function<void(Entity*)>& mod)
+{
+	Update(child, mod);
+}
+
 void EntityVec::MarkUsed()
 {
 	m_used = true;

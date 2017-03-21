@@ -118,9 +118,9 @@ public:
 	
 	std::size_t ChildCount() const override ;
 	const Entity* Child(std::size_t idx) const override;
-//	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
-	
+	void UpdateChild(const Entity* child, const std::function<void(Entity*)>& mod) override;
+
 	template <typename Type, typename... Args>
 	Type* Add(Args... arg)
 	{
@@ -134,6 +134,15 @@ public:
 	auto AddUnique(EntityContainer&& cont, const std::string& id, Args... arg);
 	
 	void AddChild(UniqueEntityPtr&& child);
+	
+	template <typename Mod>
+	void Update(const Entity *child, Mod mod)
+	{
+		auto&& idx = m_db.get<BySelf>();
+		auto it = idx.find(child);
+		if (it != idx.end())
+			idx.modify(it, [&mod](EntityEntry& ee) {mod(ee.ptr.get()); });
+	}
 	
 	void MarkUsed() override;
 	bool IsUsed() const override;

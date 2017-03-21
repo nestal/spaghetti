@@ -99,12 +99,21 @@ public:
 			AddToIndex(&c);
 	}
 	
-	void CrossReference(const Entity *entity)
+	void CrossReference(Entity *entity)
 	{
-		const_cast<Entity*>(entity)->CrossReference(this);
+		entity->CrossReference(this);
 
 		for (auto&& child : *entity)
-			CrossReference(&child);
+		{
+			entity->UpdateChild(&child, [this](auto&& nc_child)
+			{
+				CrossReference(nc_child);
+			});
+		}
+	}
+
+	void Update(const Entity* entity, const std::function<void(Entity*)>& mod)
+	{
 	}
 	
 	void Swap(EntityTree& other)
