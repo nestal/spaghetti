@@ -91,12 +91,12 @@ public:
 		CrossReference(&m_root);
 	}
 	
-	void AddToIndex(const Entity *entity)
+	void AddToIndex(Entity *entity)
 	{
 		m_index.insert(entity);
 		
-		for (auto&& c : *entity)
-			AddToIndex(&c);
+		for (auto&& child : *entity)
+			entity->UpdateChild(&child, [this](Entity *nc) {AddToIndex(nc); });
 	}
 	
 	void CrossReference(Entity *entity)
@@ -104,12 +104,7 @@ public:
 		entity->CrossReference(this);
 
 		for (auto&& child : *entity)
-		{
-			entity->UpdateChild(&child, [this](auto&& nc_child)
-			{
-				CrossReference(nc_child);
-			});
-		}
+			entity->UpdateChild(&child, [this](Entity *nc) {CrossReference(nc);});
 	}
 
 	void Update(const Entity* entity, const std::function<void(Entity*)>& mod)
@@ -128,7 +123,7 @@ private:
 	struct ByName {};
 	
 	using EntityIndex = boost::multi_index_container<
-		const Entity*,
+		Entity*,
 		mi::indexed_by<
 			
 			// hash by ID
