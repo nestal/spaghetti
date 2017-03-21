@@ -70,11 +70,11 @@ TEST(EntityVecTest, Test_Variadic_Test)
 	
 	TestEntityVec subject;
 
-	Get<0>(vec).push_back(MockDataType{&subject});
-	Get<1>(vec).push_back(Variable{libclx::Cursor{}, &subject});
-	Get<2>(vec).push_back(Function{libclx::Cursor{}, &subject});
+	Get<0>(vec).Add(MockDataType{&subject});
+	Get<1>(vec).Add(Variable{libclx::Cursor{}, &subject});
+	Get<2>(vec).Add(Function{libclx::Cursor{}, &subject});
 	
-	ASSERT_EQ(&Get<0>(vec).front(), vec.At(0));
-	ASSERT_EQ(&Get<1>(vec).front(), vec.At(1));
-	ASSERT_EQ(&Get<2>(vec).front(), vec.At(2));
+	ASSERT_EQ(&Get<0>(vec).m_types.front(), vec.At(0));
+	ASSERT_EQ(&Get<1>(vec).m_types.front(), vec.At(1));
+	ASSERT_EQ(&Get<2>(vec).m_types.front(), vec.At(2));
 }

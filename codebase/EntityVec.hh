@@ -32,17 +32,17 @@ template <typename... EntityTypes>
 struct EntitysVec;
 
 template <std::size_t k, typename Type>
-struct EntityElementType;
+struct NthEntitysVec;
 
 template <typename T, typename... OtherTypes>
-struct EntityElementType<0, EntitysVec<T, OtherTypes...>>
+struct NthEntitysVec<0, EntitysVec<T, OtherTypes...>>
 {
-	using Type = T;
+	using Type = EntitysVec<T, OtherTypes...>;
 };
 template <std::size_t k, typename T, typename... OtherTypes>
-struct EntityElementType<k, EntitysVec<T, OtherTypes...>>
+struct NthEntitysVec<k, EntitysVec<T, OtherTypes...>>
 {
-	using Type = typename EntityElementType<k-1, EntitysVec<OtherTypes...>>::Type ;
+	using Type = typename NthEntitysVec<k-1, EntitysVec<OtherTypes...>>::Type ;
 };
 
 template <typename LastType>
@@ -55,6 +55,10 @@ struct EntitysVec<LastType>
 	virtual Entity* At(std::size_t idx)
 	{
 		return &m_types.at(idx);
+	}
+	void Add(LastType&& entity)
+	{
+		m_types.push_back(std::move(entity));
 	}
 	
 	std::vector<LastType> m_types;
@@ -77,6 +81,10 @@ struct EntitysVec<FirstType, OtherTypes...> : public EntitysVec<OtherTypes...>
 		else
 			return EntitysVec<OtherTypes...>::At(idx-m_types.size());
 	}
+	void Add(FirstType&& entity)
+	{
+		m_types.push_back(std::move(entity));
+	}
 
 	std::vector<FirstType>      m_types;
 };
@@ -84,15 +92,15 @@ struct EntitysVec<FirstType, OtherTypes...> : public EntitysVec<OtherTypes...>
 template <std::size_t k, typename T, typename... OtherTypes>
 typename std::enable_if<
 	k==0,
-	std::vector<typename EntityElementType<k, EntitysVec<T, OtherTypes...>>::Type>&
+	typename NthEntitysVec<k, EntitysVec<T, OtherTypes...>>::Type&
 >::type Get(EntitysVec<T, OtherTypes...>& vecs)
 {
-	return vecs.m_types;
+	return vecs;
 }
 template <std::size_t k, typename T, typename... OtherTypes>
 typename std::enable_if<
 	k != 0,
-	std::vector<typename EntityElementType<k, EntitysVec<T, OtherTypes...>>::Type>&
+	typename NthEntitysVec<k, EntitysVec<T, OtherTypes...>>::Type&
 >::type Get(EntitysVec<T, OtherTypes...>& vecs)
 {
 	EntitysVec<OtherTypes...>& super = vecs;
