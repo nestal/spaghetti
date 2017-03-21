@@ -40,12 +40,6 @@ public:
 		return it != m_index.get<ByID>().end() ? *it : nullptr;
 	}
 	
-	Entity* Find(const std::string& id) override
-	{
-		auto it = m_index.get<ByID>().find(id);
-		return it != m_index.get<ByID>().end() ? *it : nullptr;
-	}
-	
 	const Entity* FindByName(const std::string& name) const override
 	{
 		auto it = m_index.get<ByName>().find(name);
@@ -57,38 +51,33 @@ public:
 		return dynamic_cast<const DataType*>(Find(ref.ID()));
 	}
 	
-	DataType* Instantiate(const ClassRef& ref) override
+	const DataType* Instantiate(const ClassRef& ref) override
 	{
 		assert(ref.IsTemplate());
 		assert(!ref.ID().empty());
 		
-		auto result = dynamic_cast<DataType*>(Find(ref.ID()));
+		auto result = Find(ref);
 		if (!result)
 		{
-			if (auto temp = dynamic_cast<ClassTemplate*>(Find(ref.TemplateID())))
+			if (auto temp = dynamic_cast<const ClassTemplate*>(Find(ref.TemplateID())))
 			{
 				// instantiate template and add to the index immediately
 				auto inst = temp->Instantiate(ref);
 				AddToIndex(inst.get());
 				
-				auto parent = dynamic_cast<ParentScope *>(Find(temp->Parent()->ID()));
+				auto parent = dynamic_cast<const ParentScope *>(Find(temp->Parent()->ID()));
 				
 				assert(parent);
 				assert(inst);
 				
 				result = inst.get();
-				parent->Add(std::move(inst));
+				const_cast<ParentScope*>(parent)->Add(std::move(inst));
 			}
 		}
 		
 		return result;
 	}
-	
-	DataType* Find(const ClassRef& ref) override
-	{
-		return dynamic_cast<DataType*>(Find(ref.ID()));
-	}
-	
+
 	Entity* Root()
 	{
 		return &m_root;
@@ -102,7 +91,7 @@ public:
 		CrossReference(&m_root);
 	}
 	
-	void AddToIndex(Entity *entity)
+	void AddToIndex(const Entity *entity)
 	{
 		m_index.insert(entity);
 		
@@ -110,9 +99,10 @@ public:
 			AddToIndex(&c);
 	}
 	
-	void CrossReference(Entity *entity)
+	void CrossReference(const Entity *entity)
 	{
-		entity->CrossReference(this);
+		const_cast<Entity*>(entity)->CrossReference(this);
+
 		for (auto&& child : *entity)
 			CrossReference(&child);
 	}
@@ -129,7 +119,7 @@ private:
 	struct ByName {};
 	
 	using EntityIndex = boost::multi_index_container<
-		Entity*,
+		const Entity*,
 		mi::indexed_by<
 			
 			// hash by ID

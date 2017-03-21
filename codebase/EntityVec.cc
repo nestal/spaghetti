@@ -75,23 +75,19 @@ const Entity* EntityVec::Child(std::size_t idx) const
 {
 	return m_db.get<ByIndex>().at(idx).Self();
 }
-
+/*
 Entity* EntityVec::Child(std::size_t idx)
 {
 	return const_cast<Entity*>(m_db.get<ByIndex>().at(idx).Self());
 }
-
+*/
 std::size_t EntityVec::IndexOf(const Entity* child) const
 {
-//	auto it = std::find_if(m_children.begin(), m_children.end(), [child](auto& c){return c.get() == child;});
-//	return it != m_children.end() ? static_cast<std::size_t>(it - m_children.begin()) : npos;
-	
 	auto&& idx = m_db.get<BySelf>();
 	auto it = idx.find(child);
-	if (it != idx.end())
-		return mi::project<ByIndex>(m_db, it) - m_db.get<ByIndex>().begin();
-	
-	return Entity::npos;
+	return it != idx.end()
+		? mi::project<ByIndex>(m_db, it) - m_db.get<ByIndex>().begin()
+		: Entity::npos;
 }
 
 void EntityVec::MarkUsed()
@@ -119,7 +115,6 @@ void EntityVec::Reparent(const Entity *parent)
 
 void EntityVec::AddChild(UniqueEntityPtr&& child)
 {
-//	m_children.push_back(std::move(child));
 	m_db.insert(std::move(child));
 }
 

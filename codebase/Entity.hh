@@ -73,7 +73,7 @@ public:
 	
 	virtual std::size_t ChildCount() const = 0;
 	virtual const Entity* Child(std::size_t idx) const = 0;
-	virtual Entity* Child(std::size_t idx) = 0;
+//	virtual Entity* Child(std::size_t idx) = 0;
 	virtual std::size_t IndexOf(const Entity* child) const = 0;
 	
 	virtual void MarkUsed() = 0;
@@ -85,11 +85,8 @@ public:
 	
 	static const std::size_t npos;
 	
-	using iterator       = EntityIterator<Entity, Entity>;
 	using const_iterator = EntityIterator<const Entity, const Entity>;
 	
-	iterator begin();
-	iterator end();
 	const_iterator begin() const;
 	const_iterator end() const;
 	
@@ -160,7 +157,7 @@ public:
 	LeafEntity(const std::string& name, const std::string& usr, const Entity *parent);
 	
 	std::size_t ChildCount() const override;
-	Entity* Child(std::size_t idx) override;
+//	Entity* Child(std::size_t idx) override;
 	const Entity* Child(std::size_t idx) const override;
 	std::size_t IndexOf(const Entity* child) const override;
 

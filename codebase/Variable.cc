@@ -58,8 +58,8 @@ void Variable::CrossReference(EntityMap *map)
 {
 	if (IsUsed())
 	{
-		if (auto type = dynamic_cast<DataType *>(map->Find(m_type.Declaration().USR())))
-			type->MarkUsed();
+		if (auto type = dynamic_cast<const DataType *>(map->Find(m_type.Declaration().USR())))
+			const_cast<DataType*>(type)->MarkUsed();
 	}
 }
 

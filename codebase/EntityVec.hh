@@ -118,7 +118,7 @@ public:
 	
 	std::size_t ChildCount() const override ;
 	const Entity* Child(std::size_t idx) const override;
-	Entity* Child(std::size_t idx) override;
+//	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
 	
 	template <typename Type, typename... Args>
