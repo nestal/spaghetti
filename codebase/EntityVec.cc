@@ -12,13 +12,7 @@
 
 #include "EntityVec.hh"
 
-#include "EntityType.hh"
-
-#include <functional>
-
 namespace codebase {
-
-namespace mi = boost::multi_index;
 
 EntityVec::EntityVec( const std::string& name, const std::string& usr, const EntityVec* parent) :
 	m_name{name},
@@ -34,8 +28,8 @@ EntityVec::EntityVec(EntityVec&& other) :
 	m_parent{other.m_parent},
 	m_used{other.m_used}
 {
-	for (auto&& c : m_db)
-		c.ptr->Reparent(this);
+	for (auto&& c : *this)
+		c.Reparent(this);
 }
 
 EntityVec& EntityVec::operator=(EntityVec&& other)
@@ -45,8 +39,8 @@ EntityVec& EntityVec::operator=(EntityVec&& other)
 	m_parent    = other.m_parent;
 	m_used      = other.m_used;
 	
-	for (auto&& c : m_db)
-		c.ptr->Reparent(this);
+	for (auto&& c : *this)
+		c.Reparent(this);
 	
 	return *this;
 }
@@ -68,39 +62,20 @@ const EntityVec* EntityVec::Parent() const
 
 std::size_t EntityVec::ChildCount() const
 {
-	return m_db.size();
-}
-
-const Entity* EntityVec::Child(std::size_t idx) const
-{
-	return m_db.get<ByIndex>().at(idx).Self();
-}
-
-std::size_t EntityVec::IndexOf(const Entity* child) const
-{
-	auto&& idx = m_db.get<BySelf>();
-	auto it = idx.find(child);
-	return it != idx.end()
-		? mi::project<ByIndex>(m_db, it) - m_db.get<ByIndex>().begin()
-		: Entity::npos;
-}
-
-void EntityVec::UpdateChild(const Entity* child, const std::function<void(Entity*)>& mod)
-{
-	Update(child, mod);
+	return m_index.size();
 }
 
 void EntityVec::MarkUsed()
 {
 	m_used = true;
-	for (auto& child : m_db)
-		child.ptr->MarkUsed();
+	for (auto&& child : *this)
+		child.MarkUsed();
 }
 
 bool EntityVec::IsUsed() const
 {
 	return m_used ||
-		std::find_if(m_db.begin(), m_db.end(), [](auto& child){return child.ptr->IsUsed();}) != m_db.end();
+		std::find_if(begin(), end(), [](auto& child){return child.IsUsed();}) != end();
 }
 
 void EntityVec::MarkSelfUsedOnly()
@@ -113,36 +88,18 @@ void EntityVec::Reparent(const EntityVec *parent)
 	m_parent = parent;
 }
 
-void EntityVec::AddChild(UniqueEntityPtr&& child)
-{
-	m_db.insert(std::move(child));
-}
-
 const Entity *EntityVec::FindByID(const std::string& id) const
 {
-	auto&& idx = m_db.get<ByID>();
-	auto it = idx.find(id);
-	return it != idx.end() ? it->ptr.get() : nullptr;
+	auto it = m_index.find(id);
+	return it != m_index.end() && it->second < ChildCount() ? Child(it->second) : nullptr;
 		
 }
 
-boost::iterator_range<EntityVec::TypeIterator> EntityVec::FindByType(EntityType type) const
+Entity *EntityVec::FindByID(const std::string& id)
 {
-	auto range = m_db.get<ByType>().equal_range(type);
-	return {range.first, range.second};
+	auto it = m_index.find(id);
+	return it != m_index.end() && it->second < ChildCount() ? Child(it->second) : nullptr;
+	
 }
-
-bool EntityVec::Modify(const std::string& id, std::function<void(Entity*)> func)
-{
-	auto&& idx = m_db.get<ByID>();
-	auto it = idx.find(id);
-	if (it != idx.end())
-	{
-		idx.modify(it, [&func](auto&& ee) { func(ee.ptr.get()); });
-		return true;
-	}
-	else
-		return false;
-}
-
+	
 } // end of namespace

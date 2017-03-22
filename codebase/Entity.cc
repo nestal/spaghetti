@@ -21,6 +21,16 @@ namespace codebase {
 
 const std::size_t Entity::npos = std::string::npos;
 
+Entity::iterator Entity::begin()
+{
+	return iterator(0, this);
+}
+
+Entity::iterator Entity::end()
+{
+	return iterator(ChildCount(), this);
+}
+
 Entity::const_iterator Entity::begin() const
 {
 	return const_iterator(0, this);
@@ -70,13 +80,14 @@ const Entity *LeafEntity::Child(std::size_t) const
 	return nullptr;
 }
 
+Entity *LeafEntity::Child(std::size_t)
+{
+	return nullptr;
+}
+
 std::size_t LeafEntity::IndexOf(const Entity*) const
 {
 	return npos;
-}
-
-void LeafEntity::UpdateChild(const Entity*, const std::function<void(Entity*)>&)
-{
 }
 
 const std::string& LeafEntity::Name() const

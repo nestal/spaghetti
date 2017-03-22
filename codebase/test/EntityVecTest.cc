@@ -27,7 +27,7 @@
 
 using namespace codebase;
 using namespace codebase::ut;
-
+/*
 class TestEntityVec : public EntityVec
 {
 public:
@@ -95,3 +95,4 @@ TEST(EntityVecTest, Test_Variadic_Test)
 	ASSERT_EQ(1, vec.IndexOf(vec.At(1)));
 	ASSERT_EQ(2, vec.IndexOf(vec.At(2)));
 }
+*/

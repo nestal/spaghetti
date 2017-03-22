@@ -49,7 +49,7 @@ void Function::Visit(const libclx::Cursor& self)
 		switch (cursor.Kind())
 		{
 		case CXCursor_ParmDecl:
-			AddUnique(m_args, cursor.USR(), cursor, this);
+			AddUnique<Variable>(m_args, cursor.USR(), cursor, this);
 			break;
 			
 		default:
@@ -64,8 +64,8 @@ void Function::CrossReference(EntityMap *)
 {
 	if (IsUsed())
 	{
-		for (auto& arg : m_args)
-			arg->MarkUsed();
+		for (auto& arg : *this)
+			arg.MarkUsed();
 	}
 }
 
@@ -83,5 +83,20 @@ libclx::Type Function::ReturnType() const
 {
 	return m_return_type;
 }
-	
+
+const Entity* Function::Child(std::size_t idx) const
+{
+	return m_args.At(idx);
+}
+
+Entity* Function::Child(std::size_t idx)
+{
+	return m_args.At(idx);
+}
+
+std::size_t Function::IndexOf(const Entity* child) const
+{
+	return m_args.IndexOf(child);
+}
+
 } // end of namespace

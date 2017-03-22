@@ -76,8 +76,8 @@ public:
 	
 	virtual std::size_t ChildCount() const = 0;
 	virtual const Entity* Child(std::size_t idx) const = 0;
+	virtual Entity* Child(std::size_t idx) = 0;
 	virtual std::size_t IndexOf(const Entity* child) const = 0;
-	virtual void UpdateChild(const Entity* child, const std::function<void(Entity*)>& mod) = 0;
 	
 	virtual void MarkUsed() = 0;
 	virtual bool IsUsed() const = 0;
@@ -88,8 +88,11 @@ public:
 	
 	static const std::size_t npos;
 	
+	using iterator = EntityIterator<Entity, Entity>;
 	using const_iterator = EntityIterator<const Entity, const Entity>;
 	
+	iterator begin();
+	iterator end();
 	const_iterator begin() const;
 	const_iterator end() const;
 	
@@ -161,8 +164,8 @@ public:
 	
 	std::size_t ChildCount() const override;
 	const Entity* Child(std::size_t idx) const override;
+	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
-	void UpdateChild(const Entity* child, const std::function<void(Entity*)>& mod) override;
 
 	const std::string& Name() const override;
 	const EntityVec* Parent() const override;

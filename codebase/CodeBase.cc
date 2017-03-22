@@ -71,7 +71,7 @@ public:
 				assert(inst);
 				
 				result = inst.get();
-				const_cast<ParentScope*>(parent)->Add(std::move(inst));
+//				const_cast<ParentScope*>(parent)->Add(std::move(inst));
 			}
 		}
 		
@@ -96,7 +96,7 @@ public:
 		m_index.insert(entity);
 		
 		for (auto&& child : *entity)
-			entity->UpdateChild(&child, [this](Entity *nc) {AddToIndex(nc); });
+			AddToIndex(&child);
 	}
 	
 	void CrossReference(Entity *entity)
@@ -104,7 +104,7 @@ public:
 		entity->CrossReference(this);
 
 		for (auto&& child : *entity)
-			entity->UpdateChild(&child, [this](Entity *nc) {CrossReference(nc);});
+			CrossReference(&child);
 	}
 
 	void Update(const Entity* entity, const std::function<void(Entity*)>& mod) override

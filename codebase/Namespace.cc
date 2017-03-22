@@ -47,18 +47,15 @@ void Namespace::VisitChild(const libclx::Cursor& child, const libclx::Cursor& se
 		{
 			// class method definition in namespace
 			// the class definition should already be parsed
-			Modify(child.SemanticParent().USR(), [child](Entity *entity)
-			{
-				auto parent = dynamic_cast<DataType*>(entity);
-				if (parent)
-					parent->VisitFunction(child);
-			});
+			auto parent = dynamic_cast<DataType*>(FindByID(child.SemanticParent().USR()));
+			if (parent)
+				parent->VisitFunction(child);
 		}
 		break;
 	}
 	
 	case CXCursor_Namespace:
-		AddUnique(m_ns, child.USR(), child, this)->Visit(child);
+		AddUnique<Namespace>(*m_cond, child.USR(), child, this).Visit(child);
 		break;
 	
 	default:

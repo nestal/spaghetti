@@ -108,7 +108,7 @@ std::vector<T>& Get(MultiContainer<Base, Ts...>& vec)
 }
 
 template<typename Base, typename T, typename... Ts>
-Base& Add(MultiContainer<Base, Ts...>& cond, T&& entity)
+T& Add(MultiContainer<Base, Ts...>& cond, T&& entity)
 {
 	auto& vec = GetHelper<T>(cond);
 	vec.push_back(std::forward<T>(entity));
