@@ -20,14 +20,13 @@ using namespace codebase;
 
 TEST(CodeBaseTest, TestInheritance)
 {
-	/*
 	CodeBase subject;
 	subject.Parse(SRC_DIR "/codebase/CodeBase.cc", {
 		"-std=c++14",
 		"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
 		"-I", SRC_DIR
 	});
-
+	
 	auto datatype_class = dynamic_cast<const DataType*>(subject.Map().Find("c:@N@codebase@S@EntityVec"));
 	auto entity_class   = dynamic_cast<const Entity*>(subject.Map().Find("c:@N@codebase@S@Entity"));
 	
@@ -35,5 +34,5 @@ TEST(CodeBaseTest, TestInheritance)
 	ASSERT_TRUE(entity_class);
 	
 	for (auto&& base : datatype_class->BaseClasses())
-		ASSERT_EQ(entity_class->ID(), base.ID());*/
+		ASSERT_EQ(entity_class->ID(), base.ID());
 }
