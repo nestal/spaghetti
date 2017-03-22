@@ -32,6 +32,7 @@
 
 namespace codebase {
 
+//template <typename... EntityTs>
 class EntityVec : public Entity
 {
 private:

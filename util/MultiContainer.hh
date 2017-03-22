@@ -37,9 +37,14 @@ struct MultiContainer<Base, Head>
 		m_types.push_back(std::move(entity));
 	}
 	
-	virtual std::ptrdiff_t IndexOf(const Base *entity) const
+	virtual std::size_t Size() const
 	{
-		auto diff = std::distance(&m_types[0], static_cast<const Head *>(entity));
+		return m_types.size();
+	}
+	
+	virtual std::ptrdiff_t IndexOf(const Base *base) const
+	{
+		auto diff = std::distance(&m_types[0], static_cast<const Head *>(base));
 		if (diff >= m_types.size())
 			throw std::out_of_range("oops");
 		return diff;
@@ -72,14 +77,19 @@ struct MultiContainer<Base, Head, Ts...> : public MultiContainer<Base, Ts...>
 		m_types.push_back(std::move(entity));
 	}
 	
-	std::ptrdiff_t IndexOf(const Base *entity) const override
+	std::size_t Size() const override
 	{
-		auto diff = std::distance(&m_types[0], static_cast<const Head *>(entity));
+		return m_types.size() + MultiContainer<Base, Ts...>::Size();
+	}
+	
+	std::ptrdiff_t IndexOf(const Base *base) const override
+	{
+		auto diff = std::distance(&m_types[0], static_cast<const Head *>(base));
 		if (diff < m_types.size())
 			return diff;
 		
 		else
-			return m_types.size() + MultiContainer<Base, Ts...>::IndexOf(entity);
+			return m_types.size() + MultiContainer<Base, Ts...>::IndexOf(base);
 	}
 	
 	std::vector<Head> m_types;

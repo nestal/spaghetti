@@ -80,6 +80,8 @@ TEST(EntityVecTest, Test_Variadic_Test)
 	auto& var1 = Add(vec, Variable{libclx::Cursor{}, &subject});
 	auto& fn1  = Add(vec, Function{libclx::Cursor{}, &subject});
 	
+	ASSERT_EQ(4, vec.Size());
+	
 	auto& vars = util::Get<Variable>(vec);
 	ASSERT_EQ(1, vars.size()) ;
 	ASSERT_EQ(&var1, &vars.front());
