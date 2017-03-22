@@ -14,6 +14,8 @@
 
 #include "Entity.hh"
 
+#include "util/MultiContainer.hh"
+
 #include <tuple>
 
 #include <boost/multi_index_container.hpp>
@@ -29,88 +31,6 @@
 #include <memory>
 
 namespace codebase {
-
-template <typename... EntityTypes>
-struct EntitysVec;
-
-template <typename LastType>
-struct EntitysVec<LastType>
-{
-	virtual const Entity* At(std::size_t idx) const
-	{
-		return &m_types.at(idx);
-	}
-	virtual Entity* At(std::size_t idx)
-	{
-		return &m_types.at(idx);
-	}
-	void Add(LastType&& entity)
-	{
-		m_types.push_back(std::move(entity));
-	}
-	virtual std::ptrdiff_t IndexOf(const Entity *entity) const
-	{
-		auto diff = std::distance(static_cast<const LastType*>(&m_types[0]), static_cast<const LastType*>(entity));
-		if (diff >= m_types.size())
-			throw std::out_of_range("oops");
-		return diff;
-	}
-	
-	std::vector<LastType> m_types;
-};
-
-template <typename FirstType, typename... OtherTypes>
-struct EntitysVec<FirstType, OtherTypes...> : public EntitysVec<OtherTypes...>
-{
-	const Entity* At(std::size_t idx) const override
-	{
-		if (idx < m_types.size())
-			return &m_types.at(idx);
-		else
-			return EntitysVec<OtherTypes...>::At(idx-m_types.size());
-	}
-	Entity* At(std::size_t idx) override
-	{
-		if (idx < m_types.size())
-			return &m_types.at(idx);
-		else
-			return EntitysVec<OtherTypes...>::At(idx-m_types.size());
-	}
-	void Add(FirstType&& entity)
-	{
-		m_types.push_back(std::move(entity));
-	}
-	
-	std::ptrdiff_t IndexOf(const Entity *entity) const override
-	{
-		auto diff = std::distance(static_cast<const FirstType*>(&m_types[0]), static_cast<const FirstType*>(entity));
-		if (diff < m_types.size())
-			return diff;
-		
-		else
-			return m_types.size() + EntitysVec<OtherTypes...>::IndexOf(entity);
-	}
-	
-	std::vector<FirstType>      m_types;
-};
-
-template <typename T, typename... OtherTypes>
-std::vector<T>& GetHelper(EntitysVec<T, OtherTypes...>& vec)
-{
-	return vec.m_types;
-}
-
-template <typename T, typename... Types>
-std::vector<T>& Get(EntitysVec<Types...>& vec)
-{
-	return GetHelper<T>(vec);
-}
-
-template <typename T, typename... Types>
-void Add(EntitysVec<Types...>& vec, T&& entity)
-{
-	GetHelper<T>(vec).push_back(std::forward<T>(entity));
-}
 
 class EntityVec : public Entity
 {

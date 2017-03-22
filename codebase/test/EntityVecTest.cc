@@ -19,6 +19,8 @@
 #include "codebase/EntityVec.hh"
 #include "codebase/EntityType.hh"
 
+#include "util/MultiContainer.hh"
+
 #include "libclx/Cursor.hh"
 
 #include "MockEntity.hh"
@@ -66,23 +68,28 @@ TEST(EntityVecTest, Add_Unique_With_a_Vector_Disallow_Duplicates)
 
 TEST(EntityVecTest, Test_Variadic_Test)
 {
-	EntitysVec<MockDataType, Variable, Function> vec;
+	util::MultiContainer<Entity, MockDataType, Variable, Function> vec;
 	
 	TestEntityVec subject;
-
-	Add(vec, MockDataType{&subject});
-	Add(vec, Variable{libclx::Cursor{}, &subject});
-	Add(vec, Function{libclx::Cursor{}, &subject});
 	
-	//auto& v = vec.EntitysVec<Variable, Function>::m_types;
-	auto& v = Get<Variable>(vec);
-	ASSERT_EQ(1, v.size()) ;
+	// prevent reallocation
+	util::Get<MockDataType>(vec).reserve(2);
+		
+	auto& dt1  = Add(vec, MockDataType{&subject});
+	auto& dt2  = Add(vec, MockDataType{&subject});
+	auto& var1 = Add(vec, Variable{libclx::Cursor{}, &subject});
+	auto& fn1  = Add(vec, Function{libclx::Cursor{}, &subject});
+	
+	auto& vars = util::Get<Variable>(vec);
+	ASSERT_EQ(1, vars.size()) ;
+	ASSERT_EQ(&var1, &vars.front());
+	
+	auto& dts = util::Get<MockDataType>(vec);
+	ASSERT_EQ(2, dts.size()) ;
+	ASSERT_EQ(&dt1, &dts.front());
+	ASSERT_EQ(&dt2, &dts.back());
+	
 	ASSERT_EQ(0, vec.IndexOf(vec.At(0)));
 	ASSERT_EQ(1, vec.IndexOf(vec.At(1)));
 	ASSERT_EQ(2, vec.IndexOf(vec.At(2)));
-	
-//	Get<MockDataType>(vec).front();
-//	ASSERT_EQ(&Get<MockDataType>(vec).front(), vec.At(0));
-//	ASSERT_EQ(&Get<1>(vec).m_types.front(), vec.At(1));
-//	ASSERT_EQ(&Get<2>(vec).m_types.front(), vec.At(2));
 }
