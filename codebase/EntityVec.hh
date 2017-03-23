@@ -64,6 +64,8 @@ protected:
 		{
 			auto idx = vec.size();
 			vec.emplace_back(ts...);
+			
+			// if emplace_back() throw, do not add to index
 			m_index.emplace(id, idx);
 			return vec.back();
 		}
