@@ -14,6 +14,10 @@
 
 #include "DataType.hh"
 #include "EntityType.hh"
+#include "Function.hh"
+#include "Variable.hh"
+#include "ClassTemplate.hh"
+#include "Namespace.hh"
 
 #include "libclx/Cursor.hh"
 

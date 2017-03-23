@@ -59,6 +59,7 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 		
 	case CXCursor_ClassDecl:
 	case CXCursor_StructDecl:
+	std::cout << "class declaration: " << child.USR() << std::endl;
 		AddUnique<DataType>(*m_cond, child.USR(), child, this).Visit(child);
 		break;
 	

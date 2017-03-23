@@ -13,8 +13,10 @@
 #pragma once
 
 #include "Entity.hh"
+#include "util/MultiContainer.hh"
 
 #include <unordered_map>
+#include <iostream>
 
 namespace codebase {
 
@@ -48,18 +50,22 @@ protected:
 	template <typename Type, typename MultiCond, typename... Ts>
 	Type& AddUnique(MultiCond& cond, const std::string& id, Ts... ts)
 	{
+		auto& vec = util::Get<Type>(cond);
+		
 		auto it = m_index.find(id);
 		if (it != m_index.end())
 		{
 			// can be find inside cond
-			auto entity = Child(it->second);
-			assert(entity);
-			return dynamic_cast<Type&>(*entity);
+			assert(it->second < vec.size());
+			auto& entity = vec.at(it->second);
+			return vec.at(it->second);
 		}
 		else
 		{
-			m_index.emplace(id, m_index.size());
-			return Add(cond, Type{ts...});
+			auto idx = vec.size();
+			vec.emplace_back(ts...);
+			m_index.emplace(id, idx);
+			return vec.back();
 		}
 	}
 	
