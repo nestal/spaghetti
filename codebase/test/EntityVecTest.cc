@@ -32,6 +32,12 @@ class TestEntityVec : public EntityVec
 {
 public:
 	using EntityVec::EntityVec;
+	TestEntityVec(TestEntityVec&& r) : EntityVec{std::move(r)}, m_cond{std::move(r.m_cond)}
+	{
+		for (auto&& child : *this)
+			child.Reparent(this);
+	}
+	
 	EntityType Type() const override {return EntityType::none;}
 	void CrossReference(EntityMap *) override {}
 	
@@ -47,7 +53,12 @@ public:
 	{
 		return m_cond.IndexOf(child);
 	}
-
+	
+	std::size_t ChildCount() const override
+	{
+		return m_cond.Size();
+	}
+	
 	template <typename Type, typename... Ts>
 	Type& Add(const std::string& id, Ts... ts)
 	{
@@ -85,6 +96,20 @@ TEST(EntityVecTest, Add_Unique_With_a_Vector_Disallow_Duplicates)
 	auto& m1 = subject.Add<MockEntity>("mock0ID", 0, &subject);
 	ASSERT_EQ(&m0, &m1);
 	ASSERT_EQ(1, subject.ChildCount());
+}
+
+TEST(EntityVecTest, Move_Ctor_Reparent_All_Children)
+{
+	TestEntityVec subject;
+	
+	subject.Add<MockEntity>("mock0ID", 0, &subject);
+	subject.Add<MockEntity>("mock1ID", 0, &subject);
+	subject.Add<MockEntity>("mock2ID", 0, &subject);
+	subject.Add<MockEntity>("mock3ID", 0, &subject);
+	ASSERT_EQ(4, subject.ChildCount());
+	
+	TestEntityVec moved{std::move(subject)};
+	ASSERT_EQ(4, moved.ChildCount());
 }
 
 TEST(EntityVecTest, Test_Variadic_Test)

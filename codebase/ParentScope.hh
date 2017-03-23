@@ -51,9 +51,9 @@ public:
 public:
 	ParentScope(const libclx::Cursor& cursor, const EntityVec* parent);
 	ParentScope(const std::string& name, const std::string& usr, const EntityVec *parent);
-	ParentScope(ParentScope&&);
+	ParentScope(ParentScope&& rhs);
 	ParentScope(const ParentScope&) = delete;
-	ParentScope& operator=(ParentScope&&);
+	ParentScope& operator=(ParentScope&& rhs);
 	ParentScope& operator=(const ParentScope&) = delete;
 	~ParentScope();
 	
@@ -62,6 +62,7 @@ public:
 	const Entity* Child(std::size_t idx) const override;
 	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
+	std::size_t ChildCount() const override;
 	
 	boost::iterator_range<field_iterator> Fields() const;
 	boost::iterator_range<function_iterator> Functions() const;
@@ -79,17 +80,8 @@ protected:
 	virtual void AfterVisitingChild(const libclx::Cursor& self);
 	
 protected:
-	using Cond = util::MultiContainer<
-		Entity,
-		Variable,
-		codebase::Function,
-		DataType,
-		ClassTemplate,
-		    
-		// will remove later
-		Namespace
-	>;
-	std::unique_ptr<Cond> m_cond;
+	struct Impl;
+	std::unique_ptr<Impl> m_;
 };
 
 } // end of namespace

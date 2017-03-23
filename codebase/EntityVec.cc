@@ -28,8 +28,6 @@ EntityVec::EntityVec(EntityVec&& other) :
 	m_parent{other.m_parent},
 	m_used{other.m_used}
 {
-	for (auto&& c : *this)
-		c.Reparent(this);
 }
 
 EntityVec& EntityVec::operator=(EntityVec&& other)
@@ -38,9 +36,6 @@ EntityVec& EntityVec::operator=(EntityVec&& other)
 	m_id        = std::move(other.m_id);
 	m_parent    = other.m_parent;
 	m_used      = other.m_used;
-	
-	for (auto&& c : *this)
-		c.Reparent(this);
 	
 	return *this;
 }
@@ -58,11 +53,6 @@ const std::string& EntityVec::ID() const
 const EntityVec* EntityVec::Parent() const
 {
 	return m_parent;
-}
-
-std::size_t EntityVec::ChildCount() const
-{
-	return m_index.size();
 }
 
 void EntityVec::MarkUsed()

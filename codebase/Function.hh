@@ -31,11 +31,14 @@ class Function : public EntityVec
 {
 public:
 	Function(const libclx::Cursor& first_seen, const EntityVec *parent);
+	Function(Function&&);
+	Function& operator=(Function&&);
 	
 	void Visit(const libclx::Cursor& self);
 	const Entity* Child(std::size_t idx) const override;
 	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
+	std::size_t ChildCount() const override;
 	
 	EntityType Type() const override;
 	libclx::SourceLocation Location() const override;

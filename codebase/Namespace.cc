@@ -14,10 +14,8 @@
 
 #include "DataType.hh"
 #include "EntityType.hh"
-#include "Function.hh"
-#include "Variable.hh"
-#include "ClassTemplate.hh"
-#include "Namespace.hh"
+
+#include "ParentScopeImpl.hh"
 
 #include "libclx/Cursor.hh"
 
@@ -59,7 +57,7 @@ void Namespace::VisitChild(const libclx::Cursor& child, const libclx::Cursor& se
 	}
 	
 	case CXCursor_Namespace:
-		AddUnique<Namespace>(*m_cond, child.USR(), child, this).Visit(child);
+		AddUnique<Namespace>(m_->cond, child.USR(), child, this).Visit(child);
 		break;
 	
 	default:

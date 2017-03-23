@@ -11,11 +11,7 @@
 //
 
 #include "ParentScope.hh"
-
-#include "Function.hh"
-#include "Variable.hh"
-#include "ClassTemplate.hh"
-#include "Namespace.hh"
+#include "ParentScopeImpl.hh"
 
 #include "libclx/Cursor.hh"
 #include "EntityType.hh"
@@ -27,20 +23,36 @@ namespace codebase {
 
 ParentScope::ParentScope(const libclx::Cursor& cursor, const EntityVec* parent) :
 	EntityVec{cursor.DisplayName(), cursor.USR(), parent},
-	m_cond{std::make_unique<Cond>()}
+	m_{std::make_unique<Impl>()}
 {
 }
 
 ParentScope::ParentScope(const std::string& name, const std::string& usr, const EntityVec *parent) :
 	EntityVec{name, usr, parent},
-	m_cond{std::make_unique<Cond>()}
+	m_{std::make_unique<Impl>()}
 {
 }
 
-ParentScope::ParentScope(ParentScope&&) = default;
-ParentScope& ParentScope::operator=(ParentScope&&) = default;
-ParentScope::~ParentScope() = default;
+ParentScope::ParentScope(ParentScope&& rhs) :
+	EntityVec{std::move(rhs)},
+	m_{std::move(rhs.m_)}
+{
+	for (auto&& c : *this)
+		c.Reparent(this);
+}
 
+ParentScope& ParentScope::operator=(ParentScope&& rhs)
+{
+	EntityVec::operator=(std::move(rhs));
+	m_ = std::move(rhs.m_);
+	
+	for (auto&& c : *this)
+		c.Reparent(this);
+	
+	return *this;
+}
+
+ParentScope::~ParentScope() = default;
 
 void ParentScope::Visit(const libclx::Cursor& self)
 {
@@ -54,21 +66,21 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 	switch (child.Kind())
 	{
 	case CXCursor_FieldDecl:
-		AddUnique<Variable>(*m_cond, child.USR(), child, this);
+		AddUnique<Variable>(m_->cond, child.USR(), child, this);
 		break;
 		
 	case CXCursor_ClassDecl:
 	case CXCursor_StructDecl:
 	std::cout << "class declaration: " << child.USR() << std::endl;
-		AddUnique<DataType>(*m_cond, child.USR(), child, this).Visit(child);
+		AddUnique<DataType>(m_->cond, child.USR(), child, this).Visit(child);
 		break;
 	
 	case CXCursor_ClassTemplate:
-		AddUnique<ClassTemplate>(*m_cond, child.USR(), child, this).Visit(child);
+		AddUnique<ClassTemplate>(m_->cond, child.USR(), child, this).Visit(child);
 		break;
 	
 	case CXCursor_CXXMethod:
-		AddUnique<codebase::Function>(*m_cond, child.USR(), child, this);
+		AddUnique<codebase::Function>(m_->cond, child.USR(), child, this);
 		break;
 	
 	default:
@@ -78,25 +90,25 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 
 boost::iterator_range<ParentScope::field_iterator> ParentScope::Fields() const
 {
-	auto& vec = util::Get<Variable>(*m_cond);
+	auto& vec = util::Get<Variable>(m_->cond);
 	return {vec.begin(), vec.end()};
 }
 
 boost::iterator_range<ParentScope::function_iterator> ParentScope::Functions() const
 {
-	auto& vec = util::Get<codebase::Function>(*m_cond);
+	auto& vec = util::Get<codebase::Function>(m_->cond);
 	return {vec.begin(), vec.end()};
 }
 
 const codebase::Function& ParentScope::Function(std::size_t idx) const
 {
-	auto& vec = util::Get<codebase::Function>(*m_cond);
+	auto& vec = util::Get<codebase::Function>(m_->cond);
 	return vec.at(idx);
 }
 
 const codebase::Variable& ParentScope::Field(std::size_t idx) const
 {
-	auto& vec = util::Get<codebase::Variable>(*m_cond);
+	auto& vec = util::Get<codebase::Variable>(m_->cond);
 	return vec.at(idx);
 }
 
@@ -120,17 +132,22 @@ void ParentScope::VisitFunction(const libclx::Cursor& func)
 
 const Entity* ParentScope::Child(std::size_t idx) const
 {
-	return m_cond->At(idx);
+	return m_->cond.At(idx);
 }
 
 Entity* ParentScope::Child(std::size_t idx)
 {
-	return m_cond->At(idx);
+	return m_->cond.At(idx);
 }
 
 std::size_t ParentScope::IndexOf(const Entity* child) const
 {
-	return m_cond->IndexOf(child);
+	return m_->cond.IndexOf(child);
+}
+
+std::size_t ParentScope::ChildCount() const
+{
+	return m_->cond.Size();
 }
 
 } // end of namespace

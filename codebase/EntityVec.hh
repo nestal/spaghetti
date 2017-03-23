@@ -35,8 +35,6 @@ public:
 	const std::string& ID() const override;
 	const EntityVec* Parent() const override;
 	
-	std::size_t ChildCount() const override ;
-
 	void MarkUsed() override;
 	bool IsUsed() const override;
 	void Reparent(const EntityVec *parent) override;
