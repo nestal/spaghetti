@@ -40,6 +40,12 @@ public:
 		return it != m_index.get<ByID>().end() ? *it : nullptr;
 	}
 	
+	Entity* Find(const std::string& id) override
+	{
+		auto it = m_index.get<ByID>().find(id);
+		return it != m_index.get<ByID>().end() ? *it : nullptr;
+	}
+
 	const Entity* FindByName(const std::string& name) const override
 	{
 		auto it = m_index.get<ByName>().find(name);
@@ -49,6 +55,11 @@ public:
 	const DataType* Find(const ClassRef& ref) const override
 	{
 		return dynamic_cast<const DataType*>(Find(ref.ID()));
+	}
+	
+	DataType* Find(const ClassRef& ref) override
+	{
+		return dynamic_cast<DataType*>(Find(ref.ID()));
 	}
 	
 	const DataType* Instantiate(const ClassRef& ref) override
@@ -63,15 +74,20 @@ public:
 			{
 				// instantiate template and add to the index immediately
 				auto inst = temp->Instantiate(ref);
-				AddToIndex(inst.get());
-				
-				auto parent = dynamic_cast<const ParentScope *>(Find(temp->Parent()->ID()));
+				auto parent = dynamic_cast<ParentScope*>(Find(temp->Parent()->ID()));
 				
 				assert(parent);
 				assert(inst);
 				
-				result = inst.get();
-//				const_cast<ParentScope*>(parent)->Add(std::move(inst));
+				// cannot add new entity after building the index
+				// because it will expand the vector in the parent of the new entity
+				// and invalidate other sibling entities
+//				result = &parent->Add(std::move(inst));
+//				AddToIndex(result);
+				
+				// maybe I should save these new entities elsewhere
+				// and re-add them after finishing cross referencing
+				// and then re-build the index
 			}
 		}
 		
@@ -93,6 +109,8 @@ public:
 	
 	void AddToIndex(Entity *entity)
 	{
+		std::cout << "adding: " << entity->ID() << " " << (void*)entity << std::endl;
+		
 		m_index.insert(entity);
 		
 		for (auto&& child : *entity)

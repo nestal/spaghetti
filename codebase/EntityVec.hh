@@ -46,7 +46,7 @@ protected:
 	void MarkSelfUsedOnly();
 
 	template <typename Type, typename MultiCond, typename... Ts>
-	Type& AddUnique(MultiCond& cond, const std::string& id, Ts... ts)
+	Type& AddUnique(MultiCond& cond, const std::string& id, Ts&&... ts)
 	{
 		auto& vec = util::Get<Type>(cond);
 		
@@ -61,7 +61,7 @@ protected:
 		else
 		{
 			auto idx = vec.size();
-			vec.emplace_back(ts...);
+			vec.emplace_back(std::forward<Ts>(ts)...);
 			
 			// if emplace_back() throw, do not add to index
 			m_index.emplace(id, idx);

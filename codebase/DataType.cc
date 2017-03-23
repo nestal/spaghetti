@@ -154,7 +154,7 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 	{
 		for (auto& base : m_bases)
 		{
-			auto base_entity = const_cast<DataType*>(map->Find(base));
+			auto base_entity = map->Find(base);
 			
 			// TODO: support typedef base classes
 			if (base_entity && !base_entity->IsUsed())

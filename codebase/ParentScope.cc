@@ -37,8 +37,8 @@ ParentScope::ParentScope(ParentScope&& rhs) :
 	EntityVec{std::move(rhs)},
 	m_{std::move(rhs.m_)}
 {
-	for (auto&& c : *this)
-		c.Reparent(this);
+	for (auto i = 0 ; i < m_->cond.Size() ; i++)
+		m_->cond.At(i)->Reparent(this);
 }
 
 ParentScope& ParentScope::operator=(ParentScope&& rhs)
@@ -46,8 +46,8 @@ ParentScope& ParentScope::operator=(ParentScope&& rhs)
 	EntityVec::operator=(std::move(rhs));
 	m_ = std::move(rhs.m_);
 	
-	for (auto&& c : *this)
-		c.Reparent(this);
+	for (auto i = 0 ; i < m_->cond.Size() ; i++)
+		m_->cond.At(i)->Reparent(this);
 	
 	return *this;
 }
@@ -71,7 +71,6 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 		
 	case CXCursor_ClassDecl:
 	case CXCursor_StructDecl:
-	std::cout << "class declaration: " << child.USR() << std::endl;
 		AddUnique<DataType>(m_->cond, child.USR(), child, this).Visit(child);
 		break;
 	
@@ -150,4 +149,10 @@ std::size_t ParentScope::ChildCount() const
 	return m_->cond.Size();
 }
 
+DataType& ParentScope::Add(std::unique_ptr<DataType>&& inst)
+{
+	auto id = inst->ID();
+	return AddUnique<DataType>(m_->cond, id, std::move(*inst));
+}
+	
 } // end of namespace

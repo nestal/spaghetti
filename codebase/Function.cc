@@ -35,8 +35,8 @@ Function::Function(Function&& rhs) :
 	m_return_type{rhs.m_return_type},
 	m_args{std::move(rhs.m_args)}
 {
-	for (auto&& c : *this)
-		c.Reparent(this);
+	for (auto i = 0 ; i < m_args.Size() ; i++)
+		m_args.At(i)->Reparent(this);
 }
 
 Function& Function::operator=(Function&& rhs)
@@ -46,8 +46,8 @@ Function& Function::operator=(Function&& rhs)
 	m_return_type = rhs.m_return_type;
 	m_args = std::move(rhs.m_args);
 	
-	for (auto&& c : *this)
-		c.Reparent(this);
+	for (auto i = 0 ; i < m_args.Size() ; i++)
+		m_args.At(i)->Reparent(this);
 	
 	return *this;
 }

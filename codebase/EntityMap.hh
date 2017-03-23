@@ -26,8 +26,10 @@ public:
 	virtual ~EntityMap() = default;
 	
 	virtual const Entity* Find(const std::string& id) const = 0;
+	virtual Entity* Find(const std::string& id) = 0;
 	virtual const Entity* FindByName(const std::string& name) const = 0;
 	virtual const DataType* Find(const ClassRef& ref) const = 0;
+	virtual DataType* Find(const ClassRef& ref) = 0;
 	
 	virtual void Update(const Entity* entity, const std::function<void(Entity*)>& mod) = 0;
 

@@ -74,6 +74,8 @@ public:
 	
 	void VisitFunction(const libclx::Cursor& func);
 	
+	DataType& Add(std::unique_ptr<DataType>&& inst);
+	
 protected:
 	virtual void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self);
 	virtual void OnVisit(const libclx::Cursor& self);
