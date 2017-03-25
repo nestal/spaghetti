@@ -37,10 +37,6 @@ bool MockEntity::IsUsed() const
 	return true;
 }
 
-void MockEntity::MarkUsed()
-{
-}
-
 void MockEntity::CrossReference(EntityMap *map)
 {
 	LeafEntity::CrossReference(map);

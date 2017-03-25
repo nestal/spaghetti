@@ -58,15 +58,14 @@ void Function::Visit(const libclx::Cursor& self)
 			break;
 		}
 	});
+	
+	// mark self and all children as used, after creating the children
+	if (self.IsDefinition() && self.Location().IsFromMainFile())
+		SetUsed();
 }
 
 void Function::CrossReference(EntityMap *)
 {
-	if (IsUsed())
-	{
-		for (auto& arg : *this)
-			arg.MarkUsed();
-	}
 }
 
 std::string Function::UML() const

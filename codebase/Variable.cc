@@ -26,8 +26,8 @@ Variable::Variable(const libclx::Cursor& field, const EntityVec *parent) :
 	m_location{field.Location()},
 	m_type{field.Type()}
 {
+	SetUsed();
 }
-
 
 EntityType Variable::Type() const
 {
@@ -54,13 +54,8 @@ std::string Variable::TypeID() const
 	return m_type.Declaration().USR();
 }
 
-void Variable::CrossReference(EntityMap *map)
+void Variable::CrossReference(EntityMap *)
 {
-	if (IsUsed())
-	{
-		if (auto type = dynamic_cast<const DataType *>(map->Find(m_type.Declaration().USR())))
-			const_cast<DataType*>(type)->MarkUsed();
-	}
 }
 
 std::string Variable::DisplayType() const

@@ -40,7 +40,6 @@ public:
 	EntityType Type() const override;
 	
 	void CrossReference(EntityMap *map) override;
-	void MarkUsed() override;
 	
 private:
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& parent) override;

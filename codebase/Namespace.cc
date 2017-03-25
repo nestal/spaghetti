@@ -70,9 +70,5 @@ void Namespace::CrossReference(EntityMap *)
 {
 }
 
-void Namespace::MarkUsed()
-{
-	MarkSelfUsedOnly();
-}
 
 } // end of namespace

@@ -28,7 +28,6 @@ public:
 	std::size_t Index() const;
 	
 	bool IsUsed() const override;
-	void MarkUsed() override;
 	void CrossReference(EntityMap *map) override;
 	
 private:
