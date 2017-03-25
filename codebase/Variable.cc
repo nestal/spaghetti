@@ -24,10 +24,10 @@ namespace codebase {
 Variable::Variable(const libclx::Cursor& field, const EntityVec *parent) :
 	LeafEntity{field.Spelling(), field.USR(), parent},
 	m_location{field.Location()},
-	m_type{field.Type()}
+	m_type{field.Type()},
+	m_type_ref{field}
 {
 }
-
 
 EntityType Variable::Type() const
 {
@@ -54,18 +54,23 @@ std::string Variable::TypeID() const
 	return m_type.Declaration().USR();
 }
 
-void Variable::CrossReference(EntityMap *map)
+void Variable::CrossReference(EntityMap *)
 {
-	if (IsUsed())
-	{
-		if (auto type = dynamic_cast<const DataType *>(map->Find(m_type.Declaration().USR())))
-			const_cast<DataType*>(type)->MarkUsed();
-	}
 }
 
 std::string Variable::DisplayType() const
 {
 	return m_type.Spelling();
 }
-	
+
+const libclx::Type& Variable::DataType() const
+{
+	return m_type;
+}
+
+const ClassRef& Variable::TypeRef() const
+{
+	return m_type_ref;
+}
+
 } // end of namespace

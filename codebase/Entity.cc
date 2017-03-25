@@ -105,14 +105,9 @@ const std::string& LeafEntity::ID() const
 	return m_usr;
 }
 
-void LeafEntity::MarkUsed()
-{
-	m_used = true;
-}
-
 bool LeafEntity::IsUsed() const
 {
-	return m_used || Location().IsFromMainFile();
+	return Location().IsFromMainFile();
 }
 
 void LeafEntity::CrossReference(EntityMap *)
@@ -123,5 +118,5 @@ void LeafEntity::Reparent(const EntityVec *entity)
 {
 	m_parent = entity;
 }
-	
+
 } // end of namespace

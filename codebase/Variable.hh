@@ -13,6 +13,7 @@
 #pragma once
 
 #include "Entity.hh"
+#include "ClassRef.hh"
 
 #include "libclx/Type.hh"
 #include "libclx/SourceRange.hh"
@@ -39,9 +40,13 @@ public:
 	void CrossReference(EntityMap *map) override;
 	std::string TypeID() const;
 	
+	const libclx::Type& DataType() const;
+	const ClassRef& TypeRef() const;
+	
 private:
-	libclx::SourceLocation m_location;
-	libclx::Type           m_type;
+	libclx::SourceLocation  m_location;
+	libclx::Type            m_type;
+	ClassRef                m_type_ref;
 };
 	
 } // end of namespace

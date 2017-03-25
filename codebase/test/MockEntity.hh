@@ -28,18 +28,10 @@ public:
 	std::size_t Index() const;
 	
 	bool IsUsed() const override;
-	void MarkUsed() override;
 	void CrossReference(EntityMap *map) override;
 	
 private:
 	std::size_t m_index{};
-};
-
-class MockDataType : public DataType
-{
-public:
-	MockDataType(const EntityVec *parent) : DataType{"Name", "ID", {}, parent} {}
-	using DataType::DataType;
 };
 
 }} // end of namespace

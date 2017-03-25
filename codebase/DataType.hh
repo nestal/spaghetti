@@ -45,9 +45,9 @@ class DataType : public ParentScope
 	
 public:
 	DataType(const libclx::Cursor& cursor, const EntityVec* parent);
-	DataType(DataType&&) = default;
+	DataType(DataType&&) = delete;
 	DataType(const DataType&) = delete;
-	DataType& operator=(DataType&&) = default;
+	DataType& operator=(DataType&&) = delete;
 	DataType& operator=(const DataType&) = delete;
 	
 	EntityType Type() const override;
@@ -75,10 +75,10 @@ protected:
 	);
 	
 	void AddBase(const ClassRef& base);
+	void AddField(const Variable& var);
 	
 	void OnVisit(const libclx::Cursor& self) override;
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
-	void AfterVisitingChild(const libclx::Cursor& self) override;
 	
 private:
 	libclx::SourceLocation              m_definition;

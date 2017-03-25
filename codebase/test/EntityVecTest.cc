@@ -94,33 +94,3 @@ TEST(EntityVecTest, Move_Ctor_Reparent_All_Children)
 	TestEntityVec moved{std::move(subject)};
 	ASSERT_EQ(4, moved.ChildCount());
 }
-
-TEST(EntityVecTest, Test_Variadic_Test)
-{
-	util::MultiContainer<Entity, MockDataType, Variable, Function> vec;
-	
-	TestEntityVec subject;
-	
-	// prevent reallocation
-	util::Get<MockDataType>(vec).reserve(2);
-		
-	auto& dt1  = Add(vec, MockDataType{&subject});
-	auto& dt2  = Add(vec, MockDataType{&subject});
-	auto& var1 = Add(vec, Variable{libclx::Cursor{}, &subject});
-	Add(vec, Function{libclx::Cursor{}, &subject});
-	
-	ASSERT_EQ(4, vec.Size());
-	
-	auto& vars = util::Get<Variable>(vec);
-	ASSERT_EQ(1, vars.size()) ;
-	ASSERT_EQ(&var1, &vars.front());
-	
-	auto& dts = util::Get<MockDataType>(vec);
-	ASSERT_EQ(2, dts.size()) ;
-	ASSERT_EQ(&dt1, &dts.front());
-	ASSERT_EQ(&dt2, &dts.back());
-	
-	ASSERT_EQ(0, vec.IndexOf(vec.At(0)));
-	ASSERT_EQ(1, vec.IndexOf(vec.At(1)));
-	ASSERT_EQ(2, vec.IndexOf(vec.At(2)));
-}

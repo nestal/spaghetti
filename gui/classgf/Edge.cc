@@ -129,31 +129,15 @@ void Edge::DrawEndings(QPainter *painter, const QLineF& dia) const
 	
 	auto relation = m_from->RelationOf(m_to);
 	painter->setTransform(head);
-	DrawToEnding(painter, relation);
+	DrawFromEnding(painter, relation);
 	
 	painter->setTransform(tail);
-	DrawFromEnding(painter, relation);
+	DrawToEnding(painter, relation);
 }
 
 bool Edge::IsChanged() const
 {
 	return false;
-}
-
-void Edge::DrawToEnding(QPainter *painter, ItemRelation relation) const
-{
-	painter->setBrush(QBrush{Qt::GlobalColor::white});
-	
-	switch (relation)
-	{
-	case ItemRelation::base_class_of: DrawInheritanceTrigangle(painter);
-		break;
-	case ItemRelation::use_as_member: DrawArrowHead(painter);
-		break;
-	case ItemRelation::used_by_as_member: DrawAggregationDiamond(painter);
-		break;
-	default: break;
-	}
 }
 
 void Edge::DrawFromEnding(QPainter *painter, ItemRelation relation) const
@@ -162,11 +146,32 @@ void Edge::DrawFromEnding(QPainter *painter, ItemRelation relation) const
 	
 	switch (relation)
 	{
-	case ItemRelation::derived_class_of: DrawInheritanceTrigangle(painter);
+	case ItemRelation::base_class_of: DrawInheritanceTrigangle(painter);
+		break;
+	case ItemRelation::use_as_member: DrawAggregationDiamond(painter);
 		break;
 	case ItemRelation::used_by_as_member: DrawArrowHead(painter);
 		break;
-	case ItemRelation::use_as_member: DrawAggregationDiamond(painter);
+	default: break;
+	}
+}
+
+void Edge::DrawToEnding(QPainter *painter, ItemRelation relation) const
+{
+	painter->setBrush(QBrush{Qt::GlobalColor::white});
+	
+	switch (relation)
+	{
+	// m_from is derived class of m_to
+	case ItemRelation::derived_class_of: DrawInheritanceTrigangle(painter);
+		break;
+		
+	// m_from is used as member by m_to
+	case ItemRelation::used_by_as_member: DrawAggregationDiamond(painter);
+		break;
+		
+	// m_from used m_to as member
+	case ItemRelation::use_as_member: DrawArrowHead(painter);
 		break;
 	default: break;
 	}

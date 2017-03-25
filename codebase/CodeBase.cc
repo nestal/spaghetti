@@ -74,20 +74,13 @@ public:
 			{
 				// instantiate template and add to the index immediately
 				auto inst = temp->Instantiate(ref);
-				auto parent = TypedFind<ParentScope>(temp->Parent()->ID());
 				
-				assert(parent);
+				// by default, add the instantiated template
+				auto parent = TypedFind<ParentScope>(temp->Parent()->ID());
 				assert(inst);
 				
-				// cannot add new entity after building the index
-				// because it will expand the vector in the parent of the new entity
-				// and invalidate other sibling entities
 				result = &parent->Add(std::move(inst));
 				AddToIndex(result);
-				
-				// maybe I should save these new entities elsewhere
-				// and re-add them after finishing cross referencing
-				// and then re-build the index
 			}
 		}
 		

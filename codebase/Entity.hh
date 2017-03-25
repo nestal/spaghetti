@@ -78,7 +78,6 @@ public:
 	virtual Entity* Child(std::size_t idx) = 0;
 	virtual std::size_t IndexOf(const Entity* child) const = 0;
 	
-	virtual void MarkUsed() = 0;
 	virtual bool IsUsed() const = 0;
 	virtual void CrossReference(EntityMap *map) = 0;
 	
@@ -171,17 +170,14 @@ public:
 	const std::string& ID() const override;
 	
 	bool IsUsed() const override;
-	void MarkUsed() override;
 	void CrossReference(EntityMap *map) override;
 
 	void Reparent(const EntityVec *entity) override;
-	
+
 private:
 	std::string m_name;
 	std::string m_usr;
 	const EntityVec *m_parent;
-	
-	bool m_used{false};
 };
 
 } // end of namespace

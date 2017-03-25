@@ -39,7 +39,6 @@ void ParentScope::Visit(const libclx::Cursor& self)
 {
 	OnVisit(self);
 	self.Visit([this](auto child, auto parent){this->VisitChild(child, parent);});
-	AfterVisitingChild(self);
 }
 
 void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
@@ -60,7 +59,7 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 		break;
 	
 	case CXCursor_CXXMethod:
-		AddUnique(m_func, child.USR(), child, this);
+		AddUnique(m_func, child.USR(), child, this)->Visit(child);
 		break;
 	
 	default:
@@ -92,11 +91,6 @@ void ParentScope::OnVisit(const libclx::Cursor&)
 {
 }
 
-void ParentScope::AfterVisitingChild(const libclx::Cursor&)
-{
-	
-}
-
 void ParentScope::VisitFunction(const libclx::Cursor& func)
 {
 	auto func_entity = FindInVec(m_func, func.USR());
@@ -109,8 +103,8 @@ void ParentScope::VisitFunction(const libclx::Cursor& func)
 DataType& ParentScope::Add(std::unique_ptr<DataType>&& inst)
 {
 	assert(inst->Parent() == this);
-	auto id = inst->ID();
-	return *AddUnique(m_types, id, std::move(*inst));
+	EntityVec::Add(m_types, std::move(inst));
+	return *m_types.back();
 }
 
 DataType *ParentScope::FindDataType(const std::string& id)

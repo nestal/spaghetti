@@ -13,6 +13,7 @@
 #include "ClassTemplate.hh"
 
 #include "EntityType.hh"
+#include "Variable.hh"
 
 #include "libclx/Cursor.hh"
 #include "libclx/Type.hh"
@@ -34,6 +35,7 @@ public:
 	}
 	
 	using DataType::AddBase;
+	using DataType::AddField;
 
 private:
 	const ClassTemplate *m_temp;
@@ -71,6 +73,16 @@ std::unique_ptr<DataType> ClassTemplate::Instantiate(const ClassRef& ref) const
 			arg_idx != m_param.size() ? ClassRef{ref.TempArgs().at(arg_idx)} : base
 		);
 	}
+	
+	for (auto&& field : Fields())
+	{
+		auto arg_idx = Match(field.TypeRef().ID());
+		if (arg_idx < m_param.size() && arg_idx < ref.TempArgs().size())
+			std::cout << "instantiating " << field.DataType() << " " << " as " << ref.TempArgs().at(arg_idx) << std::endl;
+		else
+			inst->AddField(field);
+	}
+	
 	return inst;
 }
 

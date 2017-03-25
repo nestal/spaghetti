@@ -55,6 +55,9 @@ void DataType::OnVisit(const libclx::Cursor& self)
 	
 	if (self.IsDefinition() || m_definition == libclx::SourceLocation{})
 		m_definition = self.Location();
+	
+	if (self.IsDefinition() && self.Location().IsFromMainFile())
+		SetUsed();
 }
 
 void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
@@ -65,8 +68,8 @@ void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& sel
 	{
 		ClassRef base{child};
 		
-		// normally we don't have hundreds of base classes so sequential searches should be faster
-		// the order of the base classes is important, so we don't want to switch to set
+		// normally we don't have hundreds of base classes so sequential searches should be faster.
+		// the order of the base classes is important, so we don't want to switch to set.
 		if (std::find(m_bases.begin(), m_bases.end(), base) == m_bases.end())
 			m_bases.push_back(base);
 		
@@ -76,13 +79,6 @@ void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& sel
 	default: ParentScope::VisitChild(child, self);
 		break;
 	}
-}
-
-void DataType::AfterVisitingChild(const libclx::Cursor& self)
-{
-	// mark self and all children as used, after creating the children
-	if (IsUsed() || (self.IsDefinition() && self.Location().IsFromMainFile()))
-		MarkUsed();
 }
 
 EntityType DataType::Type() const
@@ -116,8 +112,7 @@ bool DataType::IsBaseOf(const DataType& other) const
 bool DataType::IsUsedInMember(const DataType& other) const
 {
 	auto fields = other.Fields();
-	return std::find_if(fields.begin(), fields.end(),[myid = ID()](auto
-	field)
+	return std::find_if(fields.begin(), fields.end(),[myid = ID()](auto&& field)
 	{
 		return field.TypeID() == myid;
 	}) != fields.end();
@@ -134,7 +129,7 @@ std::ostream& operator<<(std::ostream& os, const DataType& c)
 void DataType::CrossReference(EntityMap *map)
 {
 	assert(map);
-	
+
 	// instantiate base class, if any
 	for (auto&& base : m_bases)
 	{
@@ -142,9 +137,14 @@ void DataType::CrossReference(EntityMap *map)
 			map->Instantiate(base);
 	}
 	
-	MarkBaseClassUsed(map);
+	for (auto&& field : m_fields)
+	{
+		auto type = field->TypeRef();
+		if (type.IsTemplate() && !type.ID().empty() && type.ID() != type.TemplateID())
+			map->Instantiate(type);
+	}
 	
-	MarkUsed();
+	MarkBaseClassUsed(map);
 }
 
 void DataType::MarkBaseClassUsed(EntityMap *map)
@@ -154,12 +154,12 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 	{
 		for (auto& base : m_bases)
 		{
-			auto base_entity = map->Find(base);
+			auto base_entity = map->TypedFind<DataType>(base.ID());
 			
 			// TODO: support typedef base classes
 			if (base_entity && !base_entity->IsUsed())
 			{
-				base_entity->MarkUsed();
+				base_entity->SetUsed();
 				base_entity->MarkBaseClassUsed(map);
 			}
 		}
@@ -169,6 +169,12 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 void DataType::AddBase(const ClassRef& base)
 {
 	m_bases.push_back(base);
+}
+
+void DataType::AddField(const Variable&)
+{
+//	Add(m_fields, )
+	// TODO: implement!
 }
 
 } // end of namespace

@@ -39,7 +39,6 @@ public:
 	std::size_t IndexOf(const Entity* child) const override;
 	std::size_t ChildCount() const override;
 		
-	void MarkUsed() override;
 	bool IsUsed() const override;
 	void Reparent(const EntityVec *parent) override;
 
@@ -89,6 +88,8 @@ protected:
 		auto it = m_index.find(id);
 		return it != m_index.end() && it->second.typed < cond.size() ? cond.at(it->second.typed) : nullptr;
 	}
+	
+	void SetUsed(bool used = true);
 	
 private:
 	using EntityPtr = std::unique_ptr<Entity>;
