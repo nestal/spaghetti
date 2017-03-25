@@ -31,7 +31,7 @@ public:
 	virtual const DataType* Find(const ClassRef& ref) const = 0;
 	virtual DataType* Find(const ClassRef& ref) = 0;
 	
-	virtual const DataType* Instantiate(const ClassRef& ref) = 0;
+	virtual DataType* Instantiate(const ClassRef& ref, bool used) = 0;
 	
 	template <typename EntityType>
 	const EntityType* TypedFind(const std::string& id) const

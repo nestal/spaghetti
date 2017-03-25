@@ -108,7 +108,7 @@ std::size_t EntityVec::ChildCount() const
 
 void EntityVec::SetUsed(bool used)
 {
-	m_used = used;
+	m_used |= used;
 }
 	
 } // end of namespace

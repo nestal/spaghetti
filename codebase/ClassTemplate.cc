@@ -23,10 +23,11 @@ namespace codebase {
 class ClassTemplate::Instance : public DataType
 {
 public:
-	Instance(const ClassRef& ref, const ClassTemplate *temp) :
+	Instance(const ClassRef& ref, bool used, const ClassTemplate *temp) :
 		DataType{ref.Name(), ref.ID(), temp->Location(), temp->Parent()},
 		m_temp(temp)
 	{
+		SetUsed(used);
 	}
 	
 	EntityType Type() const override
@@ -62,9 +63,9 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
  * \param args  template arguments, i.e. the actual types that will replace the template parameters
  * \return the instantiated class
  */
-std::unique_ptr<DataType> ClassTemplate::Instantiate(const ClassRef& ref) const
+std::unique_ptr<DataType> ClassTemplate::Instantiate(const ClassRef& ref, bool used) const
 {
-	auto inst = std::make_unique<Instance>(ref, this);
+	auto inst = std::make_unique<Instance>(ref, used, this);
 
 	for (auto&& base : BaseClasses())
 	{

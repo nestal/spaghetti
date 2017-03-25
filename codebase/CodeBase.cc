@@ -62,7 +62,7 @@ public:
 		return dynamic_cast<DataType*>(Find(ref.ID()));
 	}
 	
-	const DataType* Instantiate(const ClassRef& ref) override
+	DataType* Instantiate(const ClassRef& ref, bool used) override
 	{
 		assert(ref.IsTemplate());
 		assert(!ref.ID().empty());
@@ -73,7 +73,7 @@ public:
 			if (auto temp = TypedFind<ClassTemplate>(ref.TemplateID()))
 			{
 				// instantiate template and add to the index immediately
-				auto inst = temp->Instantiate(ref);
+				auto inst = temp->Instantiate(ref, used);
 				
 				// by default, add the instantiated template
 				auto parent = TypedFind<ParentScope>(temp->Parent()->ID());

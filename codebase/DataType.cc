@@ -134,14 +134,15 @@ void DataType::CrossReference(EntityMap *map)
 	for (auto&& base : m_bases)
 	{
 		if (base.IsTemplate() && !base.ID().empty() && base.ID() != base.TemplateID())
-			map->Instantiate(base);
+			map->Instantiate(base, IsUsed());
+			
 	}
 	
 	for (auto&& field : m_fields)
 	{
 		auto type = field->TypeRef();
 		if (type.IsTemplate() && !type.ID().empty() && type.ID() != type.TemplateID())
-			map->Instantiate(type);
+			map->Instantiate(type, IsUsed());
 	}
 	
 	MarkBaseClassUsed(map);
