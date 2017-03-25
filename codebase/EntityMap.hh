@@ -40,6 +40,11 @@ public:
 	{
 		return dynamic_cast<const EntityType*>(Find(id));
 	}
+	template <typename EntityType>
+	EntityType* TypedFind(const std::string& id)
+	{
+		return dynamic_cast<EntityType*>(Find(id));
+	}
 };
 
 } // end of namespace

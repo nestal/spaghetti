@@ -13,9 +13,8 @@
 #include "Namespace.hh"
 
 #include "DataType.hh"
+#include "ClassTemplate.hh"
 #include "EntityType.hh"
-
-#include "ParentScopeImpl.hh"
 
 #include "libclx/Cursor.hh"
 
@@ -49,15 +48,16 @@ void Namespace::VisitChild(const libclx::Cursor& child, const libclx::Cursor& se
 		{
 			// class method definition in namespace
 			// the class definition should already be parsed
-			auto parent = dynamic_cast<DataType*>(FindByID(child.SemanticParent().USR()));
-			if (parent)
+			if (auto parent = FindDataType(child.SemanticParent().USR()))
 				parent->VisitFunction(child);
+			else if (auto temp = FindClassTemplate(child.SemanticParent().USR()))
+				temp->VisitFunction(child);
 		}
 		break;
 	}
 	
 	case CXCursor_Namespace:
-		AddUnique<Namespace>(m_->cond, child.USR(), child, this).Visit(child);
+		AddUnique(m_ns, child.USR(), child, this)->Visit(child);
 		break;
 	
 	default:

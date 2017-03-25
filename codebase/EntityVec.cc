@@ -26,8 +26,11 @@ EntityVec::EntityVec(EntityVec&& other) :
 	m_name{std::move(other.m_name)},
 	m_id{std::move(other.m_id)},
 	m_parent{other.m_parent},
-	m_used{other.m_used}
+	m_used{other.m_used},
+	m_children{std::move(other.m_children)}
 {
+	for (auto&& c : m_children)
+		c->Reparent(this);
 }
 
 EntityVec& EntityVec::operator=(EntityVec&& other)
@@ -36,6 +39,10 @@ EntityVec& EntityVec::operator=(EntityVec&& other)
 	m_id        = std::move(other.m_id);
 	m_parent    = other.m_parent;
 	m_used      = other.m_used;
+	m_children = std::move(other.m_children);
+	
+	for (auto&& c : m_children)
+		c->Reparent(this);
 	
 	return *this;
 }
@@ -81,15 +88,35 @@ void EntityVec::Reparent(const EntityVec *parent)
 const Entity *EntityVec::FindByID(const std::string& id) const
 {
 	auto it = m_index.find(id);
-	return it != m_index.end() && it->second < ChildCount() ? Child(it->second) : nullptr;
+	return it != m_index.end() && it->second.self < ChildCount() ? Child(it->second.self) : nullptr;
 		
 }
 
 Entity *EntityVec::FindByID(const std::string& id)
 {
 	auto it = m_index.find(id);
-	return it != m_index.end() && it->second < ChildCount() ? Child(it->second) : nullptr;
-	
+	return it != m_index.end() && it->second.self < ChildCount() ? Child(it->second.self) : nullptr;
 }
-	
+
+const Entity* EntityVec::Child(std::size_t idx) const
+{
+	return m_children.at(idx).get();
+}
+
+Entity* EntityVec::Child(std::size_t idx)
+{
+	return m_children.at(idx).get();
+}
+
+std::size_t EntityVec::IndexOf(const Entity* child) const
+{
+	auto it = m_index.find(child->ID());
+	return it != m_index.end() && it->second.self < ChildCount() ? it->second.self : npos;
+}
+
+std::size_t EntityVec::ChildCount() const
+{
+	return m_children.size();
+}
+
 } // end of namespace

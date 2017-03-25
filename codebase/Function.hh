@@ -14,8 +14,6 @@
 
 #include "EntityVec.hh"
 
-#include "util/MultiContainer.hh"
-
 #include "libclx/Type.hh"
 #include "libclx/SourceRange.hh"
 
@@ -31,14 +29,12 @@ class Function : public EntityVec
 {
 public:
 	Function(const libclx::Cursor& first_seen, const EntityVec *parent);
-	Function(Function&&);
-	Function& operator=(Function&&);
+	Function(const Function&) = delete;
+	Function(Function&&) = default;
+	Function& operator=(const Function&) = delete;
+	Function& operator=(Function&&) = default;
 	
 	void Visit(const libclx::Cursor& self);
-	const Entity* Child(std::size_t idx) const override;
-	Entity* Child(std::size_t idx) override;
-	std::size_t IndexOf(const Entity* child) const override;
-	std::size_t ChildCount() const override;
 	
 	EntityType Type() const override;
 	libclx::SourceLocation Location() const override;
@@ -52,7 +48,7 @@ private:
 	libclx::SourceLocation  m_definition;
 	libclx::Type            m_return_type;
 	
-	util::MultiContainer<Entity, Variable>  m_args;
+	std::vector<Variable*>  m_args;
 };
 	
 } // end of namespace

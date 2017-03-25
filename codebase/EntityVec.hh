@@ -13,9 +13,9 @@
 #pragma once
 
 #include "Entity.hh"
-#include "util/MultiContainer.hh"
 
 #include <unordered_map>
+#include <memory>
 #include <iostream>
 
 namespace codebase {
@@ -35,6 +35,11 @@ public:
 	const std::string& ID() const override;
 	const EntityVec* Parent() const override;
 	
+	const Entity* Child(std::size_t idx) const override;
+	Entity* Child(std::size_t idx) override;
+	std::size_t IndexOf(const Entity* child) const override;
+	std::size_t ChildCount() const override;
+		
 	void MarkUsed() override;
 	bool IsUsed() const override;
 	void Reparent(const EntityVec *parent) override;
@@ -44,30 +49,50 @@ public:
 	
 protected:
 	void MarkSelfUsedOnly();
-
-	template <typename Type, typename MultiCond, typename... Ts>
-	Type& AddUnique(MultiCond& cond, const std::string& id, Ts&&... ts)
+	
+	template <typename EntityContainer, typename... Ts>
+	auto AddUnique(EntityContainer&& cond, const std::string& id, Ts&&... ts) ->
+	typename std::remove_reference_t<EntityContainer>::value_type
 	{
-		auto& vec = util::Get<Type>(cond);
+		using Type = std::remove_pointer_t<typename std::remove_reference_t<EntityContainer>::value_type>;
 		
 		auto it = m_index.find(id);
 		if (it != m_index.end())
 		{
 			// can be find inside cond
-			assert(it->second < vec.size());
-			auto& entity = vec.at(it->second);
-			return vec.at(it->second);
+			assert(it->second.typed < cond.size());
+			return cond.at(it->second.typed);
 		}
 		else
 		{
-			auto idx = vec.size();
-			vec.emplace_back(std::forward<Ts>(ts)...);
-			
-			// if emplace_back() throw, do not add to index
-			m_index.emplace(id, idx);
-			return vec.back();
+			Add(cond, std::make_unique<Type>(std::forward<Ts>(ts)...));
+			return cond.back();
 		}
 	}
+	
+	template <typename EntityContainer, typename ET>
+	void Add(EntityContainer&& cond, std::unique_ptr<ET>&& entity)
+	{
+		auto self  = m_children.size();
+		auto typed = cond.size();
+		
+		cond.push_back(entity.get());
+		m_children.push_back(std::move(entity));
+		
+		// if push_back() throw, do not add to index
+		m_index.emplace(cond.back()->ID(), Indexes{self, typed});
+	}
+	
+	template <typename EntityContainer, typename... Ts>
+	auto FindInVec(EntityContainer&& cond, const std::string& id) ->
+	typename std::remove_reference_t<EntityContainer>::value_type
+	{
+		auto it = m_index.find(id);
+		return it != m_index.end() && it->second.typed < cond.size() ? cond.at(it->second.typed) : nullptr;
+	}
+	
+private:
+	using EntityPtr = std::unique_ptr<Entity>;
 	
 private:
 	std::string m_name;
@@ -75,7 +100,14 @@ private:
 	const EntityVec *m_parent{};
 	bool m_used{false};
 	
-	std::unordered_map<std::string, std::size_t> m_index;
+	struct Indexes
+	{
+		std::size_t self;   //!< index of entity in our m_children vector
+		std::size_t typed;  //!< index of entity in the vector passed to AddUnique() when it's created
+	};
+	
+	std::unordered_map<std::string, Indexes> m_index;
+	std::vector<EntityPtr> m_children;
 };
 
 } // end of namespace codebase

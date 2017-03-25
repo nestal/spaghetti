@@ -11,10 +11,14 @@
 //
 
 #include "ParentScope.hh"
-#include "ParentScopeImpl.hh"
+
+#include "EntityType.hh"
+#include "Function.hh"
+#include "Variable.hh"
+#include "ClassTemplate.hh"
 
 #include "libclx/Cursor.hh"
-#include "EntityType.hh"
+
 
 #include <ostream>
 #include <iostream>
@@ -22,37 +26,14 @@
 namespace codebase {
 
 ParentScope::ParentScope(const libclx::Cursor& cursor, const EntityVec* parent) :
-	EntityVec{cursor.DisplayName(), cursor.USR(), parent},
-	m_{std::make_unique<Impl>()}
+	EntityVec{cursor.DisplayName(), cursor.USR(), parent}
 {
 }
 
 ParentScope::ParentScope(const std::string& name, const std::string& usr, const EntityVec *parent) :
-	EntityVec{name, usr, parent},
-	m_{std::make_unique<Impl>()}
+	EntityVec{name, usr, parent}
 {
 }
-
-ParentScope::ParentScope(ParentScope&& rhs) :
-	EntityVec{std::move(rhs)},
-	m_{std::move(rhs.m_)}
-{
-	for (auto i = 0 ; i < m_->cond.Size() ; i++)
-		m_->cond.At(i)->Reparent(this);
-}
-
-ParentScope& ParentScope::operator=(ParentScope&& rhs)
-{
-	EntityVec::operator=(std::move(rhs));
-	m_ = std::move(rhs.m_);
-	
-	for (auto i = 0 ; i < m_->cond.Size() ; i++)
-		m_->cond.At(i)->Reparent(this);
-	
-	return *this;
-}
-
-ParentScope::~ParentScope() = default;
 
 void ParentScope::Visit(const libclx::Cursor& self)
 {
@@ -66,20 +47,20 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 	switch (child.Kind())
 	{
 	case CXCursor_FieldDecl:
-		AddUnique<Variable>(m_->cond, child.USR(), child, this);
+		AddUnique(m_fields, child.USR(), child, this);
 		break;
 		
 	case CXCursor_ClassDecl:
 	case CXCursor_StructDecl:
-		AddUnique<DataType>(m_->cond, child.USR(), child, this).Visit(child);
+		AddUnique(m_types, child.USR(), child, this)->Visit(child);
 		break;
 	
 	case CXCursor_ClassTemplate:
-		AddUnique<ClassTemplate>(m_->cond, child.USR(), child, this).Visit(child);
+		AddUnique(m_temps, child.USR(), child, this)->Visit(child);
 		break;
 	
 	case CXCursor_CXXMethod:
-		AddUnique<codebase::Function>(m_->cond, child.USR(), child, this);
+		AddUnique(m_func, child.USR(), child, this);
 		break;
 	
 	default:
@@ -89,26 +70,22 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 
 boost::iterator_range<ParentScope::field_iterator> ParentScope::Fields() const
 {
-	auto& vec = util::Get<Variable>(m_->cond);
-	return {vec.begin(), vec.end()};
+	return {m_fields.begin(), m_fields.end()};
 }
 
 boost::iterator_range<ParentScope::function_iterator> ParentScope::Functions() const
 {
-	auto& vec = util::Get<codebase::Function>(m_->cond);
-	return {vec.begin(), vec.end()};
+	return {m_func.begin(), m_func.end()};
 }
 
-const codebase::Function& ParentScope::Function(std::size_t idx) const
+boost::iterator_range<ParentScope::class_template_iterator> ParentScope::ClassTemplates() const
 {
-	auto& vec = util::Get<codebase::Function>(m_->cond);
-	return vec.at(idx);
+	return {m_temps.begin(), m_temps.end()};
 }
 
-const codebase::Variable& ParentScope::Field(std::size_t idx) const
+boost::iterator_range<ParentScope::data_type_iterator> ParentScope::DataTypes() const
 {
-	auto& vec = util::Get<codebase::Variable>(m_->cond);
-	return vec.at(idx);
+	return {m_types.begin(), m_types.end()};
 }
 
 void ParentScope::OnVisit(const libclx::Cursor&)
@@ -122,37 +99,28 @@ void ParentScope::AfterVisitingChild(const libclx::Cursor&)
 
 void ParentScope::VisitFunction(const libclx::Cursor& func)
 {
-	auto func_entity = dynamic_cast<codebase::Function*>(FindByID(func.USR()));
+	auto func_entity = FindInVec(m_func, func.USR());
 	
 	// the definition of a member function should come after its declaration
 	if (func_entity)
 		func_entity->Visit(func);
 }
 
-const Entity* ParentScope::Child(std::size_t idx) const
-{
-	return m_->cond.At(idx);
-}
-
-Entity* ParentScope::Child(std::size_t idx)
-{
-	return m_->cond.At(idx);
-}
-
-std::size_t ParentScope::IndexOf(const Entity* child) const
-{
-	return m_->cond.IndexOf(child);
-}
-
-std::size_t ParentScope::ChildCount() const
-{
-	return m_->cond.Size();
-}
-
 DataType& ParentScope::Add(std::unique_ptr<DataType>&& inst)
 {
+	assert(inst->Parent() == this);
 	auto id = inst->ID();
-	return AddUnique<DataType>(m_->cond, id, std::move(*inst));
+	return *AddUnique(m_types, id, std::move(*inst));
+}
+
+DataType *ParentScope::FindDataType(const std::string& id)
+{
+	return FindInVec(m_types, id);
+}
+
+ClassTemplate *ParentScope::FindClassTemplate(const std::string& id)
+{
+	return FindInVec(m_temps, id);
 }
 	
 } // end of namespace

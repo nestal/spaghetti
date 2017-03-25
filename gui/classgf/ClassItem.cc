@@ -492,9 +492,9 @@ QString ClassItem::Tooltip(const ItemRenderingOptions& setting, qreal zoom_facto
 		if (layout.MemberRect(i).contains(pos))
 		{
 			if (i < layout.FunctionCount())
-				return QString::fromStdString(m_class->Function(i).UML());
+				return QString::fromStdString(m_class->Functions()[i].UML());
 			else if (i-layout.FunctionCount() < layout.FieldCount())
-				return QString::fromStdString(m_class->Field(i-layout.FunctionCount()).UML());
+				return QString::fromStdString(m_class->Fields()[i-layout.FunctionCount()].UML());
 		}
 	}
 	

@@ -44,6 +44,9 @@ public:
 	
 private:
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& parent) override;
+	
+private:
+	std::vector<Namespace*> m_ns;
 };
 	
 } // end of namespace

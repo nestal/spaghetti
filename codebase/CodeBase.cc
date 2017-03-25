@@ -70,11 +70,11 @@ public:
 		auto result = Find(ref);
 		if (!result)
 		{
-			if (auto temp = dynamic_cast<const ClassTemplate*>(Find(ref.TemplateID())))
+			if (auto temp = TypedFind<ClassTemplate>(ref.TemplateID()))
 			{
 				// instantiate template and add to the index immediately
 				auto inst = temp->Instantiate(ref);
-				auto parent = dynamic_cast<ParentScope*>(Find(temp->Parent()->ID()));
+				auto parent = TypedFind<ParentScope>(temp->Parent()->ID());
 				
 				assert(parent);
 				assert(inst);
@@ -82,8 +82,8 @@ public:
 				// cannot add new entity after building the index
 				// because it will expand the vector in the parent of the new entity
 				// and invalidate other sibling entities
-//				result = &parent->Add(std::move(inst));
-//				AddToIndex(result);
+				result = &parent->Add(std::move(inst));
+				AddToIndex(result);
 				
 				// maybe I should save these new entities elsewhere
 				// and re-add them after finishing cross referencing

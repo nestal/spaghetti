@@ -41,32 +41,14 @@ public:
 	EntityType Type() const override {return EntityType::none;}
 	void CrossReference(EntityMap *) override {}
 	
-	const Entity* Child(std::size_t idx) const override
-	{
-		return m_cond.At(idx);
-	}
-	Entity* Child(std::size_t idx) override
-	{
-		return m_cond.At(idx);
-	}
-	std::size_t IndexOf(const Entity* child) const override
-	{
-		return m_cond.IndexOf(child);
-	}
-	
-	std::size_t ChildCount() const override
-	{
-		return m_cond.Size();
-	}
-	
 	template <typename Type, typename... Ts>
 	Type& Add(const std::string& id, Ts... ts)
 	{
-		return AddUnique<Type>(m_cond, id, ts...);
+		return *AddUnique(m_cond, id, ts...);
 	}
 
 private:
-	util::MultiContainer<Entity, MockEntity, MockDataType, Variable, Function> m_cond;
+	std::vector<MockEntity*> m_cond;
 };
 
 TEST(EntityVecTest, Constructor_Wont_Throw)

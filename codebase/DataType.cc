@@ -12,11 +12,11 @@
 
 #include "DataType.hh"
 
+#include "EntityType.hh"
 #include "EntityMap.hh"
 #include "Function.hh"
 #include "Variable.hh"
 #include "ClassTemplate.hh"
-#include "EntityType.hh"
 
 #include "libclx/Cursor.hh"
 

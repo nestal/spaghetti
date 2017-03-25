@@ -29,29 +29,6 @@ Function::Function(const libclx::Cursor& first_seen, const EntityVec *parent) :
 {
 }
 
-Function::Function(Function&& rhs) :
-	EntityVec{std::move(rhs)},
-	m_definition{rhs.m_definition},
-	m_return_type{rhs.m_return_type},
-	m_args{std::move(rhs.m_args)}
-{
-	for (auto i = 0 ; i < m_args.Size() ; i++)
-		m_args.At(i)->Reparent(this);
-}
-
-Function& Function::operator=(Function&& rhs)
-{
-	EntityVec::operator=(std::move(rhs));
-	m_definition = rhs.m_definition;
-	m_return_type = rhs.m_return_type;
-	m_args = std::move(rhs.m_args);
-	
-	for (auto i = 0 ; i < m_args.Size() ; i++)
-		m_args.At(i)->Reparent(this);
-	
-	return *this;
-}
-
 libclx::SourceLocation Function::Location() const
 {
 	return m_definition;
@@ -72,7 +49,7 @@ void Function::Visit(const libclx::Cursor& self)
 		switch (cursor.Kind())
 		{
 		case CXCursor_ParmDecl:
-			AddUnique<Variable>(m_args, cursor.USR(), cursor, this);
+			AddUnique(m_args, cursor.USR(), cursor, this);
 			break;
 			
 		default:
@@ -105,26 +82,6 @@ std::string Function::UML() const
 libclx::Type Function::ReturnType() const
 {
 	return m_return_type;
-}
-
-const Entity* Function::Child(std::size_t idx) const
-{
-	return m_args.At(idx);
-}
-
-Entity* Function::Child(std::size_t idx)
-{
-	return m_args.At(idx);
-}
-
-std::size_t Function::IndexOf(const Entity* child) const
-{
-	return m_args.IndexOf(child);
-}
-
-std::size_t Function::ChildCount() const
-{
-	return m_args.Size();
 }
 
 } // end of namespace

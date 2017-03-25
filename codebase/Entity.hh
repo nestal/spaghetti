@@ -15,7 +15,6 @@
 #include <boost/iterator/iterator_facade.hpp>
 
 #include <functional>
-#include <memory>
 #include <string>
 #include <type_traits>
 
