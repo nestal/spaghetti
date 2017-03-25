@@ -11,6 +11,7 @@
 //
 
 #include "Entity.hh"
+#include "EntityVec.hh"
 
 #include "EntityType.hh"
 #include "libclx/SourceRange.hh"
@@ -107,7 +108,7 @@ const std::string& LeafEntity::ID() const
 
 bool LeafEntity::IsUsed() const
 {
-	return Location().IsFromMainFile();
+	return Location().IsFromMainFile() || (m_parent && m_parent->IsUsed());
 }
 
 void LeafEntity::CrossReference(EntityMap *)

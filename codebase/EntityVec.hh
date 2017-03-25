@@ -46,8 +46,6 @@ public:
 	Entity* FindByID(const std::string& id);
 	
 protected:
-	void MarkSelfUsedOnly();
-	
 	template <typename EntityContainer, typename... Ts>
 	auto AddUnique(EntityContainer&& cond, const std::string& id, Ts&&... ts) ->
 	typename std::remove_reference_t<EntityContainer>::value_type

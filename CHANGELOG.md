@@ -2,7 +2,14 @@
 
 ## Version 0.4 (Upcoming)
 
-- Prelimary support for template and their instantiations
+- Preliminary support for template and their instantiations
+- Revised the meaning of "used classes" in logical view:
+  * Classes that defined in the main translation unit (i.e. source files
+	added by "Add Source File")
+  * Base classes of the used classes above
+  * Nested classes that are defined inside the used classes above
+  * Classes that are the type of the member variables of the used classes above
+  * Class templates that instantiated the used classes above
 
 ## [Version 0.3](https://github.com/nestal/spaghetti/releases/tag/v0.3) (11 March 2017)
 
