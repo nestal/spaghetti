@@ -45,7 +45,7 @@ struct MultiContainer<Base, Head>
 	virtual std::ptrdiff_t IndexOf(const Base *base) const
 	{
 		auto diff = std::distance(&m_types[0], static_cast<const Head *>(base));
-		if (diff >= m_types.size())
+		if (static_cast<std::size_t>(diff) >= m_types.size())
 			throw std::out_of_range("oops");
 		return diff;
 	}
@@ -85,7 +85,7 @@ struct MultiContainer<Base, Head, Ts...> : public MultiContainer<Base, Ts...>
 	std::ptrdiff_t IndexOf(const Base *base) const override
 	{
 		auto diff = std::distance(&m_types[0], static_cast<const Head *>(base));
-		if (diff < m_types.size())
+		if (static_cast<std::size_t>(diff) < m_types.size())
 			return diff;
 		
 		else

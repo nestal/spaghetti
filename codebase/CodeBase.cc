@@ -123,10 +123,6 @@ public:
 			CrossReference(&child);
 	}
 
-	void Update(const Entity* entity, const std::function<void(Entity*)>& mod) override
-	{
-	}
-	
 	void Swap(EntityTree& other)
 	{
 		using namespace std;

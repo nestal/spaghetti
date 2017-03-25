@@ -31,6 +31,7 @@ using namespace codebase::ut;
 class TestEntityVec : public EntityVec
 {
 public:
+	TestEntityVec() = default;
 	using EntityVec::EntityVec;
 	TestEntityVec(TestEntityVec&& r) : EntityVec{std::move(r)}, m_cond{std::move(r.m_cond)}
 	{
@@ -106,7 +107,7 @@ TEST(EntityVecTest, Test_Variadic_Test)
 	auto& dt1  = Add(vec, MockDataType{&subject});
 	auto& dt2  = Add(vec, MockDataType{&subject});
 	auto& var1 = Add(vec, Variable{libclx::Cursor{}, &subject});
-	auto& fn1  = Add(vec, Function{libclx::Cursor{}, &subject});
+	Add(vec, Function{libclx::Cursor{}, &subject});
 	
 	ASSERT_EQ(4, vec.Size());
 	
