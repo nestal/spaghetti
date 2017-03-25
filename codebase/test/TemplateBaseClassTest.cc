@@ -72,10 +72,10 @@ TEST_F(TemplateBaseClassTest, Test_template_fields)
 	auto base = dynamic_cast<const DataType*>(m_subject.Map().FindByName("Base"));
 	auto base_fields = base->Fields();
 	
-	ASSERT_EQ(1, base_fields.size());
+	ASSERT_EQ(2, base_fields.size());
 	auto& base_field = base_fields[0];
 	
 	auto field_type = m_subject.Map().TypedFind<DataType>(base_field.TypeRef().ID());
 	ASSERT_TRUE(field_type);
-	ASSERT_EQ("Temp<int>", field_type->Name());
+	ASSERT_EQ("Temp1<int>", field_type->Name());
 }

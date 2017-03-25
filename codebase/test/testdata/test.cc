@@ -1,7 +1,10 @@
 int global_var = 0;
+
 template <typename T>
 struct Temp1 { T t; };
 
+template <typename T>
+struct InnerTemp { T t; };
 
 class Base4
 {
@@ -12,6 +15,7 @@ public:
 class Base
 {
 private:
+//	Temp1<InnerTemp<int>> m_temp;
 	Temp1<int> m_temp;
 	Base4 m_b4;
 	
