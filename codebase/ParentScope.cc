@@ -39,7 +39,6 @@ void ParentScope::Visit(const libclx::Cursor& self)
 {
 	OnVisit(self);
 	self.Visit([this](auto child, auto parent){this->VisitChild(child, parent);});
-	AfterVisitingChild(self);
 }
 
 void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
@@ -60,7 +59,7 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 		break;
 	
 	case CXCursor_CXXMethod:
-		AddUnique(m_func, child.USR(), child, this);
+		AddUnique(m_func, child.USR(), child, this)->Visit(child);
 		break;
 	
 	default:
@@ -90,11 +89,6 @@ boost::iterator_range<ParentScope::data_type_iterator> ParentScope::DataTypes() 
 
 void ParentScope::OnVisit(const libclx::Cursor&)
 {
-}
-
-void ParentScope::AfterVisitingChild(const libclx::Cursor&)
-{
-	
 }
 
 void ParentScope::VisitFunction(const libclx::Cursor& func)

@@ -71,7 +71,6 @@ public:
 protected:
 	virtual void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self);
 	virtual void OnVisit(const libclx::Cursor& self);
-	virtual void AfterVisitingChild(const libclx::Cursor& self);
 	
 	DataType* FindDataType(const std::string& id);
 	ClassTemplate* FindClassTemplate(const std::string& id);

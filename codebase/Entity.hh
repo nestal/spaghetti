@@ -174,15 +174,10 @@ public:
 
 	void Reparent(const EntityVec *entity) override;
 
-protected:
-	void SetUsed(bool used = true);
-	
 private:
 	std::string m_name;
 	std::string m_usr;
 	const EntityVec *m_parent;
-	
-	bool m_used{false};
 };
 
 } // end of namespace

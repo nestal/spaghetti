@@ -26,7 +26,6 @@ Variable::Variable(const libclx::Cursor& field, const EntityVec *parent) :
 	m_location{field.Location()},
 	m_type{field.Type()}
 {
-	SetUsed();
 }
 
 EntityType Variable::Type() const

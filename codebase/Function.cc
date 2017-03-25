@@ -44,6 +44,8 @@ void Function::Visit(const libclx::Cursor& self)
 	assert(Parent());
 	m_definition = self.Location();
 	
+	SetUsed(Parent()->IsUsed());
+	
 	self.Visit([this](libclx::Cursor cursor, libclx::Cursor)
 	{
 		switch (cursor.Kind())

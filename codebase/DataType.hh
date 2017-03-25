@@ -78,7 +78,6 @@ protected:
 	
 	void OnVisit(const libclx::Cursor& self) override;
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
-	void AfterVisitingChild(const libclx::Cursor& self) override;
 	
 private:
 	libclx::SourceLocation              m_definition;

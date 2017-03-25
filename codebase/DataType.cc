@@ -55,6 +55,9 @@ void DataType::OnVisit(const libclx::Cursor& self)
 	
 	if (self.IsDefinition() || m_definition == libclx::SourceLocation{})
 		m_definition = self.Location();
+	
+	if (self.IsDefinition() && self.Location().IsFromMainFile())
+		SetUsed();
 }
 
 void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
@@ -76,13 +79,6 @@ void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& sel
 	default: ParentScope::VisitChild(child, self);
 		break;
 	}
-}
-
-void DataType::AfterVisitingChild(const libclx::Cursor& self)
-{
-	// mark self and all children as used, after creating the children
-	if (self.IsDefinition() && self.Location().IsFromMainFile())
-		SetUsed();
 }
 
 EntityType DataType::Type() const
