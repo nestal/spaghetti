@@ -41,8 +41,8 @@ public:
 	const std::string& TemplateID() const;
 	ClassRef& SetTemplateID(const std::string&& id);
 	
-	const std::vector<std::string>& TempArgs() const;
-	ClassRef& AddTempArgs(std::string&& arg);
+	const std::vector<ClassRef>& TempArgs() const;
+	ClassRef& AddTempArgs(ClassRef&& arg);
 	
 	bool IsTemplate() const;
 	
@@ -50,7 +50,8 @@ public:
 	bool operator!=(const ClassRef& ref) const;
 	
 private:
-	void Visit(const libclx::Cursor& cursor);
+	void FromBaseSpecifier(const libclx::Cursor& cursor);
+	void FromFieldDecl(const libclx::Cursor& cursor);
 	
 private:
 	//! USR of the class or template instantiation
@@ -63,7 +64,7 @@ private:
 	std::string m_name;
 	
 	//! USR of template arguments, empty if non-template
-	std::vector<std::string> m_temp_args;
+	std::vector<ClassRef> m_temp_args;
 };
 
 std::ostream& operator<<(std::ostream& os, const ClassRef& ref);

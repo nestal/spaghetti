@@ -27,7 +27,7 @@ const std::string& ClassRef::ID() const
 	return m_base_id;
 }
 
-const std::vector<std::string>& ClassRef::TempArgs() const
+const std::vector<ClassRef>& ClassRef::TempArgs() const
 {
 	return m_temp_args;
 }
@@ -37,7 +37,7 @@ void ClassRef::SetID(std::string&& base_id)
 	m_base_id = std::move(base_id);
 }
 
-ClassRef& ClassRef::AddTempArgs(std::string&& arg)
+ClassRef& ClassRef::AddTempArgs(ClassRef&& arg)
 {
 	m_temp_args.push_back(std::move(arg));
 	return *this;
@@ -71,16 +71,23 @@ ClassRef& ClassRef::SetTemplateID(const std::string&& id)
 
 ClassRef::ClassRef(const libclx::Cursor& cursor)
 {
-	if (cursor.Kind() == CXCursor_CXXBaseSpecifier || cursor.Kind() == CXCursor_FieldDecl)
-		Visit(cursor);
+	switch (cursor.Kind())
+	{
+	case CXCursor_CXXBaseSpecifier: FromBaseSpecifier(cursor);
+		break;
+	
+	case CXCursor_FieldDecl:    FromFieldDecl(cursor);
+		break;
+		
+	default:
+		break;
+	}
 }
 
-void ClassRef::Visit(const libclx::Cursor& cursor)
+void ClassRef::FromBaseSpecifier(const libclx::Cursor& cursor)
 {
-	if (cursor.Kind() == CXCursor_CXXBaseSpecifier)
-		m_name = cursor.DisplayName();
-	else if (cursor.Kind() == CXCursor_FieldDecl)
-		m_name = cursor.Type().Spelling();
+	assert(cursor.Kind() == CXCursor_CXXBaseSpecifier);
+	m_name = cursor.DisplayName();
 	
 	// Iterating the TypeRef under the specifier.
 	// It works for both template or non-template base classes.
@@ -90,18 +97,15 @@ void ClassRef::Visit(const libclx::Cursor& cursor)
 		{
 		case CXCursor_TemplateRef:
 			// TODO: handle multiple level of templates
-		std::cout << Name() << ": child temp name = " << dec.DisplayName() << std::endl;
 			if (m_temp_id.empty())
 			{
 				assert(m_base_id.empty());
 				m_base_id = parent.Referenced().USR();
 				m_temp_id = dec.Referenced().USR();
 			}
-			std::cout << Name() << ": child base ID = " << m_base_id << " " << m_temp_id << std::endl;
 			break;
 		
 		case CXCursor_TypeRef:
-		std::cout << Name() << ": child type name = " << dec.DisplayName() << std::endl;
 			if (m_temp_id.empty())
 				m_base_id = dec.Referenced().USR();
 			else
@@ -112,6 +116,37 @@ void ClassRef::Visit(const libclx::Cursor& cursor)
 			break;
 		}
 	});
+}
+
+void ClassRef::FromFieldDecl(const libclx::Cursor& cursor)
+{
+	assert(cursor.Kind() == CXCursor_FieldDecl);
+	
+	m_name = cursor.Type().Declaration().DisplayName();
+	cursor.Visit([this](libclx::Cursor child, libclx::Cursor cursor)
+	{
+		auto type = cursor.Type();
+		switch (child.Kind())
+		{
+		case CXCursor_TemplateRef:
+			m_temp_id = child.Referenced().USR();
+			m_base_id = type.Declaration().USR();
+			for (auto&& arg : cursor.Type().TemplateArguments())
+			{
+				std::cout << "arg = " << arg.Declaration().USR() << std::endl;
+				m_temp_args.push_back(arg.Declaration().USR());
+			}
+			break;
+		
+		case CXCursor_TypeRef:
+			m_base_id = child.Referenced().USR();
+			break;
+		
+		default:
+			break;
+		}
+	});
+	std::cout << m_base_id << std::endl;
 }
 
 ClassRef::ClassRef(const std::string& base) :
