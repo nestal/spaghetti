@@ -109,8 +109,6 @@ public:
 	
 	void AddToIndex(Entity *entity)
 	{
-		std::cout << "adding: " << entity->ID() << " " << (void*)entity << std::endl;
-		
 		m_index.insert(entity);
 		
 		for (auto&& child : *entity)

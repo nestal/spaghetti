@@ -45,7 +45,7 @@ enum class EntityType;
 class Entity
 {
 public:
-	virtual ~Entity();
+	virtual ~Entity() = default;
 	
 	static const std::string& NullID();
 	

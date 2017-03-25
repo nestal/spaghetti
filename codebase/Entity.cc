@@ -16,16 +16,10 @@
 #include "libclx/SourceRange.hh"
 
 #include <cassert>
-#include <iostream>
 
 namespace codebase {
 
 const std::size_t Entity::npos = std::string::npos;
-
-Entity::~Entity()
-{
-	std::cout << "destroying " << (void*)this << std::endl;
-}
 
 Entity::iterator Entity::begin()
 {
