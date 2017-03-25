@@ -1,4 +1,7 @@
 int global_var = 0;
+template <typename T>
+struct Temp1 { T t };
+
 
 class Base4
 {
@@ -8,6 +11,9 @@ public:
 
 class Base
 {
+private:
+	Temp1<int> m_temp;
+	
 public:
 	virtual ~Base() = default;
 	virtual void Func() = 0;

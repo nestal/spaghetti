@@ -112,7 +112,7 @@ bool DataType::IsBaseOf(const DataType& other) const
 bool DataType::IsUsedInMember(const DataType& other) const
 {
 	auto fields = other.Fields();
-	return std::find_if(fields.begin(), fields.end(),[myid = ID()](auto field)
+	return std::find_if(fields.begin(), fields.end(),[myid = ID()](auto&& field)
 	{
 		return field.TypeID() == myid;
 	}) != fields.end();
@@ -136,7 +136,14 @@ void DataType::CrossReference(EntityMap *map)
 		if (base.IsTemplate() && !base.ID().empty() && base.ID() != base.TemplateID())
 			map->Instantiate(base);
 	}
-
+	
+	for (auto&& field : m_fields)
+	{
+		auto type = field->TypeRef();
+		if (type.IsTemplate() && !type.ID().empty() && type.ID() != type.TemplateID())
+			map->Instantiate(type);
+	}
+	
 	MarkBaseClassUsed(map);
 }
 

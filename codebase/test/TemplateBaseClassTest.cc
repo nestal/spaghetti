@@ -13,6 +13,7 @@
 #include "codebase/CodeBase.hh"
 
 #include "codebase/DataType.hh"
+#include "codebase/Variable.hh"
 #include "codebase/EntityMap.hh"
 
 #include <gtest/gtest.h>
@@ -39,7 +40,7 @@ protected:
 
 TEST_F(TemplateBaseClassTest, Test_base_class)
 {
-	auto derived = dynamic_cast<const DataType*>(m_subject.Map().FindByName("Derived"));
+	auto derived = dynamic_cast<const DataType *>(m_subject.Map().FindByName("Derived"));
 	ASSERT_EQ("Derived", derived->Name());
 	
 	// base should be c:@S@RecursiveBase>#$@S@Base, but we need to fix it by
@@ -53,11 +54,10 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	
 	auto temp_base = m_subject.Map().Find("c:@ST>1#T@RecursiveBase");
 	
-	// TODO: fix it!
 	ASSERT_TRUE(temp_base);
 	ASSERT_EQ("RecursiveBase<BaseType>", temp_base->Name());
 	
-	auto inst_base = dynamic_cast<const DataType*>(m_subject.Map().Find("c:@S@RecursiveBase>#$@S@Base"));
+	auto inst_base = m_subject.Map().TypedFind<DataType>("c:@S@RecursiveBase>#$@S@Base");
 	ASSERT_TRUE(inst_base);
 	
 	std::vector<ClassRef> bbase{
@@ -65,4 +65,17 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 		ClassRef{"c:@S@Base4"}
 	};
 	ASSERT_EQ(bbase, inst_base->BaseClasses());
+}
+
+TEST_F(TemplateBaseClassTest, Test_template_fields)
+{
+	auto base = dynamic_cast<const DataType*>(m_subject.Map().FindByName("Base"));
+	auto base_fields = base->Fields();
+	
+	ASSERT_EQ(1, base_fields.size());
+	auto& base_field = base_fields[0];
+	
+	auto field_type = m_subject.Map().TypedFind<DataType>(base_field.TypeRef().ID());
+	ASSERT_TRUE(field_type);
+	ASSERT_EQ("Temp<int>", field_type->Name());
 }

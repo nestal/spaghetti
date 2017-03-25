@@ -50,7 +50,7 @@ public:
 	bool operator!=(const ClassRef& ref) const;
 	
 private:
-	void FromBaseCursor(const libclx::Cursor& cursor);
+	void Visit(const libclx::Cursor& cursor);
 	
 private:
 	//! USR of the class or template instantiation
