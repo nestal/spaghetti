@@ -19,6 +19,8 @@
 #include "libclx/Token.hh"
 
 #include <QtCore/QFile>
+#include <iostream>
+#include <QtWidgets/QMessageBox>
 
 namespace gui {
 namespace sourcevw {
@@ -58,7 +60,41 @@ void SourceView::Open(const std::string& fname, unsigned line, unsigned column)
 			m_worker.join();
 		
 		// to improve latency, use a separate thread to parse the file
-		m_worker = std::thread([this, line, column]{Parse(line, column);});
+		m_worker = std::thread([this, line, column]
+		{
+			try
+			{
+				Parse(line, column);
+			}
+			catch (std::exception& e)
+			{
+				std::cerr << "Exception!!! " << e.what() << std::endl;
+				m_except = boost::current_exception();
+				
+				SendFunctorEvent(this, [this]
+				{
+					if (m_except)
+					{
+						try
+						{
+							boost::rethrow_exception(m_except);
+						}
+						catch (util::Exception& ue)
+						{
+							QMessageBox::critical(this, "Cannot open file", ue.what());
+						}
+						catch (...)
+						{
+						}
+					}
+					m_except = {};
+				});
+			}
+			catch (...)
+			{
+				std::cerr << "Unknown exception!!! " << std::endl;
+			}
+		});
 	}
 	else
 		GoTo(line, column);

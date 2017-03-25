@@ -14,8 +14,7 @@
 
 #include "Entity.hh"
 
-#include <cassert>
-#include <vector>
+#include <unordered_map>
 #include <memory>
 
 namespace codebase {
@@ -23,11 +22,8 @@ namespace codebase {
 class EntityVec : public Entity
 {
 public:
-	using EntityPtr = std::unique_ptr<Entity>;
-
-public:
 	EntityVec() = default;
-	EntityVec(const std::string& name, const std::string& usr, const Entity *parent);
+	EntityVec(const std::string& name, const std::string& usr, const EntityVec *parent);
 	
 	EntityVec(EntityVec&& other);
 	EntityVec(const EntityVec&) = delete;
@@ -36,61 +32,81 @@ public:
 
 	const std::string& Name() const override;
 	const std::string& ID() const override;
-	const Entity* Parent() const override;
+	const EntityVec* Parent() const override;
 	
-	std::size_t ChildCount() const override ;
 	const Entity* Child(std::size_t idx) const override;
 	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
-	
-	template <typename Type, typename... Args>
-	Type* Add(Args... arg)
-	{
-		auto child = std::make_unique<Type>(std::forward<Args>(arg)...);
-		auto ptr   = child.get();
-		AddChild(std::move(child));
-		return ptr;
-	}
-	
-	template <typename EntityContainer, typename... Args>
-	auto AddUnique(EntityContainer&& cont, const std::string& id, Args... arg);
-	
-	void AddChild(EntityPtr&& child);
-	
+	std::size_t ChildCount() const override;
+		
 	void MarkUsed() override;
 	bool IsUsed() const override;
-	void Reparent(const Entity *parent) override;
+	void Reparent(const EntityVec *parent) override;
 
+	const Entity* FindByID(const std::string& id) const;
+	Entity* FindByID(const std::string& id);
+	
 protected:
 	void MarkSelfUsedOnly();
-
+	
+	template <typename EntityContainer, typename... Ts>
+	auto AddUnique(EntityContainer&& cond, const std::string& id, Ts&&... ts) ->
+	typename std::remove_reference_t<EntityContainer>::value_type
+	{
+		using Type = std::remove_pointer_t<typename std::remove_reference_t<EntityContainer>::value_type>;
+		
+		auto it = m_index.find(id);
+		if (it != m_index.end())
+		{
+			// can be find inside cond
+			assert(it->second.typed < cond.size());
+			return cond.at(it->second.typed);
+		}
+		else
+		{
+			Add(cond, std::make_unique<Type>(std::forward<Ts>(ts)...));
+			return cond.back();
+		}
+	}
+	
+	template <typename EntityContainer, typename ET>
+	void Add(EntityContainer&& cond, std::unique_ptr<ET>&& entity)
+	{
+		auto self  = m_children.size();
+		auto typed = cond.size();
+		
+		cond.push_back(entity.get());
+		m_children.push_back(std::move(entity));
+		
+		// if push_back() throw, do not add to index
+		m_index.emplace(cond.back()->ID(), Indexes{self, typed});
+	}
+	
+	template <typename EntityContainer, typename... Ts>
+	auto FindInVec(EntityContainer&& cond, const std::string& id) ->
+	typename std::remove_reference_t<EntityContainer>::value_type
+	{
+		auto it = m_index.find(id);
+		return it != m_index.end() && it->second.typed < cond.size() ? cond.at(it->second.typed) : nullptr;
+	}
+	
+private:
+	using EntityPtr = std::unique_ptr<Entity>;
+	
 private:
 	std::string m_name;
 	std::string m_id{NullID()};
-	const Entity *m_parent{};
+	const EntityVec *m_parent{};
 	bool m_used{false};
-
+	
+	struct Indexes
+	{
+		std::size_t self;   //!< index of entity in our m_children vector
+		std::size_t typed;  //!< index of entity in the vector passed to AddUnique() when it's created
+	};
+	
+	std::unordered_map<std::string, Indexes> m_index;
 	std::vector<EntityPtr> m_children;
 };
-
-template <typename EntityContainer>
-auto FindByID(EntityContainer&& cont, const std::string& id)
-{
-	return std::find_if(cont.begin(), cont.end(), [id](auto& e){return e->ID() == id;});
-}
-
-template <typename EntityContainer, typename... Args>
-auto EntityVec::AddUnique(EntityContainer&& cont, const std::string& id, Args... arg)
-{
-	using Type = std::remove_pointer_t<typename std::remove_reference_t<EntityContainer>::value_type>;
-
-	auto it = FindByID(cont, id);
-	if (it == cont.end())
-	{
-		cont.push_back(Add<Type>(std::forward<Args>(arg)...));
-		it = --cont.end();
-	}
-	return *it;
-}
 
 } // end of namespace codebase

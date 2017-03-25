@@ -61,7 +61,6 @@ MainWnd::MainWnd() :
 	m_ui{std::make_unique<Ui::MainWnd>()},
 	m_doc{std::make_unique<Document>(this)}
 {
-	setWindowIcon(QIcon{":/images/fork2.svg"});
 	m_ui->setupUi(this);
 	m_ui->m_tab->Setup(*m_doc);
 	

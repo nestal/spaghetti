@@ -13,6 +13,8 @@
 #pragma once
 
 #include "EntityVec.hh"
+
+#include "util/MultiContainer.hh"
 #include "libclx/SourceRange.hh"
 
 #include <boost/iterator/indirect_iterator.hpp>
@@ -32,6 +34,7 @@ class Function;
 class Variable;
 class DataType;
 class ClassTemplate;
+class Namespace;
 class ClassRef;
 
 /**
@@ -40,41 +43,43 @@ class ClassRef;
 class ParentScope : public EntityVec
 {
 public:
-	using field_iterator    = boost::indirect_iterator<std::vector<codebase::Variable*>::const_iterator>;
-	using function_iterator = boost::indirect_iterator<std::vector<codebase::Function*>::const_iterator>;
-	using idvec_iterator    = std::vector<ClassRef>::const_iterator;
+	using field_iterator            = boost::indirect_iterator<std::vector<Variable*>::const_iterator>;
+	using function_iterator         = boost::indirect_iterator<std::vector<Function*>::const_iterator>;
+	using class_template_iterator   = boost::indirect_iterator<std::vector<ClassTemplate*>::const_iterator>;
+	using data_type_iterator        = boost::indirect_iterator<std::vector<DataType*>::const_iterator>;
+	using idvec_iterator            = std::vector<ClassRef>::const_iterator;
 
 public:
-	ParentScope(const libclx::Cursor& cursor, const Entity* parent);
-	ParentScope(const std::string& name, const std::string& usr, const Entity *parent);
-	ParentScope(ParentScope&&) = default;
+	ParentScope(const libclx::Cursor& cursor, const EntityVec* parent);
+	ParentScope(const std::string& name, const std::string& usr, const EntityVec *parent);
+	ParentScope(ParentScope&& rhs) = default;
 	ParentScope(const ParentScope&) = delete;
-	ParentScope& operator=(ParentScope&&) = default;
+	ParentScope& operator=(ParentScope&& rhs) = default;
 	ParentScope& operator=(const ParentScope&) = delete;
 	
 	void Visit(const libclx::Cursor& self);
 	
 	boost::iterator_range<field_iterator> Fields() const;
 	boost::iterator_range<function_iterator> Functions() const;
-	
-	const codebase::Function& Function(std::size_t idx) const;
-	const codebase::Variable& Field(std::size_t idx) const;
+	boost::iterator_range<class_template_iterator> ClassTemplates() const;
+	boost::iterator_range<data_type_iterator> DataTypes() const;
 	
 	void VisitFunction(const libclx::Cursor& func);
 	
-	void Add(std::unique_ptr<DataType>&& type);
+	DataType& Add(std::unique_ptr<DataType>&& inst);
 	
 protected:
 	virtual void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self);
 	virtual void OnVisit(const libclx::Cursor& self);
 	virtual void AfterVisitingChild(const libclx::Cursor& self);
 	
-	std::vector<DataType*>& Types();
+	DataType* FindDataType(const std::string& id);
+	ClassTemplate* FindClassTemplate(const std::string& id);
 	
-private:
-	std::vector<Variable*>      m_fields;
-	std::vector<codebase::Function*>      m_functions;
-	std::vector<DataType*>      m_types;
+protected:
+	std::vector<Variable*> m_fields;
+	std::vector<Function*> m_func;
+	std::vector<DataType*> m_types;
 	std::vector<ClassTemplate*> m_temps;
 };
 

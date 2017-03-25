@@ -13,6 +13,7 @@
 #include "Namespace.hh"
 
 #include "DataType.hh"
+#include "ClassTemplate.hh"
 #include "EntityType.hh"
 
 #include "libclx/Cursor.hh"
@@ -24,7 +25,7 @@ Namespace::Namespace() :
 {
 }
 
-Namespace::Namespace(const libclx::Cursor& cursor, const Entity* parent) :
+Namespace::Namespace(const libclx::Cursor& cursor, const EntityVec* parent) :
 	ParentScope{cursor, parent}
 {
 }
@@ -47,10 +48,10 @@ void Namespace::VisitChild(const libclx::Cursor& child, const libclx::Cursor& se
 		{
 			// class method definition in namespace
 			// the class definition should already be parsed
-			auto parent = FindByID(Types(), child.SemanticParent().USR());
-			
-			if (parent != Types().end())
-				(*parent)->VisitFunction(child);
+			if (auto parent = FindDataType(child.SemanticParent().USR()))
+				parent->VisitFunction(child);
+			else if (auto temp = FindClassTemplate(child.SemanticParent().USR()))
+				temp->VisitFunction(child);
 		}
 		break;
 	}

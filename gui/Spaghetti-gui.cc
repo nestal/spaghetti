@@ -18,6 +18,7 @@ int main(int argc, char **argv)
 	QCoreApplication::setApplicationName("Spaghetti");
 	QCoreApplication::setApplicationVersion(QT_VERSION_STR);
 	app.setQuitOnLastWindowClosed(true);
+	app.setWindowIcon(QIcon{":/images/fork2.svg"});
 	
 	QCommandLineParser parser;
 	parser.setApplicationDescription(QCoreApplication::applicationName());
@@ -28,8 +29,7 @@ int main(int argc, char **argv)
 	
 	// use -stylesheet option to specific stylesheet
 	
-	using namespace gui;
-	MainWnd wnd;
+	gui::MainWnd wnd;
 	wnd.show();
 	
 	auto args = parser.positionalArguments();

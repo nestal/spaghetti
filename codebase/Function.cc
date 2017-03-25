@@ -22,7 +22,7 @@
 
 namespace codebase {
 
-Function::Function(const libclx::Cursor& first_seen, const Entity *parent) :
+Function::Function(const libclx::Cursor& first_seen, const EntityVec *parent) :
 	EntityVec{first_seen.Spelling(), first_seen.USR(), parent},
 	m_definition{first_seen.Location()},
 	m_return_type{first_seen.ResultType()}
@@ -64,8 +64,8 @@ void Function::CrossReference(EntityMap *)
 {
 	if (IsUsed())
 	{
-		for (auto& arg : m_args)
-			arg->MarkUsed();
+		for (auto& arg : *this)
+			arg.MarkUsed();
 	}
 }
 
@@ -83,5 +83,5 @@ libclx::Type Function::ReturnType() const
 {
 	return m_return_type;
 }
-	
+
 } // end of namespace

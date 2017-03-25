@@ -20,7 +20,6 @@
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>
-#include <boost/multi_index/random_access_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 
 namespace codebase {
@@ -46,7 +45,7 @@ public:
 		auto it = m_index.get<ByID>().find(id);
 		return it != m_index.get<ByID>().end() ? *it : nullptr;
 	}
-	
+
 	const Entity* FindByName(const std::string& name) const override
 	{
 		auto it = m_index.get<ByName>().find(name);
@@ -58,38 +57,43 @@ public:
 		return dynamic_cast<const DataType*>(Find(ref.ID()));
 	}
 	
-	DataType* Instantiate(const ClassRef& ref) override
-	{
-		assert(ref.IsTemplate());
-		assert(!ref.ID().empty());
-		
-		auto result = dynamic_cast<DataType*>(Find(ref.ID()));
-		if (!result)
-		{
-			if (auto temp = dynamic_cast<ClassTemplate*>(Find(ref.TemplateID())))
-			{
-				// instantiate template and add to the index immediately
-				auto inst = temp->Instantiate(ref);
-				AddToIndex(inst.get());
-				
-				auto parent = dynamic_cast<ParentScope *>(Find(temp->Parent()->ID()));
-				
-				assert(parent);
-				assert(inst);
-				
-				result = inst.get();
-				parent->Add(std::move(inst));
-			}
-		}
-		
-		return result;
-	}
-	
 	DataType* Find(const ClassRef& ref) override
 	{
 		return dynamic_cast<DataType*>(Find(ref.ID()));
 	}
 	
+	const DataType* Instantiate(const ClassRef& ref) override
+	{
+		assert(ref.IsTemplate());
+		assert(!ref.ID().empty());
+		
+		auto result = Find(ref);
+		if (!result)
+		{
+			if (auto temp = TypedFind<ClassTemplate>(ref.TemplateID()))
+			{
+				// instantiate template and add to the index immediately
+				auto inst = temp->Instantiate(ref);
+				auto parent = TypedFind<ParentScope>(temp->Parent()->ID());
+				
+				assert(parent);
+				assert(inst);
+				
+				// cannot add new entity after building the index
+				// because it will expand the vector in the parent of the new entity
+				// and invalidate other sibling entities
+				result = &parent->Add(std::move(inst));
+				AddToIndex(result);
+				
+				// maybe I should save these new entities elsewhere
+				// and re-add them after finishing cross referencing
+				// and then re-build the index
+			}
+		}
+		
+		return result;
+	}
+
 	Entity* Root()
 	{
 		return &m_root;
@@ -107,17 +111,18 @@ public:
 	{
 		m_index.insert(entity);
 		
-		for (auto&& c : *entity)
-			AddToIndex(&c);
+		for (auto&& child : *entity)
+			AddToIndex(&child);
 	}
 	
 	void CrossReference(Entity *entity)
 	{
 		entity->CrossReference(this);
+
 		for (auto&& child : *entity)
 			CrossReference(&child);
 	}
-	
+
 	void Swap(EntityTree& other)
 	{
 		using namespace std;

@@ -62,7 +62,7 @@ std::string Entity::DisplayType() const
 	return to_string(Type());
 }
 
-LeafEntity::LeafEntity(const std::string& name, const std::string& usr, const Entity *parent) :
+LeafEntity::LeafEntity(const std::string& name, const std::string& usr, const EntityVec *parent) :
 	m_name{name},
 	m_usr{usr},
 	m_parent{parent}
@@ -95,7 +95,7 @@ const std::string& LeafEntity::Name() const
 	return m_name;
 }
 
-const Entity* LeafEntity::Parent() const
+const EntityVec* LeafEntity::Parent() const
 {
 	return m_parent;
 }
@@ -119,7 +119,7 @@ void LeafEntity::CrossReference(EntityMap *)
 {
 }
 
-void LeafEntity::Reparent(const Entity *entity)
+void LeafEntity::Reparent(const EntityVec *entity)
 {
 	m_parent = entity;
 }

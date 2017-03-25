@@ -12,23 +12,25 @@
 
 #include "ParentScope.hh"
 
+#include "EntityType.hh"
 #include "Function.hh"
 #include "Variable.hh"
 #include "ClassTemplate.hh"
 
 #include "libclx/Cursor.hh"
 
+
 #include <ostream>
 #include <iostream>
 
 namespace codebase {
 
-ParentScope::ParentScope(const libclx::Cursor& cursor, const Entity* parent) :
+ParentScope::ParentScope(const libclx::Cursor& cursor, const EntityVec* parent) :
 	EntityVec{cursor.DisplayName(), cursor.USR(), parent}
 {
 }
 
-ParentScope::ParentScope(const std::string& name, const std::string& usr, const Entity *parent) :
+ParentScope::ParentScope(const std::string& name, const std::string& usr, const EntityVec *parent) :
 	EntityVec{name, usr, parent}
 {
 }
@@ -58,7 +60,7 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 		break;
 	
 	case CXCursor_CXXMethod:
-		AddUnique(m_functions, child.USR(), child, this);
+		AddUnique(m_func, child.USR(), child, this);
 		break;
 	
 	default:
@@ -73,17 +75,17 @@ boost::iterator_range<ParentScope::field_iterator> ParentScope::Fields() const
 
 boost::iterator_range<ParentScope::function_iterator> ParentScope::Functions() const
 {
-	return {m_functions.begin(), m_functions.end()};
+	return {m_func.begin(), m_func.end()};
 }
 
-const codebase::Function& ParentScope::Function(std::size_t idx) const
+boost::iterator_range<ParentScope::class_template_iterator> ParentScope::ClassTemplates() const
 {
-	return *m_functions.at(idx);
+	return {m_temps.begin(), m_temps.end()};
 }
 
-const codebase::Variable& ParentScope::Field(std::size_t idx) const
+boost::iterator_range<ParentScope::data_type_iterator> ParentScope::DataTypes() const
 {
-	return *m_fields.at(idx);
+	return {m_types.begin(), m_types.end()};
 }
 
 void ParentScope::OnVisit(const libclx::Cursor&)
@@ -97,22 +99,28 @@ void ParentScope::AfterVisitingChild(const libclx::Cursor&)
 
 void ParentScope::VisitFunction(const libclx::Cursor& func)
 {
-	auto it = FindByID(m_functions, func.USR());
+	auto func_entity = FindInVec(m_func, func.USR());
 	
 	// the definition of a member function should come after its declaration
-	if (it != m_functions.end())
-		(*it)->Visit(func);
+	if (func_entity)
+		func_entity->Visit(func);
 }
 
-std::vector<DataType *>& ParentScope::Types()
+DataType& ParentScope::Add(std::unique_ptr<DataType>&& inst)
 {
-	return m_types;
+	assert(inst->Parent() == this);
+	auto id = inst->ID();
+	return *AddUnique(m_types, id, std::move(*inst));
 }
 
-void ParentScope::Add(std::unique_ptr<DataType>&& type)
+DataType *ParentScope::FindDataType(const std::string& id)
 {
-	m_types.push_back(type.get());
-	AddChild(std::move(type));
+	return FindInVec(m_types, id);
+}
+
+ClassTemplate *ParentScope::FindClassTemplate(const std::string& id)
+{
+	return FindInVec(m_temps, id);
 }
 	
 } // end of namespace

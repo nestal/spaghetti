@@ -13,9 +13,13 @@
 #pragma once
 
 #include "gui/common/ViewBase.hh"
-#include <QtWidgets/QPlainTextEdit>
 
 #include "SourceModel.hh"
+
+#include <QtWidgets/QPlainTextEdit>
+
+#include <boost/exception_ptr.hpp>
+
 #include <thread>
 #include <atomic>
 
@@ -51,6 +55,8 @@ private:
 	SourceModel *m_model{};
 	
 	QTextCursor m_highlight;
+	
+	boost::exception_ptr m_except{};
 };
 
 }} // end of namespace

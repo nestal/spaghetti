@@ -12,11 +12,11 @@
 
 #include "DataType.hh"
 
+#include "EntityType.hh"
 #include "EntityMap.hh"
 #include "Function.hh"
 #include "Variable.hh"
 #include "ClassTemplate.hh"
-#include "EntityType.hh"
 
 #include "libclx/Cursor.hh"
 
@@ -25,7 +25,7 @@
 
 namespace codebase {
 
-DataType::DataType(const libclx::Cursor& cursor, const Entity *parent) :
+DataType::DataType(const libclx::Cursor& cursor, const EntityVec *parent) :
 	ParentScope{cursor, parent}
 {
 	assert(cursor.Kind() == CXCursor_StructDecl
@@ -39,7 +39,7 @@ DataType::DataType(
 	const std::string& name,
 	const std::string& usr,
 	const libclx::SourceLocation def,
-	const Entity *parent
+	const EntityVec *parent
 ) :
 	ParentScope{name, usr, parent},
 	m_definition{def}
@@ -154,7 +154,7 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 	{
 		for (auto& base : m_bases)
 		{
-			auto base_entity = dynamic_cast<DataType *>(map->Find(base.ID()));
+			auto base_entity = map->Find(base);
 			
 			// TODO: support typedef base classes
 			if (base_entity && !base_entity->IsUsed())

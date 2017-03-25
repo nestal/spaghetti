@@ -13,14 +13,19 @@
 #pragma once
 
 #include <boost/iterator/iterator_facade.hpp>
+
+#include <functional>
 #include <string>
 #include <type_traits>
+
 #include <libclx/Index.hh>
 
 namespace codebase {
 
 template <typename Parent, typename Child>
 class EntityIterator;
+
+class EntityVec;
 
 class EntityMap;
 enum class EntityType;
@@ -64,7 +69,7 @@ public:
 	 * of a class is the namespace that contains it. The parent entity of a member function
 	 * is the class. For non-member functions, the parent entity will be a namespace.
 	 */
-	virtual const Entity* Parent() const = 0;
+	virtual const EntityVec* Parent() const = 0;
 	virtual EntityType Type() const = 0;
 	virtual std::string DisplayType() const;
 	
@@ -82,7 +87,7 @@ public:
 	
 	static const std::size_t npos;
 	
-	using iterator       = EntityIterator<Entity, Entity>;
+	using iterator = EntityIterator<Entity, Entity>;
 	using const_iterator = EntityIterator<const Entity, const Entity>;
 	
 	iterator begin();
@@ -90,11 +95,13 @@ public:
 	const_iterator begin() const;
 	const_iterator end() const;
 	
-	virtual void Reparent(const Entity *parent) = 0;
+	virtual void Reparent(const EntityVec *parent) = 0;
 	
 public:
 	bool HasChild(const Entity *child) const {return IndexOf(child) < ChildCount();}
 };
+
+using UniqueEntityPtr = std::unique_ptr<Entity>;
 
 template <typename ParentEntity, typename ChildEntity>
 class EntityIterator : public boost::iterator_facade<
@@ -152,27 +159,27 @@ private:
 class LeafEntity : public Entity
 {
 public:
-	LeafEntity(const std::string& name, const std::string& usr, const Entity *parent);
+	LeafEntity(const std::string& name, const std::string& usr, const EntityVec *parent);
 	
 	std::size_t ChildCount() const override;
-	Entity* Child(std::size_t idx) override;
 	const Entity* Child(std::size_t idx) const override;
+	Entity* Child(std::size_t idx) override;
 	std::size_t IndexOf(const Entity* child) const override;
 
 	const std::string& Name() const override;
-	const Entity* Parent() const override;
+	const EntityVec* Parent() const override;
 	const std::string& ID() const override;
 	
 	bool IsUsed() const override;
 	void MarkUsed() override;
 	void CrossReference(EntityMap *map) override;
 
-	void Reparent(const Entity *entity) override;
+	void Reparent(const EntityVec *entity) override;
 	
 private:
 	std::string m_name;
 	std::string m_usr;
-	const Entity *m_parent;
+	const EntityVec *m_parent;
 	
 	bool m_used{false};
 };

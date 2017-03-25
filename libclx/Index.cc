@@ -18,7 +18,11 @@
 #include "Type.hh"
 #include "XStr.hh"
 
+#include "util/Exception.hh"
+
 #include <boost/functional/hash.hpp>
+#include <boost/exception/errinfo_file_name.hpp>
+#include <boost/exception/info.hpp>
 
 #include <vector>
 #include <ostream>
@@ -88,7 +92,7 @@ TranslationUnit Index::Parse(const std::string& filename, const std::vector<std:
 	if (r == 0)
 		return {tu};
 	else
-		throw std::runtime_error("can't parse file " + filename);
+		BOOST_THROW_EXCEPTION(util::Exception{} << boost::errinfo_file_name(filename) << ErrorCode{r});
 }
 
 std::string Index::Version()

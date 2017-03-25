@@ -21,7 +21,7 @@
 
 namespace codebase {
 
-Variable::Variable(const libclx::Cursor& field, const Entity *parent) :
+Variable::Variable(const libclx::Cursor& field, const EntityVec *parent) :
 	LeafEntity{field.Spelling(), field.USR(), parent},
 	m_location{field.Location()},
 	m_type{field.Type()}
@@ -58,8 +58,8 @@ void Variable::CrossReference(EntityMap *map)
 {
 	if (IsUsed())
 	{
-		if (auto type = dynamic_cast<DataType *>(map->Find(m_type.Declaration().USR())))
-			type->MarkUsed();
+		if (auto type = dynamic_cast<const DataType *>(map->Find(m_type.Declaration().USR())))
+			const_cast<DataType*>(type)->MarkUsed();
 	}
 }
 

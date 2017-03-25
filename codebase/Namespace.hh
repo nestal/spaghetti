@@ -30,7 +30,7 @@ class Namespace : public ParentScope
 {
 public:
 	Namespace();
-	Namespace(const libclx::Cursor& cursor, const Entity* parent);
+	Namespace(const libclx::Cursor& cursor, const EntityVec* parent);
 	Namespace(Namespace&&) = default;
 	Namespace(const Namespace&) = delete;
 	
@@ -46,7 +46,7 @@ private:
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& parent) override;
 	
 private:
-	std::vector<Namespace*>     m_ns;
+	std::vector<Namespace*> m_ns;
 };
 	
 } // end of namespace

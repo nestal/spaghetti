@@ -13,12 +13,14 @@
 #pragma once
 
 #include "util/DeleteWith.hh"
+#include "util/Exception.hh"
 
 #include <clang-c/Index.h>
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/iterator_range_core.hpp>
 #include <boost/operators.hpp>
+#include <boost/exception/error_info.hpp>
 
 #include <cassert>
 #include <iosfwd>
@@ -41,6 +43,9 @@ class TokenSet;
 
 class Index
 {
+public:
+	using ErrorCode = boost::error_info<struct ErrorCodeTag, int>;
+	
 public:
 	Index();
 	Index(Index&&) = default;
