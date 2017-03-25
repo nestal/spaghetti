@@ -35,6 +35,7 @@ public:
 	}
 	
 	using DataType::AddBase;
+	using DataType::AddField;
 
 private:
 	const ClassTemplate *m_temp;
@@ -75,9 +76,11 @@ std::unique_ptr<DataType> ClassTemplate::Instantiate(const ClassRef& ref) const
 	
 	for (auto&& field : Fields())
 	{
-		auto arg_idx = Match(field.TypeID());
+		auto arg_idx = Match(field.TypeRef().ID());
 		if (arg_idx != m_param.size())
 			std::cout << "instantiating " << field.DataType() << " " << " as " << ref.TempArgs().at(arg_idx) << std::endl;
+		else
+			inst->AddField(field);
 	}
 	
 	return inst;

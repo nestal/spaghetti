@@ -171,4 +171,10 @@ void DataType::AddBase(const ClassRef& base)
 	m_bases.push_back(base);
 }
 
+void DataType::AddField(const Variable&)
+{
+//	Add(m_fields, )
+	// TODO: implement!
+}
+
 } // end of namespace

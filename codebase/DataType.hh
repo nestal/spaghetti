@@ -75,6 +75,7 @@ protected:
 	);
 	
 	void AddBase(const ClassRef& base);
+	void AddField(const Variable& var);
 	
 	void OnVisit(const libclx::Cursor& self) override;
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
