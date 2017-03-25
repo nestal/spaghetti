@@ -35,11 +35,4 @@ private:
 	std::size_t m_index{};
 };
 
-class MockDataType : public DataType
-{
-public:
-	MockDataType(const EntityVec *parent) : DataType{"Name", "ID", {}, parent} {}
-	using DataType::DataType;
-};
-
 }} // end of namespace

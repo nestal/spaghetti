@@ -45,9 +45,9 @@ class DataType : public ParentScope
 	
 public:
 	DataType(const libclx::Cursor& cursor, const EntityVec* parent);
-	DataType(DataType&&) = default;
+	DataType(DataType&&) = delete;
 	DataType(const DataType&) = delete;
-	DataType& operator=(DataType&&) = default;
+	DataType& operator=(DataType&&) = delete;
 	DataType& operator=(const DataType&) = delete;
 	
 	EntityType Type() const override;

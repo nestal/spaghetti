@@ -109,8 +109,8 @@ void ParentScope::VisitFunction(const libclx::Cursor& func)
 DataType& ParentScope::Add(std::unique_ptr<DataType>&& inst)
 {
 	assert(inst->Parent() == this);
-	auto id = inst->ID();
-	return *AddUnique(m_types, id, std::move(*inst));
+	EntityVec::Add(m_types, std::move(inst));
+	return *m_types.back();
 }
 
 DataType *ParentScope::FindDataType(const std::string& id)
