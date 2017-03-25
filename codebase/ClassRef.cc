@@ -31,7 +31,7 @@ ClassRef::ClassRef(const libclx::Cursor& cursor) :
 	m_name{cursor.DisplayName()},
 	m_type_kind{cursor.Type().Kind()}
 {
-	std::cout << "created ClassRef for " << cursor.KindSpelling() << " base(" << m_base_id << ") temp(" << m_temp_id << ") " << m_name << std::endl;
+//	std::cout << "created ClassRef for " << cursor.KindSpelling() << " base(" << m_base_id << ") temp(" << m_temp_id << ") " << m_name << std::endl;
 	assert(
 		cursor.Kind() == CXCursor_CXXBaseSpecifier ||
 		cursor.Kind() == CXCursor_FieldDecl ||

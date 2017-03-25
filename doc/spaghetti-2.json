@@ -20,6 +20,13 @@
         {
             "classes": [
                 {
+                    "height": 171,
+                    "id": "c:@N@std@S@vector>#$@N@std@S@unique_ptr>#$@N@codebase@S@Entity#$@N@std@S@default_delete>#S1_#$@N@std@S@allocator>#S0_",
+                    "width": 458,
+                    "x": -1356.5,
+                    "y": -250
+                },
+                {
                     "height": 175,
                     "id": "c:@N@libclx@S@Type",
                     "width": 225,
@@ -162,8 +169,8 @@
                     "height": 175,
                     "id": "c:@S@QGraphicsLineItem",
                     "width": 225,
-                    "x": -1019,
-                    "y": 464
+                    "x": -1157,
+                    "y": 405
                 },
                 {
                     "height": 175,
@@ -323,6 +330,41 @@
                     "width": 225,
                     "x": -39,
                     "y": -90
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@std@S@vector>#*$@N@codebase@S@Variable#$@N@std@S@allocator>#S0_",
+                    "width": 225,
+                    "x": -21,
+                    "y": 219
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@std@S@vector>#*$@N@codebase@S@Function#$@N@std@S@allocator>#S0_",
+                    "width": 225,
+                    "x": -354,
+                    "y": 248
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@std@S@vector>#*$@N@codebase@S@DataType#$@N@std@S@allocator>#S0_",
+                    "width": 225,
+                    "x": -654,
+                    "y": 224
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@Namespace",
+                    "width": 225,
+                    "x": -947,
+                    "y": -129
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@codebase@S@Variable",
+                    "width": 225,
+                    "x": -861,
+                    "y": 439
                 }
             ],
             "name": "Class Diagram4",

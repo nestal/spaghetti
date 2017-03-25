@@ -314,15 +314,21 @@ ItemRelation ClassItem::RelationOf(const BaseItem *other) const
 		auto class_ = dynamic_cast<const ClassItem*>(other);
 		assert(class_ && class_->m_class);
 		
+		// other is a base class of *this
+		// *this is derived class of other
 		if (class_->m_class->IsBaseOf(*m_class))
 			return ItemRelation::derived_class_of;
 		
+		// *this is a base class of other
 		else if (m_class->IsBaseOf(*class_->m_class))
 			return ItemRelation::base_class_of;
 		
+		// *this is used as member by others
 		else if (m_class->IsUsedInMember(*class_->m_class))
 			return ItemRelation::used_by_as_member;
-		
+			
+		// other is used as member by *this
+		// *this uses other as member
 		else if (class_->m_class->IsUsedInMember(*m_class))
 			return ItemRelation::use_as_member;
 		
