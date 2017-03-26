@@ -71,7 +71,7 @@ std::unique_ptr<DataType> ClassTemplate::Instantiate(const TypeRef& ref, bool us
 	{
 		auto arg_idx = Match(base.ID());
 		inst->AddBase(
-			arg_idx != m_param.size() ? TypeRef{ref.TempArgs().at(arg_idx)} : base
+			arg_idx != npos ? ref.TempArgs().at(arg_idx) : base
 		);
 	}
 	
@@ -80,7 +80,7 @@ std::unique_ptr<DataType> ClassTemplate::Instantiate(const TypeRef& ref, bool us
 		
 		
 		auto arg_idx = Match(field.TypeRef().ID());
-		if (arg_idx < m_param.size() && arg_idx < ref.TempArgs().size())
+		if (arg_idx != npos && arg_idx < ref.TempArgs().size())
 			std::cout << "instantiating " << field.DisplayType() << " " << " as " << ref.TempArgs().at(arg_idx) << std::endl;
 		else
 			inst->AddField(field);
@@ -95,7 +95,7 @@ std::size_t ClassTemplate::Match(const std::string& usr) const
 	{
 		return param.usr == usr;
 	});
-	return static_cast<std::size_t>(it-m_param.begin());
+	return it == m_param.end() ? npos : static_cast<std::size_t>(it-m_param.begin());
 }
 
 EntityType ClassTemplate::Type() const

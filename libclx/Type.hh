@@ -34,7 +34,10 @@ public:
 	std::string Spelling() const;
 	Cursor Declaration() const;
 	
-	std::string Kind() const;
+	std::string KindSpelling() const;
+	CXTypeKind Kind() const;
+	static std::string KindSpelling(CXTypeKind kind);
+	
 	Type ClassType() const;
 	int NumTemplateArguments() const;
 	Type TemplateArgument(int idx) const;

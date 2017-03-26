@@ -56,7 +56,7 @@ void Function::Visit(const libclx::Cursor& self)
 			
 		default:
 //			if (!cursor.Location().IsFromSystemHeader())
-//				std::cout << Name() << " " <<  cursor.Spelling() << ' ' << cursor.Kind() << std::endl;
+//				std::cout << Name() << " " <<  cursor.Spelling() << ' ' << cursor.KindSpelling() << std::endl;
 			break;
 		}
 	});

@@ -21,15 +21,24 @@
 
 namespace codebase {
 
+TypeRef::TypeRef(CXTypeKind kind) : TypeRef{{}, kind}
+{
+}
+
+TypeRef::TypeRef(const std::string& base, CXTypeKind kind) :
+	m_kind{kind},
+	m_base_id{base},
+	m_name{libclx::Type::KindSpelling(m_kind)}
+{
+}
+
 TypeRef::TypeRef(const libclx::Type& type)
 {
 	FromType(type);
 }
 
 TypeRef::TypeRef(const libclx::Cursor& cursor) :
-	m_base_id{cursor.USR()},
-	m_name{cursor.DisplayName()},
-	m_type_kind{cursor.Type().Kind()}
+	TypeRef{cursor.Type()}
 {
 //	std::cout << "created TypeRef for " << cursor.KindSpelling() << " base(" << m_base_id << ") temp(" << m_temp_id << ") " << m_name << std::endl;
 	assert(
@@ -69,11 +78,6 @@ const std::vector<TypeRef>& TypeRef::TempArgs() const
 	return m_temp_args;
 }
 
-void TypeRef::SetID(std::string&& base_id)
-{
-	m_base_id = std::move(base_id);
-}
-
 TypeRef& TypeRef::AddTempArgs(TypeRef&& arg)
 {
 	m_temp_args.push_back(std::move(arg));
@@ -82,12 +86,39 @@ TypeRef& TypeRef::AddTempArgs(TypeRef&& arg)
 
 bool TypeRef::operator==(const TypeRef& ref) const
 {
-	return m_base_id == ref.m_base_id && m_temp_id == ref.m_temp_id && m_temp_args == ref.m_temp_args;
+	return m_kind == ref.m_kind &&
+		(
+			// for record types (i.e. class/struct/union), need to compare the IDs of the
+			// class/struct/union as well
+			(m_kind != CXType_Record) ||
+			(m_base_id == ref.m_base_id && m_temp_id == ref.m_temp_id && m_temp_args == ref.m_temp_args)
+		);
 }
 
 bool TypeRef::operator!=(const TypeRef& ref) const
 {
 	return !operator==(ref);
+}
+
+// for convenience
+bool operator==(const TypeRef& type, const std::string& id)
+{
+	return type.ID() == id;
+}
+
+bool operator!=(const TypeRef& type, const std::string& id)
+{
+	return type.ID() != id;
+}
+
+bool operator==(const std::string& id, const TypeRef& type)
+{
+	return type.ID() == id;
+}
+
+bool operator!=(const std::string& id, const TypeRef& type)
+{
+	return type.ID() != id;
 }
 
 bool TypeRef::IsTemplate() const
@@ -118,14 +149,10 @@ void TypeRef::FromType(const libclx::Type& type)
 {
 	m_name      = type.Declaration().DisplayName();
 	m_base_id   = type.Declaration().USR();
+	m_kind      = type.Kind();
 	
 	for (auto&& arg : type.TemplateArguments())
-		m_temp_args.emplace_back(arg);
-}
-
-TypeRef::TypeRef(const std::string& base) :
-	m_base_id{base}
-{
+		m_temp_args.push_back(TypeRef{arg});
 }
 
 const std::string& TypeRef::Name() const
@@ -138,9 +165,14 @@ void TypeRef::SetName(std::string&& name)
 	m_name = std::move(name);
 }
 
+CXTypeKind TypeRef::Kind() const
+{
+	return m_kind;
+}
+
 std::ostream& operator<<(std::ostream& os, const TypeRef& ref)
 {
-	return os << ref.ID();
+	return os << ref.ID() << '(' << libclx::Type::KindSpelling(ref.Kind()) << ')';
 }
 
 } // end of namespace

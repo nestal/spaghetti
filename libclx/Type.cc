@@ -16,6 +16,7 @@
 #include "XStr.hh"
 
 #include <ostream>
+#include <clang-c/Index.h>
 
 namespace libclx {
 
@@ -31,7 +32,7 @@ std::string Type::Spelling() const
 
 std::ostream& operator<<(std::ostream& os, const Type& t)
 {
-	return os << t.Spelling() << ": " << " (" << t.Kind() << ")";
+	return os << t.Spelling() << ": " << " (" << t.KindSpelling() << ")";
 }
 
 Cursor Type::Declaration() const
@@ -39,9 +40,19 @@ Cursor Type::Declaration() const
 	return {::clang_getTypeDeclaration(m_type)};
 }
 
-std::string Type::Kind() const
+CXTypeKind Type::Kind() const
 {
-	return XStr{::clang_getTypeKindSpelling(m_type.kind)}.Str();
+	return m_type.kind;
+}
+
+std::string Type::KindSpelling(CXTypeKind kind)
+{
+	return XStr{::clang_getTypeKindSpelling(kind)}.Str();
+}
+
+std::string Type::KindSpelling() const
+{
+	return KindSpelling(m_type.kind);
 }
 
 Type Type::ClassType() const
