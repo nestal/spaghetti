@@ -39,6 +39,8 @@ public:
 	static std::string KindSpelling(CXTypeKind kind);
 	
 	Type ClassType() const;
+	Type PointeeType() const;
+	
 	int NumTemplateArguments() const;
 	Type TemplateArgument(int idx) const;
 	

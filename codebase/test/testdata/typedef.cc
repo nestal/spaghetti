@@ -21,4 +21,5 @@ public:
 	using Str = Temp<String>;
 	
 	Str m_str;
+	String *m_pstr;
 };

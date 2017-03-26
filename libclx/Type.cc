@@ -81,6 +81,11 @@ boost::iterator_range<Type::template_argument_iterator> Type::TemplateArguments(
 	return {begin, end};
 }
 
+Type Type::PointeeType() const
+{
+	return {::clang_getPointeeType(m_type)};
+}
+
 void Type::template_argument_iterator::increment()
 {
 	m_idx++;

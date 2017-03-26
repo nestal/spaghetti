@@ -62,6 +62,7 @@ TypeRef::TypeRef(const libclx::Cursor& cursor) :
 			break;
 		
 		default:
+//		std::cout << child.KindSpelling() << " " << child.DisplayName() << std::endl;
 			break;
 		}
 	});
@@ -154,11 +155,15 @@ void TypeRef::FromTemplateRef(const libclx::Cursor& ref, const libclx::Type& typ
 
 void TypeRef::FromType(const libclx::Type& type)
 {
-	m_name      = type.Declaration().DisplayName();
-	m_base_id   = type.Declaration().USR();
+	auto actual = type;
+	if (type.Kind() == CXType_Pointer)
+		actual = type.PointeeType();
+	
+	m_name      = actual.Declaration().DisplayName();
+	m_base_id   = actual.Declaration().USR();
 	m_kind      = type.Kind();
 	
-	for (auto&& arg : type.TemplateArguments())
+	for (auto&& arg : actual.TemplateArguments())
 		m_temp_args.push_back(TypeRef{arg});
 }
 

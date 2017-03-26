@@ -34,7 +34,7 @@ TEST_F(TypeAliasTest, Test_typedef)
 	ASSERT_TRUE(owner_class);
 	
 	auto fields = owner_class->Fields();
-	ASSERT_EQ(1, fields.size());
+	ASSERT_EQ(2, fields.size());
 	
 	auto& str_field = fields.front();
 	ASSERT_EQ("m_str", str_field.Name());
@@ -54,4 +54,26 @@ TEST_F(TypeAliasTest, Test_typedef)
 	ASSERT_TRUE(class_type);
 	ASSERT_EQ("Temp<String>", class_type->Name());
 	ASSERT_TRUE(class_type->IsUsedInMember(*owner_class));
+}
+
+TEST_F(TypeAliasTest, Test_pointer_field)
+{
+	auto owner_class = dynamic_cast<const DataType*>(m_map.FindByName("TypedefOwner"));
+	ASSERT_TRUE(owner_class);
+	
+	auto fields = owner_class->Fields();
+	ASSERT_EQ(2, fields.size());
+	auto& str_field = fields[1];
+	auto& field_type = str_field.TypeRef();
+	
+	ASSERT_EQ("m_pstr", str_field.Name());
+	ASSERT_EQ(CXType_Pointer, field_type.Kind());
+	ASSERT_EQ("c:@S@String",  field_type.ID());
+	
+	auto string_class = dynamic_cast<const DataType*>(m_map.FindByName("String"));
+	ASSERT_TRUE(string_class);
+	ASSERT_EQ(string_class->ID(), field_type.ID());
+	ASSERT_EQ(string_class, str_field.ClassType());
+	
+	ASSERT_EQ("String", field_type.Name());
 }
