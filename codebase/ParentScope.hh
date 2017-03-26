@@ -36,6 +36,7 @@ class DataType;
 class ClassTemplate;
 class Namespace;
 class TypeRef;
+class TypeAlias;
 
 /**
  * \brief Base class of Namespace, Class, Structure and Union
@@ -80,6 +81,7 @@ protected:
 	std::vector<Function*> m_func;
 	std::vector<DataType*> m_types;
 	std::vector<ClassTemplate*> m_temps;
+	std::vector<TypeAlias*> m_alias;
 };
 
 } // end of namespace

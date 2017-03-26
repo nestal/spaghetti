@@ -12,6 +12,11 @@
 
 #include "Fixture.hh"
 
+#include "codebase/EntityMap.hh"
+#include "codebase/DataType.hh"
+#include "codebase/Variable.hh"
+#include "codebase/TypeAlias.hh"
+
 using namespace codebase;
 
 class TypeDefTest : public ut::Fixture
@@ -25,5 +30,21 @@ protected:
 
 TEST_F(TypeDefTest, Test_typedef)
 {
+	auto owner_class = dynamic_cast<const DataType*>(m_map.FindByName("TypedefOwner"));
+	ASSERT_TRUE(owner_class);
 	
+	auto fields = owner_class->Fields();
+	ASSERT_EQ(1, fields.size());
+	
+	auto& str_field = fields.front();
+	ASSERT_EQ("m_str", str_field.Name());
+	ASSERT_EQ("Str", str_field.TypeRef().Name());
+	ASSERT_EQ(CXType_Typedef, str_field.TypeRef().Kind());
+	
+	auto string_alias = m_map.TypedFind<TypeAlias>(str_field.TypeRef().ID());
+	ASSERT_TRUE(string_alias);
+	
+	auto& real_type = string_alias->Dest();
+	std::cout << "real type = " << real_type << std::endl;
+	ASSERT_EQ("String", real_type.Name());
 }

@@ -139,6 +139,11 @@ int Cursor::NumTemplateArguments() const
 	return ::clang_Cursor_getNumTemplateArguments(m_cursor);
 }
 
+libclx::Type Cursor::TypedefUnderlying() const
+{
+	return {::clang_getTypedefDeclUnderlyingType(m_cursor)};
+}
+
 unsigned Cursor::Hash::operator()(Cursor c) const
 {
 	return ::clang_hashCursor(c.m_cursor);

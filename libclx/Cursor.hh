@@ -63,6 +63,7 @@ public:
 	SourceRange Extent() const;
 	libclx::Type Type() const;
 	libclx::Type ResultType() const;
+	libclx::Type TypedefUnderlying() const;
 	
 	struct Hash
 	{

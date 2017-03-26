@@ -16,6 +16,7 @@
 #include "Function.hh"
 #include "Variable.hh"
 #include "ClassTemplate.hh"
+#include "TypeAlias.hh"
 
 #include "libclx/Cursor.hh"
 
@@ -62,6 +63,10 @@ void ParentScope::VisitChild(const libclx::Cursor& child, const libclx::Cursor&)
 		AddUnique(m_func, child.USR(), child, this)->Visit(child);
 		break;
 	
+	case CXCursor_TypeAliasDecl:
+		AddUnique(m_alias, child.USR(), child, this);
+		break;
+		
 	default:
 		break;
 	}
