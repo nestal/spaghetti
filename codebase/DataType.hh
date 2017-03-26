@@ -51,6 +51,7 @@ public:
 	DataType& operator=(const DataType&) = delete;
 	
 	EntityType Type() const override;
+	virtual codebase::TypeRef TypeRef() const;
 	
 	libclx::SourceLocation Location() const override;
 	
@@ -74,15 +75,15 @@ protected:
 		const EntityVec *parent
 	);
 	
-	void AddBase(const TypeRef& base);
+	void AddBase(const codebase::TypeRef& base);
 	void AddField(const Variable& var);
 	
 	void OnVisit(const libclx::Cursor& self) override;
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
 	
 private:
-	libclx::SourceLocation              m_definition;
-	std::vector<TypeRef>               m_bases;
+	libclx::SourceLocation          m_definition;
+	std::vector<codebase::TypeRef>  m_bases;
 };
 
 } // end of namespace

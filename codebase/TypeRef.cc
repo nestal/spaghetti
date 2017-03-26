@@ -131,9 +131,16 @@ const std::string& TypeRef::TemplateID() const
 	return m_temp_id;
 }
 
-TypeRef& TypeRef::SetTemplateID(const std::string&& id)
+TypeRef& TypeRef::SetTemplateID(const std::string& id)
 {
-	m_temp_id = std::move(id);
+	m_temp_id = id;
+	return *this;
+}
+
+TypeRef& TypeRef::SetTemplate(const std::string& temp_id, const std::vector<TypeRef>& args)
+{
+	m_temp_id = temp_id;
+	m_temp_args = args;
 	return *this;
 }
 
@@ -160,9 +167,16 @@ const std::string& TypeRef::Name() const
 	return m_name;
 }
 
-void TypeRef::SetName(std::string&& name)
+TypeRef& TypeRef::SetName(std::string&& name)
 {
 	m_name = std::move(name);
+	return *this;
+}
+
+TypeRef& TypeRef::SetName(const std::string& name)
+{
+	m_name = name;
+	return *this;
 }
 
 CXTypeKind TypeRef::Kind() const

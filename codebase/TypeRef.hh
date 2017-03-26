@@ -42,10 +42,12 @@ public:
 	const std::string& ID() const;
 	
 	const std::string& Name() const;
-	void SetName(std::string&& name);
+	TypeRef& SetName(std::string&& name);
+	TypeRef& SetName(const std::string& name);
 	
 	const std::string& TemplateID() const;
-	TypeRef& SetTemplateID(const std::string&& id);
+	TypeRef& SetTemplateID(const std::string& id);
+	TypeRef& SetTemplate(const std::string& temp_id, const std::vector<TypeRef>& args);
 	
 	const std::vector<TypeRef>& TempArgs() const;
 	TypeRef& AddTempArgs(TypeRef&& arg);

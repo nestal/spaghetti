@@ -15,7 +15,6 @@ public:
 class Base
 {
 private:
-//	Temp1<InnerTemp<int>> m_temp;
 	Temp1<int> m_temp;
 	Base4 m_b4;
 	

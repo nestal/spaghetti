@@ -33,6 +33,8 @@ TEST(CodeBaseTest, TestInheritance)
 	ASSERT_TRUE(datatype_class);
 	ASSERT_TRUE(entity_class);
 	
+	ASSERT_EQ(TypeRef{"c:@N@codebase@S@EntityVec"}.SetName("EntityVec"), datatype_class->TypeRef());
+	
 	for (auto&& base : datatype_class->BaseClasses())
 		ASSERT_EQ(entity_class->ID(), base.ID());
 }

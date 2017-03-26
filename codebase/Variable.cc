@@ -70,4 +70,11 @@ const TypeRef& Variable::TypeRef() const
 	return m_type;
 }
 
+Variable Variable::ReplaceType(const codebase::TypeRef& type, const EntityVec *parent) const
+{
+	Variable var{*this, parent};
+	var.m_type = type;
+	return var;
+}
+
 } // end of namespace

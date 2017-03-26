@@ -41,6 +41,7 @@ public:
 	void CrossReference(EntityMap *map) override;
 	
 	const TypeRef& TypeRef() const;
+	Variable ReplaceType(const codebase::TypeRef& type, const EntityVec *parent) const;
 	
 private:
 	libclx::SourceLocation  m_location;

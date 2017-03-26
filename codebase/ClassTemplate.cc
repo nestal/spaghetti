@@ -23,11 +23,23 @@ namespace codebase {
 class ClassTemplate::Instance : public DataType
 {
 public:
-	Instance(const TypeRef& ref, bool used, const ClassTemplate *temp) :
+	Instance(const codebase::TypeRef& ref, bool used, const ClassTemplate *temp) :
 		DataType{ref.Name(), ref.ID(), temp->Location(), temp->Parent()},
-		m_temp(temp)
+		m_temp(temp),
+		m_args{ref.TempArgs()}
 	{
+		assert(m_temp);
+		assert(ref.TemplateID() == m_temp->ID());
 		SetUsed(used);
+		
+		for (auto&& base : temp->BaseClasses())
+			AddBase(temp->Match(base, ref.TempArgs()));
+		
+		for (auto&& field : temp->Fields())
+		{
+			std::cout << "instantiating " << field.TypeRef() << std::endl;
+			AddField(field.ReplaceType(temp->Match(field.TypeRef(), ref.TempArgs()), this));
+		}
 	}
 	
 	EntityType Type() const override
@@ -35,11 +47,17 @@ public:
 		return EntityType::instantiated_type;
 	}
 	
-	using DataType::AddBase;
-	using DataType::AddField;
-
+	codebase::TypeRef TypeRef() const override
+	{
+		assert(m_temp);
+		return codebase::TypeRef{ID(), CXType_Unexposed}.
+			SetName(Name()).
+			SetTemplate(m_temp->ID(), m_args);
+	}
+	
 private:
 	const ClassTemplate *m_temp;
+	std::vector<codebase::TypeRef> m_args;
 };
 
 void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor& self)
@@ -63,44 +81,25 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
  * \param args  template arguments, i.e. the actual types that will replace the template parameters
  * \return the instantiated class
  */
-std::unique_ptr<DataType> ClassTemplate::Instantiate(const TypeRef& ref, bool used) const
+std::unique_ptr<DataType> ClassTemplate::Instantiate(const codebase::TypeRef& ref, bool used) const
 {
-	auto inst = std::make_unique<Instance>(ref, used, this);
-
-	for (auto&& base : BaseClasses())
-	{
-		auto arg_idx = Match(base.ID());
-		inst->AddBase(
-			arg_idx != npos ? ref.TempArgs().at(arg_idx) : base
-		);
-	}
-	
-	for (auto&& field : Fields())
-	{
-		
-		
-		auto arg_idx = Match(field.TypeRef().ID());
-		if (arg_idx != npos && arg_idx < ref.TempArgs().size())
-			std::cout << "instantiating " << field.DisplayType() << " " << " as " << ref.TempArgs().at(arg_idx) << std::endl;
-		else
-			inst->AddField(field);
-	}
-	
-	return inst;
+	return std::make_unique<Instance>(ref, used, this);
 }
 
-std::size_t ClassTemplate::Match(const std::string& usr) const
-{
-	auto it = std::find_if(m_param.begin(), m_param.end(), [&usr](auto&& param)
-	{
-		return param.usr == usr;
-	});
-	return it == m_param.end() ? npos : static_cast<std::size_t>(it-m_param.begin());
-}
 
 EntityType ClassTemplate::Type() const
 {
 	return EntityType::class_template;
+}
+
+codebase::TypeRef ClassTemplate::Match(const codebase::TypeRef& type, const std::vector<codebase::TypeRef>& args) const
+{
+	auto it = std::find_if(m_param.begin(), m_param.end(), [&type](auto&& param)
+	{
+		return param.usr == type.ID();
+	});
+	return it == m_param.end() ? type : args.at(it-m_param.begin());
+
 }
 	
 } // end of namespace

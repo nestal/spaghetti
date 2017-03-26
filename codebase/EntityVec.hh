@@ -69,6 +69,8 @@ protected:
 	template <typename EntityContainer, typename ET>
 	void Add(EntityContainer&& cond, std::unique_ptr<ET>&& entity)
 	{
+		assert(entity->Parent() == this);
+		
 		auto self  = m_children.size();
 		auto typed = cond.size();
 		

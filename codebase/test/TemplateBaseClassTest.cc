@@ -78,4 +78,8 @@ TEST_F(TemplateBaseClassTest, Test_template_fields)
 	auto field_type = m_subject.Map().TypedFind<DataType>(base_field.TypeRef().ID());
 	ASSERT_TRUE(field_type);
 	ASSERT_EQ("Temp1<int>", field_type->Name());
+	
+	auto temp1_fields = field_type->Fields();
+	ASSERT_EQ(1, temp1_fields.size());
+	ASSERT_EQ(CXType_Int, temp1_fields.front().TypeRef().Kind());
 }

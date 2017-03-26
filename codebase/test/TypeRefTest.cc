@@ -31,7 +31,7 @@ protected:
 TEST_F(TypeRefTest, ID_only_constructor_construct_record_type)
 {
 	ASSERT_EQ(CXType_Record, m_base.Kind());
-	ASSERT_EQ(m_base.ID(), m_base.Name());
+	ASSERT_EQ("Record", m_base.Name());
 }
 
 TEST_F(TypeRefTest, Class_ref_does_not_equal_to_build_ref)
