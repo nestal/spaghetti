@@ -32,7 +32,8 @@ TypeRef::TypeRef(const std::string& base, CXTypeKind kind) :
 {
 }
 
-TypeRef::TypeRef(const libclx::Type& type)
+TypeRef::TypeRef(const libclx::Type& type, const std::string& temp_id) :
+	m_temp_id{temp_id}
 {
 	FromType(type);
 }
@@ -148,7 +149,6 @@ TypeRef& TypeRef::SetTemplate(const std::string& temp_id, const std::vector<Type
 void TypeRef::FromTemplateRef(const libclx::Cursor& ref, const libclx::Type& type)
 {
 	assert(ref.Kind() == CXCursor_TemplateRef);
-	
 	m_temp_id = ref.Referenced().USR();
 	FromType(type);
 }
@@ -187,7 +187,12 @@ CXTypeKind TypeRef::Kind() const
 
 std::ostream& operator<<(std::ostream& os, const TypeRef& ref)
 {
-	return os << ref.ID() << '(' << libclx::Type::KindSpelling(ref.Kind()) << ')';
+	os << ref.ID() << '(' << libclx::Type::KindSpelling(ref.Kind()) << ':' << ref.TemplateID() << ':' << ref.TempArgs().size() << ':';
+	
+	for (auto&& arg : ref.TempArgs())
+		os << arg << ",";
+	
+	return os << ')';
 }
 
 } // end of namespace

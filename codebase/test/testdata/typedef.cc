@@ -10,12 +10,15 @@
 // Created by nestal on 3/26/17.
 //
 
+template <typename T>
+struct Temp { T t; };
+
 struct String {};
 
 class TypedefOwner
 {
 public:
-	using Str = String;
+	using Str = Temp<String>;
 	
 	Str m_str;
 };

@@ -22,10 +22,17 @@ namespace codebase {
 TypeAlias::TypeAlias(const libclx::Cursor& cursor, const EntityVec *parent) :
 	LeafEntity{cursor.Spelling(), cursor.USR(), parent},
 	m_location{cursor.Location()},
-	m_dest{cursor}
+	m_dest{cursor.TypedefUnderlying(), TypeRef{cursor}.TemplateID()}
 {
+	// want to merge m_dest and m_self
+	// need to put the temp_id in m_self into m_dest
+	
+	std::cout << "self: " << m_self << std::endl;
+	std::cout << "underlying: " << m_dest << std::endl;
+	
+	m_dest.SetTemplateID(m_self.TemplateID());
 }
-
+-
 const TypeRef& TypeAlias::Dest() const
 {
 	return m_dest;

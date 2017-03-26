@@ -31,6 +31,7 @@ class TypeRef
 public:
 	TypeRef(CXTypeKind kind = CXType_Invalid);
 	TypeRef(const std::string& base, CXTypeKind kind = CXType_Record);
+	TypeRef(const libclx::Type& type, const std::string& temp_id = {});
 	explicit TypeRef(const libclx::Cursor& cursor);
 	
 	// TypeRef is a value type. Support copy and move.
@@ -61,8 +62,6 @@ public:
 private:
 	void FromTemplateRef(const libclx::Cursor& cursor, const libclx::Type& type);
 	void FromType(const libclx::Type& type);
-	
-	TypeRef(const libclx::Type& type);
 
 private:
 	//! For build-in types
