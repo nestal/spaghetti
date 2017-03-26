@@ -36,10 +36,23 @@ protected:
 	}
 	
 	CodeBase m_subject;
+	EntityMap& m_map{m_subject.Map()};
 };
 
 TEST_F(UniquePtrTest, Test_unique_ptr_to_int)
 {
-	auto derived = dynamic_cast<const DataType *>(m_subject.Map().FindByName("Test"));
-	ASSERT_EQ("Test", derived->Name());
+	auto test_class = dynamic_cast<const DataType *>(m_map.FindByName("Test"));
+	ASSERT_EQ("Test", test_class->Name());
+	
+	auto fields = test_class->Fields();
+	ASSERT_EQ(1, fields.size());
+	
+	auto& member_i = fields.front();
+	ASSERT_EQ("i", member_i.Name());
+	
+	auto unique_ptr_int = m_map.TypedFind<DataType>(member_i.TypeRef().ID());
+	ASSERT_TRUE(unique_ptr_int);
+	
+	auto up_fields = unique_ptr_int->Fields();
+	ASSERT_GE(up_fields.size(), 0);
 }
