@@ -24,6 +24,8 @@ class Cursor;
 
 namespace codebase {
 
+class DataType;
+
 class Variable : public LeafEntity
 {
 public:
@@ -41,11 +43,14 @@ public:
 	void CrossReference(EntityMap *map) override;
 	
 	const codebase::TypeRef& TypeRef() const;
+	const DataType* ClassType() const;
+	
 	Variable ReplaceType(const codebase::TypeRef& type, const EntityVec *parent) const;
 	
 private:
 	libclx::SourceLocation  m_location;
 	codebase::TypeRef       m_type;
+	const DataType          *m_data_type{};
 };
 	
 } // end of namespace

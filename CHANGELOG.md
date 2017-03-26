@@ -10,6 +10,7 @@
   * Nested classes that are defined inside the used classes above
   * Classes that are the type of the member variables of the used classes above
   * Class templates that instantiated the used classes above
+- Initial support for aliased types (typedefs and using declarations)
 
 ## [Version 0.3](https://github.com/nestal/spaghetti/releases/tag/v0.3) (11 March 2017)
 

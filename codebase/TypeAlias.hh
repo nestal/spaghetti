@@ -38,7 +38,6 @@ public:
 
 private:
 	libclx::SourceLocation  m_location;
-	TypeRef m_self;
 	TypeRef m_dest;
 };
 	

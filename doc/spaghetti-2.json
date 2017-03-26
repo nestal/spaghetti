@@ -20,6 +20,13 @@
         {
             "classes": [
                 {
+                    "height": 88,
+                    "id": "c:@N@std@S@vector>#*$@N@codebase@S@Variable#$@N@std@S@allocator>#S0_",
+                    "width": 225,
+                    "x": -556,
+                    "y": 59.5
+                },
+                {
                     "height": 171,
                     "id": "c:@N@std@S@vector>#$@N@std@S@unique_ptr>#$@N@codebase@S@Entity#$@N@std@S@default_delete>#S1_#$@N@std@S@allocator>#S0_",
                     "width": 458,
@@ -30,8 +37,8 @@
                     "height": 175,
                     "id": "c:@N@libclx@S@Type",
                     "width": 225,
-                    "x": -278,
-                    "y": 268
+                    "x": -217,
+                    "y": 189
                 },
                 {
                     "height": 249,
@@ -58,36 +65,36 @@
                     "height": 175,
                     "id": "c:@N@codebase@S@LeafEntity",
                     "width": 382.6520510067446,
-                    "x": -37.04037542402307,
-                    "y": 9
+                    "x": -32.04037542402307,
+                    "y": -283
                 },
                 {
                     "height": 175,
                     "id": "c:@N@codebase@S@DataType",
                     "width": 225,
-                    "x": -673.4007972178139,
-                    "y": 164.10119582672087
+                    "x": -759.4007972178139,
+                    "y": 239.10119582672087
                 },
                 {
                     "height": 175,
                     "id": "c:@N@codebase@S@Variable",
                     "width": 225,
-                    "x": -86,
-                    "y": 521
+                    "x": -52,
+                    "y": 444
                 },
                 {
                     "height": 218,
                     "id": "c:@N@codebase@S@Function",
                     "width": 320,
-                    "x": -421.2976083465582,
-                    "y": -98.09521669311647
+                    "x": -432.29760834655826,
+                    "y": -166.09521669311647
                 },
                 {
                     "height": 175,
                     "id": "c:@N@libclx@S@SourceLocation",
                     "width": 352.55484126909346,
-                    "x": -494.22257936545327,
-                    "y": 505
+                    "x": -497.22257936545327,
+                    "y": 531
                 },
                 {
                     "height": 175,
@@ -102,6 +109,13 @@
                     "width": 386.9516523978378,
                     "x": -952.3617081271082,
                     "y": 487.2881576572111
+                },
+                {
+                    "height": 175,
+                    "id": "c:@N@std@S@unique_ptr>#$@N@codebase@S@CodeBase@S@EntityTree#$@N@std@S@default_delete>#S0_",
+                    "width": 382,
+                    "x": -1362.5,
+                    "y": -51
                 }
             ],
             "name": "Entity Classes",
@@ -273,8 +287,8 @@
                     "height": 175,
                     "id": "c:@N@gui@S@ViewBase",
                     "width": 225,
-                    "x": -302,
-                    "y": -185
+                    "x": -291,
+                    "y": -163
                 },
                 {
                     "height": 175,

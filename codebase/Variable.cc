@@ -14,8 +14,10 @@
 
 #include "DataType.hh"
 #include "EntityMap.hh"
-#include "libclx/Cursor.hh"
 #include "EntityType.hh"
+#include "TypeAlias.hh"
+
+#include "libclx/Cursor.hh"
 
 #include <iostream>
 
@@ -56,8 +58,21 @@ std::string Variable::UML() const
 	return Name() + " : " + DisplayType();
 }
 
-void Variable::CrossReference(EntityMap *)
+void Variable::CrossReference(EntityMap *map)
 {
+	auto entity = map->Find(m_type.ID());
+	while (entity && entity->Type() == EntityType::type_alias)
+	{
+		auto alias = dynamic_cast<const TypeAlias*>(entity);
+		auto dest  = alias->Dest();
+		
+		entity =
+			(dest.IsTemplate() && !dest.ID().empty() && dest.ID() != dest.TemplateID()) ?
+				map->Instantiate(dest, IsUsed()) :
+				map->Find(dest.ID());
+	}
+	
+	m_data_type = dynamic_cast<const DataType*>(entity);
 }
 
 std::string Variable::DisplayType() const
@@ -75,6 +90,19 @@ Variable Variable::ReplaceType(const codebase::TypeRef& type, const EntityVec *p
 	Variable var{*this, parent};
 	var.m_type = type;
 	return var;
+}
+
+/**
+ * \brief Returns the DataType of this variable.
+ *
+ * For a variable "std::string s", it returns a pointer to std::basic_string<char...>.
+ * In other words, alias like typedefs has already been resolved.
+ *
+ * \return A pointer to the DataType of this variable, or null if it is a build-in type.
+ */
+const DataType* Variable::ClassType() const
+{
+	return m_data_type;
 }
 
 } // end of namespace

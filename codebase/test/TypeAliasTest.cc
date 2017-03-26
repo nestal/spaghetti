@@ -19,16 +19,16 @@
 
 using namespace codebase;
 
-class TypeDefTest : public ut::Fixture
+class TypeAliasTest : public ut::Fixture
 {
 protected:
-	TypeDefTest() : Fixture{"typedef.cc"}
+	TypeAliasTest() : Fixture{"typedef.cc"}
 	{
 		
 	}
 };
 
-TEST_F(TypeDefTest, Test_typedef)
+TEST_F(TypeAliasTest, Test_typedef)
 {
 	auto owner_class = dynamic_cast<const DataType*>(m_map.FindByName("TypedefOwner"));
 	ASSERT_TRUE(owner_class);
@@ -46,6 +46,12 @@ TEST_F(TypeDefTest, Test_typedef)
 	
 	auto real_type = string_alias->Dest();
 	ASSERT_EQ("Temp<String>", real_type.Name());
+	ASSERT_EQ("c:@ST>1#T@Temp", real_type.TemplateID());
 	ASSERT_EQ(1, real_type.TempArgs().size());
 	ASSERT_EQ("String", real_type.TempArgs().front().Name());
+	
+	auto class_type = str_field.ClassType();
+	ASSERT_TRUE(class_type);
+	ASSERT_EQ("Temp<String>", class_type->Name());
+	ASSERT_TRUE(class_type->IsUsedInMember(*owner_class));
 }
