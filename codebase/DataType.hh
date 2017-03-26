@@ -51,7 +51,7 @@ public:
 	DataType& operator=(const DataType&) = delete;
 	
 	EntityType Type() const override;
-	virtual codebase::TypeRef TypeRef() const;
+	virtual codebase::TypeRef GetTypeRef() const;
 	
 	libclx::SourceLocation Location() const override;
 	

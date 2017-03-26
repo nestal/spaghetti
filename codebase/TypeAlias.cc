@@ -32,7 +32,7 @@ TypeAlias::TypeAlias(const libclx::Cursor& cursor, const EntityVec *parent) :
 	
 	m_dest.SetTemplateID(m_self.TemplateID());
 }
--
+
 const TypeRef& TypeAlias::Dest() const
 {
 	return m_dest;

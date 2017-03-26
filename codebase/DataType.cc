@@ -177,7 +177,7 @@ void DataType::AddField(const Variable& var)
 	EntityVec::Add(m_fields, std::make_unique<Variable>(var, this));
 }
 
-codebase::TypeRef DataType::TypeRef() const
+codebase::TypeRef DataType::GetTypeRef() const
 {
 	return codebase::TypeRef{ID()}.SetName(Name());
 }

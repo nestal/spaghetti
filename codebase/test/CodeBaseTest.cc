@@ -27,14 +27,14 @@ TEST(CodeBaseTest, TestInheritance)
 		"-I", SRC_DIR
 	});
 	
-	auto datatype_class = dynamic_cast<const DataType*>(subject.Map().Find("c:@N@codebase@S@EntityVec"));
+	auto entityvec_class = dynamic_cast<const DataType*>(subject.Map().Find("c:@N@codebase@S@EntityVec"));
 	auto entity_class   = dynamic_cast<const Entity*>(subject.Map().Find("c:@N@codebase@S@Entity"));
 	
-	ASSERT_TRUE(datatype_class);
+	ASSERT_TRUE(entityvec_class);
 	ASSERT_TRUE(entity_class);
 	
-	ASSERT_EQ(TypeRef{"c:@N@codebase@S@EntityVec"}.SetName("EntityVec"), datatype_class->TypeRef());
+	ASSERT_EQ(TypeRef{"c:@N@codebase@S@EntityVec"}.SetName("EntityVec"), entityvec_class->GetTypeRef());
 	
-	for (auto&& base : datatype_class->BaseClasses())
+	for (auto&& base : entityvec_class->BaseClasses())
 		ASSERT_EQ(entity_class->ID(), base.ID());
 }

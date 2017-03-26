@@ -65,7 +65,7 @@ std::string Variable::DisplayType() const
 	return m_type.Name();
 }
 
-const TypeRef& Variable::TypeRef() const
+const codebase::TypeRef& Variable::TypeRef() const
 {
 	return m_type;
 }

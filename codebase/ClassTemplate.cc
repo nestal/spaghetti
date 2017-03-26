@@ -47,7 +47,7 @@ public:
 		return EntityType::instantiated_type;
 	}
 	
-	codebase::TypeRef TypeRef() const override
+	codebase::TypeRef GetTypeRef() const override
 	{
 		assert(m_temp);
 		return codebase::TypeRef{ID(), CXType_Unexposed}.
