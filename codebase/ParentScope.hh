@@ -35,7 +35,7 @@ class Variable;
 class DataType;
 class ClassTemplate;
 class Namespace;
-class ClassRef;
+class TypeRef;
 
 /**
  * \brief Base class of Namespace, Class, Structure and Union
@@ -47,7 +47,7 @@ public:
 	using function_iterator         = boost::indirect_iterator<std::vector<Function*>::const_iterator>;
 	using class_template_iterator   = boost::indirect_iterator<std::vector<ClassTemplate*>::const_iterator>;
 	using data_type_iterator        = boost::indirect_iterator<std::vector<DataType*>::const_iterator>;
-	using idvec_iterator            = std::vector<ClassRef>::const_iterator;
+	using idvec_iterator            = std::vector<TypeRef>::const_iterator;
 
 public:
 	ParentScope(const libclx::Cursor& cursor, const EntityVec* parent);

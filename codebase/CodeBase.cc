@@ -52,17 +52,17 @@ public:
 		return it != m_index.get<ByName>().end() ? *it : nullptr;
 	}
 	
-	const DataType* Find(const ClassRef& ref) const override
+	const DataType* Find(const TypeRef& ref) const override
 	{
 		return dynamic_cast<const DataType*>(Find(ref.ID()));
 	}
 	
-	DataType* Find(const ClassRef& ref) override
+	DataType* Find(const TypeRef& ref) override
 	{
 		return dynamic_cast<DataType*>(Find(ref.ID()));
 	}
 	
-	DataType* Instantiate(const ClassRef& ref, bool used) override
+	DataType* Instantiate(const TypeRef& ref, bool used) override
 	{
 		assert(ref.IsTemplate());
 		assert(!ref.ID().empty());

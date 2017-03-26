@@ -24,9 +24,16 @@ namespace codebase {
 Variable::Variable(const libclx::Cursor& field, const EntityVec *parent) :
 	LeafEntity{field.Spelling(), field.USR(), parent},
 	m_location{field.Location()},
-	m_type{field.Type()},
-	m_type_ref{field}
+	m_type{field}
 {
+}
+
+Variable::Variable(const Variable& other, const EntityVec *parent) :
+	LeafEntity{other.Name(), other.ID(), parent},
+	m_location{other.Location()},
+	m_type{other.m_type}
+{
+	
 }
 
 EntityType Variable::Type() const
@@ -36,7 +43,7 @@ EntityType Variable::Type() const
 
 std::ostream& operator<<(std::ostream& os, const Variable& c)
 {
-	return os << c.m_type << " " << c.Name();
+	return os << c.DisplayType() << " " << c.Name();
 }
 
 libclx::SourceLocation Variable::Location() const
@@ -49,28 +56,18 @@ std::string Variable::UML() const
 	return Name() + " : " + DisplayType();
 }
 
-std::string Variable::TypeID() const
-{
-	return m_type.Declaration().USR();
-}
-
 void Variable::CrossReference(EntityMap *)
 {
 }
 
 std::string Variable::DisplayType() const
 {
-	return m_type.Spelling();
+	return m_type.Name();
 }
 
-const libclx::Type& Variable::DataType() const
+const TypeRef& Variable::TypeRef() const
 {
 	return m_type;
-}
-
-const ClassRef& Variable::TypeRef() const
-{
-	return m_type_ref;
 }
 
 } // end of namespace

@@ -45,10 +45,10 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	
 	// base should be c:@S@RecursiveBase>#$@S@Base, but we need to fix it by
 	// differentiating between a template and its instantiation
-	std::vector<ClassRef> base{
-		ClassRef{"c:@S@RecursiveBase>#$@S@Base"}.SetTemplateID("c:@ST>1#T@RecursiveBase").AddTempArgs(ClassRef{"c:@S@Base"}),
-		ClassRef{"c:@S@Base2"},
-		ClassRef{"c:@S@Base3"}
+	std::vector<TypeRef> base{
+		TypeRef{"c:@S@RecursiveBase>#$@S@Base"}.SetTemplateID("c:@ST>1#T@RecursiveBase").AddTempArgs(TypeRef{"c:@S@Base"}),
+		TypeRef{"c:@S@Base2"},
+		TypeRef{"c:@S@Base3"}
 	};
 	ASSERT_EQ(base, derived->BaseClasses());
 	
@@ -60,9 +60,9 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	auto inst_base = m_subject.Map().TypedFind<DataType>("c:@S@RecursiveBase>#$@S@Base");
 	ASSERT_TRUE(inst_base);
 	
-	std::vector<ClassRef> bbase{
-		ClassRef{"c:@S@Base"},
-		ClassRef{"c:@S@Base4"}
+	std::vector<TypeRef> bbase{
+		TypeRef{"c:@S@Base"},
+		TypeRef{"c:@S@Base4"}
 	};
 	ASSERT_EQ(bbase, inst_base->BaseClasses());
 }

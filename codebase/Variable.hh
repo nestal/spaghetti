@@ -13,7 +13,7 @@
 #pragma once
 
 #include "Entity.hh"
-#include "ClassRef.hh"
+#include "TypeRef.hh"
 
 #include "libclx/Type.hh"
 #include "libclx/SourceRange.hh"
@@ -28,6 +28,7 @@ class Variable : public LeafEntity
 {
 public:
 	Variable(const libclx::Cursor& field, const EntityVec *parent);
+	Variable(const Variable& other, const EntityVec *parent);
 	
 	EntityType Type() const override;
 	std::string DisplayType() const override;
@@ -38,15 +39,12 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 
 	void CrossReference(EntityMap *map) override;
-	std::string TypeID() const;
 	
-	const libclx::Type& DataType() const;
-	const ClassRef& TypeRef() const;
+	const TypeRef& TypeRef() const;
 	
 private:
 	libclx::SourceLocation  m_location;
-	libclx::Type            m_type;
-	ClassRef                m_type_ref;
+	codebase::TypeRef       m_type;
 };
 	
 } // end of namespace

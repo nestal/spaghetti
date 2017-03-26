@@ -23,7 +23,7 @@ namespace codebase {
 class ClassTemplate::Instance : public DataType
 {
 public:
-	Instance(const ClassRef& ref, bool used, const ClassTemplate *temp) :
+	Instance(const TypeRef& ref, bool used, const ClassTemplate *temp) :
 		DataType{ref.Name(), ref.ID(), temp->Location(), temp->Parent()},
 		m_temp(temp)
 	{
@@ -63,7 +63,7 @@ void ClassTemplate::VisitChild(const libclx::Cursor& child, const libclx::Cursor
  * \param args  template arguments, i.e. the actual types that will replace the template parameters
  * \return the instantiated class
  */
-std::unique_ptr<DataType> ClassTemplate::Instantiate(const ClassRef& ref, bool used) const
+std::unique_ptr<DataType> ClassTemplate::Instantiate(const TypeRef& ref, bool used) const
 {
 	auto inst = std::make_unique<Instance>(ref, used, this);
 
@@ -71,15 +71,17 @@ std::unique_ptr<DataType> ClassTemplate::Instantiate(const ClassRef& ref, bool u
 	{
 		auto arg_idx = Match(base.ID());
 		inst->AddBase(
-			arg_idx != m_param.size() ? ClassRef{ref.TempArgs().at(arg_idx)} : base
+			arg_idx != m_param.size() ? TypeRef{ref.TempArgs().at(arg_idx)} : base
 		);
 	}
 	
 	for (auto&& field : Fields())
 	{
+		
+		
 		auto arg_idx = Match(field.TypeRef().ID());
 		if (arg_idx < m_param.size() && arg_idx < ref.TempArgs().size())
-			std::cout << "instantiating " << field.DataType() << " " << " as " << ref.TempArgs().at(arg_idx) << std::endl;
+			std::cout << "instantiating " << field.DisplayType() << " " << " as " << ref.TempArgs().at(arg_idx) << std::endl;
 		else
 			inst->AddField(field);
 	}

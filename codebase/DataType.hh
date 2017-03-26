@@ -14,7 +14,7 @@
 #pragma once
 
 #include "ParentScope.hh"
-#include "ClassRef.hh"
+#include "TypeRef.hh"
 #include "libclx/SourceRange.hh"
 
 #include <boost/iterator/indirect_iterator.hpp>
@@ -41,7 +41,7 @@ class Variable;
  */
 class DataType : public ParentScope
 {
-	using idvec_iterator    = std::vector<ClassRef>::const_iterator;
+	using idvec_iterator    = std::vector<TypeRef>::const_iterator;
 	
 public:
 	DataType(const libclx::Cursor& cursor, const EntityVec* parent);
@@ -74,7 +74,7 @@ protected:
 		const EntityVec *parent
 	);
 	
-	void AddBase(const ClassRef& base);
+	void AddBase(const TypeRef& base);
 	void AddField(const Variable& var);
 	
 	void OnVisit(const libclx::Cursor& self) override;
@@ -82,7 +82,7 @@ protected:
 	
 private:
 	libclx::SourceLocation              m_definition;
-	std::vector<ClassRef>               m_bases;
+	std::vector<TypeRef>               m_bases;
 };
 
 } // end of namespace

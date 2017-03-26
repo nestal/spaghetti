@@ -26,14 +26,14 @@ namespace codebase {
 
 class EntityMap;
 
-class ClassRef
+class TypeRef
 {
 public:
-	ClassRef() = default;
+	TypeRef() = default;
 	
-	ClassRef(const libclx::Type& type);
-	ClassRef(const std::string& base);
-	explicit ClassRef(const libclx::Cursor& cursor);
+	TypeRef(const libclx::Type& type);
+	TypeRef(const std::string& base);
+	explicit TypeRef(const libclx::Cursor& cursor);
 	
 	const std::string& ID() const;
 	void SetID(std::string&& base_id);
@@ -42,15 +42,15 @@ public:
 	void SetName(std::string&& name);
 	
 	const std::string& TemplateID() const;
-	ClassRef& SetTemplateID(const std::string&& id);
+	TypeRef& SetTemplateID(const std::string&& id);
 	
-	const std::vector<ClassRef>& TempArgs() const;
-	ClassRef& AddTempArgs(ClassRef&& arg);
+	const std::vector<TypeRef>& TempArgs() const;
+	TypeRef& AddTempArgs(TypeRef&& arg);
 	
 	bool IsTemplate() const;
 	
-	bool operator==(const ClassRef& ref) const;
-	bool operator!=(const ClassRef& ref) const;
+	bool operator==(const TypeRef& ref) const;
+	bool operator!=(const TypeRef& ref) const;
 	
 private:
 	void FromTemplateRef(const libclx::Cursor& cursor, const libclx::Type& type);
@@ -68,12 +68,12 @@ private:
 	std::string m_temp_id;
 	
 	//! USR of template arguments, empty if non-template
-	std::vector<ClassRef> m_temp_args;
+	std::vector<TypeRef> m_temp_args;
 	
 	//! For build-in types
 	std::string m_type_kind;
 };
 
-std::ostream& operator<<(std::ostream& os, const ClassRef& ref);
+std::ostream& operator<<(std::ostream& os, const TypeRef& ref);
 	
 } // end of namespace

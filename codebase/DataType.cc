@@ -66,7 +66,7 @@ void DataType::VisitChild(const libclx::Cursor& child, const libclx::Cursor& sel
 	{
 	case CXCursor_CXXBaseSpecifier:
 	{
-		ClassRef base{child};
+		TypeRef base{child};
 		
 		// normally we don't have hundreds of base classes so sequential searches should be faster.
 		// the order of the base classes is important, so we don't want to switch to set.
@@ -114,7 +114,7 @@ bool DataType::IsUsedInMember(const DataType& other) const
 	auto fields = other.Fields();
 	return std::find_if(fields.begin(), fields.end(),[myid = ID()](auto&& field)
 	{
-		return field.TypeID() == myid;
+		return field.TypeRef().ID() == myid;
 	}) != fields.end();
 }
 
@@ -167,15 +167,14 @@ void DataType::MarkBaseClassUsed(EntityMap *map)
 	}
 }
 
-void DataType::AddBase(const ClassRef& base)
+void DataType::AddBase(const TypeRef& base)
 {
 	m_bases.push_back(base);
 }
 
-void DataType::AddField(const Variable&)
+void DataType::AddField(const Variable& var)
 {
-//	Add(m_fields, )
-	// TODO: implement!
+	EntityVec::Add(m_fields, std::make_unique<Variable>(var, this));
 }
 
 } // end of namespace
