@@ -10,7 +10,7 @@
 // Created by nestal on 3/11/17.
 //
 
-#include "codebase/CodeBase.hh"
+#include "Fixture.hh"
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
@@ -18,24 +18,15 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/filesystem/path.hpp>
-
 using namespace codebase;
-namespace fs = boost::filesystem;
 
-class TemplateBaseClassTest : public testing::Test
+class TemplateBaseClassTest : public ut::Fixture
 {
 protected:
-	void SetUp() override
+	TemplateBaseClassTest() : Fixture{"template_base.cc"}
 	{
-		m_subject.Parse((fs::path{__FILE__}.parent_path()/"testdata/test.cc").string(), {
-			"-std=c++14",
-			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-			"-I", SRC_DIR
-		});
+		
 	}
-	
-	CodeBase m_subject;
 };
 
 TEST_F(TemplateBaseClassTest, Test_base_class)

@@ -12,31 +12,22 @@
 
 #include <gtest/gtest.h>
 
-#include "codebase/CodeBase.hh"
+#include "Fixture.hh"
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
 #include "codebase/EntityMap.hh"
 
-#include <boost/filesystem/path.hpp>
 
 using namespace codebase;
-namespace fs = boost::filesystem;
 
-class UniquePtrTest : public testing::Test
+class UniquePtrTest : public ut::Fixture
 {
 protected:
-	void SetUp() override
+	UniquePtrTest() : Fixture{"unique_test.cc"}
 	{
-		m_subject.Parse((fs::path{__FILE__}.parent_path()/"testdata/unique_test.cc").string(), {
-			"-std=c++14",
-			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-			"-I", SRC_DIR
-		});
+		
 	}
-	
-	CodeBase m_subject;
-	EntityMap& m_map{m_subject.Map()};
 };
 
 TEST_F(UniquePtrTest, Test_unique_ptr_to_int)
