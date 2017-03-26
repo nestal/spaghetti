@@ -7,7 +7,7 @@
 */
 
 //
-// Created by nestal on 2/4/17.
+// Created by nestal on 3/26/17.
 //
 
 #pragma once
@@ -15,7 +15,6 @@
 #include "Entity.hh"
 #include "TypeRef.hh"
 
-#include "libclx/Type.hh"
 #include "libclx/SourceRange.hh"
 
 namespace libclx {
@@ -24,33 +23,22 @@ class Cursor;
 
 namespace codebase {
 
-class DataType;
-
-class Variable : public LeafEntity
+class TypeAlias : public LeafEntity
 {
 public:
-	Variable(const libclx::Cursor& field, const EntityVec *parent);
-	Variable(const Variable& other, const EntityVec *parent);
+	TypeAlias(const libclx::Cursor& cursor, const EntityVec *parent);
+	
+	const TypeRef& Dest() const;
 	
 	EntityType Type() const override;
 	std::string DisplayType() const override;
 	libclx::SourceLocation Location() const override;
 	
 	std::string UML() const override;
-	
-	friend std::ostream& operator<<(std::ostream& os, const Variable& c);
 
-	void CrossReference(EntityMap *map) override;
-	
-	const codebase::TypeRef& TypeRef() const;
-	const DataType* ClassType() const;
-	
-	Variable ReplaceType(const codebase::TypeRef& type, const EntityVec *parent) const;
-	
 private:
 	libclx::SourceLocation  m_location;
-	codebase::TypeRef       m_type;
-	const DataType          *m_data_type{};
+	TypeRef m_dest;
 };
 	
 } // end of namespace

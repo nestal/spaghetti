@@ -46,8 +46,6 @@ public:
 	Entity* FindByID(const std::string& id);
 	
 protected:
-	void MarkSelfUsedOnly();
-	
 	template <typename EntityContainer, typename... Ts>
 	auto AddUnique(EntityContainer&& cond, const std::string& id, Ts&&... ts) ->
 	typename std::remove_reference_t<EntityContainer>::value_type
@@ -71,6 +69,8 @@ protected:
 	template <typename EntityContainer, typename ET>
 	void Add(EntityContainer&& cond, std::unique_ptr<ET>&& entity)
 	{
+		assert(entity->Parent() == this);
+		
 		auto self  = m_children.size();
 		auto typed = cond.size();
 		

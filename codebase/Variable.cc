@@ -14,8 +14,10 @@
 
 #include "DataType.hh"
 #include "EntityMap.hh"
-#include "libclx/Cursor.hh"
 #include "EntityType.hh"
+#include "TypeAlias.hh"
+
+#include "libclx/Cursor.hh"
 
 #include <iostream>
 
@@ -24,9 +26,16 @@ namespace codebase {
 Variable::Variable(const libclx::Cursor& field, const EntityVec *parent) :
 	LeafEntity{field.Spelling(), field.USR(), parent},
 	m_location{field.Location()},
-	m_type{field.Type()},
-	m_type_ref{field}
+	m_type{field}
 {
+}
+
+Variable::Variable(const Variable& other, const EntityVec *parent) :
+	LeafEntity{other.Name(), other.ID(), parent},
+	m_location{other.Location()},
+	m_type{other.m_type}
+{
+	
 }
 
 EntityType Variable::Type() const
@@ -36,7 +45,7 @@ EntityType Variable::Type() const
 
 std::ostream& operator<<(std::ostream& os, const Variable& c)
 {
-	return os << c.m_type << " " << c.Name();
+	return os << c.DisplayType() << " " << c.Name();
 }
 
 libclx::SourceLocation Variable::Location() const
@@ -49,28 +58,51 @@ std::string Variable::UML() const
 	return Name() + " : " + DisplayType();
 }
 
-std::string Variable::TypeID() const
+void Variable::CrossReference(EntityMap *map)
 {
-	return m_type.Declaration().USR();
-}
-
-void Variable::CrossReference(EntityMap *)
-{
+	auto entity = map->Find(m_type.ID());
+	while (entity && entity->Type() == EntityType::type_alias)
+	{
+		auto alias = dynamic_cast<const TypeAlias*>(entity);
+		auto dest  = alias->Dest();
+		
+		entity =
+			(dest.IsTemplate() && !dest.ID().empty() && dest.ID() != dest.TemplateID()) ?
+				map->Instantiate(dest, IsUsed()) :
+				map->Find(dest.ID());
+	}
+	
+	m_data_type = dynamic_cast<const DataType*>(entity);
 }
 
 std::string Variable::DisplayType() const
 {
-	return m_type.Spelling();
+	return m_type.Name();
 }
 
-const libclx::Type& Variable::DataType() const
+const codebase::TypeRef& Variable::TypeRef() const
 {
 	return m_type;
 }
 
-const ClassRef& Variable::TypeRef() const
+Variable Variable::ReplaceType(const codebase::TypeRef& type, const EntityVec *parent) const
 {
-	return m_type_ref;
+	Variable var{*this, parent};
+	var.m_type = type;
+	return var;
+}
+
+/**
+ * \brief Returns the DataType of this variable.
+ *
+ * For a variable "std::string s", it returns a pointer to std::basic_string<char...>.
+ * In other words, alias like typedefs has already been resolved.
+ *
+ * \return A pointer to the DataType of this variable, or null if it is a build-in type.
+ */
+const DataType* Variable::ClassType() const
+{
+	return m_data_type;
 }
 
 } // end of namespace

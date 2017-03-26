@@ -24,6 +24,7 @@ enum class EntityType
 	function,
 	namespace_,
 	variable,
+	type_alias,
 	none
 };
 

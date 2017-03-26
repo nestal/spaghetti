@@ -52,17 +52,17 @@ public:
 		return it != m_index.get<ByName>().end() ? *it : nullptr;
 	}
 	
-	const DataType* Find(const ClassRef& ref) const override
+	const DataType* Find(const TypeRef& ref) const override
 	{
 		return dynamic_cast<const DataType*>(Find(ref.ID()));
 	}
 	
-	DataType* Find(const ClassRef& ref) override
+	DataType* Find(const TypeRef& ref) override
 	{
 		return dynamic_cast<DataType*>(Find(ref.ID()));
 	}
 	
-	const DataType* Instantiate(const ClassRef& ref) override
+	DataType* Instantiate(const TypeRef& ref, bool used) override
 	{
 		assert(ref.IsTemplate());
 		assert(!ref.ID().empty());
@@ -73,7 +73,7 @@ public:
 			if (auto temp = TypedFind<ClassTemplate>(ref.TemplateID()))
 			{
 				// instantiate template and add to the index immediately
-				auto inst = temp->Instantiate(ref);
+				auto inst = temp->Instantiate(ref, used);
 				
 				// by default, add the instantiated template
 				auto parent = TypedFind<ParentScope>(temp->Parent()->ID());

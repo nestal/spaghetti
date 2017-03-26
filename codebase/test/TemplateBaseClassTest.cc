@@ -10,7 +10,7 @@
 // Created by nestal on 3/11/17.
 //
 
-#include "codebase/CodeBase.hh"
+#include "Fixture.hh"
 
 #include "codebase/DataType.hh"
 #include "codebase/Variable.hh"
@@ -18,24 +18,15 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/filesystem/path.hpp>
-
 using namespace codebase;
-namespace fs = boost::filesystem;
 
-class TemplateBaseClassTest : public testing::Test
+class TemplateBaseClassTest : public ut::Fixture
 {
 protected:
-	void SetUp() override
+	TemplateBaseClassTest() : Fixture{"template_base.cc"}
 	{
-		m_subject.Parse((fs::path{__FILE__}.parent_path()/"testdata/test.cc").string(), {
-			"-std=c++14",
-			"-I", "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/",
-			"-I", SRC_DIR
-		});
+		
 	}
-	
-	CodeBase m_subject;
 };
 
 TEST_F(TemplateBaseClassTest, Test_base_class)
@@ -45,10 +36,10 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	
 	// base should be c:@S@RecursiveBase>#$@S@Base, but we need to fix it by
 	// differentiating between a template and its instantiation
-	std::vector<ClassRef> base{
-		ClassRef{"c:@S@RecursiveBase>#$@S@Base"}.SetTemplateID("c:@ST>1#T@RecursiveBase").AddTempArgs(ClassRef{"c:@S@Base"}),
-		ClassRef{"c:@S@Base2"},
-		ClassRef{"c:@S@Base3"}
+	std::vector<TypeRef> base{
+		TypeRef{"c:@S@RecursiveBase>#$@S@Base", CXType_Unexposed}.SetTemplateID("c:@ST>1#T@RecursiveBase").AddTempArgs(TypeRef{"c:@S@Base"}),
+		TypeRef{"c:@S@Base2"},
+		TypeRef{"c:@S@Base3"}
 	};
 	ASSERT_EQ(base, derived->BaseClasses());
 	
@@ -60,9 +51,9 @@ TEST_F(TemplateBaseClassTest, Test_base_class)
 	auto inst_base = m_subject.Map().TypedFind<DataType>("c:@S@RecursiveBase>#$@S@Base");
 	ASSERT_TRUE(inst_base);
 	
-	std::vector<ClassRef> bbase{
-		ClassRef{"c:@S@Base"},
-		ClassRef{"c:@S@Base4"}
+	std::vector<TypeRef> bbase{
+		TypeRef{"c:@S@Base"},
+		TypeRef{"c:@S@Base4"}
 	};
 	ASSERT_EQ(bbase, inst_base->BaseClasses());
 }
@@ -78,4 +69,8 @@ TEST_F(TemplateBaseClassTest, Test_template_fields)
 	auto field_type = m_subject.Map().TypedFind<DataType>(base_field.TypeRef().ID());
 	ASSERT_TRUE(field_type);
 	ASSERT_EQ("Temp1<int>", field_type->Name());
+	
+	auto temp1_fields = field_type->Fields();
+	ASSERT_EQ(1, temp1_fields.size());
+	ASSERT_EQ(CXType_Int, temp1_fields.front().TypeRef().Kind());
 }

@@ -64,13 +64,7 @@ const EntityVec* EntityVec::Parent() const
 
 bool EntityVec::IsUsed() const
 {
-	return m_used ||
-		std::find_if(begin(), end(), [](auto& child){return child.IsUsed();}) != end();
-}
-
-void EntityVec::MarkSelfUsedOnly()
-{
-	m_used = true;
+	return m_used;
 }
 
 void EntityVec::Reparent(const EntityVec *parent)
@@ -114,7 +108,7 @@ std::size_t EntityVec::ChildCount() const
 
 void EntityVec::SetUsed(bool used)
 {
-	m_used = used;
+	m_used |= used;
 }
 	
 } // end of namespace

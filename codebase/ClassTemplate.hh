@@ -21,7 +21,7 @@
 
 namespace codebase {
 
-class ClassRef;
+class TypeRef;
 class ClassTemplate;
 class InstantiatedDataType;
 
@@ -32,10 +32,12 @@ public:
 	
 	void VisitChild(const libclx::Cursor& child, const libclx::Cursor& self) override;
 	
-	std::unique_ptr<DataType> Instantiate(const ClassRef& ref) const;
+	std::unique_ptr<DataType> Instantiate(const codebase::TypeRef& ref, bool used) const;
 	
 	EntityType Type() const override;
-
+	
+	codebase::TypeRef Match(const codebase::TypeRef& type, const std::vector<codebase::TypeRef>& args) const;
+	
 private:
 	std::size_t Match(const std::string& usr) const;
 	class Instance;
