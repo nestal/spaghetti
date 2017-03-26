@@ -20,6 +20,7 @@ class TypedefOwner
 public:
 	using Str = Temp<String>;
 	
-	Str m_str;
+	Str    m_str;
+	Str    *m_ptstr;
 	String *m_pstr;
 };
