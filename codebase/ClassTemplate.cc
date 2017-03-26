@@ -36,10 +36,7 @@ public:
 			AddBase(temp->Match(base, ref.TempArgs()));
 		
 		for (auto&& field : temp->Fields())
-		{
-			std::cout << "instantiating " << field.TypeRef() << std::endl;
 			AddField(field.ReplaceType(temp->Match(field.TypeRef(), ref.TempArgs()), this));
-		}
 	}
 	
 	EntityType Type() const override

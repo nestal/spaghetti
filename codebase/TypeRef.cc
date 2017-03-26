@@ -41,7 +41,6 @@ TypeRef::TypeRef(const libclx::Type& type, const std::string& temp_id) :
 TypeRef::TypeRef(const libclx::Cursor& cursor) :
 	TypeRef{cursor.Type()}
 {
-	std::cout << "created TypeRef for " << cursor.KindSpelling() << " base(" << m_base_id << ") temp(" << m_temp_id << ") " << m_name << std::endl;
 	assert(
 		cursor.Kind() == CXCursor_CXXBaseSpecifier ||
 		cursor.Kind() == CXCursor_FieldDecl ||
